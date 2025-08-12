@@ -1,0 +1,16 @@
+0,1,2
+Field,Definition,Further information
+Year,Calendar year (1989-current year),
+census_issue_date,Month and year retrieved from Census website or date of Census DVD,
+hts10,HTS10 import commodity code or schedule B10 export commodity code,HTS: https://hts.usitc.gov/current; SchB: https://www.census.gov/foreign-trade/schedules/b/index.html
+description_long,Description of 10-digit commodity - long version,
+description_short,Description of 10-digit commodity - short version,
+quantity_1,First unit of quantity (see note below),https://www.census.gov/foreign-trade/guide/sec4.html#units
+quantity_2,Second unit of quantity (see note below),https://www.census.gov/foreign-trade/guide/sec4.html#units
+sitc,Standard International Trade Classification,https://www.census.gov/foreign-trade/reference/codes/sitc/sitcmstr.txt
+end_use,End use classification,Import codes: https://www.census.gov/foreign-trade/reference/codes/enduse/imeumstr.txt. Export codes: https://www.census.gov/foreign-trade/reference/codes/enduse/exeumstr.txt
+naics,North American Industrial Classification System (1997-current year only),https://www.census.gov/eos/www/naics/
+ag_code,Agriculture or non-agriculture product code,"Agricultural commodities, as determined by the U.S. Department of Agriculture. ""0"" indicates agricultural commodity; ""1"" indicates non-agricultural commodity"
+hitech,HiTech (aka advanced technology) product codes ,https://www.census.gov/foreign-trade/reference/codes/atp/index.html
+sic,Standard Industrial Classification System (1989-2003 only),https://www.census.gov/foreign-trade/reference/codes/sic/isic.txt
+"Note: The first and second units of measurement for quantity data vary from year to year in some cases. Dataweb query results always show the most recent units of measure (and there is no adjustment of past year's quantity data). Care should be taken when interpreting quantity data. To view the units of measure for HTS10 subheadings for both import and export codes by year, go to the ""Import concordance"" and ""Export concordance"" sheets, respectively.",,

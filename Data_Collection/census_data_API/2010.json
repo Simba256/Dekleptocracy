@@ -1,0 +1,4154 @@
+{
+  "@context": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld",
+  "@id": "http://api.census.gov/data/2010/acs/acs3/profile.json",
+  "@type": "dcat:Catalog",
+  "conformsTo": "https://project-open-data.cio.gov/v1.1/schema",
+  "describedBy": "https://project-open-data.cio.gov/v1.1/schema/catalog.json",
+  "dataset": [
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs3",
+        "profile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs3/profile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs3/profile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs3/profile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs3/profile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs3/profile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs3/profile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 3-Year Estimates: Data Profiles 3-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is a nationwide survey designed to provide communities a fresh look at how they are changing. The ACS replaced the decennial census long form in 2010 and thereafter by collecting long form type information throughout the decade rather than only once every 10 years. Questionnaires are mailed to a sample of addresses to obtain information about households -- that is, about each person and the housing unit itself. The American Community Survey produces demographic, social, housing and economic estimates in the form of 1-year, 3-year and 5-year estimates based on population thresholds. The strength of the ACS is in estimating population and housing characteristics.  The 3-year data provide key estimates for each of the topic areas covered by the ACS for the nation, all 50 states, the District of Columbia, Puerto Rico, every congressional district, every metropolitan area, and all counties and places with populations of 20,000 or more.  Although the ACS produces population, demographic and housing unit estimates,it is the Census Bureau's Population Estimates Program that produces and disseminates the official estimates of the population for the nation, states, counties, cities and towns, and estimates of housing units for states and counties. For 2010 and other decennial census years, the Decennial Census provides the official counts of population and housing units.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs3/profile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDP3Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-01-28 09:44:53.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "pums"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/pums/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/pums/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/pums/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/pums/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/pums/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/pums/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2006-2010 American Community Survey: 5-Year Estimates - Public Use Microdata Sample",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) Public Use Microdata Sample (PUMS) contains a sample of responses to the ACS. The ACS PUMS dataset includes variables for nearly every question on the survey, as well as many new variables that were derived after the fact from multiple survey responses (such as poverty status).Each record in the file represents a single person, or, in the household-level dataset, a single housing unit. In the person-level file, individuals are organized into households, making possible the study of people within the contexts of their families and other household members. Individuals living in Group Quarters, such as nursing facilities or college facilities, are also included on the person file. ACS PUMS data are available at the nation, state, and Public Use Microdata Area (PUMA) levels. PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing roughly 100,000 people each. ACS PUMS files for an individual year, such as 2019, contain data on approximately one percent of the United States population.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/pums",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSPUMS5Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-11-25 11:05:59.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs1"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs1/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs1/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs1/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs1/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs1/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs1/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "ACS 1-Year Detailed Tables",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is a nationwide survey designed to provide communities a fresh look at how they are changing. The ACS replaced the decennial census long form in 2010 and thereafter by collecting long form type information throughout the decade rather than only once every 10 years. Questionnaires are mailed to a sample of addresses to obtain information about households -- that is, about each person and the housing unit itself. The American Community Survey produces demographic, social, housing and economic estimates in the form of 1 and 5-year estimates based on population thresholds. The strength of the ACS is in estimating population and housing characteristics. The 2012 data provide key estimates for each of the topic areas covered by the ACS for the nation, all 50 states, the District of Columbia, Puerto Rico, every congressional district, every metropolitan area, and all counties and places with populations of 65,000 or more. Although the ACS produces population, demographic and housing unit estimates,it is the Census Bureau's Population Estimates Program that produces and disseminates the official estimates of the population for the nation, states, counties, cities and towns, and estimates of housing units for states and counties. For 2010 and other decennial census years, the Decennial Census provides the official counts of population and housing units.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs1",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDT1Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-07-04 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs3",
+        "spp"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs3/spp/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs3/spp/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs3/spp/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs3/spp/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs3/spp/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs3/spp/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 3-Year Estimates: Selected Population Profiles 3-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population. Summary file, Subject tables, Data profiles, and Comparison profiles are available for the us, all 50 states, the District of Columbia, Puerto Rico, every congressional district, every metropolitan area, and all counties and places with populations of 65,000 or more. Selected Population Profiles provide an overview of the estimates available across a range of topics for detailed population groups. The data are presented as population counts and percentages. There are over 300 variables in this dataset.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs3/spp",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSSPP3Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-03-04 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cbp"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cbp/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cbp/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cbp/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cbp/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cbp/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cbp/sorts.json",
+      "c_documentationLink": "http://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2010 County Business Patterns: Business Patterns",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "County Business Patterns (CBP) is an annual series that provides economic data by industry at the U.S., State, County and Metropolitan Area levels. This series includes the number of establishments, employment during the week of March 12, first quarter payroll, and annual payroll. CBP provides statistics for businesses with paid employees for the U.S., Puerto Rico, and the Island Areas. Census Bureau staff identified a processing error that affects selected data from the 2014 County Business Patterns (CBP). As a result, we suppressed 2014 employment and payroll totals in the Health Care and Social Assistance sector (Sector 62) for the following geographies: U.S.; Michigan; Battle Creek, MI metro area; Calhoun County, MI; and the 3rd congressional district of Michigan. This processing error did not affect other sectors. While suppressed values can be derived by subtraction, we do not recommend using the derived values in any analyses.  The Census Bureau plans to release revised statistics at a later date.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cbp",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CBP Staff",
+        "hasEmail": "mailto:epcd.county.business.patterns@census.gov"
+      },
+      "identifier": "http://api.census.gov/data/id/CBP2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2017-02-22",
+      "programCode": [
+        "006:007"
+      ],
+      "references": [
+        "http://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "temporal": "2010/2010",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs1",
+        "cprofile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs1/cprofile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs1/cprofile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs1/cprofile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs1/cprofile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs1/cprofile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs1/cprofile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "ACS 1-Year Comparison Profiles",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population. Much of the ACS data provided on the Census Bureau's Web site are available separately by age group, race, Hispanic origin, and sex.  Summary files, Subject tables, Data profiles, and Comparison profiles are available for the nation, all 50 states, the District of Columbia, Puerto Rico, every congressional district, every metropolitan area, and all counties and places with populations of 65,000 or more.  Comparison profiles are similar to data profiles but also include comparisons with past-year data.  The current year data are compared with each of the last four years of data and include statistical significance testing.  There are over 1,000 variables in this dataset.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs1/cprofile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSCP1Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-09-18 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs1",
+        "profile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs1/profile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs1/profile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs1/profile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs1/profile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs1/profile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs1/profile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "ACS 1-Year Data Profiles",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is a nationwide survey designed to provide communities a fresh look at how they are changing. The ACS replaced the decennial census long form in 2010 and thereafter by collecting long form type information throughout the decade rather than only once every 10 years. Questionnaires are mailed to a sample of addresses to obtain information about households -- that is, about each person and the housing unit itself. The American Community Survey produces demographic, social, housing and economic estimates in the form of 1 and 5-year estimates based on population thresholds. The strength of the ACS is in estimating population and housing characteristics. The data profiles provide key estimates for each of the topic areas covered by the ACS for the nation, all 50 states, the District of Columbia, Puerto Rico, every congressional district, every metropolitan area, and all counties and places with populations of 65,000 or more. Although the ACS produces population, demographic and housing unit estimates,it is the Census Bureau's Population Estimates Program that produces and disseminates the official estimates of the population for the nation, states, counties, cities and towns, and estimates of housing units for states and counties. For 2010 and other decennial census years, the Decennial Census provides the official counts of population and housing units.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs1/profile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDP1Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-06-20 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs3",
+        "subject"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs3/subject/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs3/subject/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs3/subject/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs3/subject/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs3/subject/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs3/subject/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 3-Year Estimates: Subject Tables 3-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population. The subject tables include the following geographies: nation, all states (including DC and Puerto Rico), all metropolitan areas, all congressional districts, all counties, all places and all tracts. Subject tables provide an overview of the estimates available in a particular topic.  The data are presented as both counts and percentages.  There are over 66,000 variables in this dataset.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs3/subject",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSST3Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-05 15:59:41.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs1",
+        "pums"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs1/pums/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs1/pums/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs1/pums/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs1/pums/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs1/pums/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs1/pums/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2010 American Community Survey: 1-Year Estimates - Public Use Microdata Sample",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) Public Use Microdata Sample (PUMS) contains a sample of responses to the ACS. The ACS PUMS dataset includes variables for nearly every question on the survey, as well as many new variables that were derived after the fact from multiple survey responses (such as poverty status).Each record in the file represents a single person, or, in the household-level dataset, a single housing unit. In the person-level file, individuals are organized into households, making possible the study of people within the contexts of their families and other household members. Individuals living in Group Quarters, such as nursing facilities or college facilities, are also included on the person file. ACS PUMS data are available at the nation, state, and Public Use Microdata Area (PUMA) levels. PUMAs are special non-overlapping areas that partition each state into contiguous geographic units containing roughly 100,000 people each. ACS PUMS files for an individual year, such as 2020, contain data on approximately one percent of the United States population",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs1/pums",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSPUMS1Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-11-22 10:52:01.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "aian"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/aian/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/aian/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/aian/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/aian/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/aian/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/aian/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 5-Year Estimates: American Indian and Alaska Native Detailed Tables 5-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Indian and Alaska Native (AIAN) tables are released every five years. They are available for selected tribal populations, with more detailed tribal categories compared to those in the Selected Population Tables.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/aian",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDT5YAIAN2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-24 07:18:57.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs1",
+        "pumspr"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs1/pumspr/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs1/pumspr/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs1/pumspr/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs1/pumspr/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs1/pumspr/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs1/pumspr/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2010 American Community Survey: 1-Year Estimates - Puerto Rico Public Use Microdata Sample",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Public Use Microdata Sample (PUMS) for Puerto Rico (PR) contains a sample of responses to the Puerto Rico Community Survey (PRCS). The PRCS is similar to, but separate from, the American Community Survey (ACS). The PRCS collects data about the population and housing units in Puerto Rico. Puerto Rico data is not included in the national PUMS files. It is published as a state equivalent file and has a State FIPS code of \"72\". The file includes variables for nearly every question on the survey, as well as many new variables that were derived after the fact from multiple survey responses (such as poverty status). Each record in the file represents a single person, or, in the household-level dataset, a single housing unit. In the person-level file, individuals are organized into households, making possible the study of people within the contexts of their families and other household members. Individuals living in Group Quarters, such as nursing facilities or college facilities, are also included on the person file. Data are available at the state and Public Use Microdata Area (PUMA) levels. PUMAs are special non-overlapping areas that partition Puerto Rico into contiguous geographic units containing roughly 100,000 people each. The Puerto Rico PUMS file for an individual year, such as 2020, contain data on approximately one percent of the Puerto Rico population.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs1/pumspr",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSPUMS1YPR2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-11-22 11:59:02.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "aianprofile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/aianprofile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/aianprofile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/aianprofile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/aianprofile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/aianprofile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/aianprofile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 5-Year Estimates: American Indian and Alaska Native Data Profiles 5-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Indian and Alaska Native (AIAN) tables are released every five years. They are available for selected tribal populations, with more detailed tribal categories compared to those in the Selected Population Tables.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/aianprofile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDP5YAIAN2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-24 06:46:02.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "ACS 5-Year Detailed Tables",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population.  Summary files include the following geographies: nation, all states (including DC and Puerto Rico), all metropolitan areas, all congressional districts (114th congress), all counties, all places, and all tracts and block groups.  Summary files contain the most detailed cross-tabulations, many of which are published down to block groups. The data are population and housing counts. There are over 64,000 variables in this dataset.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDT5Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-07-04 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs1",
+        "spp"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs1/spp/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs1/spp/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs1/spp/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs1/spp/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs1/spp/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs1/spp/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 1-Year Estimates: Selected Population Profiles 1-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Selected Population Profiles provide broad social, economic, and housing profiles for a large number of race, ethnic, ancestry, and country/region of birth groups. The data are presented as population counts for the total population and various subgroups and percentages.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs1/spp",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSSPP1Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-13 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "temporal": "2010/2010",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "profile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/profile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/profile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/profile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/profile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/profile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/profile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "ACS 5-Year Data Profiles",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population. The data profiles include the following geographies: nation, all states (including DC and Puerto Rico), all metropolitan areas, all congressional districts, all counties, all places and all tracts. Data profiles contain broad social, economic, housing, and demographic information. The data are presented as both counts and percentages. There are over 2,400 variables in this dataset.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/profile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDP5Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-06-29 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs1",
+        "subject"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs1/subject/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs1/subject/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs1/subject/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs1/subject/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs1/subject/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs1/subject/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "ACS 1-Year Subject Tables",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population.  Summary file, Subject tables, Data profiles, and Comparison profiles are available for the nation, all 50 states, the District of Columbia, Puerto Rico, every congressional district, every metropolitan area, and all counties and places with populations of 65,000 or more.  Subject tables provide an overview of the estimates available in a particular topic.  The data are presented as population counts and percentages.  There are over 66,000 variables in this dataset.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs1/subject",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSST1Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-07-05 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "pumspr"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/pumspr/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/pumspr/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/pumspr/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/pumspr/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/pumspr/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/pumspr/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2006-2010 American Community Survey: 5-Year Estimates - Puerto Rico Public Use Microdata Sample",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Public Use Microdata Sample (PUMS) for Puerto Rico (PR) contains a sample of responses to the Puerto Rico Community Survey (PRCS). The PRCS is similar to, but separate from, the American Community Survey (ACS). The PRCS collects data about the population and housing units in Puerto Rico. Puerto Rico data is not included in the national PUMS files. It is published as a state equivalent file and has a State FIPS code of “72”. The file includes variables for nearly every question on the survey, as well as many new variables that were derived after the fact from multiple survey responses (such as poverty status). Each record in the file represents a single person, or, in the household-level dataset, a single housing unit. In the person-level file, individuals are organized into households, making possible the study of people within the contexts of their families and other household members. Individuals living in Group Quarters, such as nursing facilities or college facilities, are also included on the person file. Data are available at the state and Public Use Microdata Area (PUMA) levels. PUMAs are special non-overlapping areas that partition Puerto Rico into contiguous geographic units containing roughly 100,000 people each. The Puerto Rico PUMS file for an individual year, such as 2019, contain data on approximately one percent of the Puerto Rico population.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/pumspr",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSPUMS5YPR2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-11-25 11:42:59.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "spt"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/spt/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/spt/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/spt/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/spt/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/spt/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/spt/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 5-Year Estimates: Selected Population Detailed Tables 5-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Selected Population  Tables (SPT) are released every five years. They are available for selected race, Hispanic origin, tribal, and ancestry populations.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/spt",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDT5YSPT2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-11 14:16:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "sptprofile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/sptprofile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/sptprofile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/sptprofile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/sptprofile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/sptprofile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/sptprofile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "American Community Survey: 5-Year Estimates: Selected Population Data Profiles 5-Year",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Selected Population  Tables (SPT) are released every five years. They are available for selected race, Hispanic origin, tribal, and ancestry populations.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/sptprofile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSDP5YSPT2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-09 13:54:45.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "acs5",
+        "subject"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/acs5/subject/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/acs5/subject/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/acs5/subject/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/acs5/subject/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/acs5/subject/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/acs5/subject/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "ACS 5-Year Subject Tables",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Community Survey (ACS) is an ongoing survey that provides data every year -- giving communities the current information they need to plan investments and services. The ACS covers a broad range of topics about social, economic, demographic, and housing characteristics of the U.S. population. The subject tables include the following geographies: nation, all states (including DC and Puerto Rico), all metropolitan areas, all congressional districts, all counties, all places and all tracts. Subject tables provide an overview of the estimates available in a particular topic.  The data are presented as both counts and percentages.  There are over 66,000 variables in this dataset.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/acs5/subject",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "American Community Survey Office",
+        "hasEmail": "mailto:acso.users.support@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/ACSST5Y2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-09-18 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "acs",
+        "flows"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/acs/flows/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/acs/flows/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/acs/flows/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/acs/flows/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/acs/flows/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/acs/flows/sorts.json",
+      "c_documentationLink": "http://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2006-2010 American Community Survey: Migration Flows",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Migration flows are derived from the relationship between the location of current residence in the American Community Survey (ACS) sample and the responses given to the migration question \"Where did you live 1 year ago?\".  There are flow statistics (moved in, moved out, and net moved) between county or minor civil division (MCD) of residence and county, MCD, or world region of residence 1 year ago.  Estimates for MCDs are only available for the 12 strong-MCD states, where the MCDs have the same government functions as incorporated places.  Migration flows between metropolitan statistical areas are available starting with the 2009-2013 5-year ACS dataset.   Flow statistics are available by three or four variables for each dataset starting with the 2006-2010 5-year ACS datasets.  The variables change for each dataset and do not repeat in overlapping datasets.  In addition to the flow estimates, there are supplemental statistics files that contain migration/geographical mobility estimates (e.g., nonmovers, moved to a different state, moved from abroad) for each county, MCD, or metro area.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/acs/flows",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Journey to Work and Migration Statistics Branch",
+        "hasEmail": "mailto:sehsd.migration@census.gov"
+      },
+      "identifier": "http://api.census.gov/data/id/ACSFlows2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-08-22",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "http://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "may"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/may/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/may/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/may/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/may/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/may/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/may/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "May 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/may",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201005",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:08.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "asec",
+        "mar"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/asec/mar/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/asec/mar/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/asec/mar/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/asec/mar/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/asec/mar/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/asec/mar/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Mar 2010 Current Population Survey: Annual Social and Economic (March) Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Annual Social and Economic Supplement or March CPS supplement is the primary source of detailed information on income and work experience in the United States. Numerous publications based on this survey are issued each year by the Bureaus of Labor Statistics and Census. A public-use microdata file is available for private researchers, who also produce many academic and policy-related documents based on these data.    The Annual Social and Economic Supplement is used to generate the annual Population Profile of the United States, reports on geographical mobility and educational attainment, and detailed analysis of money income and poverty status. The labor force and work experience data from this survey are used to profile the U.S. labor market and to make employment projections.    To allow for the same type of in-depth analysis of hispanics, additional hispanic sample units are added to the basic CPS sample in March each year. Additional weighting is also performed so that estimates can be made for households and families, in addition to persons.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/asec/mar",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSASEC2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2022-10-14 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "temporal": "2010-03/2010-03",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "nov"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/nov/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/nov/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/nov/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/nov/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/nov/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/nov/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Nov 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/nov",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201011",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:15.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "apr"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/apr/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/apr/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/apr/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/apr/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/apr/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/apr/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Apr 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/apr",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201004",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:07.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "oct"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/oct/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/oct/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/oct/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/oct/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/oct/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/oct/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Oct 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/oct",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:14.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "aug"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/aug/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/aug/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/aug/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/aug/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/aug/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/aug/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Aug 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/aug",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201008",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:11.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "sep"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/sep/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/sep/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/sep/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/sep/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/sep/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/sep/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Sep 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/sep",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201009",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:13.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "dec"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/dec/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/dec/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/dec/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/dec/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/dec/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/dec/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Dec 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/dec",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201012",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:16.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "civic",
+        "nov"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/civic/nov/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/civic/nov/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/civic/nov/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/civic/nov/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/civic/nov/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/civic/nov/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Nov 2010 Current Population Survey: Civic Engagement Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Provides information on the extent to which our nations communities are places where individuals are civically active. Provide information on communication with others, interaction with public institutions and private enterprises, forming positve relationships with others, participation in groups, extent of political action, frequency of gaining news and information from media sources.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/civic/nov",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSCIVICENGAGE201011",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-08-11 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "feb"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/feb/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/feb/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/feb/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/feb/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/feb/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/feb/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Feb 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/feb",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201002",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:04.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "dwjt",
+        "jan"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/dwjt/jan/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/dwjt/jan/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/dwjt/jan/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/dwjt/jan/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/dwjt/jan/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/dwjt/jan/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Jan 2010 Current Population Survey: Displaced Workers/Job Tenure",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Displaced Workers: Provides data on workers who lost a job in the last 3 years due to plant closing, shift elimination, or other work-related reason. Job Tenure: Provides data that will measure an individual’s tenure with his/her current employer and in his/her current occupation.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/dwjt/jan",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSDISWORKJOBTEN201001",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-07-28 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "jan"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/jan/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/jan/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/jan/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/jan/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/jan/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/jan/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Jan 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/jan",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201001",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:03.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "fertility",
+        "jun"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/fertility/jun/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/fertility/jun/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/fertility/jun/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/fertility/jun/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/fertility/jun/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/fertility/jun/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Jun 2010 Current Population Survey: Fertility Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Provides data on the number of children that women aged 15-50 have ever had, year of first birth, mother's age at first birth, and marital status at first birth.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/fertility/jun",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSFERTILITY201006",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-07-28 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "jul"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/jul/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/jul/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/jul/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/jul/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/jul/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/jul/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Jul 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/jul",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201007",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:10.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "foodsec",
+        "dec"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/foodsec/dec/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/foodsec/dec/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/foodsec/dec/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/foodsec/dec/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/foodsec/dec/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/foodsec/dec/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Dec 2010 Current Population Survey: Food Security Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Provides data that will measure hunger and food security. It will provide data on food expenditure, access to food, and food quality and safety.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/foodsec/dec",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSFOODSECURITY201012",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-08-18 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "jun"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/jun/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/jun/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/jun/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/jun/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/jun/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/jun/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Jun 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/jun",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201006",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:09.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "internet",
+        "oct"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/internet/oct/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/internet/oct/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/internet/oct/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/internet/oct/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/internet/oct/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/internet/oct/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Oct 2010 Current Population Survey: Computer and Internet Use Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Information on person and household broadband (high-speed Internet) use, where it is used, by what types of devices, what type of service provider, and other characteristics.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/internet/oct",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSINTERNET201010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-07-28 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "basic",
+        "mar"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/basic/mar/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/basic/mar/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/basic/mar/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/basic/mar/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/basic/mar/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/basic/mar/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Mar 2010 Current Population Survey: Basic Monthly",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To provide estimates of employment, unemployment, and other characteristics of the general labor force, of the population as a whole, and of various subgroups of the population. Monthly labor force data for the country are used by the Bureau of Labor Statistics (BLS) to determine the distribution of funds under the Job Training Partnership Act. These data are collected through combined computer-assisted personal interviewing (CAPI) and computer-assisted telephone interviewing (CATI). In addition to the labor force data, the CPS basic funding provides annual data on work experience, income, and migration from the March Annual Demographic Supplement and on school enrollment of the population from the October Supplement. Other supplements, some of which are sponsored by other agencies, are conducted biennially or intermittently.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/basic/mar",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSBASIC201003",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-10-10 09:25:05.0",
+      "programCode": [
+        "012:031"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "school",
+        "oct"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/school/oct/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/school/oct/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/school/oct/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/school/oct/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/school/oct/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/school/oct/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Oct 2010 Current Population Survey: School Enrollment Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Provides information on population 3 years old and older on school enrollment, junior or regular college attendance, and high school graduation.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/school/oct",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSSCHOOL201010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-07-17 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "tobacco",
+        "aug"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/tobacco/aug/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/tobacco/aug/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/tobacco/aug/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/tobacco/aug/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/tobacco/aug/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/tobacco/aug/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Aug 2010 Current Population Survey: Tobacco Use Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To measure changes in America's use of tobacco products as well as to understand public attitudes about smoking.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/tobacco/aug",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSTOBACCOUSE201008",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-05-06 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "tobacco",
+        "may"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/tobacco/may/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/tobacco/may/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/tobacco/may/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/tobacco/may/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/tobacco/may/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/tobacco/may/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "May 2010 Current Population Survey: Tobacco Use Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "To measure changes in America's use of tobacco products as well as to understand public attitudes about smoking.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/tobacco/may",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSTOBACCOUSE201005",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-05-06 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "vets",
+        "jul"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/vets/jul/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/vets/jul/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/vets/jul/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/vets/jul/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/vets/jul/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/vets/jul/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Jul 2010 Current Population Survey: Veterans Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Provides data for veterans of the United States on Vietnam-theater and Persian Gulf-theater status, service-connected income, effect of a service-connected disability on current labor force participation and participation in veterans’ programs.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/vets/jul",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSVETS201007",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-06-04 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "volunteer",
+        "sep"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/volunteer/sep/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/volunteer/sep/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/volunteer/sep/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/volunteer/sep/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/volunteer/sep/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/volunteer/sep/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Sep 2010 Current Population Survey: Volunteering and Civic Life Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Information on a variety of topics that assess civic health:  interactions with family, friends, neighbors; political engagement; group membership and participation; frequency of volunteering activity; and donations to political or charitable organizations.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/volunteer/sep",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSVOLUNTEER201009",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-08-03 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "plnat"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/plnat/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/plnat/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/plnat/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/plnat/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/plnat/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/plnat/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: National Redistricting Data",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The 2010 Census National Summary File of Redistricting Data provides population counts for all persons and for persons 18 years and over by race (63 categories) and by Hispanic or Latino origin, as well as counts of all persons and persons 18 years and over that are not Hispanic/Latino cross-tabulated by race (63 categories). It provides the total housing unit counts and the counts of occupied and vacant units.The National Summary File of Redistricting Data is an extract of selected geographic areas (e.g., states, Congressional districts, and state legislative districts) previously released in the 2010 Census Redistricting Data (Public Law 94-171) Summary Files. In addition, this product provides summaries for the United States, regions, divisions, and other geographic areas that cross state boundaries, such as American Indian areas, metropolitan statistical areas, and micropolitan statistical areas.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/plnat",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALPLNAT2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-27 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "cps",
+        "voting",
+        "nov"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/cps/voting/nov/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/cps/voting/nov/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/cps/voting/nov/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/cps/voting/nov/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/cps/voting/nov/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/cps/voting/nov/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isMicrodata": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Nov 2010 Current Population Survey: Voting Supplement",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Provides demographic information on persons who did and did not register to vote. Also measures number of persons who voted and reasons for not registering.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/cps/voting/nov",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CPS Staff",
+        "hasEmail": "mailto:dsd.cps@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/CPSVOTING201011",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-09-01 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "nonemp"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/nonemp/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/nonemp/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/nonemp/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/nonemp/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/nonemp/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/nonemp/sorts.json",
+      "c_documentationLink": "http://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2010 Nonemployer Statistics: Non Employer Statistics",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Nonemployer Statistics is an annual series that provides subnational economic data for businesses that have no paid employees and are subject to federal income tax. The data consist of the number of businesses and total receipts by industry. Most nonemployers are self-employed individuals operating unincorporated businesses (known as sole proprietorships), which may or may not be the owner's principal source of income. The majority of all business establishments in the United States are nonemployers, yet these firms average less than 4 percent of all sales and receipts nationally. Due to their small economic impact, these firms are excluded from most other Census Bureau business statistics (the primary exception being the Survey of Business Owners). The Nonemployers Statistics series is the primary resource available to study the scope and activities of nonemployers at a detailed geographic level. For complementary statistics on the firms that do have paid employees, refer to the County Business Patterns. Additional sources of data on small businesses include the Economic Census, and the Statistics of U.S. Businesses.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/nonemp",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Nonemployer Statistics staff",
+        "hasEmail": "mailto:epcd.nonemployer.statistics@census.gov"
+      },
+      "identifier": "http://api.census.gov/data/id/NONEMP2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2016-09-21",
+      "programCode": [
+        "006:007"
+      ],
+      "references": [
+        "http://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "temporal": "2010/2010",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "responserate"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/responserate/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/responserate/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/responserate/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/responserate/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/responserate/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/responserate/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: Decennial Self-Reponse Rate",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Final 2010 Self-Response Rates",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/responserate",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALRR2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-12-19 11:02:34.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "aian"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/aian/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/aian/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/aian/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/aian/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/aian/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/aian/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: American Indian and Alaska Native Summary File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The AIAN Summary File contains data on population characteristics, such as sex, age, average household size, household type, and relationship to householder.  The American Indian and Alaska Native Summary File (AIANSF) contains data on population characteristics, such as sex, age, average household size, household type, and relationship to householder. The file also includes housing characteristics, such as tenure (whether a housing unit is owner-occupied or renter- occupied) and age of householder for occupied housing units. Selected aggregates and medians also are provided. A complete listing of subjects in the AIANSF is found in Chapter 3, Subject Locator. The layout of the tables in the AIANSF is similar to that in Summary File 2 (SF 2). These data are presented in 47 population tables (identified with a \"PCT\") and 14 housing tables (identified with an \"HCT\") shown down to the census tract level; and 10 population tables (identified with a \"PCO\") shown down to the county level, for a total of 71 tables.   Each table is iterated for the total population, the total American Indian and Alaska Native population alone, the total American Indian and Alaska Native population alone or in combination, and 1,567 detailed tribes and tribal groupings. Tribes or tribal groupings are included on the iterations list if they met a threshold of at least 100 people in the 2010 Census. In addition, the presentation of AIANSF tables for any of the tribes and tribal groupings is subject to a population threshold of 100 or more people in a given geography. That is, if there are fewer than 100 people in a specific population group in a specific geographic area, their population and housing characteristics data are not available for that geographic area in the AIANSF. See Appendix H, Characteristic Iterations, for more information.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/aian",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALAIAN2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-08-06 07:21:39.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "surname"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/surname/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/surname/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/surname/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/surname/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/surname/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/surname/sorts.json",
+      "c_documentationLink": "http://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2010 Decennial Census of Population and Housing: Surnames",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Census Bureau's Census surnames product is a data release based on names recorded in the decennial census.  The product contains rank and frequency data on surnames reported 100 or more times in the decennial census, along with Hispanic origin and race category percentages.  The latter are suppressed where necessary for confidentiality.  The data focus on summarized aggregates of counts and characteristics associated with surnames, and the data do not in any way identify any specific individuals.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/surname",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Joshua Comenetz",
+        "hasEmail": "mailto:Joshua.Comenetz@census.gov"
+      },
+      "identifier": "http://api.census.gov/data/id/DecennialSurname2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2016-12-15",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "http://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "temporal": "2010/2010",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "as"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/as/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/as/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/as/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/as/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/as/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/as/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: American Samoa Summary File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Samoa Summary File contains detailed demographic, social, economic, and housing data asked of all people and about every housing unit.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/as",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALAS2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-27 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "asyoe"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/asyoe/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/asyoe/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/asyoe/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/asyoe/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/asyoe/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/asyoe/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: American Samoa Year of Entry File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The American Samoa Year of Entry Summary File contains data on year of entry.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/asyoe",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALYOEAS2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-03-02 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "zbp"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/zbp/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/zbp/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/zbp/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/zbp/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/zbp/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/zbp/sorts.json",
+      "c_documentationLink": "http://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "2010 County Business Patterns - Zip Code Business Patterns: Total For Zip Code",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "ZIP Code Business Patterns (ZBP) is an annual series that provides economic data by ZIP Code.  This table includes the number of establishments, employment during the week of March 12, first quarter payroll, and annual payroll for All Industries by 5-digit ZIP Code.  All Industries is set using SIC=00 from 1994 to 1997 and then with NAICS=00 from 1998 to present.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/zbp",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "CBP Staff",
+        "hasEmail": "mailto:ewd.county.business.patterns@census.gov"
+      },
+      "identifier": "http://api.census.gov/data/id/ZBPTotal2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-01-25",
+      "programCode": [
+        "006:007"
+      ],
+      "references": [
+        "http://www.census.gov/developers/"
+      ],
+      "spatial": "United States",
+      "temporal": "2010/2010",
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "cd113"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/cd113/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/cd113/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/cd113/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/cd113/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/cd113/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/cd113/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial CD113",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Congressional District Summary File contains the data compiled from the questions asked of all people and about every housing unit in the 2010 Census.  The Congressional District Summary File (113th Congress) (CD113) contains the data compiled from the questions asked of all people and about every housing unit in the 2010 Census. Population items include sex, age, race, Hispanic or Latino origin, household relationship, household type, household size, family type, family size, and group quarters. Housing items include occupancy status, vacancy status, and tenure (whether a housing unit is owner-occupied or renter-occupied). The file contains subject content identical to that shown in the 2010 Census Summary File 1.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/cd113",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALCD1132010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/unidentified",
+      "modified": "2018-09-28 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "sf1"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/sf1/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/sf1/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/sf1/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/sf1/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/sf1/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/sf1/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial SF1",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Summary File 1 (SF 1) contains detailed tables focusing on age, sex, households, families, and housing units. These tables provide in-depth figures by race and Hispanic origin> some tables are repeated for each of nine race/Latino groups. Counts also are provided for over forty American Indian and Alaska Native tribes and for groups within race categories. The race categories include eighteen Asian groups and twelve Native Hawaiian and Other Pacific Islander groups. Counts of persons of Hispanic origin by country of origin (twenty-eight groups) are also shown. Summary File 1 presents data for the United States, the 50 states, and the District of Columbia in a hierarchical sequence down to the block level for many tabulations, but only to the census tract level for others. Summaries are included for other geographic areas such as ZIP Code Tabulation Areas (ZCTAs) and Congressional districts. Geographic coverage for Puerto Rico is comparable to the 50 states. Data are presented in a hierarchical sequence down the block level for many tabulations, but only to the census tract level for others. Geographic areas include barrios, barrios-pueblo, subbarrios, places, census tracts, block groups, and blocks. Summaries also are included for other geographic areas such as ZIP Code Tabulation Areas (ZCTAs).",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/sf1",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALSF12010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-08-28 12:52:11.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "pl"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/pl/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/pl/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/pl/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/pl/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/pl/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/pl/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: Redistricting Data (PL 94-171)",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Public Law 94-171, enacted in 1975, directs the Census Bureau to make special preparations to provide redistricting data needed by the 50 states. It specifies that within a year following Census Day, the Census Bureau must send the governor and legislative leadership in each state the data they need to redraw congressional and state legislative districts. To meet this legal requirement, the Census Bureau set up a program that affords the states an opportunity before each decennial census to define the small areas for which they wish to receive census population totals for redistricting. Officials may receive data for voting districts (e.g., election precincts, wards) and state house and senate districts, in addition to standard census geographic areas such as counties, cities, census tracts, and tabulation blocks. State participation in defining areas is voluntary and nonpartisan.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/pl",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALPL2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-07-18 08:36:06.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "cd113profile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/cd113profile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/cd113profile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/cd113profile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/cd113profile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/cd113profile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/cd113profile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: 113th Congressional District Demographic Profile",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Congressional District Summary File contains the data compiled from the questions asked of all people and about every housing unit in the 2010 Census.  The Congressional District Summary File (113th Congress) (CD113) contains the data compiled from the questions asked of all people and about every housing unit in the 2010 Census. Population items include sex, age, race, Hispanic or Latino origin, household relationship, household type, household size, family type, family size, and group quarters. Housing items include occupancy status, vacancy status, and tenure (whether a housing unit is owner-occupied or renter-occupied). The file contains subject content identical to that shown in the 2010 Census Summary File 1.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/cd113profile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALDPCD1132010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-27 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "cd115"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/cd115/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/cd115/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/cd115/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/cd115/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/cd115/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/cd115/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial CD115",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Congressional District Summary File contains the data compiled from the questions asked of all people and about every housing unit in the 2010 Census.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/cd115",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALCD1152010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/unidentified",
+      "modified": "2018-09-28 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "sf2"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/sf2/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/sf2/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/sf2/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/sf2/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/sf2/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/sf2/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial SF2",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "Summary File 2 (SF 2) contains the data compiled from the questions asked of all people and about every housing unit. Summary File 2 (SF 2) contains the data compiled from the questions asked of all people and about every housing unit. SF 2 includes population characteristics, such as sex, age, average household size, household type, and relationship to householder such as nonrelative or child. The file includes housing characteristics, such as tenure (whether a housing unit is owner-occupied or renter-occupied), age of householder, and household size for occupied housing units. Selected aggregates and medians also are provided",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/sf2",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALSF22010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2018-09-28 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "cd115profile"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/cd115profile/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/cd115profile/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/cd115profile/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/cd115profile/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/cd115profile/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/cd115profile/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: 115th Congressional District Demographic Profile",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Congressional District Summary File contains the data compiled from the questions asked of all people and about every housing unit in the 2010 Census.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/cd115profile",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALDPCD1152010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-26 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "cd116"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/cd116/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/cd116/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/cd116/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/cd116/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/cd116/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/cd116/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Congressional District 116",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Congressional District Summary File contains data compiled from the questions asked of all people and about every housing unit in the 2010 Census.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/cd116",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALCD1162010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2019-07-05 12:33:40.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "gu"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/gu/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/gu/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/gu/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/gu/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/gu/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/gu/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: Guam Summary File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Guam Summary File contains detailed demographic, social, economic, and housing data asked of all people and about every housing unit.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/gu",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALGU2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-08-06 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "vi"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/vi/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/vi/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/vi/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/vi/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/vi/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/vi/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: U.S. Virgin Islands Summary File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The U.S. Virgin Islands Summary File contains detailed demographic, social, economic, and housing data asked of all people and about every housing unit.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/vi",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALVI2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-08-06 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "guyoe"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/guyoe/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/guyoe/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/guyoe/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/guyoe/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/guyoe/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/guyoe/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: Guam Year of Entry File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Guam Year of Entry Summary File contains data on year of entry.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/guyoe",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALYOEGU2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-27 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "mp"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/mp/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/mp/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/mp/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/mp/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/mp/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/mp/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: Commonwealth of the Northern Mariana Islands Summary File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Commonwealth of the Northern Mariana Islands Summary File contains detailed demographic, social, economic, and housing data asked of all people and about every housing unit.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/mp",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALMP2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-08-06 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    },
+    {
+      "c_vintage": 2010,
+      "c_dataset": [
+        "dec",
+        "mpyoe"
+      ],
+      "c_geographyLink": "http://api.census.gov/data/2010/dec/mpyoe/geography.json",
+      "c_variablesLink": "http://api.census.gov/data/2010/dec/mpyoe/variables.json",
+      "c_tagsLink": "http://api.census.gov/data/2010/dec/mpyoe/tags.json",
+      "c_examplesLink": "http://api.census.gov/data/2010/dec/mpyoe/examples.json",
+      "c_groupsLink": "http://api.census.gov/data/2010/dec/mpyoe/groups.json",
+      "c_sorts_url": "http://api.census.gov/data/2010/dec/mpyoe/sorts.json",
+      "c_documentationLink": "https://www.census.gov/developer/",
+      "c_isAggregate": true,
+      "c_isCube": true,
+      "c_isAvailable": true,
+      "@type": "dcat:Dataset",
+      "title": "Decennial Census: Commonwealth of the Northern Mariana Islands Year of Entry File",
+      "accessLevel": "public",
+      "bureauCode": [
+        "006:07"
+      ],
+      "description": "The Commonwealth of the Northern Mariana Islands Year of Entry Summary File contains data on year of entry.",
+      "distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "accessURL": "http://api.census.gov/data/2010/dec/mpyoe",
+          "description": "API endpoint",
+          "format": "API",
+          "mediaType": "application/json",
+          "title": "API endpoint"
+        }
+      ],
+      "contactPoint": {
+        "fn": "Census Bureau Call Center",
+        "hasEmail": "mailto:pio@census.gov"
+      },
+      "identifier": "https://api.census.gov/data/id/DECENNIALYOEMP2010",
+      "keyword": [
+        "census"
+      ],
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "modified": "2020-02-27 00:00:00.0",
+      "programCode": [
+        "006:004"
+      ],
+      "references": [
+        "https://www.census.gov/developers/"
+      ],
+      "publisher": {
+        "@type": "org:Organization",
+        "name": "U.S. Census Bureau",
+        "subOrganizationOf": {
+             "@type": "org:Organization",
+             "name": "U.S. Department Of Commerce",
+             "subOrganizationOf": {
+                 "@type": "org:Organization",
+                 "name": "U.S. Government"
+             }
+         }
+      }
+    }
+  ]
+}

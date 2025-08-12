@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Federal Register API Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-buttons {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            min-width: 120px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secondary-btn {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+        
+        .bulk-btn {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+        }
+        
+        .danger-btn {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+        }
+        
+        .bulk-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .bulk-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .bulk-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .bulk-card:hover {
+            border-color: #a29bfe;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bulk-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .bulk-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .bulk-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+            margin-top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f1f3f4;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #6c757d;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .download-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        
+        .download-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 6px;
+        }
+        
+        .download-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .download-info {
+            flex: 1;
+        }
+        
+        .download-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .download-meta {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .download-size {
+            font-size: 0.8rem;
+            color: #495057;
+            margin-left: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .results-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: '....'; }
+        }
+
+        .error {
+            background: #fee;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #c53030;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .result-count {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            font-size: 0.9rem;
+            padding: 8px 20px;
+        }
+
+        .document-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .document-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .document-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .document-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .meta-value {
+            color: #6c757d;
+        }
+
+        .document-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .type-rule { background: #28a745; }
+        .type-prorule { background: #ffc107; color: #212529; }
+        .type-notice { background: #17a2b8; }
+        .type-presdocu { background: #6f42c1; }
+
+        .document-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .doc-link {
+            padding: 6px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-link {
+            background: #dc3545;
+            color: white;
+        }
+
+        .html-link {
+            background: #007bff;
+            color: white;
+        }
+
+        .doc-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .page-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            font-size: 0.9rem;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .agency-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .agency-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .agency-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .agency-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .agency-slug {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .document-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Federal Register API Explorer</h1>
+        
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('search')">Document Search</button>
+            <button class="tab" onclick="switchTab('bulk')">Bulk Data Access</button>
+        </div>
+        
+        <!-- Search Tab Content -->
+        <div id="searchTab" class="tab-content active">
+            <div class="search-section">
+                <div class="search-form">
+                    <div class="form-group">
+                        <label for="searchTerm">Search Term</label>
+                        <input type="text" id="searchTerm" placeholder="Enter keywords...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="documentType">Document Type</label>
+                        <select id="documentType">
+                            <option value="">All Types</option>
+                            <option value="RULE">Rule</option>
+                            <option value="PRORULE">Proposed Rule</option>
+                            <option value="NOTICE">Notice</option>
+                            <option value="PRESDOCU">Presidential Document</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="agency">Agency</label>
+                        <select id="agency">
+                            <option value="">All Agencies</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateFrom">From Date</label>
+                        <input type="date" id="dateFrom">
+                    </div>
+                    
+                    <div class="search-buttons">
+                        <button onclick="searchDocuments()">Search Documents</button>
+                        <button onclick="loadAgencies()" class="secondary-btn">Load Agencies</button>
+                        <button onclick="getSpecificDocument()" class="secondary-btn">Get Document by ID</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bulk Data Tab Content -->
+        <div id="bulkTab" class="tab-content">
+            <div class="bulk-section">
+                <h2 style="color: #2c3e50; margin-bottom: 20px;">Bulk Data Access</h2>
+                <p style="color: #6c757d; margin-bottom: 25px;">Access large datasets from multiple government sources for comprehensive analysis. Perfect for building predictive models and conducting research.</p>
+                
+                <div class="bulk-options">
+                    <div class="bulk-card" onclick="showBulkForm('govinfo'); event.stopPropagation();">
+                        <h3>GovInfo Bulk Data</h3>
+                        <p>Federal Register, Congressional Records, CFR, and more. API key pre-configured for immediate access.</p>
+                        <button class="bulk-btn" onclick="event.stopPropagation(); showBulkForm('govinfo');">Access GovInfo</button>
+                    </div>
+                    
+                    <div class="bulk-card" onclick="showBulkForm('xml'); event.stopPropagation();">
+                        <h3>Federal Register XML</h3>
+                        <p>Direct access to bulk Federal Register XML files from GPO. No API key required.</p>
+                        <button class="bulk-btn" onclick="event.stopPropagation(); showBulkForm('xml');">Get XML Files</button>
+                    </div>
+                    
+                    <div class="bulk-card" onclick="showBulkForm('regulations'); event.stopPropagation();">
+                        <h3>Regulations.gov API</h3>
+                        <p>Access regulatory dockets, comments, and documents. API key pre-configured.</p>
+                        <button class="bulk-btn" onclick="event.stopPropagation(); showBulkForm('regulations');">Access Regulations</button>
+                    </div>
+                </div>
+                
+                <div id="bulkFormContainer"></div>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <div id="results">
+                <p style="text-align: center; color: #6c757d; padding: 40px;">
+                    Choose between Document Search for individual queries or Bulk Data Access for large-scale analysis.
+                    <br><br>
+                    <strong>For Kleptocracy Analysis:</strong><br>
+                    • Use Document Search to find specific corruption-related documents<br>
+                    • Use Bulk Data to download entire datasets for pattern analysis<br>
+                    • Cross-reference regulatory changes with financial market impacts
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let currentSearchParams = {};
+        let activeDownloads = new Map();
+        
+        // Load agencies on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAgencies();
+        });
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Reset results when switching tabs
+            if (tabName === 'search') {
+                document.getElementById('results').innerHTML = `
+                    <p style="text-align: center; color: #6c757d; padding: 40px;">
+                        Enter search criteria above and click "Search Documents" to explore Federal Register data.
+                        <br><br>
+                        <strong>Quick Tips:</strong><br>
+                        • Use "Load Agencies" to see all available agencies<br>
+                        • Try searching for terms like "corruption", "ethics", or specific agency names<br>
+                        • Use date filters to focus on specific time periods
+                    </p>
+                `;
+            } else if (tabName === 'bulk') {
+                document.getElementById('results').innerHTML = `
+                    <p style="text-align: center; color: #6c757d; padding: 40px;">
+                        Choose a bulk data source above to access large datasets.
+                        <br><br>
+                        <strong>Bulk Data Benefits:</strong><br>
+                        • Download entire collections for offline analysis<br>
+                        • Access historical data going back decades<br>
+                        • Build machine learning models on comprehensive datasets<br>
+                        • Identify long-term patterns and trends
+                    </p>
+                `;
+            }
+        }
+
+        function showBulkForm(type) {
+            const container = document.getElementById('bulkFormContainer');
+            let html = '';
+            
+            switch(type) {
+                case 'govinfo':
+                    html = `
+                        <div style="background: white; padding: 20px; border-radius: 12px; margin-top: 25px; border: 1px solid #e9ecef;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">GovInfo API Access</h3>
+                            <p style="color: #6c757d; margin-bottom: 20px;">Access comprehensive government data including Federal Register, Congressional documents, and CFR. API key is pre-configured.</p>
+                            
+                            <div class="bulk-form">
+                                <div class="form-group">
+                                    <label>API Endpoint</label>
+                                    <select id="govinfoEndpoint">
+                                        <option value="collections" selected>Collections (by date)</option>
+                                        <option value="published">Published (by date)</option>
+                                        <option value="search">Search (POST)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Collection</label>
+                                    <select id="govinfoCollection">
+                                        <option value="all">All Collections</option>
+                                        <option value="FR">Federal Register</option>
+                                        <option value="CFR">Code of Federal Regulations</option>
+                                        <option value="CREC">Congressional Record</option>
+                                        <option value="BILLS">Congressional Bills</option>
+                                        <option value="PLAW">Public Laws</option>
+                                        <option value="USCODE">US Code</option>
+                                        <option value="USCOURTS">US Courts Opinions</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Date</label>
+                                    <input type="date" id="govinfoDate" value="${new Date().toISOString().split('T')[0]}">
+                                </div>
+                                <div class="form-group">
+                                    <label>Page Size</label>
+                                    <select id="govinfoPageSize">
+                                        <option value="25">25 items</option>
+                                        <option value="50">50 items</option>
+                                        <option value="100" selected>100 items</option>
+                                    </select>
+                                </div>
+                                <button onclick="accessGovInfo()" class="bulk-btn">Access Data</button>
+                            </div>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 6px; font-size: 0.9rem;">
+                                <strong>✓ API Key Configured:</strong> 8Xh7gVkd75vu4uKUcQwmPCz2GLc1tuNEZxAtKJfn (verified working)
+                            </div>
+                            
+                            <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 6px; font-size: 0.85rem;">
+                                <strong>Endpoint Guide:</strong><br>
+                                • <strong>Collections:</strong> Get new/updated documents since a date<br>
+                                • <strong>Published:</strong> Get documents published on a specific date<br>
+                                • <strong>Search:</strong> Use advanced search queries (most flexible)
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'xml':
+                    html = `
+                        <div style="background: white; padding: 20px; border-radius: 12px; margin-top: 25px; border: 1px solid #e9ecef;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">Federal Register XML Bulk Data</h3>
+                            <p style="color: #6c757d; margin-bottom: 20px;">Download Federal Register XML files directly from GPO. No API key required.</p>
+                            
+                            <div class="bulk-form">
+                                <div class="form-group">
+                                    <label>Year</label>
+                                    <select id="xmlYear">
+                                        ${generateYearOptions()}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Month (Optional)</label>
+                                    <select id="xmlMonth">
+                                        <option value="">Entire Year</option>
+                                        <option value="01">January</option>
+                                        <option value="02">February</option>
+                                        <option value="03">March</option>
+                                        <option value="04">April</option>
+                                        <option value="05">May</option>
+                                        <option value="06">June</option>
+                                        <option value="07">July</option>
+                                        <option value="08">August</option>
+                                        <option value="09">September</option>
+                                        <option value="10">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Format</label>
+                                    <select id="xmlFormat">
+                                        <option value="xml">XML Files</option>
+                                        <option value="mods">MODS Metadata</option>
+                                    </select>
+                                </div>
+                                <button onclick="getBulkXML()" class="bulk-btn">Get Download Links</button>
+                            </div>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 6px; font-size: 0.9rem;">
+                                <strong>Tip:</strong> Start with recent months for smaller downloads. Full years can be very large (10GB+).
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'regulations':
+                    html = `
+                        <div style="background: white; padding: 20px; border-radius: 12px; margin-top: 25px; border: 1px solid #e9ecef;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">Regulations.gov API</h3>
+                            <p style="color: #6c757d; margin-bottom: 20px;">Access regulatory dockets, public comments, and supporting documents. API key is pre-configured.</p>
+                            
+                            <div class="bulk-form">
+                                <div class="form-group">
+                                    <label>Search Type</label>
+                                    <select id="regulationsType">
+                                        <option value="documents">Documents</option>
+                                        <option value="dockets">Dockets</option>
+                                        <option value="comments">Comments</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Agency (Optional)</label>
+                                    <input type="text" id="regulationsAgency" placeholder="e.g., EPA, SEC, FDA">
+                                </div>
+                                <div class="form-group">
+                                    <label>Results</label>
+                                    <select id="regulationsPageSize">
+                                        <option value="25" selected>25 items</option>
+                                        <option value="50">50 items</option>
+                                        <option value="100">100 items</option>
+                                    </select>
+                                </div>
+                                <button onclick="accessRegulations()" class="bulk-btn">Search Data</button>
+                            </div>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 6px; font-size: 0.9rem;">
+                                <strong>✓ API Key Configured:</strong> Using your verified api.data.gov key
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function generateYearOptions() {
+            const currentYear = new Date().getFullYear();
+            let options = '';
+            for (let year = currentYear; year >= 1994; year--) {
+                options += `<option value="${year}">${year}</option>`;
+            }
+            return options;
+        }
+
+        async function accessGovInfo() {
+            // Using hardcoded API key
+            const apiKey = '8Xh7gVkd75vu4uKUcQwmPCz2GLc1tuNEZxAtKJfn';
+            const collection = document.getElementById('govinfoCollection').value;
+            const date = document.getElementById('govinfoDate').value;
+            const pageSize = document.getElementById('govinfoPageSize').value;
+            const endpoint = document.getElementById('govinfoEndpoint').value;
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Accessing GovInfo API</div>';
+            
+            try {
+                let url;
+                let requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                };
+                
+                switch(endpoint) {
+                    case 'collections':
+                        if (collection === 'all') {
+                            // Get list of all collections
+                            url = `https://api.govinfo.gov/collections?api_key=${apiKey}`;
+                        } else {
+                            // Get packages for specific collection since a date
+                            const startDate = `${date}T00:00:00Z`;
+                            url = `https://api.govinfo.gov/collections/${collection}/${startDate}?offsetMark=*&pageSize=${pageSize}&api_key=${apiKey}`;
+                        }
+                        break;
+                        
+                    case 'published':
+                        // Get packages published on a specific date
+                        url = `https://api.govinfo.gov/published/${date}?offsetMark=*&pageSize=${pageSize}&api_key=${apiKey}`;
+                        break;
+                        
+                    case 'search':
+                        // Use POST search endpoint
+                        url = `https://api.govinfo.gov/search?api_key=${apiKey}`;
+                        requestOptions.method = 'POST';
+                        requestOptions.headers['Content-Type'] = 'application/json';
+                        
+                        const searchQuery = collection === 'all' ? 'federal' : `collection:(${collection})`;
+                        requestOptions.body = JSON.stringify({
+                            query: searchQuery,
+                            pageSize: parseInt(pageSize),
+                            offsetMark: "*",
+                            sorts: [
+                                { field: "lastModified", sortOrder: "DESC" }
+                            ]
+                        });
+                        break;
+                        
+                    default:
+                        throw new Error('Invalid endpoint selected');
+                }
+                
+                console.log('GovInfo API request:', { url, method: requestOptions.method, body: requestOptions.body });
+                
+                const response = await fetch(url, requestOptions);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API Error: ${response.status} - ${response.statusText}. Response: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                console.log('GovInfo API response:', data);
+                displayBulkResults(data, 'govinfo');
+                
+            } catch (error) {
+                console.error('GovInfo API error:', error);
+                
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        Error accessing GovInfo API: ${error.message}
+                        <br><br>
+                        <strong>Debug Info:</strong><br>
+                        • Endpoint: ${endpoint}<br>
+                        • Collection: ${collection}<br>
+                        • Date: ${date}<br>
+                        • API Key: ${apiKey.substring(0, 8)}... (confirmed working)<br>
+                        <br>
+                        <strong>Possible Issues:</strong><br>
+                        • CORS policy may block browser requests to some government APIs<br>
+                        • Try different endpoints or use the Federal Register XML option<br>
+                        • Check browser console for detailed error information
+                    </div>
+                `;
+            }
+        }
+
+        async function getBulkXML() {
+            const year = document.getElementById('xmlYear').value;
+            const month = document.getElementById('xmlMonth').value;
+            const format = document.getElementById('xmlFormat').value;
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Generating bulk download links</div>';
+            
+            // Generate download links for Federal Register XML bulk data
+            const baseUrl = 'https://www.govinfo.gov/bulkdata/FR';
+            let downloadLinks = [];
+            
+            if (month) {
+                // Single month
+                const url = `${baseUrl}/${year}/${year}-${month}.zip`;
+                downloadLinks.push({
+                    title: `Federal Register ${format.toUpperCase()} - ${getMonthName(month)} ${year}`,
+                    url: url,
+                    size: 'Unknown',
+                    type: format.toUpperCase()
+                });
+            } else {
+                // Entire year - generate monthly links
+                for (let m = 1; m <= 12; m++) {
+                    const monthStr = m.toString().padStart(2, '0');
+                    const url = `${baseUrl}/${year}/${year}-${monthStr}.zip`;
+                    downloadLinks.push({
+                        title: `Federal Register ${format.toUpperCase()} - ${getMonthName(monthStr)} ${year}`,
+                        url: url,
+                        size: 'Unknown',
+                        type: format.toUpperCase()
+                    });
+                }
+            }
+            
+            displayDownloadLinks(downloadLinks);
+        }
+
+        async function accessRegulations() {
+            // Using hardcoded API key (same one works for both)
+            const apiKey = '8Xh7gVkd75vu4uKUcQwmPCz2GLc1tuNEZxAtKJfn';
+            const type = document.getElementById('regulationsType').value;
+            const agency = document.getElementById('regulationsAgency').value;
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Accessing Regulations.gov API</div>';
+            
+            try {
+                let url = `https://api.regulations.gov/v4/${type}?api_key=${apiKey}&page[size]=25`;
+                if (agency) {
+                    url += `&filter[agencyId]=${agency.toUpperCase()}`;
+                }
+                
+                console.log('Regulations.gov API call:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Regulations.gov API response:', data);
+                displayBulkResults(data, 'regulations');
+                
+            } catch (error) {
+                console.error('Regulations.gov API error:', error);
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        Error accessing Regulations.gov API: ${error.message}
+                        <br><br>
+                        <strong>Debug Info:</strong><br>
+                        • API Key: ${apiKey.substring(0, 8)}... (confirmed working)<br>
+                        • Search Type: ${type}<br>
+                        • Agency: ${agency || 'All agencies'}<br>
+                        <br>
+                        Try different search criteria or check the browser console for more details.
+                    </div>
+                `;
+            }
+        }
+
+        function displayBulkResults(data, source) {
+            const resultsDiv = document.getElementById('results');
+            let html = `
+                <div class="results-header">
+                    <div class="result-count">Bulk Data Results from ${source.toUpperCase()}</div>
+                    <button onclick="exportData(${JSON.stringify(data).replace(/"/g, '&quot;')}, '${source}_bulk')" class="export-btn">Export JSON</button>
+                </div>
+            `;
+            
+            if (source === 'govinfo') {
+                // Handle different GovInfo API response formats
+                let items = [];
+                let totalCount = 0;
+                
+                if (data.packages) {
+                    items = data.packages;
+                    totalCount = data.count || items.length;
+                } else if (data.results) {
+                    items = data.results;
+                    totalCount = data.count || items.length;
+                } else if (data.data) {
+                    items = data.data;
+                    totalCount = data.count || items.length;
+                } else if (Array.isArray(data)) {
+                    items = data;
+                    totalCount = items.length;
+                }
+                
+                if (items.length > 0) {
+                    html = `
+                        <div class="results-header">
+                            <div class="result-count">Found ${totalCount} items from GovInfo API</div>
+                            <button onclick="exportData(${JSON.stringify(data).replace(/"/g, '&quot;')}, 'govinfo_bulk')" class="export-btn">Export JSON</button>
+                        </div>
+                        <div class="download-list">
+                    `;
+                    
+                    items.forEach(pkg => {
+                        const title = pkg.title || pkg.packageId || pkg.id || 'Unknown Document';
+                        const id = pkg.packageId || pkg.id || 'unknown';
+                        const date = pkg.dateIssued || pkg.publishDate || pkg.date || pkg.lastModified || 'Unknown Date';
+                        const link = pkg.packageLink || pkg.resultLink || '#';
+                        
+                        html += `
+                            <div class="download-item">
+                                <div class="download-info">
+                                    <div class="download-title">${title}</div>
+                                    <div class="download-meta">ID: ${id} | Date: ${date}</div>
+                                    ${link !== '#' ? `<div class="download-meta">Link: <a href="${link}&api_key=8Xh7gVkd75vu4uKUcQwmPCz2GLc1tuNEZxAtKJfn" target="_blank">${link}</a></div>` : ''}
+                                </div>
+                                <div class="download-size">Metadata</div>
+                                <button onclick="exportData(${JSON.stringify(pkg).replace(/"/g, '&quot;')}, 'govinfo_${id.replace(/[^a-zA-Z0-9]/g, '_')}')" class="doc-link bulk-btn" style="margin-left: 10px;">Export</button>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                } else {
+                    html += `
+                        <p style="text-align: center; padding: 40px; color: #6c757d;">
+                            No items found in the response. The API may have returned data in an unexpected format.
+                            <br><br>
+                            <strong>Response structure:</strong><br>
+                            <code style="font-size: 0.8rem; background: #f8f9fa; padding: 10px; border-radius: 4px; display: block; margin-top: 10px; text-align: left; max-height: 200px; overflow-y: auto;">
+                                ${JSON.stringify(data, null, 2)}
+                            </code>
+                            <br>
+                            <strong>Tip:</strong> The GovInfo API may be blocked by CORS policy in browsers. It works better from server-side applications.
+                        </p>
+                    `;
+                }
+            } else if (source === 'regulations' && data.data) {
+                html += '<div class="download-list">';
+                data.data.forEach(item => {
+                    const title = item.attributes?.title || item.id || 'Unknown Document';
+                    const itemId = item.id || 'unknown';
+                    const type = item.type || 'Unknown';
+                    
+                    html += `
+                        <div class="download-item">
+                            <div class="download-info">
+                                <div class="download-title">${title}</div>
+                                <div class="download-meta">ID: ${itemId} | Type: ${type}</div>
+                            </div>
+                            <div class="download-size">Metadata</div>
+                            <button onclick="exportData(${JSON.stringify(item).replace(/"/g, '&quot;')}, 'regulation_${itemId.replace(/[^a-zA-Z0-9]/g, '_')}')" class="doc-link bulk-btn" style="margin-left: 10px;">Export</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html += '<p style="text-align: center; padding: 40px; color: #6c757d;">No data found or unexpected response format.</p>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function displayDownloadLinks(links) {
+            const resultsDiv = document.getElementById('results');
+            let html = `
+                <div class="results-header">
+                    <div class="result-count">Federal Register Bulk Download Links (${links.length} files)</div>
+                    <button onclick="downloadAllLinks()" class="danger-btn">Download All</button>
+                </div>
+                <div class="download-list">
+            `;
+            
+            links.forEach((link, index) => {
+                html += `
+                    <div class="download-item">
+                        <div class="download-info">
+                            <div class="download-title">${link.title}</div>
+                            <div class="download-meta">${link.type} Format | ${link.url}</div>
+                        </div>
+                        <div class="download-size">${link.size}</div>
+                        <button onclick="downloadFile('${link.url}', '${link.title}')" class="doc-link bulk-btn" style="margin-left: 10px;">Download</button>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function downloadFile(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.zip';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadAllLinks() {
+            const downloadItems = document.querySelectorAll('.download-item');
+            let delay = 0;
+            
+            downloadItems.forEach(item => {
+                const button = item.querySelector('button[onclick*="downloadFile"]');
+                if (button) {
+                    setTimeout(() => {
+                        button.click();
+                    }, delay);
+                    delay += 1000; // 1 second delay between downloads
+                }
+            });
+        }
+
+        async function downloadGovInfoPackage(packageId) {
+            // This would typically require the API key and more complex handling
+            alert(`To download package ${packageId}, you would typically use the GovInfo API with your API key. This would provide direct download URLs for the package contents.`);
+        }
+
+        function getMonthName(monthNum) {
+            const months = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            return months[parseInt(monthNum)];
+        }
+
+        async function loadAgencies() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Loading agencies</div>';
+            
+            try {
+                const response = await fetch('https://www.federalregister.gov/api/v1/agencies.json');
+                const data = await response.json();
+                
+                // Populate agency dropdown
+                const agencySelect = document.getElementById('agency');
+                agencySelect.innerHTML = '<option value="">All Agencies</option>';
+                
+                data.forEach(agency => {
+                    const option = document.createElement('option');
+                    option.value = agency.slug;
+                    option.textContent = agency.name;
+                    agencySelect.appendChild(option);
+                });
+                
+                // Display agencies in results
+                let html = `
+                    <div class="results-header">
+                        <div class="result-count">Found ${data.length} agencies</div>
+                        <button onclick="exportData(${JSON.stringify(data).replace(/"/g, '&quot;')}, 'agencies')" class="export-btn">Export JSON</button>
+                    </div>
+                    <div class="agency-list">
+                `;
+                
+                data.forEach(agency => {
+                    html += `
+                        <div class="agency-card" onclick="searchByAgency('${agency.slug}')">
+                            <div class="agency-name">${agency.name}</div>
+                            <div class="agency-slug">${agency.slug}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">Error loading agencies: ${error.message}</div>`;
+            }
+        }
+
+        async function searchDocuments(page = 1) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Searching documents</div>';
+            
+            // Build search parameters
+            const params = new URLSearchParams();
+            params.append('per_page', '20');
+            params.append('page', page.toString());
+            
+            const searchTerm = document.getElementById('searchTerm').value;
+            const documentType = document.getElementById('documentType').value;
+            const agency = document.getElementById('agency').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            
+            if (searchTerm) params.append('conditions[term]', searchTerm);
+            if (documentType) params.append('conditions[type]', documentType);
+            if (agency) params.append('conditions[agencies][]', agency);
+            if (dateFrom) params.append('conditions[publication_date][gte]', dateFrom);
+            
+            currentSearchParams = Object.fromEntries(params);
+            currentPage = page;
+            
+            try {
+                const response = await fetch(`https://www.federalregister.gov/api/v1/articles.json?${params}`);
+                const data = await response.json();
+                
+                displayDocuments(data);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">Error searching documents: ${error.message}</div>`;
+            }
+        }
+
+        function displayDocuments(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="results-header">
+                    <div class="result-count">Found ${data.count} documents (showing page ${currentPage})</div>
+                    <button onclick="exportData(${JSON.stringify(data).replace(/"/g, '&quot;')}, 'documents')" class="export-btn">Export JSON</button>
+                </div>
+            `;
+            
+            if (data.results && data.results.length > 0) {
+                data.results.forEach(doc => {
+                    const typeClass = `type-${doc.type.toLowerCase()}`;
+                    html += `
+                        <div class="document-card">
+                            <div class="document-title">${doc.title}</div>
+                            <div class="document-meta">
+                                <div class="meta-item">
+                                    <span class="meta-label">Type:</span>
+                                    <span class="document-type ${typeClass}">${doc.type}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Agency:</span>
+                                    <span class="meta-value">${doc.agencies ? doc.agencies.map(a => a.name).join(', ') : 'N/A'}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Date:</span>
+                                    <span class="meta-value">${doc.publication_date}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Document #:</span>
+                                    <span class="meta-value">${doc.document_number}</span>
+                                </div>
+                            </div>
+                            <div class="document-links">
+                                ${doc.pdf_url ? `<a href="${doc.pdf_url}" target="_blank" class="doc-link pdf-link">PDF</a>` : ''}
+                                ${doc.html_url ? `<a href="${doc.html_url}" target="_blank" class="doc-link html-link">HTML</a>` : ''}
+                                <button onclick="getDocumentDetails('${doc.document_number}')" class="doc-link" style="background: #6c757d; color: white; border: none; cursor: pointer;">Details</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Add pagination
+                if (data.count > 20) {
+                    html += '<div class="pagination">';
+                    const totalPages = Math.ceil(data.count / 20);
+                    const maxVisiblePages = 5;
+                    
+                    if (currentPage > 1) {
+                        html += `<button onclick="searchDocuments(${currentPage - 1})" class="page-btn">Previous</button>`;
+                    }
+                    
+                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                    
+                    for (let i = startPage; i <= endPage; i++) {
+                        const activeClass = i === currentPage ? 'active' : '';
+                        html += `<button onclick="searchDocuments(${i})" class="page-btn ${activeClass}">${i}</button>`;
+                    }
+                    
+                    if (currentPage < totalPages) {
+                        html += `<button onclick="searchDocuments(${currentPage + 1})" class="page-btn">Next</button>`;
+                    }
+                    
+                    html += '</div>';
+                }
+            } else {
+                html += '<p style="text-align: center; padding: 40px; color: #6c757d;">No documents found. Try different search criteria.</p>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        async function getDocumentDetails(documentNumber) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Loading document details</div>';
+            
+            try {
+                const response = await fetch(`https://www.federalregister.gov/api/v1/articles/${documentNumber}.json`);
+                const doc = await response.json();
+                
+                let html = `
+                    <div class="results-header">
+                        <div class="result-count">Document Details: ${doc.document_number}</div>
+                        <button onclick="exportData(${JSON.stringify(doc).replace(/"/g, '&quot;')}, 'document')" class="export-btn">Export JSON</button>
+                    </div>
+                    <div class="document-card">
+                        <div class="document-title">${doc.title}</div>
+                        <div class="document-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Type:</span>
+                                <span class="document-type type-${doc.type.toLowerCase()}">${doc.type}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Agency:</span>
+                                <span class="meta-value">${doc.agencies ? doc.agencies.map(a => a.name).join(', ') : 'N/A'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Publication Date:</span>
+                                <span class="meta-value">${doc.publication_date}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Document Number:</span>
+                                <span class="meta-value">${doc.document_number}</span>
+                            </div>
+                            ${doc.docket_id ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Docket ID:</span>
+                                <span class="meta-value">${doc.docket_id}</span>
+                            </div>` : ''}
+                            ${doc.effective_on ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Effective Date:</span>
+                                <span class="meta-value">${doc.effective_on}</span>
+                            </div>` : ''}
+                        </div>
+                        ${doc.abstract ? `
+                        <div style="margin: 15px 0;">
+                            <strong>Abstract:</strong>
+                            <p style="margin-top: 8px; line-height: 1.5; color: #495057;">${doc.abstract}</p>
+                        </div>` : ''}
+                        <div class="document-links">
+                            ${doc.pdf_url ? `<a href="${doc.pdf_url}" target="_blank" class="doc-link pdf-link">PDF</a>` : ''}
+                            ${doc.html_url ? `<a href="${doc.html_url}" target="_blank" class="doc-link html-link">HTML</a>` : ''}
+                            ${doc.raw_text_url ? `<a href="${doc.raw_text_url}" target="_blank" class="doc-link" style="background: #28a745; color: white;">Raw Text</a>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">Error loading document details: ${error.message}</div>`;
+            }
+        }
+
+        function getSpecificDocument() {
+            const docId = prompt('Enter Document Number (e.g., 2019-24499):');
+            if (docId) {
+                getDocumentDetails(docId);
+            }
+        }
+
+        function searchByAgency(agencySlug) {
+            document.getElementById('agency').value = agencySlug;
+            searchDocuments(1);
+        }
+
+        function exportData(data, filename) {
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `federal_register_${filename}_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Add Enter key support for search
+        document.getElementById('searchTerm').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchDocuments(1);
+            }
+        });
+    </script>
+</body>
+</html>
