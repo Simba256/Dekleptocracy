@@ -4,8 +4,8 @@ Base API client class for common functionality
 import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
-from ..config import APIConfig
-from ..utils import make_api_request, log_api_call, cache_result
+from config import APIConfig
+from utils import make_api_request, log_api_call, cache_result
 
 logger = logging.getLogger(__name__)
 

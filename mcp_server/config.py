@@ -48,6 +48,11 @@ class Config:
                 api_key=os.getenv("BEA_API_KEY"),
                 rate_limit={"requests_per_minute": 100, "data_mb_per_minute": 100}
             ),
+            "census": APIConfig(
+                base_url="https://api.census.gov/data",
+                api_key=os.getenv("CENSUS_API_KEY"),
+                rate_limit={"requests_per_minute": 500}
+            ),
             "dataweb": APIConfig(
                 base_url="https://datawebws.usitc.gov/dataweb",
                 token=os.getenv("DATAWEB_TOKEN")
@@ -86,7 +91,7 @@ class Config:
         validation_results = {}
         
         for api_name, config in self.apis.items():
-            if api_name in ["bea", "govinfo", "regulations", "gnews", "gemini"]:
+            if api_name in ["bea", "census", "govinfo", "regulations", "gnews", "gemini"]:
                 validation_results[api_name] = bool(config.api_key)
             elif api_name == "dataweb":
                 validation_results[api_name] = bool(config.token)

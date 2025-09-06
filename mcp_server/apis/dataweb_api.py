@@ -4,7 +4,7 @@ USITC DataWeb API client
 import logging
 from typing import Dict, Any, List, Optional
 from .base_api import BaseAPIClient
-from ..utils import cache_result, validate_hts_code, validate_year
+from utils import cache_result, validate_hts_code, validate_year
 
 logger = logging.getLogger(__name__)
 

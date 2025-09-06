@@ -5,7 +5,7 @@ import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from .base_api import BaseAPIClient
-from ..utils import cache_result, sanitize_input
+from utils import cache_result, sanitize_input
 
 logger = logging.getLogger(__name__)
 

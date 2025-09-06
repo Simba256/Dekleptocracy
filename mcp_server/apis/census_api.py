@@ -4,7 +4,7 @@ Census API client for trade data
 import logging
 from typing import Dict, Any, List, Optional
 from .base_api import BaseAPIClient
-from ..utils import cache_result, validate_hts_code, validate_year, validate_country_code
+from utils import cache_result, validate_hts_code, validate_year, validate_country_code
 
 logger = logging.getLogger(__name__)
 
