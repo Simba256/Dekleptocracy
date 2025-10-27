@@ -3,7 +3,14 @@ Gemini AI API client for analysis and sentiment
 """
 import logging
 from typing import Dict, Any, List, Optional
-import google.generativeai as genai
+
+try:
+    import google.generativeai as genai
+    GENAI_AVAILABLE = True
+except ImportError:
+    GENAI_AVAILABLE = False
+    genai = None
+
 from .base_api import BaseAPIClient
 from utils import cache_result, sanitize_input
 
@@ -14,9 +21,16 @@ class GeminiAPIClient(BaseAPIClient):
     
     def __init__(self, config):
         super().__init__(config)
-        genai.configure(api_key=self.api_key)
-        self.model_name = "gemini-1.5-flash"
-        self.model = genai.GenerativeModel(self.model_name)
+        if GENAI_AVAILABLE and self.api_key:
+            genai.configure(api_key=self.api_key)
+            self.model_name = "gemini-1.5-flash"
+            self.model = genai.GenerativeModel(self.model_name)
+        else:
+            if not GENAI_AVAILABLE:
+                logger.warning("Google Generative AI package not installed. Gemini features disabled.")
+            else:
+                logger.warning("Gemini API key not configured.")
+            self.model = None
     
     def test_connection(self) -> bool:
         """Test Gemini API connection"""
@@ -26,6 +40,54 @@ class GeminiAPIClient(BaseAPIClient):
         except Exception as e:
             logger.error(f"Gemini API connection test failed: {e}")
             return False
+
+    def generate_content(
+        self,
+        prompt: str,
+        max_tokens: int = 1000,
+        temperature: float = 0.7
+    ) -> Dict[str, Any]:
+        """Generate content using Gemini AI
+
+        Args:
+            prompt: The prompt to generate content from
+            max_tokens: Maximum tokens to generate
+            temperature: Temperature for generation (0.0 to 1.0)
+
+        Returns:
+            Dictionary with generated text
+        """
+        if not self.model:
+            return {
+                "status": "error",
+                "error": "Gemini model not available",
+                "text": ""
+            }
+
+        try:
+            # Configure generation parameters
+            generation_config = {
+                "max_output_tokens": max_tokens,
+                "temperature": temperature,
+            }
+
+            response = self.model.generate_content(
+                prompt,
+                generation_config=generation_config
+            )
+
+            return {
+                "status": "success",
+                "text": response.text if response else "",
+                "prompt_length": len(prompt)
+            }
+        except Exception as e:
+            logger.error(f"Gemini content generation failed: {e}")
+            return {
+                "status": "error",
+                "error": f"Content generation failed: {str(e)}",
+                "text": ""
+            }
     
     @cache_result(ttl=3600)  # Cache for 1 hour
     def analyze_sentiment(

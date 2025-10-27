@@ -6,8 +6,10 @@ from typing import Dict, Any, Optional
 from dataclasses import dataclass
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env files
+# Load .env first, then .env.local (which overrides .env)
+load_dotenv()  # Loads .env
+load_dotenv('.env.local', override=True)  # Loads .env.local and overrides
 
 @dataclass
 class APIConfig:
