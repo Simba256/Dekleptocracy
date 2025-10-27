@@ -1,0 +1,410 @@
+/* Reports Page */
+.reports-page {
+  padding: 80px 20px 80px;
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reports-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+}
+
+/* Top Banner */
+.reports-banner {
+  display: inline-block;
+  background-color: #FF6B5A;
+  color: white;
+  padding: 12px 28px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+/* Main Title */
+.reports-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #4A5D3F;
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+/* Subtitle */
+.reports-subtitle {
+  margin-bottom: 48px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reports-subtitle-line1,
+.reports-subtitle-line2 {
+  font-size: 18px;
+  color: #333333;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.reports-subtitle-line1 {
+  margin-bottom: 8px;
+}
+
+/* Main Card */
+.reports-card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.reports-card-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.reports-card-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.reports-card-subtitle {
+  font-size: 16px;
+  color: #888888;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Section Labels */
+.reports-section-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+/* Role Selection */
+.reports-role-section {
+  margin-bottom: 32px;
+}
+
+.reports-role-cards {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.reports-role-card {
+  flex: 1;
+  max-width: 150px;
+  background-color: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.reports-role-card:hover {
+  border-color: #FF6B5A;
+  transform: translateY(-2px);
+}
+
+.reports-role-card.selected {
+  background-color: #FFF8F5;
+  border-color: #FF6B5A;
+}
+
+.reports-role-icon {
+  color: #4A5D3F;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.reports-role-short-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4A5D3F;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+
+.reports-role-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FF6B5A;
+  letter-spacing: -0.01em;
+}
+
+/* District Selection */
+.reports-district-section {
+  margin-bottom: 32px;
+}
+
+.reports-dropdown-wrapper {
+  position: relative;
+}
+
+.reports-dropdown {
+  width: 100%;
+  padding: 16px 48px 16px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #333333;
+  background-color: white;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border-color 0.2s ease;
+}
+
+.reports-dropdown:focus {
+  outline: none;
+  border-color: #FF6B5A;
+}
+
+.reports-dropdown-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888888;
+  pointer-events: none;
+}
+
+/* Name Input */
+.reports-name-section {
+  margin-bottom: 40px;
+}
+
+.reports-name-input {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #333333;
+  background-color: white;
+  transition: border-color 0.2s ease;
+}
+
+.reports-name-input:focus {
+  outline: none;
+  border-color: #FF6B5A;
+}
+
+.reports-name-input::placeholder {
+  color: #888888;
+}
+
+/* Generate Button */
+.reports-generate-button {
+  width: 100%;
+  background-color: #FF6B5A;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: -0.01em;
+}
+
+.reports-generate-button:hover {
+  background-color: #FF5647;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 90, 0.3);
+}
+
+.reports-generate-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reports-page {
+    padding: 60px 16px 60px;
+  }
+
+  .reports-title {
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+
+  .reports-subtitle-line1,
+  .reports-subtitle-line2 {
+    font-size: 16px;
+    white-space: normal;
+  }
+  
+  .reports-subtitle {
+    margin-bottom: 40px;
+  }
+
+  .reports-card {
+    padding: 32px 24px;
+  }
+
+  .reports-card-title {
+    font-size: 24px;
+  }
+
+  .reports-card-subtitle {
+    font-size: 14px;
+  }
+
+  .reports-role-cards {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .reports-role-card {
+    max-width: none;
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 16px;
+  }
+  
+  .reports-role-card .reports-role-icon {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  
+  .reports-role-card .reports-role-short-label,
+  .reports-role-card .reports-role-label {
+    text-align: left;
+  }
+
+  .reports-role-icon {
+    margin-bottom: 8px;
+  }
+
+  .reports-role-short-label {
+    font-size: 13px;
+  }
+
+  .reports-role-label {
+    font-size: 13px;
+  }
+
+  .reports-section-label {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .reports-dropdown,
+  .reports-name-input {
+    padding: 14px 44px 14px 14px;
+    font-size: 15px;
+  }
+
+  .reports-generate-button {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reports-page {
+    padding: 50px 12px 40px;
+  }
+
+  .reports-title {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .reports-subtitle-line1,
+  .reports-subtitle-line2 {
+    font-size: 15px;
+    white-space: normal;
+  }
+  
+  .reports-subtitle {
+    margin-bottom: 32px;
+  }
+
+  .reports-card {
+    padding: 24px 20px;
+  }
+
+  .reports-card-title {
+    font-size: 20px;
+  }
+
+  .reports-card-subtitle {
+    font-size: 13px;
+  }
+
+  .reports-role-card {
+    padding: 16px 12px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 12px;
+  }
+  
+  .reports-role-card .reports-role-icon {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  
+  .reports-role-card .reports-role-short-label,
+  .reports-role-card .reports-role-label {
+    text-align: left;
+  }
+
+  .reports-role-icon {
+    margin-bottom: 6px;
+  }
+
+  .reports-role-short-label {
+    font-size: 12px;
+  }
+
+  .reports-role-label {
+    font-size: 12px;
+  }
+
+  .reports-section-label {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .reports-dropdown,
+  .reports-name-input {
+    padding: 12px 40px 12px 12px;
+    font-size: 14px;
+  }
+
+  .reports-generate-button {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+}
