@@ -20,5 +20,8 @@ pandas>=2.0.0
 primp==0.15.0
 duckduckgo-search>=6.1.0
 
+# AI Models
+google-generativeai>=0.8.0
+
 # MCP Protocol (if using official MCP package)
 # mcp
