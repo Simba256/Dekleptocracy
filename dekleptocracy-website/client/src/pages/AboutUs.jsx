@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AboutUs.css';
 
 const AboutUs = () => {
+  const navigate = useNavigate();
   return (
     <div className="about-us-page">
       <div className="about-us-container">
@@ -24,8 +26,8 @@ const AboutUs = () => {
                 Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.
               </p>
             </div>
-            
-            <button className="ask-ai-button">
+
+            <button className="ask-ai-button" onClick={() => navigate('/chatbot')}>
               Ask AI
             </button>
           </div>
@@ -237,7 +239,7 @@ const AboutUs = () => {
                 </div>
 
                 <div className="experts-cta">
-                  <button className="ask-ai-button-experts">Ask AI</button>
+                  <button className="ask-ai-button-experts" onClick={() => navigate('/chatbot')}>Ask AI</button>
                 </div>
               </div>
             </div>
@@ -255,7 +257,7 @@ const AboutUs = () => {
                   </p>
                 </div>
                 <div className="what-sets-us-apart-cta">
-                  <button className="ask-ai-button-what-sets">Ask AI</button>
+                  <button className="ask-ai-button-what-sets" onClick={() => navigate('/chatbot')}>Ask AI</button>
                 </div>
               </div>
             </div>

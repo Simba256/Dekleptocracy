@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Chatbot.css';
 
 const Chatbot = () => {
+  const location = useLocation();
   const [messages, setMessages] = useState([
     {
       id: '1',
@@ -14,6 +16,7 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
+  const hasSubmittedInitialQuery = useRef(false);
 
   // MCP Server URL - uses environment variable in production, localhost in development
   const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8000';
@@ -23,20 +26,25 @@ const Chatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Handle initial query from navigation state
+  useEffect(() => {
+    if (location.state?.initialQuery && !hasSubmittedInitialQuery.current) {
+      hasSubmittedInitialQuery.current = true;
+      submitMessage(location.state.initialQuery);
+    }
+  }, [location.state]);
 
-    if (!input.trim() || isLoading) return;
+  const submitMessage = async (messageText) => {
+    if (!messageText.trim() || isLoading) return;
 
     const userMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: input.trim(),
+      content: messageText.trim(),
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
     setIsLoading(true);
 
     // Create a placeholder for the assistant's response
@@ -117,6 +125,15 @@ const Chatbot = () => {
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (input.trim()) {
+      const messageToSend = input;
+      setInput('');
+      await submitMessage(messageToSend);
     }
   };
 

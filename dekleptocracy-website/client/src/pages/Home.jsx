@@ -222,7 +222,7 @@ const Home = () => {
                   </svg>
                 </button>
               </div>
-              <button className="ask-ai-btn">
+              <button className="ask-ai-btn" onClick={() => navigate('/chatbot', { state: { initialQuery: query } })}>
                 Ask AI
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="13 17 18 12 13 7" />
@@ -1024,7 +1024,7 @@ const Home = () => {
                 hidden costs behind rising bills.
               </p>
               <div className="cta-buttons">
-                <button className="cta-btn primary">Ask AI Now</button>
+                <button className="cta-btn primary" onClick={() => navigate('/chatbot')}>Ask AI Now</button>
                 <button className="cta-btn secondary">Explore Local Impact</button>
               </div>
             </div>
@@ -1087,10 +1087,10 @@ const Home = () => {
             <div className="impact-lobbying-card">
               <h3 className="impact-lobbying-amount">$2.3 BILLION Spent in DC</h3>
               <p className="impact-lobbying-text">
-                While your housing costs jumped <span className="highlight-orange">+80.9%</span>, real estate fat cats poured 
+                While your housing costs jumped <span className="highlight-orange">+80.9%</span>, real estate fat cats poured
                 <span className="highlight-orange"> $2.3B</span> into lobbying for the very policies that drove your costs up.
               </p>
-              <button className="ask-ai-modal-btn">Ask AI</button>
+              <button className="ask-ai-modal-btn" onClick={() => navigate('/chatbot')}>Ask AI</button>
             </div>
           </div>
         </div>
