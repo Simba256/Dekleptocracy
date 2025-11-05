@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import './Chatbot.css';
 
 // localStorage utilities for chat history
@@ -369,7 +370,10 @@ const Chatbot = () => {
                       <span className="loading-dot"></span>
                     </div>
                   ) : (
-                    <ReactMarkdown className="markdown-content">
+                    <ReactMarkdown
+                      className="markdown-content"
+                      remarkPlugins={[remarkGfm]}
+                    >
                       {message.content}
                     </ReactMarkdown>
                   )}

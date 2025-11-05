@@ -502,8 +502,12 @@
 .markdown-content table {
   border-collapse: collapse;
   width: 100%;
-  margin: 12px 0;
-  font-size: 0.95em;
+  margin: 16px 0;
+  font-size: 14px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .markdown-content th,
@@ -527,6 +531,16 @@
 
 .markdown-content tbody tr:hover {
   background-color: #f3f4f6;
+}
+
+.markdown-content td {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.markdown-content tbody td {
+  color: #111827;
+  font-weight: 400;
 }
 
 .markdown-content hr {
