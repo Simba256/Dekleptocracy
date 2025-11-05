@@ -267,22 +267,21 @@ const Chatbot = () => {
 
   return (
     <div className="chatbot-page">
-      {/* Sidebar Toggle Button - Always visible on left edge */}
+      {/* Sidebar Toggle Button - Mobile only */}
       <button
-        className={`sidebar-toggle-tab ${showHistory ? 'hidden' : ''}`}
+        className={`sidebar-toggle-mobile ${showHistory ? 'hidden' : ''}`}
         onClick={() => setShowHistory(true)}
         title="Open chat history"
       >
-        <span className="toggle-icon">☰</span>
-        <span className="toggle-text">History</span>
+        ☰
       </button>
 
-      {/* History Sidebar */}
-      <div className={`chat-history-sidebar ${showHistory ? 'show' : ''}`}>
+      {/* History Sidebar - Always visible on desktop */}
+      <div className={`chat-history-sidebar ${showHistory ? 'show-mobile' : ''}`}>
         <div className="history-header">
           <h2 className="history-title">📚 Chat History</h2>
           <button
-            className="history-close-btn"
+            className="history-close-btn-mobile"
             onClick={() => setShowHistory(false)}
             title="Close sidebar"
           >
@@ -323,10 +322,10 @@ const Chatbot = () => {
         </div>
       </div>
 
-      {/* Overlay when sidebar is open */}
+      {/* Overlay when sidebar is open - Mobile only */}
       {showHistory && (
         <div
-          className="history-overlay"
+          className="history-overlay-mobile"
           onClick={() => setShowHistory(false)}
         />
       )}
