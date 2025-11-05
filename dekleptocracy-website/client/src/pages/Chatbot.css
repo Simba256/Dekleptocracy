@@ -135,9 +135,16 @@
 
 .message-user .message-text {
   background: linear-gradient(135deg, #2c5f3e 0%, #3a7b4e 100%);
-  color: #ffffff;
+  color: #ffffff !important;
   border: none;
   box-shadow: 0 2px 6px rgba(44, 95, 62, 0.3);
+}
+
+.message-user .message-text *,
+.message-user .message-text p,
+.message-user .message-text span,
+.message-user .message-text div {
+  color: #ffffff !important;
 }
 
 .message-user .message-text:hover {
@@ -390,6 +397,16 @@
 .markdown-content p,
 .markdown-content p *:not(a):not(code) {
   color: #111827 !important;
+}
+
+/* Override for user messages - keep text white on green background */
+.message-user .markdown-content,
+.message-user .markdown-content *,
+.message-user .markdown-content p,
+.message-user .markdown-content p *,
+.message-user .markdown-content span,
+.message-user .markdown-content div {
+  color: #ffffff !important;
 }
 
 .markdown-content h1,
