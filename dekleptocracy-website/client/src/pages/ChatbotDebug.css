@@ -536,7 +536,7 @@
 
 .markdown-content h1 {
   font-size: 1.8em;
-  border-bottom: 2px solid #e94560;
+  border-bottom: 2px solid #a8dadc;
   padding-bottom: 8px;
 }
 
@@ -544,12 +544,12 @@
   font-size: 1.5em;
   border-bottom: 1px solid #0f3460;
   padding-bottom: 6px;
-  color: #e94560;
+  color: #a8dadc;
 }
 
 .markdown-content h3 {
   font-size: 1.3em;
-  color: #53a8ff;
+  color: #a8dadc;
 }
 
 .markdown-content h4 {
@@ -557,12 +557,12 @@
 }
 
 .markdown-content p {
-  margin: 8px 0;
+  margin: 4px 0;
 }
 
 .markdown-content strong {
   font-weight: 700;
-  color: #e94560;
+  color: #e8e8e8;
 }
 
 .markdown-content em {
@@ -594,7 +594,7 @@
   padding: 2px 6px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.9em;
-  color: #ff6b9d;
+  color: #a8dadc;
 }
 
 .markdown-content pre {
