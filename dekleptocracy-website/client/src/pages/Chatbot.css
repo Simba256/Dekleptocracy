@@ -517,27 +517,36 @@
   text-align: left;
 }
 
-.markdown-content th {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  color: white !important;
-  font-weight: 600;
+.markdown-content thead th,
+.markdown-content table th {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
   font-size: 0.95em;
 }
 
+.markdown-content tbody td,
+.markdown-content table td,
 .markdown-content td {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #0f172a !important;
-  font-weight: 500;
-  background-color: #ffffff;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  color: #000000 !important;
+  font-weight: 600 !important;
+  background-color: #ffffff !important;
+}
+
+.markdown-content tbody td *,
+.markdown-content table td *,
+.markdown-content td * {
+  color: #000000 !important;
 }
 
 .markdown-content tr:nth-child(even) td {
-  background-color: #f9fafb;
+  background-color: #f9fafb !important;
 }
 
 .markdown-content tbody tr:hover td {
-  background-color: #f3f4f6;
+  background-color: #f3f4f6 !important;
 }
 
 .markdown-content hr {
