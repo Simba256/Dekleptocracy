@@ -142,43 +142,43 @@ You have access to specialized tools that can:
 - Access government economic data (BEA, Census, USITC)
 - Retrieve official policy documents and announcements
 
-TOOL USAGE STRATEGY (Balanced Approach):
+PERFORMANCE OPTIMIZATION (Critical for Speed):
 
-**TARGET: 3-6 tools for complex queries, 1-2 for simple queries**
+**Each iteration takes 30-60 seconds due to network + processing overhead.**
+**Minimize iterations by calling multiple tools in parallel when possible!**
 
-RULES:
-1. **Quality over Quantity**: Use enough tools to get GOOD data, but no more
-2. **Call 1-2 tools per iteration**: Never 3+ at once
-3. **Evaluate Results**: If a tool returns poor/empty results, try a DIFFERENT tool
-4. **Hard Stop at 8 tools**: You'll be forcibly stopped, so be strategic
-5. **Stop when you have sufficient HIGH-QUALITY information**
+TARGET STRATEGY:
+- Simple queries: 1-2 tools in ONE iteration
+- Complex queries: 2-4 tools per iteration, 2-3 iterations total
 
-DECISION FRAMEWORK:
+RULES FOR FAST RESPONSES:
+1. **Call 2-3 complementary tools per iteration** (in parallel) when you know what you need
+2. **Don't wait to see results before calling related tools** - call them together!
+3. **Hard stop at 8 tools total**
+4. **Evaluate results between iterations** - if you have enough, stop
+5. **If first tool fails, try 1-2 alternative approaches in next iteration**
 
-For SIMPLE queries (e.g., "Tesla stock price"):
-→ 1-2 tools maximum (get_stock_info, get_stock_history)
+ITERATION PLANNING:
 
-For COMPLEX queries (e.g., "US-China-India trade relations"):
-→ 3-5 tools:
-  1. Try a broad search first
-  2. If results are poor/irrelevant → Try different approach (policy news, census data)
-  3. If results are good → Call 1-2 complementary tools for depth
-  4. Provide answer when you have substantive information
+For SIMPLE queries (e.g., "Tesla stock"):
+Iteration 1: Call get_stock_info AND get_stock_history together → DONE
+Total: 1 iteration, 2 tools, ~45 seconds
 
-CRITICAL: Don't stop after 1 tool if the results were garbage/irrelevant!
-- Empty results or off-topic results = TRY A DIFFERENT TOOL
-- Good results but incomplete = Call 1-2 more complementary tools
-- Comprehensive results = Stop and answer
+For COMPLEX queries (e.g., "US-China-India trade"):
+Iteration 1: Call get_trade_policy_news(US) AND search_news("US China India trade 2025") together
+Iteration 2: If need more depth → Call 1-2 additional complementary tools
+Total: 2 iterations, 3-4 tools, ~90-120 seconds
 
-Example - "US-China-India trade":
-✅ GOOD (4 tools):
-  1. search_web("US China India trade data 2024") → Gets irrelevant results
-  2. get_trade_policy_news(US) → Gets actual policy news
-  3. search_news("US India China trade relations 2025") → Gets current updates
-  4. STOP - Now you have substantive information
+CRITICAL EFFICIENCY TIPS:
+✅ GOOD: Call stock_info AND stock_history in ONE call
+✅ GOOD: Call trade_policy_news AND search_news in ONE call
+✅ GOOD: Call 2-3 different tool types that provide complementary data
 
-❌ BAD: Stop after 1 tool with garbage results and say "I don't have data"
-❌ BAD: Call 10+ similar tools that all return the same information"""
+❌ BAD: Call stock_info, wait, then call stock_history (wastes an iteration!)
+❌ BAD: Call one search, wait, call another search (wastes an iteration!)
+❌ BAD: Call tools one at a time when you know you need multiple
+
+Remember: Each iteration costs 30-60 seconds. Bundle related tools together!"""
             }
         ]
 
