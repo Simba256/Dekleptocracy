@@ -140,19 +140,28 @@ You have access to specialized tools that can:
 - Access government economic data (BEA, Census, USITC)
 - Retrieve official policy documents and announcements
 
+CRITICAL EFFICIENCY RULES:
+1. **Tool Call Budget**: Aim for 3-6 TOTAL tools per query (not per iteration)
+2. **One Tool Per Iteration**: Call only 1-2 tools per iteration maximum
+3. **No Duplicates**: NEVER call the same tool with the same parameters twice
+4. **Broad Searches First**: Use broad search queries that cover multiple aspects rather than many narrow ones
+5. **Stop When Sufficient**: Once you have enough information to answer, STOP calling tools and provide your response
+
 When a user asks a question:
 1. Analyze what information is needed
-2. Use the appropriate tools to gather that information efficiently (aim for 2-5 tools per query)
-3. Provide a comprehensive, well-structured answer based on the tool results
-4. Cite specific data points and sources when available
+2. Identify the 2-4 MOST IMPORTANT tools that will provide comprehensive information
+3. Call them strategically (1-2 at a time)
+4. Synthesize results and determine if you have enough to answer
+5. If yes, provide your answer. If no, call 1-2 more tools
+6. Cite specific data points and sources when available
 
-Be strategic in tool selection:
-- Prioritize tools that directly answer the user's question
-- Use multiple complementary tools when they provide different perspectives
-- Avoid redundant tool calls that retrieve similar information
-- For example, when asked about a company and tariffs, use both stock info tools AND search tools
+Example for "US-China-India trade relations":
+- Call get_trade_policy_news(US) ONCE - covers US-China relations
+- Call search_news with ONE broad query covering all three countries
+- STOP if you have sufficient information
+Total: 2-3 tools, not 14!
 
-You have a limit of 10 tool-calling iterations, so be efficient and purposeful."""
+You have a limit of 10 tool-calling iterations and should complete most queries in 2-4 iterations."""
             }
         ]
 
@@ -173,6 +182,7 @@ You have a limit of 10 tool-calling iterations, so be efficient and purposeful."
         # Track tool calls and results
         all_tool_calls = []
         all_tool_results = {}
+        tool_call_signatures = set()  # Track unique tool+params combinations to prevent duplicates
         iterations = 0
         last_response_had_tool_calls = False
 
@@ -203,11 +213,32 @@ You have a limit of 10 tool-calling iterations, so be efficient and purposeful."
                         tool_name = tool_call.function.name
                         tool_args = json.loads(tool_call.function.arguments)
 
+                        # Create signature to detect duplicates (tool name + sorted params)
+                        tool_signature = f"{tool_name}:{json.dumps(tool_args, sort_keys=True)}"
+
+                        # Check if this exact tool call was already made
+                        if tool_signature in tool_call_signatures:
+                            logger.warning(f"⚠️ DUPLICATE DETECTED: {tool_name} with same parameters - skipping execution, reusing previous result")
+                            # Reuse existing result
+                            result = all_tool_results.get(tool_name, {"status": "duplicate", "message": "This tool was already called with the same parameters"})
+
+                            # Still acknowledge to GPT so it doesn't get confused
+                            messages.append({
+                                "role": "tool",
+                                "tool_call_id": tool_call.id,
+                                "name": tool_name,
+                                "content": f"✓ {tool_name} already called with these parameters - using cached result"
+                            })
+                            continue
+
                         logger.info(f"🔧 GPT-5 calling: {tool_name}({json.dumps(tool_args)[:100]})")
 
                         # Execute the tool
                         result = self._execute_tool(tool_name, tool_args)
                         logger.info(f"✅ {tool_name} completed")
+
+                        # Mark this signature as used
+                        tool_call_signatures.add(tool_signature)
 
                         # Track for response
                         all_tool_calls.append({
