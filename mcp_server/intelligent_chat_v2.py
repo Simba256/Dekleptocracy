@@ -112,7 +112,7 @@ class IntelligentChatHandlerV2:
         self,
         user_message: str,
         conversation_history: List[Dict[str, str]] = None,
-        max_iterations: int = 20  # Increased to allow GPT-5 to be thorough
+        max_iterations: int = 10  # Balanced limit to prevent long execution times
     ) -> Dict[str, Any]:
         """
         Process a user message with LLM-driven tool selection
@@ -142,12 +142,17 @@ You have access to specialized tools that can:
 
 When a user asks a question:
 1. Analyze what information is needed
-2. Use the appropriate tools to gather that information
+2. Use the appropriate tools to gather that information efficiently (aim for 2-5 tools per query)
 3. Provide a comprehensive, well-structured answer based on the tool results
 4. Cite specific data points and sources when available
 
-Be proactive in using multiple tools when they provide complementary information.
-For example, when asked about a company and tariffs, use both stock info tools AND search tools."""
+Be strategic in tool selection:
+- Prioritize tools that directly answer the user's question
+- Use multiple complementary tools when they provide different perspectives
+- Avoid redundant tool calls that retrieve similar information
+- For example, when asked about a company and tariffs, use both stock info tools AND search tools
+
+You have a limit of 10 tool-calling iterations, so be efficient and purposeful."""
             }
         ]
 
@@ -169,6 +174,7 @@ For example, when asked about a company and tariffs, use both stock info tools A
         all_tool_calls = []
         all_tool_results = {}
         iterations = 0
+        last_response_had_tool_calls = False
 
         while iterations < max_iterations:
             iterations += 1
@@ -188,6 +194,7 @@ For example, when asked about a company and tariffs, use both stock info tools A
 
                 # Check if the model wants to call tools
                 if response_message.tool_calls:
+                    last_response_had_tool_calls = True
                     # Add assistant's response to messages
                     messages.append(response_message)
 
@@ -223,6 +230,7 @@ For example, when asked about a company and tariffs, use both stock info tools A
                     continue
 
                 else:
+                    last_response_had_tool_calls = False
                     # No more tool calls - time for PHASE 2: Synthesis with actual data
                     logger.info(f"Tool calling phase complete. {len(all_tool_calls)} tools called. Starting synthesis phase...")
 
@@ -333,7 +341,7 @@ Be specific, cite data points, and synthesize the information into a coherent re
         try:
             if len(all_tool_calls) == 0:
                 return {
-                    "response": "I wasn't able to gather enough information to answer your question.",
+                    "response": "I wasn't able to gather enough information to answer your question. Please try asking a more specific question.",
                     "tool_calls": [],
                     "tool_results": {},
                     "iterations": iterations,
@@ -356,11 +364,16 @@ Be specific, cite data points, and synthesize the information into a coherent re
 
                 synthesis_prompt += f"{idx}. {tool_name}: {result_str}\n\n"
 
+            # Add note if we hit the iteration limit while model wanted more tools
+            limit_note = ""
+            if last_response_had_tool_calls:
+                limit_note = "\n\nIMPORTANT: The analysis reached the maximum tool call limit. There may be additional relevant information that wasn't explored. Please add a brief note at the end: 'Note: This analysis was limited by time constraints. Additional information may be available - feel free to ask follow-up questions for more specific details.'"
+
             synthesis_prompt += f"""
 
 Now, using ALL the information above, provide a comprehensive, well-structured answer to the user's original question: "{user_message}"
 
-Be specific, cite data points, and synthesize the information into a coherent response."""
+Be specific, cite data points, and synthesize the information into a coherent response.{limit_note}"""
 
             # Final synthesis call with fresh context
             logger.info(f"Max iterations synthesis - Prompt length: {len(synthesis_prompt)} chars")
@@ -407,9 +420,22 @@ Be specific, cite data points, and synthesize the information into a coherent re
                 "tokens_used": final_response.usage.total_tokens if final_response.usage else 0
             }
         except Exception as e:
-            logger.error(f"Error in final synthesis: {e}")
+            logger.error(f"Error in final synthesis: {e}", exc_info=True)
+
+            # Even if synthesis fails, try to provide something useful
+            tools_used = ", ".join([call['name'] for call in all_tool_calls[:5]])
+            if len(all_tool_calls) > 5:
+                tools_used += f" and {len(all_tool_calls) - 5} more"
+
+            fallback_response = f"I gathered information from {len(all_tool_calls)} tools ({tools_used}), but encountered an issue creating the final response. "
+
+            if last_response_had_tool_calls:
+                fallback_response += "Additionally, the analysis reached the iteration limit and there may be more information to explore. "
+
+            fallback_response += "Please try asking a more specific question or breaking your query into smaller parts."
+
             return {
-                "response": "I gathered information but encountered an issue synthesizing the final response. Please try asking a more specific question.",
+                "response": fallback_response,
                 "tool_calls": all_tool_calls,
                 "tool_results": all_tool_results,
                 "iterations": iterations,
