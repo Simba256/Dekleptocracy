@@ -516,3 +516,153 @@
     border-top: 2px solid #e94560;
   }
 }
+
+/* Markdown Content Styling */
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin: 16px 0 8px 0;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #e8e8e8;
+}
+
+.markdown-content h1 {
+  font-size: 1.8em;
+  border-bottom: 2px solid #e94560;
+  padding-bottom: 8px;
+}
+
+.markdown-content h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #0f3460;
+  padding-bottom: 6px;
+  color: #e94560;
+}
+
+.markdown-content h3 {
+  font-size: 1.3em;
+  color: #53a8ff;
+}
+
+.markdown-content h4 {
+  font-size: 1.1em;
+}
+
+.markdown-content p {
+  margin: 8px 0;
+}
+
+.markdown-content strong {
+  font-weight: 700;
+  color: #e94560;
+}
+
+.markdown-content em {
+  font-style: italic;
+  color: #a8dadc;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.markdown-content li {
+  margin: 4px 0;
+}
+
+.markdown-content ul ul,
+.markdown-content ol ol,
+.markdown-content ul ol,
+.markdown-content ol ul {
+  margin: 4px 0;
+}
+
+.markdown-content code {
+  background-color: #0f0f1e;
+  border: 1px solid #0f3460;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+  color: #ff6b9d;
+}
+
+.markdown-content pre {
+  background-color: #0f0f1e;
+  border: 1px solid #0f3460;
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: #a8dadc;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #e94560;
+  padding-left: 16px;
+  margin: 12px 0;
+  color: #a8dadc;
+  font-style: italic;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  font-size: 0.95em;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid #0f3460;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.markdown-content th {
+  background-color: #e94560;
+  color: white;
+  font-weight: 600;
+}
+
+.markdown-content tr:nth-child(even) {
+  background-color: rgba(15, 52, 96, 0.2);
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 2px solid #0f3460;
+  margin: 16px 0;
+}
+
+.markdown-content a {
+  color: #53a8ff;
+  text-decoration: underline;
+}
+
+.markdown-content a:hover {
+  color: #e94560;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 12px 0;
+}

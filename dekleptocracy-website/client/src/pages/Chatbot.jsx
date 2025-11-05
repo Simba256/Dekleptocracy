@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import './Chatbot.css';
 
 const Chatbot = () => {
@@ -183,13 +184,9 @@ const Chatbot = () => {
                       <span className="loading-dot"></span>
                     </div>
                   ) : (
-                    // Preserve line breaks and formatting
-                    message.content.split('\n').map((line, i) => (
-                      <React.Fragment key={i}>
-                        {line}
-                        {i < message.content.split('\n').length - 1 && <br />}
-                      </React.Fragment>
-                    ))
+                    <ReactMarkdown className="markdown-content">
+                      {message.content}
+                    </ReactMarkdown>
                   )}
                 </div>
                 <div className="message-time">
