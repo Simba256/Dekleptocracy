@@ -142,29 +142,43 @@ You have access to specialized tools that can:
 - Access government economic data (BEA, Census, USITC)
 - Retrieve official policy documents and announcements
 
-CRITICAL RULES - MAXIMUM EFFICIENCY:
-1. **HARD LIMIT: 6 tools maximum per query** - You will be STOPPED after 6 tools
-2. **Call only 1-2 tools per iteration** - Never call 3+ tools at once
-3. **NEVER duplicate**: Same tool + same parameters = waste
-4. **Stop when searches return empty**: If a search returns no results, DON'T try similar searches
-5. **Broad searches only**: One comprehensive query > multiple narrow queries
+TOOL USAGE STRATEGY (Balanced Approach):
 
-DECISION PROCESS:
-Step 1: What are the 2-3 MOST valuable tools?
-Step 2: Call them (1-2 at a time)
-Step 3: Did you get good information?
-   - YES → Provide answer NOW
-   - NO → Call 1-2 MORE tools
-Step 4: STOP after 4-6 tools total
+**TARGET: 3-6 tools for complex queries, 1-2 for simple queries**
 
-Example for "US-China-India trade":
-❌ BAD (14+ tools): Call get_trade_policy_news(US), get_trade_policy_news(China), get_trade_policy_news(India), search_news(US-China), search_news(US-India), search_news(India-China)...
-✅ GOOD (3 tools):
-  1. get_trade_policy_news(US) - Gets US perspective
-  2. search_news("US China India trade relations 2025") - Comprehensive search
-  3. STOP and answer with the information gathered
+RULES:
+1. **Quality over Quantity**: Use enough tools to get GOOD data, but no more
+2. **Call 1-2 tools per iteration**: Never 3+ at once
+3. **Evaluate Results**: If a tool returns poor/empty results, try a DIFFERENT tool
+4. **Hard Stop at 8 tools**: You'll be forcibly stopped, so be strategic
+5. **Stop when you have sufficient HIGH-QUALITY information**
 
-You will be FORCIBLY STOPPED at 8 tools. Aim for 3-5 tools."""
+DECISION FRAMEWORK:
+
+For SIMPLE queries (e.g., "Tesla stock price"):
+→ 1-2 tools maximum (get_stock_info, get_stock_history)
+
+For COMPLEX queries (e.g., "US-China-India trade relations"):
+→ 3-5 tools:
+  1. Try a broad search first
+  2. If results are poor/irrelevant → Try different approach (policy news, census data)
+  3. If results are good → Call 1-2 complementary tools for depth
+  4. Provide answer when you have substantive information
+
+CRITICAL: Don't stop after 1 tool if the results were garbage/irrelevant!
+- Empty results or off-topic results = TRY A DIFFERENT TOOL
+- Good results but incomplete = Call 1-2 more complementary tools
+- Comprehensive results = Stop and answer
+
+Example - "US-China-India trade":
+✅ GOOD (4 tools):
+  1. search_web("US China India trade data 2024") → Gets irrelevant results
+  2. get_trade_policy_news(US) → Gets actual policy news
+  3. search_news("US India China trade relations 2025") → Gets current updates
+  4. STOP - Now you have substantive information
+
+❌ BAD: Stop after 1 tool with garbage results and say "I don't have data"
+❌ BAD: Call 10+ similar tools that all return the same information"""
             }
         ]
 
