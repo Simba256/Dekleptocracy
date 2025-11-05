@@ -267,10 +267,20 @@ const Chatbot = () => {
 
   return (
     <div className="chatbot-page">
+      {/* Sidebar Toggle Button - Always visible on left edge */}
+      <button
+        className={`sidebar-toggle-tab ${showHistory ? 'hidden' : ''}`}
+        onClick={() => setShowHistory(true)}
+        title="Open chat history"
+      >
+        <span className="toggle-icon">☰</span>
+        <span className="toggle-text">History</span>
+      </button>
+
       {/* History Sidebar */}
       <div className={`chat-history-sidebar ${showHistory ? 'show' : ''}`}>
         <div className="history-header">
-          <h2 className="history-title">Chat History</h2>
+          <h2 className="history-title">📚 Chat History</h2>
           <button
             className="history-close-btn"
             onClick={() => setShowHistory(false)}
@@ -321,23 +331,15 @@ const Chatbot = () => {
         />
       )}
 
-      <div className="chatbot-full-container">
+      {/* Main Chat Container */}
+      <div className="chatbot-main">
         {/* Header */}
         <div className="chatbot-header">
-          <div className="header-left">
-            <button
-              className="history-toggle-btn"
-              onClick={() => setShowHistory(!showHistory)}
-              title="Toggle chat history"
-            >
-              ☰
-            </button>
-            <div>
-              <h1 className="chatbot-title">AI Trade & Tariff Assistant</h1>
-              <p className="chatbot-subtitle">
-                Powered by GPT-5 with real-time trade analysis tools
-              </p>
-            </div>
+          <div className="header-content">
+            <h1 className="chatbot-title">AI Trade & Tariff Assistant</h1>
+            <p className="chatbot-subtitle">
+              Powered by GPT-5 with real-time trade analysis tools
+            </p>
           </div>
           {messages.length > 1 && (
             <button className="new-chat-btn-header" onClick={startNewChat}>
