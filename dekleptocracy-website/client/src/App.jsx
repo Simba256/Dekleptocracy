@@ -7,6 +7,7 @@ import Reports from './pages/Reports';
 import DistrictReport from './pages/DistrictReport';
 import Insights from './pages/Insights';
 import Chatbot from './pages/Chatbot';
+import ChatbotDebug from './pages/ChatbotDebug';
 import CreateAccount from './pages/CreateAccount';
 import Login from './pages/Login';
 import Survey from './pages/Survey';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/insights/articles" element={<Insights />} />
           <Route path="/insights/research" element={<Insights />} />
           <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/chatbot/debug" element={<ChatbotDebug />} />
           <Route path="/chatbot/create-account" element={<CreateAccount />} />
           <Route path="/chatbot/login" element={<Login />} />
           <Route path="/survey" element={<Survey />} />
