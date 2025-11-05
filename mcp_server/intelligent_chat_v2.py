@@ -112,7 +112,8 @@ class IntelligentChatHandlerV2:
         self,
         user_message: str,
         conversation_history: List[Dict[str, str]] = None,
-        max_iterations: int = 10  # Balanced limit to prevent long execution times
+        max_iterations: int = 10,  # Balanced limit to prevent long execution times
+        max_total_tools: int = 8   # Hard limit on total tools called
     ) -> Dict[str, Any]:
         """
         Process a user message with LLM-driven tool selection
@@ -121,6 +122,7 @@ class IntelligentChatHandlerV2:
             user_message: The user's message
             conversation_history: Optional conversation history
             max_iterations: Max number of tool calling iterations
+            max_total_tools: Hard limit on total number of tools called
 
         Returns:
             Dictionary with response and execution details
@@ -140,19 +142,29 @@ You have access to specialized tools that can:
 - Access government economic data (BEA, Census, USITC)
 - Retrieve official policy documents and announcements
 
-When a user asks a question:
-1. Analyze what information is needed
-2. Use the appropriate tools to gather that information efficiently (aim for 2-5 tools per query)
-3. Provide a comprehensive, well-structured answer based on the tool results
-4. Cite specific data points and sources when available
+CRITICAL RULES - MAXIMUM EFFICIENCY:
+1. **HARD LIMIT: 6 tools maximum per query** - You will be STOPPED after 6 tools
+2. **Call only 1-2 tools per iteration** - Never call 3+ tools at once
+3. **NEVER duplicate**: Same tool + same parameters = waste
+4. **Stop when searches return empty**: If a search returns no results, DON'T try similar searches
+5. **Broad searches only**: One comprehensive query > multiple narrow queries
 
-Be strategic in tool selection:
-- Prioritize tools that directly answer the user's question
-- Use multiple complementary tools when they provide different perspectives
-- Avoid redundant tool calls that retrieve similar information
-- For example, when asked about a company and tariffs, use both stock info tools AND search tools
+DECISION PROCESS:
+Step 1: What are the 2-3 MOST valuable tools?
+Step 2: Call them (1-2 at a time)
+Step 3: Did you get good information?
+   - YES → Provide answer NOW
+   - NO → Call 1-2 MORE tools
+Step 4: STOP after 4-6 tools total
 
-You have a limit of 10 tool-calling iterations, so be efficient and purposeful."""
+Example for "US-China-India trade":
+❌ BAD (14+ tools): Call get_trade_policy_news(US), get_trade_policy_news(China), get_trade_policy_news(India), search_news(US-China), search_news(US-India), search_news(India-China)...
+✅ GOOD (3 tools):
+  1. get_trade_policy_news(US) - Gets US perspective
+  2. search_news("US China India trade relations 2025") - Comprehensive search
+  3. STOP and answer with the information gathered
+
+You will be FORCIBLY STOPPED at 8 tools. Aim for 3-5 tools."""
             }
         ]
 
@@ -173,6 +185,7 @@ You have a limit of 10 tool-calling iterations, so be efficient and purposeful."
         # Track tool calls and results
         all_tool_calls = []
         all_tool_results = {}
+        tool_call_signatures = set()  # Track unique tool+params combinations to prevent duplicates
         iterations = 0
         last_response_had_tool_calls = False
 
@@ -203,11 +216,32 @@ You have a limit of 10 tool-calling iterations, so be efficient and purposeful."
                         tool_name = tool_call.function.name
                         tool_args = json.loads(tool_call.function.arguments)
 
+                        # Create signature to detect duplicates (tool name + sorted params)
+                        tool_signature = f"{tool_name}:{json.dumps(tool_args, sort_keys=True)}"
+
+                        # Check if this exact tool call was already made
+                        if tool_signature in tool_call_signatures:
+                            logger.warning(f"⚠️ DUPLICATE DETECTED: {tool_name} with same parameters - skipping execution, reusing previous result")
+                            # Reuse existing result
+                            result = all_tool_results.get(tool_name, {"status": "duplicate", "message": "This tool was already called with the same parameters"})
+
+                            # Still acknowledge to GPT so it doesn't get confused
+                            messages.append({
+                                "role": "tool",
+                                "tool_call_id": tool_call.id,
+                                "name": tool_name,
+                                "content": f"✓ {tool_name} already called with these parameters - using cached result"
+                            })
+                            continue
+
                         logger.info(f"🔧 GPT-5 calling: {tool_name}({json.dumps(tool_args)[:100]})")
 
                         # Execute the tool
                         result = self._execute_tool(tool_name, tool_args)
                         logger.info(f"✅ {tool_name} completed")
+
+                        # Mark this signature as used
+                        tool_call_signatures.add(tool_signature)
 
                         # Track for response
                         all_tool_calls.append({
@@ -225,6 +259,18 @@ You have a limit of 10 tool-calling iterations, so be efficient and purposeful."
                             "name": tool_name,
                             "content": f"✓ {tool_name} completed successfully"
                         })
+
+                        # Check if we've hit the hard limit on total tools
+                        if len(all_tool_calls) >= max_total_tools:
+                            logger.warning(f"⚠️ HARD LIMIT REACHED: {len(all_tool_calls)}/{max_total_tools} tools called - forcing synthesis")
+                            last_response_had_tool_calls = True
+                            # Break out of tool execution loop and force synthesis
+                            break
+
+                    # If we hit the tool limit, break out of iteration loop and synthesize
+                    if len(all_tool_calls) >= max_total_tools:
+                        logger.info(f"Tool limit reached. {len(all_tool_calls)} tools called. Forcing synthesis...")
+                        break
 
                     # Continue loop to let LLM process results
                     continue
@@ -317,13 +363,19 @@ Be specific, cite data points, and synthesize the information into a coherent re
 
                     logger.info(f"Synthesis complete. Response length: {len(final_response)}")
 
-                    return {
+                    response_data = {
                         "response": final_response,
                         "tool_calls": all_tool_calls,
                         "tool_results": all_tool_results,
                         "iterations": iterations,
                         "tokens_used": response.usage.total_tokens + synthesis_response.usage.total_tokens if response.usage and synthesis_response.usage else 0
                     }
+
+                    # Add flag if tool limit was reached
+                    if len(all_tool_calls) >= max_total_tools:
+                        response_data["tool_limit_reached"] = True
+
+                    return response_data
 
             except Exception as e:
                 logger.error(f"Error in LLM iteration {iterations}: {e}", exc_info=True)
@@ -364,10 +416,12 @@ Be specific, cite data points, and synthesize the information into a coherent re
 
                 synthesis_prompt += f"{idx}. {tool_name}: {result_str}\n\n"
 
-            # Add note if we hit the iteration limit while model wanted more tools
+            # Add note if we hit any limit
             limit_note = ""
-            if last_response_had_tool_calls:
-                limit_note = "\n\nIMPORTANT: The analysis reached the maximum tool call limit. There may be additional relevant information that wasn't explored. Please add a brief note at the end: 'Note: This analysis was limited by time constraints. Additional information may be available - feel free to ask follow-up questions for more specific details.'"
+            if len(all_tool_calls) >= max_total_tools:
+                limit_note = f"\n\nIMPORTANT: The analysis was STOPPED at the {max_total_tools}-tool limit to ensure timely responses. Provide your best answer with the available data. Add a note: 'Note: Analysis limited to {len(all_tool_calls)} tools for efficiency. Ask follow-up questions for more details.'"
+            elif last_response_had_tool_calls:
+                limit_note = "\n\nIMPORTANT: The analysis reached the maximum iteration limit. There may be additional relevant information that wasn't explored. Please add a brief note at the end: 'Note: This analysis was limited by time constraints. Additional information may be available - feel free to ask follow-up questions for more specific details.'"
 
             synthesis_prompt += f"""
 
@@ -411,7 +465,7 @@ Be specific, cite data points, and synthesize the information into a coherent re
                     )
                     final_text = retry_response.choices[0].message.content or "Unable to synthesize due to context limits."
 
-            return {
+            response_data = {
                 "response": final_text or "I gathered comprehensive information but encountered an issue synthesizing the final response.",
                 "tool_calls": all_tool_calls,
                 "tool_results": all_tool_results,
@@ -419,6 +473,12 @@ Be specific, cite data points, and synthesize the information into a coherent re
                 "max_iterations_reached": True,
                 "tokens_used": final_response.usage.total_tokens if final_response.usage else 0
             }
+
+            # Add flag if tool limit was reached
+            if len(all_tool_calls) >= max_total_tools:
+                response_data["tool_limit_reached"] = True
+
+            return response_data
         except Exception as e:
             logger.error(f"Error in final synthesis: {e}", exc_info=True)
 
@@ -434,7 +494,7 @@ Be specific, cite data points, and synthesize the information into a coherent re
 
             fallback_response += "Please try asking a more specific question or breaking your query into smaller parts."
 
-            return {
+            response_data = {
                 "response": fallback_response,
                 "tool_calls": all_tool_calls,
                 "tool_results": all_tool_results,
@@ -442,3 +502,9 @@ Be specific, cite data points, and synthesize the information into a coherent re
                 "max_iterations_reached": True,
                 "error": str(e)
             }
+
+            # Add flag if tool limit was reached
+            if len(all_tool_calls) >= max_total_tools:
+                response_data["tool_limit_reached"] = True
+
+            return response_data
