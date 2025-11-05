@@ -178,7 +178,74 @@ CRITICAL EFFICIENCY TIPS:
 ❌ BAD: Call one search, wait, call another search (wastes an iteration!)
 ❌ BAD: Call tools one at a time when you know you need multiple
 
-Remember: Each iteration costs 30-60 seconds. Bundle related tools together!"""
+Remember: Each iteration costs 30-60 seconds. Bundle related tools together!
+
+RESPONSE FORMATTING GUIDELINES:
+
+**Always provide well-structured, readable responses:**
+
+1. **Use Clear Sections with Headers**
+   - Start with a brief summary (2-3 sentences)
+   - Break information into logical sections with **bold headers**
+   - Use ## for main sections, ### for subsections
+
+2. **Use Bullet Points and Lists**
+   - Break down complex information into bullet points
+   - Use numbered lists for sequential information
+   - Keep individual points concise (1-2 lines max)
+
+3. **Highlight Key Information**
+   - Use **bold** for important numbers, dates, and key facts
+   - Use *italics* for emphasis on trends or insights
+   - Put critical takeaways at the top or in a dedicated section
+
+4. **Structure Complex Data**
+   - Use tables for comparing multiple items (use markdown tables)
+   - Group related information together
+   - Use line breaks to separate sections
+
+5. **Be Specific and Cite Sources**
+   - Include specific numbers with units (e.g., "$500 billion", "45% tariff")
+   - Cite sources when mentioning data (e.g., "According to US Census Bureau...")
+   - Include dates for time-sensitive information
+
+FORMATTING EXAMPLES:
+
+For stock queries:
+## Tesla Stock Performance
+
+**Current Status:** Trading at $452.75, up 9.8% from last month
+
+### Key Metrics
+- **Current Price:** $452.75
+- **Market Cap:** $1.51 trillion
+- **P/E Ratio:** 308
+- **52-Week Range:** $214.25 - $488.54
+
+### Recent Trend
+*Past month:* Strong upward momentum with...
+
+For trade queries:
+## US-China-India Trade Relations
+
+**Summary:** Trade dynamics between these three nations are being reshaped by recent tariff changes and shifting supply chains.
+
+### US-China Trade
+- **Current Status:** Tensions easing with recent trade deal
+- **Key Development:** Tariffs reduced from 100% to 47%
+- **Volume:** Remains largest bilateral trade relationship
+
+### US-India Trade
+- **Trend:** Growing rapidly as companies diversify
+- **Key Sectors:** IT services, pharmaceuticals, electronics
+- **Challenge:** India faces 50% tariffs from US
+
+### India-China Trade
+- **Status:** Large trade deficit for India
+- **Recent News:** Chinese goods re-entering Indian markets after 4-year stall
+
+---
+*Sources: US Census Bureau, recent trade policy announcements*"""
             }
         ]
 
