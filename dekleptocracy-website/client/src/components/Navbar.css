@@ -1,3 +1,8 @@
+/* CSS Variables for navbar height */
+:root {
+  --navbar-height: 100px;
+}
+
 /* Navbar Container */
 .navbar {
   background-color: white;
@@ -16,7 +21,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100px;
+  height: var(--navbar-height);
 }
 
 /* Logo */
@@ -209,7 +214,7 @@
 .mobile-menu-overlay {
   display: none;
   position: fixed;
-  top: 100px;
+  top: var(--navbar-height);
   left: 0;
   right: 0;
   bottom: 0;
@@ -330,12 +335,12 @@
 }
 
 @media (max-width: 768px) {
-  .navbar-container {
-    padding: 0 1.5rem;
+  :root {
+    --navbar-height: 80px;
   }
 
-  .navbar-content {
-    height: 80px;
+  .navbar-container {
+    padding: 0 1.5rem;
   }
 
   .navbar-logo {
@@ -362,7 +367,6 @@
   /* Show mobile menu overlay when active */
   .mobile-menu-overlay {
     display: block;
-    top: 80px;
   }
 
   /* Hide profile avatar on mobile */
@@ -373,12 +377,12 @@
 }
 
 @media (max-width: 480px) {
-  .navbar-container {
-    padding: 0 1rem;
+  :root {
+    --navbar-height: 70px;
   }
 
-  .navbar-content {
-    height: 70px;
+  .navbar-container {
+    padding: 0 1rem;
   }
 
   .navbar-logo {
@@ -400,9 +404,6 @@
     height: 24px;
   }
 
-  .mobile-menu-overlay {
-    top: 70px;
-  }
 
   .mobile-menu {
     width: 260px;

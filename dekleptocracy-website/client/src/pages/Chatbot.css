@@ -1,6 +1,6 @@
 .chatbot-page {
   position: fixed;
-  top: 60px;
+  top: var(--navbar-height, 100px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -721,7 +721,7 @@
 .sidebar-toggle-mobile {
   position: fixed;
   left: 16px;
-  top: 70px;
+  top: calc(var(--navbar-height, 100px) + 10px);
   background: linear-gradient(135deg, #2c5f3e 0%, #3a7b4e 100%);
   color: #ffffff;
   border: none;
@@ -784,7 +784,7 @@
   .chat-history-sidebar {
     position: fixed;
     left: 0;
-    top: 60px;
+    top: var(--navbar-height, 100px);
     bottom: 0;
     width: 300px;
     transform: translateX(-100%);
@@ -811,7 +811,7 @@
     inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
-    top: 60px;
+    top: var(--navbar-height, 100px);
   }
 
   .new-chat-btn-header {
