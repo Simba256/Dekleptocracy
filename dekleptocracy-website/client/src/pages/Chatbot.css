@@ -515,32 +515,29 @@
   border: 1px solid #d1d5db;
   padding: 10px 14px;
   text-align: left;
-  color: #374151;
 }
 
 .markdown-content th {
   background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  color: white;
+  color: white !important;
   font-weight: 600;
   font-size: 0.95em;
-}
-
-.markdown-content tr:nth-child(even) {
-  background-color: #f9fafb;
-}
-
-.markdown-content tbody tr:hover {
-  background-color: #f3f4f6;
 }
 
 .markdown-content td {
   font-size: 14px;
   line-height: 1.5;
+  color: #0f172a !important;
+  font-weight: 500;
+  background-color: #ffffff;
 }
 
-.markdown-content tbody td {
-  color: #111827;
-  font-weight: 400;
+.markdown-content tr:nth-child(even) td {
+  background-color: #f9fafb;
+}
+
+.markdown-content tbody tr:hover td {
+  background-color: #f3f4f6;
 }
 
 .markdown-content hr {
