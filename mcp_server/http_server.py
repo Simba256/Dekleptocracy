@@ -479,8 +479,10 @@ async def intelligent_chat_v2_endpoint(request: ChatRequest):
         if not user_message:
             raise HTTPException(status_code=400, detail="No user message found")
 
-        # Process with LLM-driven handler
-        result = intelligent_chat_handler_v2.process_message(
+        # Process with LLM-driven handler (run in thread to avoid blocking)
+        # This allows multiple concurrent requests to be processed in parallel
+        result = await asyncio.to_thread(
+            intelligent_chat_handler_v2.process_message,
             user_message=user_message,
             conversation_history=request.messages
         )
@@ -517,8 +519,9 @@ async def intelligent_chat_endpoint(request: ChatRequest):
         if not user_message:
             raise HTTPException(status_code=400, detail="No user message found")
 
-        # Process with intelligent chat handler
-        result = intelligent_chat_handler.process_message(
+        # Process with intelligent chat handler (run in thread to avoid blocking)
+        result = await asyncio.to_thread(
+            intelligent_chat_handler.process_message,
             user_message=user_message,
             conversation_history=request.messages
         )
