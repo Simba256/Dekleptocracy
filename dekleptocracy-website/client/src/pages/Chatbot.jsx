@@ -3,6 +3,35 @@ import { useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import './Chatbot.css';
 
+// localStorage utilities for chat history
+const STORAGE_KEY = 'dekleptocracy_chat_history';
+
+const getChatHistory = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : { chats: [], currentChatId: null };
+  } catch (error) {
+    console.error('Error loading chat history:', error);
+    return { chats: [], currentChatId: null };
+  }
+};
+
+const saveChatHistory = (history) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  } catch (error) {
+    console.error('Error saving chat history:', error);
+  }
+};
+
+const generateChatTitle = (messages) => {
+  const firstUserMessage = messages.find(msg => msg.role === 'user');
+  if (!firstUserMessage) return 'New Chat';
+
+  const title = firstUserMessage.content.substring(0, 50);
+  return title.length < firstUserMessage.content.length ? title + '...' : title;
+};
+
 const Chatbot = () => {
   const location = useLocation();
   const [messages, setMessages] = useState([
@@ -15,6 +44,9 @@ const Chatbot = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentChatId, setCurrentChatId] = useState(null);
+  const [chatHistory, setChatHistory] = useState(() => getChatHistory());
+  const [showHistory, setShowHistory] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
   const hasSubmittedInitialQuery = useRef(false);
@@ -34,6 +66,88 @@ const Chatbot = () => {
       submitMessage(location.state.initialQuery);
     }
   }, [location.state]);
+
+  // Save current chat to history after messages change
+  useEffect(() => {
+    if (messages.length > 1) { // More than just the welcome message
+      saveCurrentChat();
+    }
+  }, [messages]);
+
+  const saveCurrentChat = () => {
+    const history = getChatHistory();
+    const chatId = currentChatId || Date.now().toString();
+
+    const existingChatIndex = history.chats.findIndex(chat => chat.id === chatId);
+    const chatData = {
+      id: chatId,
+      title: generateChatTitle(messages),
+      messages: messages,
+      createdAt: existingChatIndex >= 0 ? history.chats[existingChatIndex].createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (existingChatIndex >= 0) {
+      history.chats[existingChatIndex] = chatData;
+    } else {
+      history.chats.unshift(chatData); // Add to beginning
+    }
+
+    history.currentChatId = chatId;
+    saveChatHistory(history);
+    setChatHistory(history);
+
+    if (!currentChatId) {
+      setCurrentChatId(chatId);
+    }
+  };
+
+  const loadChat = (chatId) => {
+    const history = getChatHistory();
+    const chat = history.chats.find(c => c.id === chatId);
+
+    if (chat) {
+      setMessages(chat.messages.map(msg => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp)
+      })));
+      setCurrentChatId(chatId);
+      setShowHistory(false);
+    }
+  };
+
+  const startNewChat = () => {
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        content: 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?',
+        timestamp: new Date(),
+      },
+    ]);
+    setCurrentChatId(null);
+    setInput('');
+    setShowHistory(false);
+  };
+
+  const deleteChat = (chatId, event) => {
+    event.stopPropagation();
+
+    const history = getChatHistory();
+    history.chats = history.chats.filter(chat => chat.id !== chatId);
+
+    if (history.currentChatId === chatId) {
+      history.currentChatId = null;
+    }
+
+    saveChatHistory(history);
+    setChatHistory(history);
+
+    // If deleting current chat, start a new one
+    if (currentChatId === chatId) {
+      startNewChat();
+    }
+  };
 
   const submitMessage = async (messageText) => {
     if (!messageText.trim() || isLoading) return;
@@ -153,13 +267,83 @@ const Chatbot = () => {
 
   return (
     <div className="chatbot-page">
+      {/* History Sidebar */}
+      <div className={`chat-history-sidebar ${showHistory ? 'show' : ''}`}>
+        <div className="history-header">
+          <h2 className="history-title">Chat History</h2>
+          <button
+            className="history-close-btn"
+            onClick={() => setShowHistory(false)}
+            title="Close sidebar"
+          >
+            ✕
+          </button>
+        </div>
+
+        <button className="new-chat-btn" onClick={startNewChat}>
+          ➕ New Chat
+        </button>
+
+        <div className="history-list">
+          {chatHistory.chats.length === 0 ? (
+            <div className="history-empty">No chat history yet</div>
+          ) : (
+            chatHistory.chats.map((chat) => (
+              <div
+                key={chat.id}
+                className={`history-item ${chat.id === currentChatId ? 'active' : ''}`}
+                onClick={() => loadChat(chat.id)}
+              >
+                <div className="history-item-content">
+                  <div className="history-item-title">{chat.title}</div>
+                  <div className="history-item-date">
+                    {new Date(chat.updatedAt).toLocaleDateString()}
+                  </div>
+                </div>
+                <button
+                  className="history-delete-btn"
+                  onClick={(e) => deleteChat(chat.id, e)}
+                  title="Delete chat"
+                >
+                  🗑️
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Overlay when sidebar is open */}
+      {showHistory && (
+        <div
+          className="history-overlay"
+          onClick={() => setShowHistory(false)}
+        />
+      )}
+
       <div className="chatbot-full-container">
         {/* Header */}
         <div className="chatbot-header">
-          <h1 className="chatbot-title">AI Trade & Tariff Assistant</h1>
-          <p className="chatbot-subtitle">
-            Powered by GPT-5 with real-time trade analysis tools
-          </p>
+          <div className="header-left">
+            <button
+              className="history-toggle-btn"
+              onClick={() => setShowHistory(!showHistory)}
+              title="Toggle chat history"
+            >
+              ☰
+            </button>
+            <div>
+              <h1 className="chatbot-title">AI Trade & Tariff Assistant</h1>
+              <p className="chatbot-subtitle">
+                Powered by GPT-5 with real-time trade analysis tools
+              </p>
+            </div>
+          </div>
+          {messages.length > 1 && (
+            <button className="new-chat-btn-header" onClick={startNewChat}>
+              ➕ New Chat
+            </button>
+          )}
         </div>
 
         {/* Messages Area */}
