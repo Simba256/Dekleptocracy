@@ -520,6 +520,11 @@
 /* Markdown Content Styling */
 .markdown-content {
   line-height: 1.6;
+  color: #e8e8e8;
+}
+
+.markdown-content * {
+  color: inherit;
 }
 
 .markdown-content h1,
@@ -558,11 +563,12 @@
 
 .markdown-content p {
   margin: 4px 0;
+  color: #e8e8e8;
 }
 
 .markdown-content strong {
   font-weight: 700;
-  color: #e8e8e8;
+  color: #ffffff;
 }
 
 .markdown-content em {
@@ -574,10 +580,12 @@
 .markdown-content ol {
   margin: 8px 0;
   padding-left: 24px;
+  color: #e8e8e8;
 }
 
 .markdown-content li {
   margin: 4px 0;
+  color: #e8e8e8;
 }
 
 .markdown-content ul ul,
@@ -633,16 +641,25 @@
   border: 1px solid #0f3460;
   padding: 8px 12px;
   text-align: left;
+  color: #ffffff;
 }
 
 .markdown-content th {
   background-color: #e94560;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
+}
+
+.markdown-content td {
+  color: #e8e8e8;
 }
 
 .markdown-content tr:nth-child(even) {
   background-color: rgba(15, 52, 96, 0.2);
+}
+
+.markdown-content tr:nth-child(odd) {
+  background-color: rgba(15, 52, 96, 0.1);
 }
 
 .markdown-content hr {
