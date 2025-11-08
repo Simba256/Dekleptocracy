@@ -18,12 +18,25 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: function() {
+      return !this.googleId; // Password not required if user signs in with Google
+    },
     minlength: [6, 'Password must be at least 6 characters long']
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true // Allows multiple null values
+  },
+  isGoogleUser: {
+    type: Boolean,
+    default: false
   },
   agreeToTerms: {
     type: Boolean,
-    required: [true, 'You must agree to terms and conditions'],
+    required: function() {
+      return !this.googleId; // Not required for Google OAuth users
+    },
     default: false
   },
   createdAt: {
@@ -38,8 +51,13 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
+  // Skip password hashing if user is signing in with Google and has no password
+  if (this.isGoogleUser && !this.password) {
+    return next();
+  }
+
   // Only hash the password if it has been modified (or is new)
-  if (!this.isModified('password')) {
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
 

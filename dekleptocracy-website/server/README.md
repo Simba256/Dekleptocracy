@@ -12,13 +12,24 @@ npm install
 
 ### 2. Configure Environment Variables
 
-Create a `.env` file in the server directory (see `.env.example` for reference):
+Create a `.env` file in the server directory:
 
 ```env
 MONGODB_URI=mongodb://localhost:27017/dekleptocracy
 PORT=5000
 JWT_SECRET=your-secret-key-change-in-production
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ```
+
+#### Google OAuth Setup (Optional)
+
+To enable Google Sign-In:
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create OAuth 2.0 credentials (see `GOOGLE_OAUTH_SETUP.md` for detailed instructions)
+3. Add `GOOGLE_CLIENT_ID` to your backend `.env` file
+4. Add `VITE_GOOGLE_CLIENT_ID` to your frontend `.env` file (same value)
+
+See `GOOGLE_OAUTH_SETUP.md` in the root directory for complete setup instructions.
 
 ### 3. MongoDB Setup
 
@@ -86,6 +97,31 @@ Create a new user account.
 }
 ```
 
+#### POST `/api/auth/google`
+Login or signup with Google OAuth.
+
+**Request Body:**
+```json
+{
+  "credential": "google-id-token"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Google login successful",
+  "token": "jwt-token-here",
+  "user": {
+    "id": "user-id",
+    "fullName": "John Doe",
+    "email": "john@example.com",
+    "picture": "profile-picture-url"
+  }
+}
+```
+
 #### POST `/api/auth/login`
 Login with email and password.
 
@@ -132,8 +168,10 @@ Check server status.
 {
   fullName: String (required, max 100 chars),
   email: String (required, unique, lowercase),
-  password: String (required, min 6 chars, hashed),
-  agreeToTerms: Boolean (required),
+  password: String (required if not Google user, min 6 chars, hashed),
+  googleId: String (unique, for Google OAuth users),
+  isGoogleUser: Boolean (default: false),
+  agreeToTerms: Boolean (required if not Google user),
   createdAt: Date,
   updatedAt: Date
 }
@@ -143,9 +181,11 @@ Check server status.
 
 - Password hashing using bcrypt
 - JWT token authentication
+- Google OAuth 2.0 authentication
 - Input validation
 - Error handling
 - CORS enabled for frontend
+- Token verification for Google OAuth
 
 ## Development
 

@@ -147,5 +147,114 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Google OAuth route
+router.post('/google', async (req, res) => {
+  try {
+    const { credential } = req.body; // Google ID token
+
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google credential is required'
+      });
+    }
+
+    // Verify Google token
+    const { OAuth2Client } = await import('google-auth-library');
+    
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      return res.status(500).json({
+        success: false,
+        message: 'Google OAuth is not configured on the server'
+      });
+    }
+
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    let ticket;
+    try {
+      ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+    } catch (error) {
+      console.error('Google token verification error:', error);
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid Google token'
+      });
+    }
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name: fullName, picture } = payload;
+
+    // Check if user exists with this Google ID
+    let user = await User.findOne({ googleId });
+    let isNewUser = false;
+    let isLinkedAccount = false;
+
+    if (!user) {
+      // Check if user exists with this email
+      user = await User.findOne({ email: email.toLowerCase() });
+
+      if (user) {
+        // Link Google account to existing user (login with Google for existing email account)
+        user.googleId = googleId;
+        user.isGoogleUser = true;
+        if (!user.fullName && fullName) {
+          user.fullName = fullName;
+        }
+        await user.save();
+        isLinkedAccount = true;
+      } else {
+        // Create new user with Google account (signup with Google)
+        user = new User({
+          fullName: fullName || email.split('@')[0],
+          email: email.toLowerCase(),
+          googleId,
+          isGoogleUser: true,
+          agreeToTerms: true, // Assume user agrees when using Google OAuth
+          password: undefined // No password for Google users
+        });
+        await user.save();
+        isNewUser = true;
+      }
+    }
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Determine appropriate message
+    let message = 'Google authentication successful';
+    if (isNewUser) {
+      message = 'Account created successfully with Google';
+    } else if (isLinkedAccount) {
+      message = 'Google account linked successfully';
+    } else {
+      message = 'Google login successful';
+    }
+
+    // Return success response
+    res.status(200).json({
+      success: true,
+      message,
+      token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        picture: picture || null
+      },
+      isNewUser
+    });
+  } catch (error) {
+    console.error('Google OAuth error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again later.'
+    });
+  }
+});
+
 export default router;
 
