@@ -15,11 +15,18 @@ npm install
 Create a `.env` file in the server directory:
 
 ```env
-MONGODB_URI=mongodb://localhost:27017/dekleptocracy
+# MongoDB Atlas Connection String
+# Replace <db_password> with your actual database password
+MONGODB_URI=mongodb+srv://hasankamal839_db_user:<db_password>@cluster0.fink5ub.mongodb.net/dekleptocracy?retryWrites=true&w=majority&appName=Cluster0
+
 PORT=5000
 JWT_SECRET=your-secret-key-change-in-production
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ```
+
+**Important Notes:**
+1. Replace `<db_password>` in the `MONGODB_URI` with your actual MongoDB Atlas database password.
+2. Generate a secure JWT secret using: `npm run generate-secret` (see JWT Setup below)
 
 #### Google OAuth Setup (Optional)
 
@@ -31,20 +38,57 @@ To enable Google Sign-In:
 
 See `GOOGLE_OAUTH_SETUP.md` in the root directory for complete setup instructions.
 
+#### JWT Secret Setup
+
+Generate a secure JWT secret for authentication:
+
+1. Run the generator script:
+   ```bash
+   npm run generate-secret
+   ```
+
+2. Copy the generated secret
+
+3. Add it to your `.env` file as `JWT_SECRET`
+
+See `JWT_SETUP.md` for detailed JWT token setup and configuration.
+
 ### 3. MongoDB Setup
 
-#### Option A: Local MongoDB
+#### Using MongoDB Atlas (Recommended - Already Configured)
 
+Your MongoDB Atlas connection string is already configured:
+- Cluster: `cluster0.fink5ub.mongodb.net`
+- Database User: `hasankamal839_db_user`
+- Database Name: `dekleptocracy`
+
+**Setup Steps:**
+1. Get your database password from MongoDB Atlas
+2. Replace `<db_password>` in the `MONGODB_URI` in your `.env` file with your actual password
+3. The connection string format should be:
+   ```
+   mongodb+srv://hasankamal839_db_user:YOUR_ACTUAL_PASSWORD@cluster0.fink5ub.mongodb.net/dekleptocracy?retryWrites=true&w=majority&appName=Cluster0
+   ```
+
+**To get your password:**
+1. Go to [MongoDB Atlas](https://cloud.mongodb.com/)
+2. Navigate to "Database Access"
+3. Find the user `hasankamal839_db_user`
+4. Click "Edit" and then "Edit Password"
+5. Either use the existing password or reset it
+
+**Network Access:**
+Make sure your IP address is whitelisted in MongoDB Atlas:
+1. Go to "Network Access" in MongoDB Atlas
+2. Click "Add IP Address"
+3. Add your current IP or `0.0.0.0/0` for development (not recommended for production)
+
+#### Option B: Local MongoDB (Alternative)
+
+If you prefer to use local MongoDB:
 1. Install MongoDB locally: https://www.mongodb.com/try/download/community
 2. Start MongoDB service
-3. Use connection string: `mongodb://localhost:27017/dekleptocracy`
-
-#### Option B: MongoDB Atlas (Cloud)
-
-1. Create a free account at https://www.mongodb.com/cloud/atlas
-2. Create a new cluster
-3. Get your connection string from Atlas dashboard
-4. Update `MONGODB_URI` in `.env` file
+3. Update `MONGODB_URI` in `.env` file to: `mongodb://localhost:27017/dekleptocracy`
 
 ### 4. Run the Server
 

@@ -33,8 +33,11 @@ app.use((err, req, res, next) => {
 async function start() {
   try {
     if (mongoUri) {
-      await mongoose.connect(mongoUri);
-      console.log('✅ Connected to MongoDB');
+      await mongoose.connect(mongoUri, {
+        // MongoDB Atlas connection options
+        serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      });
+      console.log('✅ Connected to MongoDB Atlas');
     } else {
       console.warn('⚠️  MONGODB_URI not set, using default local database');
       await mongoose.connect('mongodb://localhost:27017/dekleptocracy');
