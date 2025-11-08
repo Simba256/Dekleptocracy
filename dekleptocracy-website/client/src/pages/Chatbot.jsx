@@ -189,6 +189,12 @@ const Chatbot = () => {
             content,
           })),
           use_mcp_tools: true,
+          // Context window management parameters (optional)
+          max_iterations: 10,          // Maximum tool calling iterations
+          max_total_tools: 8,           // Maximum total tools to call
+          preserve_recent_messages: 3,  // Number of recent messages to preserve when truncating
+          // max_context_tokens can be set to limit context size (uncomment to use)
+          // max_context_tokens: 50000,
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -217,6 +223,24 @@ const Chatbot = () => {
       if (data.metadata) {
         console.log('MCP V2 Metadata:', data.metadata);
         console.log(`Tools used: ${data.metadata.tool_count}, Iterations: ${data.metadata.iterations}, Tokens: ${data.metadata.tokens_used}`);
+
+        // Log token/context metadata
+        if (data.metadata.token_metadata) {
+          const tm = data.metadata.token_metadata;
+          console.log(`Context Window: ${tm.initial_messages_tokens?.toLocaleString() || 'N/A'} / ${tm.context_limit?.toLocaleString() || 'N/A'} tokens (${tm.initial_utilization_percent || 0}%)`);
+
+          if (tm.truncation_occurred) {
+            console.warn(`⚠️ Context truncation occurred: ${tm.messages_removed} messages removed`);
+          }
+        }
+
+        // Log if limits were reached
+        if (data.metadata.tool_limit_reached) {
+          console.warn('⚠️ Tool limit reached - some analysis may be incomplete');
+        }
+        if (data.metadata.max_iterations_reached) {
+          console.warn('⚠️ Max iterations reached - some analysis may be incomplete');
+        }
       }
       if (data.tools_used) {
         console.log('Tools used:', data.tools_used);

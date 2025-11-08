@@ -77,6 +77,11 @@ const ChatbotDebug = () => {
             content,
           })),
           use_mcp_tools: true,
+          // Context window management parameters (optional)
+          max_iterations: 10,          // Maximum tool calling iterations
+          max_total_tools: 8,           // Maximum total tools to call
+          preserve_recent_messages: 3,  // Number of recent messages to preserve when truncating
+          // max_context_tokens: 50000, // Uncomment to limit context window size
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -331,8 +336,72 @@ const ChatbotDebug = () => {
                           <span className="debug-stat-value">Reached</span>
                         </div>
                       )}
+                      {info.metadata.tool_limit_reached && (
+                        <div className="debug-stat debug-stat-warning">
+                          <span className="debug-stat-label">⚠️ Tool Limit:</span>
+                          <span className="debug-stat-value">Reached</span>
+                        </div>
+                      )}
                     </div>
                   </div>
+
+                  {info.metadata.token_metadata && (
+                    <div className="debug-section">
+                      <h4 className="debug-section-title">🔢 Context Window</h4>
+                      <div className="debug-stats">
+                        <div className="debug-stat">
+                          <span className="debug-stat-label">Model:</span>
+                          <span className="debug-stat-value">
+                            {info.metadata.token_metadata.model || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="debug-stat">
+                          <span className="debug-stat-label">Context Limit:</span>
+                          <span className="debug-stat-value">
+                            {info.metadata.token_metadata.context_limit?.toLocaleString() || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="debug-stat">
+                          <span className="debug-stat-label">Initial Tokens:</span>
+                          <span className="debug-stat-value">
+                            {info.metadata.token_metadata.initial_messages_tokens?.toLocaleString() || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="debug-stat">
+                          <span className="debug-stat-label">Utilization:</span>
+                          <span className="debug-stat-value">
+                            {info.metadata.token_metadata.initial_utilization_percent || 0}%
+                          </span>
+                        </div>
+                        {info.metadata.token_metadata.truncation_occurred && (
+                          <>
+                            <div className="debug-stat debug-stat-warning">
+                              <span className="debug-stat-label">⚠️ Truncation:</span>
+                              <span className="debug-stat-value">Occurred</span>
+                            </div>
+                            <div className="debug-stat debug-stat-warning">
+                              <span className="debug-stat-label">Messages Removed:</span>
+                              <span className="debug-stat-value">
+                                {info.metadata.token_metadata.messages_removed}
+                              </span>
+                            </div>
+                            <div className="debug-stat">
+                              <span className="debug-stat-label">Final Tokens:</span>
+                              <span className="debug-stat-value">
+                                {info.metadata.token_metadata.final_messages_tokens?.toLocaleString() || 'N/A'}
+                              </span>
+                            </div>
+                            <div className="debug-stat">
+                              <span className="debug-stat-label">Final Utilization:</span>
+                              <span className="debug-stat-value">
+                                {info.metadata.token_metadata.final_utilization_percent || 0}%
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {info.toolCalls.length > 0 && (
                     <div className="debug-section">
