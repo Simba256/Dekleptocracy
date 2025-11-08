@@ -295,9 +295,321 @@ def get_cache_stats() -> Dict[str, int]:
     """Get cache statistics"""
     current_time = time.time()
     valid_entries = sum(1 for ttl in _cache_ttl.values() if current_time - ttl < 300)
-    
+
     return {
         "total_entries": len(_cache),
         "valid_entries": valid_entries,
         "expired_entries": len(_cache) - valid_entries
     }
+
+
+# ============================================================================
+# Token Counting and Context Management Utilities
+# ============================================================================
+
+try:
+    import tiktoken
+    TIKTOKEN_AVAILABLE = True
+except ImportError:
+    TIKTOKEN_AVAILABLE = False
+    logger.warning("tiktoken not available - token counting will use character estimation")
+
+# Token encoding cache
+_encoding_cache = {}
+
+# Model to encoding mapping
+MODEL_TO_ENCODING = {
+    "gpt-4": "cl100k_base",
+    "gpt-4-turbo": "cl100k_base",
+    "gpt-4o": "o200k_base",
+    "gpt-5": "o200k_base",
+    "gpt-3.5-turbo": "cl100k_base",
+    "o1": "o200k_base",
+    "o1-preview": "o200k_base",
+    "o1-mini": "o200k_base",
+}
+
+# Context window limits for different models
+MODEL_CONTEXT_LIMITS = {
+    "gpt-4": 8192,
+    "gpt-4-32k": 32768,
+    "gpt-4-turbo": 128000,
+    "gpt-4o": 128000,
+    "gpt-5": 128000,
+    "gpt-3.5-turbo": 16385,
+    "o1": 200000,
+    "o1-preview": 128000,
+    "o1-mini": 128000,
+    "gemini-pro": 32768,
+    "gemini-1.5-pro": 1000000,
+    "gemini-1.5-flash": 1000000,
+}
+
+
+def get_encoding_for_model(model: str):
+    """Get the tiktoken encoding for a specific model"""
+    if not TIKTOKEN_AVAILABLE:
+        return None
+
+    # Check cache first
+    if model in _encoding_cache:
+        return _encoding_cache[model]
+
+    # Find the right encoding name
+    encoding_name = "cl100k_base"  # default
+    for model_prefix, enc_name in MODEL_TO_ENCODING.items():
+        if model.startswith(model_prefix):
+            encoding_name = enc_name
+            break
+
+    try:
+        encoding = tiktoken.get_encoding(encoding_name)
+        _encoding_cache[model] = encoding
+        return encoding
+    except Exception as e:
+        logger.warning(f"Could not get encoding for model {model}: {e}")
+        return None
+
+
+def count_tokens(text: str, model: str = "gpt-4") -> int:
+    """
+    Count the number of tokens in a text string for a specific model.
+    Falls back to character-based estimation if tiktoken is not available.
+
+    Args:
+        text: The text to count tokens for
+        model: The model to use for token counting
+
+    Returns:
+        Estimated number of tokens
+    """
+    if not text:
+        return 0
+
+    if TIKTOKEN_AVAILABLE:
+        encoding = get_encoding_for_model(model)
+        if encoding:
+            try:
+                return len(encoding.encode(text))
+            except Exception as e:
+                logger.warning(f"Error counting tokens with tiktoken: {e}")
+
+    # Fallback: estimate based on characters (roughly 4 chars per token for English)
+    return len(text) // 4
+
+
+def count_message_tokens(messages: list, model: str = "gpt-4") -> int:
+    """
+    Count tokens for a list of messages in OpenAI chat format.
+
+    Args:
+        messages: List of message dicts with 'role' and 'content' keys
+        model: The model to use for token counting
+
+    Returns:
+        Total estimated tokens including message formatting overhead
+    """
+    if not messages:
+        return 0
+
+    total_tokens = 0
+
+    # Tokens per message overhead (varies by model)
+    tokens_per_message = 3  # Default overhead for role + formatting
+    tokens_per_name = 1  # Overhead if name field is present
+
+    for message in messages:
+        total_tokens += tokens_per_message
+
+        # Handle both dict and object-style messages
+        if isinstance(message, dict):
+            role = message.get("role", "")
+            content = message.get("content", "")
+            name = message.get("name", "")
+        else:
+            role = getattr(message, "role", "")
+            content = getattr(message, "content", "")
+            name = getattr(message, "name", "")
+
+        total_tokens += count_tokens(role, model)
+        total_tokens += count_tokens(content, model)
+
+        if name:
+            total_tokens += tokens_per_name
+            total_tokens += count_tokens(name, model)
+
+    # Add overhead for assistant reply priming
+    total_tokens += 3
+
+    return total_tokens
+
+
+def get_model_context_limit(model: str) -> int:
+    """
+    Get the context window limit for a specific model.
+
+    Args:
+        model: The model name
+
+    Returns:
+        Maximum context window size in tokens
+    """
+    # Check for exact match first
+    if model in MODEL_CONTEXT_LIMITS:
+        return MODEL_CONTEXT_LIMITS[model]
+
+    # Check for prefix match
+    for model_prefix, limit in MODEL_CONTEXT_LIMITS.items():
+        if model.startswith(model_prefix):
+            return limit
+
+    # Default conservative limit
+    logger.warning(f"Unknown model {model}, using conservative 8K context limit")
+    return 8192
+
+
+def estimate_tokens_remaining(
+    messages: list,
+    model: str = "gpt-4",
+    max_completion_tokens: int = 4000
+) -> Dict[str, int]:
+    """
+    Estimate how many tokens remain for completion.
+
+    Args:
+        messages: Current conversation messages
+        model: Model being used
+        max_completion_tokens: Maximum tokens to reserve for completion
+
+    Returns:
+        Dict with token usage breakdown
+    """
+    context_limit = get_model_context_limit(model)
+    messages_tokens = count_message_tokens(messages, model)
+    tokens_for_completion = min(max_completion_tokens, context_limit - messages_tokens)
+
+    return {
+        "context_limit": context_limit,
+        "messages_tokens": messages_tokens,
+        "reserved_for_completion": max_completion_tokens,
+        "available_for_completion": max(0, tokens_for_completion),
+        "tokens_remaining": max(0, context_limit - messages_tokens - max_completion_tokens),
+        "utilization_percent": round((messages_tokens / context_limit) * 100, 2) if context_limit > 0 else 0
+    }
+
+
+def truncate_messages_to_fit(
+    messages: list,
+    model: str = "gpt-4",
+    max_tokens: Optional[int] = None,
+    reserved_for_completion: int = 4000,
+    preserve_system: bool = True,
+    preserve_recent: int = 3
+) -> list:
+    """
+    Truncate message history to fit within token limits.
+
+    Args:
+        messages: List of message dicts
+        model: Model being used
+        max_tokens: Maximum tokens for messages (if None, uses model limit - reserved_for_completion)
+        reserved_for_completion: Tokens to reserve for the completion
+        preserve_system: Always keep system messages
+        preserve_recent: Number of recent messages to always keep
+
+    Returns:
+        Truncated list of messages
+    """
+    if not messages:
+        return []
+
+    # Calculate token budget
+    if max_tokens is None:
+        context_limit = get_model_context_limit(model)
+        max_tokens = context_limit - reserved_for_completion
+
+    # Separate system messages and conversation messages
+    system_messages = []
+    conversation_messages = []
+
+    for msg in messages:
+        role = msg.get("role") if isinstance(msg, dict) else getattr(msg, "role", "")
+        if role == "system" and preserve_system:
+            system_messages.append(msg)
+        else:
+            conversation_messages.append(msg)
+
+    # Count system message tokens
+    system_tokens = count_message_tokens(system_messages, model) if system_messages else 0
+    remaining_budget = max_tokens - system_tokens
+
+    if remaining_budget <= 0:
+        logger.warning(f"System messages alone exceed token budget ({system_tokens} > {max_tokens})")
+        return system_messages
+
+    # Always preserve the most recent messages
+    preserved_messages = conversation_messages[-preserve_recent:] if preserve_recent > 0 else []
+    older_messages = conversation_messages[:-preserve_recent] if preserve_recent > 0 else conversation_messages
+
+    # Build message list from preserved messages backwards
+    preserved_tokens = count_message_tokens(preserved_messages, model)
+    remaining_budget -= preserved_tokens
+
+    # Add older messages until we run out of budget
+    included_older = []
+    for msg in reversed(older_messages):
+        msg_tokens = count_message_tokens([msg], model)
+        if msg_tokens <= remaining_budget:
+            included_older.insert(0, msg)
+            remaining_budget -= msg_tokens
+        else:
+            break
+
+    # Combine all parts
+    final_messages = system_messages + included_older + preserved_messages
+
+    # Log truncation info
+    original_count = len(messages)
+    final_count = len(final_messages)
+    if original_count > final_count:
+        logger.info(f"Truncated conversation history: {original_count} -> {final_count} messages")
+        logger.info(f"Token usage: {count_message_tokens(final_messages, model)}/{max_tokens}")
+
+    return final_messages
+
+
+def summarize_old_messages(
+    messages: list,
+    model: str = "gpt-4",
+    keep_recent: int = 5
+) -> str:
+    """
+    Create a summary of old messages to compress context.
+    This is a simple extraction-based summary for now.
+
+    Args:
+        messages: List of message dicts
+        model: Model being used
+        keep_recent: Number of recent messages to exclude from summary
+
+    Returns:
+        Summary text
+    """
+    if len(messages) <= keep_recent:
+        return ""
+
+    old_messages = messages[:-keep_recent]
+
+    # Extract key information
+    summary_parts = []
+    summary_parts.append(f"Previous conversation context ({len(old_messages)} messages):")
+
+    for i, msg in enumerate(old_messages, 1):
+        role = msg.get("role") if isinstance(msg, dict) else getattr(msg, "role", "")
+        content = msg.get("content") if isinstance(msg, dict) else getattr(msg, "content", "")
+
+        # Truncate long messages in summary
+        truncated_content = truncate_text(content, max_length=200)
+        summary_parts.append(f"{i}. {role}: {truncated_content}")
+
+    return "\n".join(summary_parts)

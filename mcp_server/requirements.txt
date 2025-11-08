@@ -22,6 +22,7 @@ duckduckgo-search>=6.1.0
 
 # AI Models
 google-generativeai>=0.8.0
+tiktoken>=0.5.1
 
 # MCP Protocol (if using official MCP package)
 # mcp

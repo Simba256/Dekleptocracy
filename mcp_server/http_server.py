@@ -113,6 +113,10 @@ class ChatRequest(BaseModel):
     messages: List[ChatMessage]
     use_mcp_tools: bool = Field(default=True, description="Whether to use MCP tools")
     stream: bool = Field(default=True, description="Whether to stream the response")
+    max_iterations: int = Field(default=10, description="Maximum number of tool calling iterations")
+    max_total_tools: int = Field(default=8, description="Maximum total number of tools to call")
+    max_context_tokens: Optional[int] = Field(default=None, description="Maximum tokens for context (if None, uses model default)")
+    preserve_recent_messages: int = Field(default=3, description="Number of recent messages to preserve when truncating")
 
 # Tool implementations
 AVAILABLE_TOOLS = {
@@ -484,7 +488,11 @@ async def intelligent_chat_v2_endpoint(request: ChatRequest):
         result = await asyncio.to_thread(
             intelligent_chat_handler_v2.process_message,
             user_message=user_message,
-            conversation_history=request.messages
+            conversation_history=request.messages,
+            max_iterations=request.max_iterations,
+            max_total_tools=request.max_total_tools,
+            max_context_tokens=request.max_context_tokens,
+            preserve_recent_messages=request.preserve_recent_messages
         )
 
         return {
@@ -497,7 +505,10 @@ async def intelligent_chat_v2_endpoint(request: ChatRequest):
                 "llm_driven": True,
                 "iterations": result.get("iterations", 0),
                 "tokens_used": result.get("tokens_used", 0),
-                "tool_count": len(result.get("tool_calls", []))
+                "tool_count": len(result.get("tool_calls", [])),
+                "token_metadata": result.get("token_metadata", {}),
+                "tool_limit_reached": result.get("tool_limit_reached", False),
+                "max_iterations_reached": result.get("max_iterations_reached", False)
             }
         }
 

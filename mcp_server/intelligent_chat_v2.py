@@ -7,6 +7,12 @@ import logging
 import json
 from typing import Dict, Any, List, Optional
 from tool_catalog import TOOL_CATALOG
+from utils import (
+    count_message_tokens,
+    get_model_context_limit,
+    estimate_tokens_remaining,
+    truncate_messages_to_fit
+)
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +119,9 @@ class IntelligentChatHandlerV2:
         user_message: str,
         conversation_history: List[Dict[str, str]] = None,
         max_iterations: int = 10,  # Balanced limit to prevent long execution times
-        max_total_tools: int = 8   # Hard limit on total tools called
+        max_total_tools: int = 8,   # Hard limit on total tools called
+        max_context_tokens: Optional[int] = None,  # Maximum tokens for context
+        preserve_recent_messages: int = 3  # Number of recent messages to preserve when truncating
     ) -> Dict[str, Any]:
         """
         Process a user message with LLM-driven tool selection
@@ -123,9 +131,11 @@ class IntelligentChatHandlerV2:
             conversation_history: Optional conversation history
             max_iterations: Max number of tool calling iterations
             max_total_tools: Hard limit on total number of tools called
+            max_context_tokens: Maximum tokens for context (if None, uses model default)
+            preserve_recent_messages: Number of recent messages to preserve when truncating
 
         Returns:
-            Dictionary with response and execution details
+            Dictionary with response and execution details including token usage
         """
         if conversation_history is None:
             conversation_history = []
@@ -260,6 +270,67 @@ For trade queries:
         # Add current user message
         messages.append({"role": "user", "content": user_message})
 
+        # PRE-FLIGHT VALIDATION: Check and manage context window size
+        model = "gpt-5"  # Default model used in this handler
+        max_completion_tokens = 4000  # Tokens to reserve for completion
+
+        # Get token usage estimates
+        token_estimate = estimate_tokens_remaining(
+            messages=messages,
+            model=model,
+            max_completion_tokens=max_completion_tokens
+        )
+
+        # Track token metadata for response
+        token_metadata = {
+            "model": model,
+            "context_limit": token_estimate['context_limit'],
+            "initial_messages_tokens": token_estimate['messages_tokens'],
+            "initial_utilization_percent": token_estimate['utilization_percent'],
+            "truncation_occurred": False,
+            "messages_removed": 0
+        }
+
+        logger.info(f"📊 Context Window Check:")
+        logger.info(f"   - Model: {model}")
+        logger.info(f"   - Context Limit: {token_estimate['context_limit']:,} tokens")
+        logger.info(f"   - Current Usage: {token_estimate['messages_tokens']:,} tokens ({token_estimate['utilization_percent']}%)")
+        logger.info(f"   - Reserved for Completion: {token_estimate['reserved_for_completion']:,} tokens")
+        logger.info(f"   - Available: {token_estimate['available_for_completion']:,} tokens")
+
+        # Check if we need to truncate
+        if token_estimate['available_for_completion'] <= 0:
+            logger.warning(f"⚠️  Context window nearly full - truncating conversation history")
+            original_message_count = len(messages)
+
+            # Truncate messages to fit within budget
+            # Preserve system message and recent user/assistant exchanges
+            messages = truncate_messages_to_fit(
+                messages=messages,
+                model=model,
+                max_tokens=max_context_tokens,  # Use configurable limit if provided
+                reserved_for_completion=max_completion_tokens,
+                preserve_system=True,
+                preserve_recent=preserve_recent_messages  # Use configurable value
+            )
+
+            # Re-calculate after truncation
+            new_token_estimate = estimate_tokens_remaining(
+                messages=messages,
+                model=model,
+                max_completion_tokens=max_completion_tokens
+            )
+
+            # Update metadata
+            token_metadata["truncation_occurred"] = True
+            token_metadata["messages_removed"] = original_message_count - len(messages)
+            token_metadata["final_messages_tokens"] = new_token_estimate['messages_tokens']
+            token_metadata["final_utilization_percent"] = new_token_estimate['utilization_percent']
+
+            logger.info(f"✂️  Truncated: {original_message_count} → {len(messages)} messages")
+            logger.info(f"   - New Usage: {new_token_estimate['messages_tokens']:,} tokens ({new_token_estimate['utilization_percent']}%)")
+            logger.info(f"   - Available: {new_token_estimate['available_for_completion']:,} tokens")
+
         # Convert tools to OpenAI format
         tools = self._convert_tools_to_openai_format()
 
@@ -369,7 +440,8 @@ For trade queries:
                             "tool_calls": [],
                             "tool_results": {},
                             "iterations": iterations,
-                            "tokens_used": response.usage.total_tokens if response.usage else 0
+                            "tokens_used": response.usage.total_tokens if response.usage else 0,
+                            "token_metadata": token_metadata
                         }
 
                     # PHASE 2: Create summaries of tool results for synthesis
@@ -471,6 +543,43 @@ Now, synthesize the tool results provided into a comprehensive, well-formatted a
                         {"role": "user", "content": synthesis_prompt}
                     ]
 
+                    # Validate synthesis message size
+                    synthesis_token_estimate = estimate_tokens_remaining(
+                        messages=final_messages,
+                        model=model,
+                        max_completion_tokens=16000
+                    )
+
+                    logger.info(f"📊 Synthesis Phase Context Check:")
+                    logger.info(f"   - Messages: {synthesis_token_estimate['messages_tokens']:,} tokens ({synthesis_token_estimate['utilization_percent']}%)")
+                    logger.info(f"   - Available for Response: {synthesis_token_estimate['available_for_completion']:,} tokens")
+
+                    # If synthesis prompt is too large, truncate tool results more aggressively
+                    if synthesis_token_estimate['available_for_completion'] < 8000:
+                        logger.warning(f"⚠️  Synthesis prompt is large - using shorter tool result summaries")
+
+                        # Rebuild synthesis prompt with shorter summaries
+                        synthesis_prompt = f"""Based on the {len(all_tool_calls)} tools you called, here are the results:
+
+"""
+                        # Use much shorter truncation (1000 instead of 3000)
+                        for idx, call in enumerate(all_tool_calls, 1):
+                            tool_name = call['name']
+                            result = all_tool_results.get(tool_name, {})
+                            result_str = json.dumps(result)
+                            if len(result_str) > 1000:
+                                result_str = result_str[:1000] + "..."
+                            synthesis_prompt += f"{idx}. {tool_name}: {result_str}\n\n"
+
+                        synthesis_prompt += f"""
+
+Now, using ALL the information above, provide a comprehensive, well-structured answer to the user's original question: "{user_message}"
+
+Be specific, cite data points, and synthesize the information into a coherent response."""
+
+                        final_messages[1]["content"] = synthesis_prompt
+                        logger.info(f"   - Reduced synthesis prompt to {len(synthesis_prompt)} chars")
+
                     synthesis_response = self.openai_client.client.chat.completions.create(
                         model="gpt-5",
                         messages=final_messages,
@@ -518,7 +627,8 @@ Now, synthesize the tool results provided into a comprehensive, well-formatted a
                         "tool_calls": all_tool_calls,
                         "tool_results": all_tool_results,
                         "iterations": iterations,
-                        "tokens_used": response.usage.total_tokens + synthesis_response.usage.total_tokens if response.usage and synthesis_response.usage else 0
+                        "tokens_used": response.usage.total_tokens + synthesis_response.usage.total_tokens if response.usage and synthesis_response.usage else 0,
+                        "token_metadata": token_metadata
                     }
 
                     # Add flag if tool limit was reached
@@ -534,7 +644,8 @@ Now, synthesize the tool results provided into a comprehensive, well-formatted a
                     "tool_calls": all_tool_calls,
                     "tool_results": all_tool_results,
                     "iterations": iterations,
-                    "error": str(e)
+                    "error": str(e),
+                    "token_metadata": token_metadata
                 }
 
         # Max iterations reached - PHASE 2: Synthesize with actual data
@@ -547,7 +658,8 @@ Now, synthesize the tool results provided into a comprehensive, well-formatted a
                     "tool_calls": [],
                     "tool_results": {},
                     "iterations": iterations,
-                    "max_iterations_reached": True
+                    "max_iterations_reached": True,
+                    "token_metadata": token_metadata
                 }
 
             # Create summaries of all tool results
@@ -621,7 +733,8 @@ Be specific, cite data points, and synthesize the information into a coherent re
                 "tool_results": all_tool_results,
                 "iterations": iterations,
                 "max_iterations_reached": True,
-                "tokens_used": final_response.usage.total_tokens if final_response.usage else 0
+                "tokens_used": final_response.usage.total_tokens if final_response.usage else 0,
+                "token_metadata": token_metadata
             }
 
             # Add flag if tool limit was reached
@@ -650,7 +763,8 @@ Be specific, cite data points, and synthesize the information into a coherent re
                 "tool_results": all_tool_results,
                 "iterations": iterations,
                 "max_iterations_reached": True,
-                "error": str(e)
+                "error": str(e),
+                "token_metadata": token_metadata
             }
 
             # Add flag if tool limit was reached
