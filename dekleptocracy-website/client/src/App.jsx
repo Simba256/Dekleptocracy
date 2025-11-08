@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Reports from './pages/Reports';
@@ -32,8 +33,22 @@ function AppContent() {
         <Route path="/insights" element={<Insights />} />
         <Route path="/insights/articles" element={<Insights />} />
         <Route path="/insights/research" element={<Insights />} />
-        <Route path="/chatbot" element={<Chatbot />} />
-        <Route path="/chatbot/debug" element={<ChatbotDebug />} />
+        <Route 
+          path="/chatbot" 
+          element={
+            <ProtectedRoute>
+              <Chatbot />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/chatbot/debug" 
+          element={
+            <ProtectedRoute>
+              <ChatbotDebug />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/chatbot/create-account" element={<CreateAccount />} />
         <Route path="/chatbot/login" element={<Login />} />
         <Route path="/survey" element={<Survey />} />

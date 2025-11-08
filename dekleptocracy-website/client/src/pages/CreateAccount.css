@@ -183,9 +183,15 @@
   margin-top: 4px;
 }
 
-.signup-button:hover {
+.signup-button:hover:not(:disabled) {
   background-color: #e55a2b;
   transform: translateY(-1px);
+}
+
+.signup-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .divider {

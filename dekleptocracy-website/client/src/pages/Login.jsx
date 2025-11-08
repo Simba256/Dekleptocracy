@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
 
+// Use proxy in development, or full URL in production
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:5000');
+
 const Login = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     agreeToTerms: false
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Get the intended destination from location state, or default to chatbot
+  const from = location.state?.from?.pathname || '/chatbot';
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -16,14 +26,45 @@ const Login = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Clear error when user starts typing
+    if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    // Redirect to survey page after successful login
-    window.location.href = '/survey';
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed. Please try again.');
+      }
+
+      // Store token in localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
+      // Redirect to intended destination or chatbot after successful login
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,6 +76,36 @@ const Login = () => {
           <div className="form-content">
             <h1 className="form-title">Login</h1>
             <p className="form-description">Add your credentials to log in</p>
+
+            {/* Info Message if redirected from protected route */}
+            {location.state?.from && (
+              <div className="info-message" style={{
+                padding: '12px 16px',
+                backgroundColor: '#e3f2fd',
+                color: '#1976d2',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '14px',
+                border: '1px solid #90caf9'
+              }}>
+                Please login to access the chatbot
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+              <div className="error-message" style={{
+                padding: '12px 16px',
+                backgroundColor: '#fee',
+                color: '#c33',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '14px',
+                border: '1px solid #fcc'
+              }}>
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="login-form">
               <div className="form-group">
@@ -100,8 +171,8 @@ const Login = () => {
                 </label>
               </div>
 
-              <button type="submit" className="login-button">
-                Login
+              <button type="submit" className="login-button" disabled={loading}>
+                {loading ? 'Logging in...' : 'Login'}
               </button>
 
               <div className="divider">

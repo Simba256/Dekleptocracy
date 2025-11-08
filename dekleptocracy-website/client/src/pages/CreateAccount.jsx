@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './CreateAccount.css';
 
+// Use proxy in development, or full URL in production
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:5000');
+
 const CreateAccount = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -10,6 +14,9 @@ const CreateAccount = () => {
     agreeToTerms: false
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -17,14 +24,46 @@ const CreateAccount = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Clear error when user starts typing
+    if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    // Redirect to survey page after successful signup
-    window.location.href = '/survey';
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Signup failed. Please try again.');
+      }
+
+      // Store token in localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
+      setSuccess(true);
+      
+      // Redirect to chatbot after successful signup
+      setTimeout(() => {
+        navigate('/chatbot');
+      }, 1500);
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,6 +75,36 @@ const CreateAccount = () => {
           <div className="form-content">
             <h1 className="form-title">Create an Account</h1>
             <p className="form-description">Kindly fill in your details to create an account</p>
+
+            {/* Error Message */}
+            {error && (
+              <div className="error-message" style={{
+                padding: '12px 16px',
+                backgroundColor: '#fee',
+                color: '#c33',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '14px',
+                border: '1px solid #fcc'
+              }}>
+                {error}
+              </div>
+            )}
+
+            {/* Success Message */}
+            {success && (
+              <div className="success-message" style={{
+                padding: '12px 16px',
+                backgroundColor: '#efe',
+                color: '#3c3',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '14px',
+                border: '1px solid #cfc'
+              }}>
+                Account created successfully! Redirecting...
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="account-form">
               <div className="form-group">
@@ -115,8 +184,8 @@ const CreateAccount = () => {
                 </label>
               </div>
 
-              <button type="submit" className="signup-button">
-                Sign up
+              <button type="submit" className="signup-button" disabled={loading || success}>
+                {loading ? 'Creating Account...' : success ? 'Account Created!' : 'Sign up'}
               </button>
 
               <div className="divider">
