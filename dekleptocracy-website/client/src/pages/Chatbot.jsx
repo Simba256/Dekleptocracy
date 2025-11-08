@@ -29,8 +29,49 @@ const generateChatTitle = (messages) => {
   const firstUserMessage = messages.find(msg => msg.role === 'user');
   if (!firstUserMessage) return 'New Chat';
 
-  const title = firstUserMessage.content.substring(0, 50);
-  return title.length < firstUserMessage.content.length ? title + '...' : title;
+  const content = firstUserMessage.content;
+
+  // Remove common question words and filler words
+  const fillerWords = ['what', 'how', 'why', 'when', 'where', 'who', 'which', 'is', 'are', 'was', 'were',
+                       'the', 'a', 'an', 'can', 'could', 'would', 'should', 'do', 'does', 'did',
+                       'have', 'has', 'had', 'be', 'been', 'being', 'me', 'you', 'please', 'tell',
+                       'show', 'give', 'explain', 'about', 'for', 'of', 'to', 'in', 'on', 'at'];
+
+  // Extract sentences (split by question marks or periods)
+  const sentences = content.split(/[.?!]+/).filter(s => s.trim().length > 0);
+  const firstSentence = sentences[0].trim();
+
+  // Split into words and filter
+  const words = firstSentence.toLowerCase()
+    .split(/\s+/)
+    .filter(word => {
+      // Remove punctuation
+      const cleanWord = word.replace(/[^\w\s]/g, '');
+      // Keep words that are not filler words and are at least 3 chars
+      return cleanWord.length >= 3 && !fillerWords.includes(cleanWord);
+    })
+    .map(word => word.replace(/[^\w\s]/g, '')); // Clean punctuation
+
+  // If we extracted meaningful words, create a title from them
+  if (words.length > 0) {
+    // Capitalize first letter of each word
+    const titleWords = words.slice(0, 6).map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    );
+
+    const generatedTitle = titleWords.join(' ');
+
+    // Limit to 50 characters
+    if (generatedTitle.length <= 50) {
+      return generatedTitle;
+    } else {
+      return generatedTitle.substring(0, 47) + '...';
+    }
+  }
+
+  // Fallback: use first 50 characters if we couldn't extract keywords
+  const fallbackTitle = content.substring(0, 50);
+  return content.length > 50 ? fallbackTitle + '...' : fallbackTitle;
 };
 
 const Chatbot = () => {
