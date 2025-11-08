@@ -21,10 +21,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Rebase on main
+        run: |
+          git fetch origin main
+          git rebase origin/main
+
       - name: Sync to main
         run: |
-          git fetch origin main || git fetch origin
           git checkout main || git checkout -b main
-          git merge --ff-only origin/${{ github.ref_name }} || \
-            git merge origin/${{ github.ref_name }}
+          git merge --ff-only ${{ github.ref_name }}
           git push origin main
