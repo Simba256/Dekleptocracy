@@ -3,7 +3,7 @@ name: Sync to Main
 on:
   push:
     branches:
-      - claude/explore-codebase-011CUpRksi6kabgyLY1LBiwN
+      - 'claude/**'
 
 jobs:
   sync:
@@ -25,6 +25,6 @@ jobs:
         run: |
           git fetch origin main || git fetch origin
           git checkout main || git checkout -b main
-          git merge --ff-only origin/claude/explore-codebase-011CUpRksi6kabgyLY1LBiwN || \
-            git merge origin/claude/explore-codebase-011CUpRksi6kabgyLY1LBiwN
+          git merge --ff-only origin/${{ github.ref_name }} || \
+            git merge origin/${{ github.ref_name }}
           git push origin main
