@@ -83,12 +83,7 @@ Make sure your IP address is whitelisted in MongoDB Atlas:
 2. Click "Add IP Address"
 3. Add your current IP or `0.0.0.0/0` for development (not recommended for production)
 
-#### Option B: Local MongoDB (Alternative)
-
-If you prefer to use local MongoDB:
-1. Install MongoDB locally: https://www.mongodb.com/try/download/community
-2. Start MongoDB service
-3. Update `MONGODB_URI` in `.env` file to: `mongodb://localhost:27017/dekleptocracy`
+**Note**: This application is configured to use MongoDB Atlas. Local MongoDB is not supported. Make sure your `MONGODB_URI` is set correctly in your `.env` file.
 
 ### 4. Run the Server
 

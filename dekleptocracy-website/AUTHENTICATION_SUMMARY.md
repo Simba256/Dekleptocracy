@@ -161,7 +161,7 @@ Users can have:
 
 **Backend** (`server/.env`):
 ```env
-MONGODB_URI=mongodb://localhost:27017/dekleptocracy
+MONGODB_URI=mongodb+srv://hasankamal839_db_user:password@cluster0.fink5ub.mongodb.net/dekleptocracy?retryWrites=true&w=majority&appName=Cluster0
 PORT=5000
 JWT_SECRET=your-secret-key
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com

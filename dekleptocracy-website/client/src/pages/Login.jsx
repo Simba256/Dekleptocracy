@@ -5,7 +5,16 @@ import './Login.css';
 
 // Use proxy in development, or full URL in production
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:5000');
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '';
+
+// Debug: Log environment variables (remove in production)
+if (import.meta.env.DEV) {
+  console.log('Environment variables:', {
+    VITE_GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? `${GOOGLE_CLIENT_ID.substring(0, 20)}...` : 'NOT SET',
+    hasGoogleClientId: !!GOOGLE_CLIENT_ID,
+    allEnvKeys: Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'))
+  });
+}
 
 const Login = () => {
   const navigate = useNavigate();
@@ -228,19 +237,32 @@ const Login = () => {
                 width: '100%', 
                 display: 'flex', 
                 justifyContent: 'center',
-                marginTop: '8px'
+                marginTop: '8px',
+                minHeight: '40px'
               }}></div>
               {!GOOGLE_CLIENT_ID && (
                 <div style={{
-                  padding: '8px',
+                  padding: '12px',
                   backgroundColor: '#fff3cd',
                   color: '#856404',
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  textAlign: 'center',
-                  marginTop: '8px'
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  textAlign: 'left',
+                  marginTop: '12px',
+                  border: '1px solid #ffc107'
                 }}>
-                  Google Sign-In is not configured. Please set VITE_GOOGLE_CLIENT_ID in your .env file.
+                  <strong>⚠️ Google Sign-In Not Configured</strong>
+                  <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                    <p style={{ margin: '4px 0' }}>To enable Google Sign-In:</p>
+                    <ol style={{ margin: '4px 0', paddingLeft: '20px' }}>
+                      <li>Create a <code>.env</code> file in the <code>client/</code> directory</li>
+                      <li>Add: <code>VITE_GOOGLE_CLIENT_ID=your-client-id</code></li>
+                      <li><strong>Restart the dev server</strong> (Ctrl+C then npm run dev)</li>
+                    </ol>
+                    <p style={{ margin: '8px 0 4px 0', fontSize: '11px', color: '#666' }}>
+                      Check browser console (F12) for debug info. See ENV_SETUP.md for details.
+                    </p>
+                  </div>
                 </div>
               )}
 

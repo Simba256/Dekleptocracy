@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { isAuthenticated } from '../utils/auth';
+import { isAuthenticated, verifyToken, logout } from '../utils/auth';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -8,10 +8,31 @@ const ProtectedRoute = ({ children }) => {
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    // Check authentication
-    const checkAuth = () => {
-      const authenticated = isAuthenticated();
-      setIsAuth(authenticated);
+    // Check authentication with backend verification
+    const checkAuth = async () => {
+      // First check if token exists
+      if (!isAuthenticated()) {
+        setIsAuth(false);
+        setIsLoading(false);
+        return;
+      }
+
+      // Verify token with backend
+      try {
+        const isValid = await verifyToken();
+        if (!isValid) {
+          // Token is invalid, clear it
+          logout();
+          setIsAuth(false);
+        } else {
+          setIsAuth(true);
+        }
+      } catch (error) {
+        console.error('Auth verification error:', error);
+        logout();
+        setIsAuth(false);
+      }
+      
       setIsLoading(false);
     };
 

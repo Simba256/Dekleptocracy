@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/dekleptocracy';
+const mongoUri = process.env.MONGODB_URI;
 
 // Middleware
 app.use(cors());
@@ -32,16 +32,31 @@ app.use((err, req, res, next) => {
 
 async function start() {
   try {
-    if (mongoUri) {
-      await mongoose.connect(mongoUri, {
-        // MongoDB Atlas connection options
-        serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      });
-      console.log('✅ Connected to MongoDB Atlas');
+    if (!mongoUri) {
+      console.error('❌ MONGODB_URI is required but not set in environment variables');
+      console.error('Please set MONGODB_URI in your .env file');
+      console.error('Example: mongodb+srv://user:password@cluster.mongodb.net/dekleptocracy');
+      process.exit(1);
+    }
+
+    await mongoose.connect(mongoUri, {
+      // MongoDB Atlas connection options
+      serverSelectionTimeoutMS: 10000, // Timeout after 10s
+    });
+    
+    // Verify connection to Atlas
+    const dbName = mongoose.connection.db.databaseName;
+    const host = mongoose.connection.host;
+    console.log('✅ Connected to MongoDB Atlas');
+    console.log(`📊 Database: ${dbName}`);
+    console.log(`🌐 Host: ${host}`);
+    
+    // Verify it's Atlas (not local)
+    if (host && !host.includes('mongodb.net') && !mongoUri.includes('mongodb+srv')) {
+      console.warn('⚠️  Warning: Connection does not appear to be MongoDB Atlas');
+      console.warn('⚠️  Please ensure you are using MongoDB Atlas connection string');
     } else {
-      console.warn('⚠️  MONGODB_URI not set, using default local database');
-      await mongoose.connect('mongodb://localhost:27017/dekleptocracy');
-      console.log('✅ Connected to MongoDB (local)');
+      console.log('✅ Verified: Using MongoDB Atlas (cloud database)');
     }
     
     app.listen(port, () => {

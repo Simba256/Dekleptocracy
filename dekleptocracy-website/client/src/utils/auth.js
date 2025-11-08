@@ -50,12 +50,14 @@ export const setAuth = (token, user) => {
 };
 
 /**
- * Verify token with backend (optional - for token validation)
+ * Verify token with backend
  * @returns {Promise<boolean>} True if token is valid
  */
 export const verifyToken = async () => {
   const token = getToken();
-  if (!token) return false;
+  if (!token) {
+    return false;
+  }
 
   const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:5000');
   
@@ -67,9 +69,23 @@ export const verifyToken = async () => {
         'Content-Type': 'application/json',
       },
     });
-    return response.ok;
+
+    if (!response.ok) {
+      // Token is invalid or expired
+      if (response.status === 401) {
+        // Clear invalid token
+        logout();
+      }
+      return false;
+    }
+
+    const data = await response.json();
+    return data.success === true;
   } catch (error) {
     console.error('Token verification error:', error);
+    // If backend is not reachable or there's an error, deny access
+    // This ensures security - user must have valid token verified by backend
+    logout();
     return false;
   }
 };
