@@ -118,6 +118,10 @@ class ChatRequest(BaseModel):
     max_context_tokens: Optional[int] = Field(default=None, description="Maximum tokens for context (if None, uses model default)")
     preserve_recent_messages: int = Field(default=3, description="Number of recent messages to preserve when truncating")
 
+class TitleRequest(BaseModel):
+    """Model for title generation requests"""
+    message: str = Field(..., description="The user message to generate a title from")
+
 # Tool implementations
 AVAILABLE_TOOLS = {
     "get_bea_datasets": {
@@ -551,6 +555,55 @@ async def intelligent_chat_endpoint(request: ChatRequest):
 
     except Exception as e:
         logger.error(f"Intelligent chat error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/generate-title")
+async def generate_title_endpoint(request: TitleRequest):
+    """
+    Quick, lightweight endpoint for generating chat titles
+    Uses gpt-3.5-turbo for speed and cost efficiency
+    """
+    try:
+        if not request.message or not request.message.strip():
+            raise HTTPException(status_code=400, detail="No message provided")
+
+        if not openai_client.client:
+            raise HTTPException(status_code=503, detail="OpenAI client not available")
+
+        # Truncate message to first 500 characters for efficiency
+        message_content = request.message[:500]
+
+        # Call OpenAI API with gpt-3.5-turbo for fast title generation
+        response = await asyncio.to_thread(
+            openai_client.client.chat.completions.create,
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Generate a concise, 2-6 word title for the chat message. Focus on the main topic or question. Return only the title, no explanation or punctuation at the end."
+                },
+                {
+                    "role": "user",
+                    "content": message_content
+                }
+            ],
+            max_tokens=20,
+            temperature=0.7
+        )
+
+        title = response.choices[0].message.content.strip()
+
+        # Remove any trailing punctuation
+        title = title.rstrip('.,!?;:')
+
+        return {
+            "title": title,
+            "model": "gpt-3.5-turbo",
+            "tokens_used": response.usage.total_tokens
+        }
+
+    except Exception as e:
+        logger.error(f"Title generation error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/mcp")

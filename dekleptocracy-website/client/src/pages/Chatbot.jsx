@@ -25,7 +25,8 @@ const saveChatHistory = (history) => {
   }
 };
 
-const generateChatTitle = (messages) => {
+// Fallback title generation using keyword extraction (used if LLM fails)
+const generateChatTitleFallback = (messages) => {
   const firstUserMessage = messages.find(msg => msg.role === 'user');
   if (!firstUserMessage) return 'New Chat';
 
@@ -74,6 +75,44 @@ const generateChatTitle = (messages) => {
   return content.length > 50 ? fallbackTitle + '...' : fallbackTitle;
 };
 
+// LLM-powered title generation using gpt-3.5-turbo
+const generateChatTitle = async (messages, mcpServerUrl) => {
+  const firstUserMessage = messages.find(msg => msg.role === 'user');
+  if (!firstUserMessage) return 'New Chat';
+
+  try {
+    // Call the backend API for LLM-generated title
+    const response = await fetch(`${mcpServerUrl}/generate-title`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: firstUserMessage.content
+      }),
+      signal: AbortSignal.timeout(5000) // 5 second timeout
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Limit to 50 characters and add ellipsis if needed
+    let title = data.title || '';
+    if (title.length > 50) {
+      title = title.substring(0, 47) + '...';
+    }
+
+    return title || generateChatTitleFallback(messages);
+  } catch (error) {
+    console.warn('LLM title generation failed, using fallback:', error);
+    // Fallback to keyword extraction if LLM fails
+    return generateChatTitleFallback(messages);
+  }
+};
+
 const Chatbot = () => {
   const location = useLocation();
   const [messages, setMessages] = useState([
@@ -116,14 +155,17 @@ const Chatbot = () => {
     }
   }, [messages]);
 
-  const saveCurrentChat = () => {
+  const saveCurrentChat = async () => {
     const history = getChatHistory();
     const chatId = currentChatId || Date.now().toString();
+
+    // Generate title using LLM (with fallback to keyword extraction)
+    const title = await generateChatTitle(messages, MCP_SERVER_URL);
 
     const existingChatIndex = history.chats.findIndex(chat => chat.id === chatId);
     const chatData = {
       id: chatId,
-      title: generateChatTitle(messages),
+      title: title,
       messages: messages,
       createdAt: existingChatIndex >= 0 ? history.chats[existingChatIndex].createdAt : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
