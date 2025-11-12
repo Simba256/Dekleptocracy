@@ -5,12 +5,11 @@ import './Home.css';
 const Home = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [heroState, setHeroState] = useState('California');
+  const [userSelectedState, setUserSelectedState] = useState('California');
   const [selectedState, setSelectedState] = useState('CALIFORNIA');
   const [searchState, setSearchState] = useState('');
   const [impactState, setImpactState] = useState('California');
   const [timePeriod, setTimePeriod] = useState('YoY');
-  const [mapState, setMapState] = useState('California');
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [isHeroStateDropdownOpen, setIsHeroStateDropdownOpen] = useState(false);
   const [isMapStateDropdownOpen, setIsMapStateDropdownOpen] = useState(false);
@@ -18,6 +17,8 @@ const Home = () => {
   const [timelineDate, setTimelineDate] = useState(50);
   const [productQuery, setProductQuery] = useState('');
   const [showImpactModal, setShowImpactModal] = useState(false);
+  const [heroStateSearch, setHeroStateSearch] = useState('');
+  const [mapStateSearch, setMapStateSearch] = useState('');
 
   const quickQuestions = [
     'How does the new tax hit my grocery bill in my city?',
@@ -37,6 +38,14 @@ const Home = () => {
     'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah',
     'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
   ];
+
+  // Filter states based on search input
+  const getFilteredStates = (searchTerm) => {
+    if (!searchTerm) return allStates;
+    return allStates.filter(state =>
+      state.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
 
   const walletShocks = [
     {
@@ -239,9 +248,12 @@ const Home = () => {
               <div className="custom-dropdown" style={{ position: 'relative' }}>
                 <button
                   className="hero-state-dropdown-button"
-                  onClick={() => setIsHeroStateDropdownOpen(!isHeroStateDropdownOpen)}
+                  onClick={() => {
+                    setIsHeroStateDropdownOpen(!isHeroStateDropdownOpen);
+                    setHeroStateSearch('');
+                  }}
                 >
-                  <span>{heroState}</span>
+                  <span>{userSelectedState}</span>
                   <svg
                     className={`dropdown-arrow ${isHeroStateDropdownOpen ? 'open' : ''}`}
                     width="16"
@@ -259,21 +271,41 @@ const Home = () => {
                   <>
                     <div
                       className="dropdown-overlay"
-                      onClick={() => setIsHeroStateDropdownOpen(false)}
+                      onClick={() => {
+                        setIsHeroStateDropdownOpen(false);
+                        setHeroStateSearch('');
+                      }}
                     ></div>
                     <div className="custom-dropdown-menu">
-                      {allStates.map((state, index) => (
-                        <div
-                          key={index}
-                          className={`custom-dropdown-item ${heroState === state ? 'selected' : ''}`}
-                          onClick={() => {
-                            setHeroState(state);
-                            setIsHeroStateDropdownOpen(false);
-                          }}
-                        >
-                          {state}
-                        </div>
-                      ))}
+                      <div className="dropdown-search-container">
+                        <input
+                          type="text"
+                          className="dropdown-search-input"
+                          placeholder="Search states..."
+                          value={heroStateSearch}
+                          onChange={(e) => setHeroStateSearch(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          autoFocus
+                        />
+                      </div>
+                      <div className="dropdown-items-container">
+                        {getFilteredStates(heroStateSearch).map((state, index) => (
+                          <div
+                            key={index}
+                            className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
+                            onClick={() => {
+                              setUserSelectedState(state);
+                              setIsHeroStateDropdownOpen(false);
+                              setHeroStateSearch('');
+                            }}
+                          >
+                            {state}
+                          </div>
+                        ))}
+                        {getFilteredStates(heroStateSearch).length === 0 && (
+                          <div className="dropdown-no-results">No states found</div>
+                        )}
+                      </div>
                     </div>
                   </>
                 )}
@@ -944,9 +976,12 @@ const Home = () => {
                 <div className="custom-dropdown" style={{ position: 'relative', flex: 1 }}>
                   <button
                     className="map-state-dropdown-button"
-                    onClick={() => setIsMapStateDropdownOpen(!isMapStateDropdownOpen)}
+                    onClick={() => {
+                      setIsMapStateDropdownOpen(!isMapStateDropdownOpen);
+                      setMapStateSearch('');
+                    }}
                   >
-                    <span>{mapState}</span>
+                    <span>{userSelectedState}</span>
                     <svg
                       className={`dropdown-arrow ${isMapStateDropdownOpen ? 'open' : ''}`}
                       width="16"
@@ -964,21 +999,41 @@ const Home = () => {
                     <>
                       <div
                         className="dropdown-overlay"
-                        onClick={() => setIsMapStateDropdownOpen(false)}
+                        onClick={() => {
+                          setIsMapStateDropdownOpen(false);
+                          setMapStateSearch('');
+                        }}
                       ></div>
                       <div className="custom-dropdown-menu">
-                        {allStates.map((state, index) => (
-                          <div
-                            key={index}
-                            className={`custom-dropdown-item ${mapState === state ? 'selected' : ''}`}
-                            onClick={() => {
-                              setMapState(state);
-                              setIsMapStateDropdownOpen(false);
-                            }}
-                          >
-                            {state}
-                          </div>
-                        ))}
+                        <div className="dropdown-search-container">
+                          <input
+                            type="text"
+                            className="dropdown-search-input"
+                            placeholder="Search states..."
+                            value={mapStateSearch}
+                            onChange={(e) => setMapStateSearch(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            autoFocus
+                          />
+                        </div>
+                        <div className="dropdown-items-container">
+                          {getFilteredStates(mapStateSearch).map((state, index) => (
+                            <div
+                              key={index}
+                              className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
+                              onClick={() => {
+                                setUserSelectedState(state);
+                                setIsMapStateDropdownOpen(false);
+                                setMapStateSearch('');
+                              }}
+                            >
+                              {state}
+                            </div>
+                          ))}
+                          {getFilteredStates(mapStateSearch).length === 0 && (
+                            <div className="dropdown-no-results">No states found</div>
+                          )}
+                        </div>
                       </div>
                     </>
                   )}
