@@ -10,15 +10,17 @@ const Home = () => {
   const [searchState, setSearchState] = useState('');
   const [impactState, setImpactState] = useState('California');
   const [timePeriod, setTimePeriod] = useState('YoY');
-  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [isHeroStateDropdownOpen, setIsHeroStateDropdownOpen] = useState(false);
   const [isMapStateDropdownOpen, setIsMapStateDropdownOpen] = useState(false);
-  const [locationDropdown, setLocationDropdown] = useState('California');
+  const [isWalletShocksDropdownOpen, setIsWalletShocksDropdownOpen] = useState(false);
+  const [isCostImpactDropdownOpen, setIsCostImpactDropdownOpen] = useState(false);
   const [timelineDate, setTimelineDate] = useState(50);
   const [productQuery, setProductQuery] = useState('');
   const [showImpactModal, setShowImpactModal] = useState(false);
   const [heroStateSearch, setHeroStateSearch] = useState('');
   const [mapStateSearch, setMapStateSearch] = useState('');
+  const [walletShocksStateSearch, setWalletShocksStateSearch] = useState('');
+  const [costImpactStateSearch, setCostImpactStateSearch] = useState('');
 
   const quickQuestions = [
     'How does the new tax hit my grocery bill in my city?',
@@ -458,14 +460,17 @@ const Home = () => {
             <div className="state-dropdown-wrapper">
               <label className="state-dropdown-label">Select Your Location</label>
               <div className="custom-dropdown">
-                <button 
+                <button
                   className="state-dropdown-button"
-                  onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+                  onClick={() => {
+                    setIsWalletShocksDropdownOpen(!isWalletShocksDropdownOpen);
+                    setWalletShocksStateSearch('');
+                  }}
                 >
                   <span>Current Location</span>
-                  <span className="dropdown-selected-value">{locationDropdown}</span>
+                  <span className="dropdown-selected-value">{userSelectedState}</span>
                   <svg
-                    className={`dropdown-arrow ${isLocationDropdownOpen ? 'open' : ''}`}
+                    className={`dropdown-arrow ${isWalletShocksDropdownOpen ? 'open' : ''}`}
                     width="16"
                     height="16"
                     viewBox="0 0 24 24"
@@ -476,26 +481,46 @@ const Home = () => {
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
-                
-                {isLocationDropdownOpen && (
+
+                {isWalletShocksDropdownOpen && (
                   <>
-                    <div 
-                      className="dropdown-overlay" 
-                      onClick={() => setIsLocationDropdownOpen(false)}
+                    <div
+                      className="dropdown-overlay"
+                      onClick={() => {
+                        setIsWalletShocksDropdownOpen(false);
+                        setWalletShocksStateSearch('');
+                      }}
                     ></div>
                     <div className="custom-dropdown-menu">
-                      {allStates.map((state, index) => (
-                        <div
-                          key={index}
-                          className={`custom-dropdown-item ${locationDropdown === state ? 'selected' : ''}`}
-                          onClick={() => {
-                            setLocationDropdown(state);
-                            setIsLocationDropdownOpen(false);
-                          }}
-                        >
-                          {state}
-                        </div>
-                      ))}
+                      <div className="dropdown-search-container">
+                        <input
+                          type="text"
+                          className="dropdown-search-input"
+                          placeholder="Search states..."
+                          value={walletShocksStateSearch}
+                          onChange={(e) => setWalletShocksStateSearch(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          autoFocus
+                        />
+                      </div>
+                      <div className="dropdown-items-container">
+                        {getFilteredStates(walletShocksStateSearch).map((state, index) => (
+                          <div
+                            key={index}
+                            className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
+                            onClick={() => {
+                              setUserSelectedState(state);
+                              setIsWalletShocksDropdownOpen(false);
+                              setWalletShocksStateSearch('');
+                            }}
+                          >
+                            {state}
+                          </div>
+                        ))}
+                        {getFilteredStates(walletShocksStateSearch).length === 0 && (
+                          <div className="dropdown-no-results">No states found</div>
+                        )}
+                      </div>
                     </div>
                   </>
                 )}
@@ -575,47 +600,70 @@ const Home = () => {
               <div className="state-dropdown-wrapper">
                 <label className="state-dropdown-label">Select Your Location:</label>
                 <div className="custom-dropdown" style={{ position: 'relative' }}>
-                  <button 
+                  <button
                     className="state-dropdown-button"
-                    onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+                    onClick={() => {
+                      setIsCostImpactDropdownOpen(!isCostImpactDropdownOpen);
+                      setCostImpactStateSearch('');
+                    }}
                   >
-                  <span>Current Location</span>
-                  <span className="dropdown-selected-value">{locationDropdown}</span>
-                  <svg
-                    className={`dropdown-arrow ${isLocationDropdownOpen ? 'open' : ''}`}
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                  >
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-                
-                {isLocationDropdownOpen && (
-                  <>
-                    <div 
-                      className="dropdown-overlay" 
-                      onClick={() => setIsLocationDropdownOpen(false)}
-                    ></div>
-                    <div className="custom-dropdown-menu">
-                      {allStates.map((state, index) => (
-                        <div
-                          key={index}
-                          className={`custom-dropdown-item ${locationDropdown === state ? 'selected' : ''}`}
-                          onClick={() => {
-                            setLocationDropdown(state);
-                            setIsLocationDropdownOpen(false);
-                          }}
-                        >
-                          {state}
+                    <span>Current Location</span>
+                    <span className="dropdown-selected-value">{userSelectedState}</span>
+                    <svg
+                      className={`dropdown-arrow ${isCostImpactDropdownOpen ? 'open' : ''}`}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+
+                  {isCostImpactDropdownOpen && (
+                    <>
+                      <div
+                        className="dropdown-overlay"
+                        onClick={() => {
+                          setIsCostImpactDropdownOpen(false);
+                          setCostImpactStateSearch('');
+                        }}
+                      ></div>
+                      <div className="custom-dropdown-menu">
+                        <div className="dropdown-search-container">
+                          <input
+                            type="text"
+                            className="dropdown-search-input"
+                            placeholder="Search states..."
+                            value={costImpactStateSearch}
+                            onChange={(e) => setCostImpactStateSearch(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            autoFocus
+                          />
                         </div>
-                      ))}
-                    </div>
-                  </>
-                )}
+                        <div className="dropdown-items-container">
+                          {getFilteredStates(costImpactStateSearch).map((state, index) => (
+                            <div
+                              key={index}
+                              className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
+                              onClick={() => {
+                                setUserSelectedState(state);
+                                setIsCostImpactDropdownOpen(false);
+                                setCostImpactStateSearch('');
+                              }}
+                            >
+                              {state}
+                            </div>
+                          ))}
+                          {getFilteredStates(costImpactStateSearch).length === 0 && (
+                            <div className="dropdown-no-results">No states found</div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="time-period-buttons">
