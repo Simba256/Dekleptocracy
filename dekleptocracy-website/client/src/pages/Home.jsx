@@ -5,13 +5,15 @@ import './Home.css';
 const Home = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [zipCode, setZipCode] = useState('');
+  const [heroState, setHeroState] = useState('California');
   const [selectedState, setSelectedState] = useState('CALIFORNIA');
   const [searchState, setSearchState] = useState('');
   const [impactState, setImpactState] = useState('California');
   const [timePeriod, setTimePeriod] = useState('YoY');
-  const [exploreZipcode, setExploreZipcode] = useState('');
+  const [mapState, setMapState] = useState('California');
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [isHeroStateDropdownOpen, setIsHeroStateDropdownOpen] = useState(false);
+  const [isMapStateDropdownOpen, setIsMapStateDropdownOpen] = useState(false);
   const [locationDropdown, setLocationDropdown] = useState('California');
   const [timelineDate, setTimelineDate] = useState(50);
   const [productQuery, setProductQuery] = useState('');
@@ -233,14 +235,49 @@ const Home = () => {
 
             {/* Location Input */}
             <div className="location-section">
-              <span className="location-label">Use my Location:</span>
-              <input
-                type="text"
-                placeholder="Enter Zip Code"
-                value={zipCode}
-                onChange={(e) => setZipCode(e.target.value)}
-                className="zip-input"
-              />
+              <span className="location-label">Select Your State:</span>
+              <div className="custom-dropdown" style={{ position: 'relative' }}>
+                <button
+                  className="hero-state-dropdown-button"
+                  onClick={() => setIsHeroStateDropdownOpen(!isHeroStateDropdownOpen)}
+                >
+                  <span>{heroState}</span>
+                  <svg
+                    className={`dropdown-arrow ${isHeroStateDropdownOpen ? 'open' : ''}`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+
+                {isHeroStateDropdownOpen && (
+                  <>
+                    <div
+                      className="dropdown-overlay"
+                      onClick={() => setIsHeroStateDropdownOpen(false)}
+                    ></div>
+                    <div className="custom-dropdown-menu">
+                      {allStates.map((state, index) => (
+                        <div
+                          key={index}
+                          className={`custom-dropdown-item ${heroState === state ? 'selected' : ''}`}
+                          onClick={() => {
+                            setHeroState(state);
+                            setIsHeroStateDropdownOpen(false);
+                          }}
+                        >
+                          {state}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Quick Question Cards */}
@@ -902,15 +939,50 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Zipcode Input */}
+              {/* State Select Input */}
               <div className="zipcode-explore">
-                <input
-                  type="text"
-                  placeholder="Enter your Zipcode"
-                  value={exploreZipcode}
-                  onChange={(e) => setExploreZipcode(e.target.value)}
-                  className="zipcode-input"
-                />
+                <div className="custom-dropdown" style={{ position: 'relative', flex: 1 }}>
+                  <button
+                    className="map-state-dropdown-button"
+                    onClick={() => setIsMapStateDropdownOpen(!isMapStateDropdownOpen)}
+                  >
+                    <span>{mapState}</span>
+                    <svg
+                      className={`dropdown-arrow ${isMapStateDropdownOpen ? 'open' : ''}`}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+
+                  {isMapStateDropdownOpen && (
+                    <>
+                      <div
+                        className="dropdown-overlay"
+                        onClick={() => setIsMapStateDropdownOpen(false)}
+                      ></div>
+                      <div className="custom-dropdown-menu">
+                        {allStates.map((state, index) => (
+                          <div
+                            key={index}
+                            className={`custom-dropdown-item ${mapState === state ? 'selected' : ''}`}
+                            onClick={() => {
+                              setMapState(state);
+                              setIsMapStateDropdownOpen(false);
+                            }}
+                          >
+                            {state}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
                 <button className="explore-btn">
                   Explore ▶
                 </button>

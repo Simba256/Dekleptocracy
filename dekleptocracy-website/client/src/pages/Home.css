@@ -173,25 +173,36 @@
   font-weight: 500;
 }
 
-.zip-input {
-  padding: 10px 16px;
+.hero-state-dropdown-button {
+  padding: 10px 40px 10px 16px;
   border: 1px solid #cbd5e1;
   border-radius: 0.5rem;
-  font-size: 13px;
+  font-size: 14px;
   color: #2E3A2E;
-  width: 200px;
-  outline: none;
-  transition: all 0.2s;
   background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+  position: relative;
+  font-weight: 500;
+  text-align: left;
 }
 
-.zip-input:focus {
+.hero-state-dropdown-button:hover {
   border-color: #FF6B5A;
   box-shadow: 0 0 0 3px rgba(255, 107, 90, 0.1);
 }
 
-.zip-input::placeholder {
-  color: #94a3b8;
+.hero-state-dropdown-button span {
+  display: block;
+}
+
+.hero-state-dropdown-button svg {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  stroke: #2E3A2E;
 }
 
 /* Quick Questions */
@@ -1644,25 +1655,42 @@
   gap: 10px;
 }
 
-.zipcode-input {
-  flex: 1;
-  padding: 11px 14px;
+.map-state-dropdown-button {
+  width: 100%;
+  padding: 11px 40px 11px 14px;
   font-size: 14px;
   color: #1f2937;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background-color: white;
+  cursor: pointer;
   transition: all 0.2s;
+  position: relative;
+  font-weight: 500;
+  text-align: left;
 }
 
-.zipcode-input::placeholder {
-  color: #9ca3af;
+.map-state-dropdown-button:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
 }
 
-.zipcode-input:focus {
+.map-state-dropdown-button:focus {
   outline: none;
   border-color: #2d3748;
   box-shadow: 0 0 0 3px rgba(45, 55, 72, 0.1);
+}
+
+.map-state-dropdown-button span {
+  display: block;
+}
+
+.map-state-dropdown-button svg {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  stroke: #1f2937;
 }
 
 .explore-btn {
