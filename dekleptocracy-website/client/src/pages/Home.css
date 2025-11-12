@@ -647,6 +647,7 @@
   color: #4A5D3F;
   cursor: pointer;
   transition: background-color 0.2s;
+  text-align: left;
 }
 
 .custom-dropdown-item:hover {
