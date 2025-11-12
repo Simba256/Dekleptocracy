@@ -10,9 +10,45 @@ const app = express();
 const port = process.env.PORT || 5000;
 const mongoUri = process.env.MONGODB_URI;
 
-// Middleware
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      process.env.FRONTEND_URL, // Add this env var on Render
+    ].filter(Boolean); // Remove undefined values
+
+    // Log the origin for debugging
+    console.log(`📍 Request from origin: ${origin}`);
+
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
+      console.log(`✅ CORS: Allowing origin ${origin}`);
+      callback(null, true);
+    } else {
+      console.log(`❌ CORS: Blocking origin ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600 // Cache preflight requests for 10 minutes
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path} from ${req.get('origin') || 'unknown'}`);
+  next();
+});
 
 // Routes
 app.get('/api/health', (_req, res) => {

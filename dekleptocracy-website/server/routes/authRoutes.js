@@ -149,44 +149,60 @@ router.post('/login', async (req, res) => {
 
 // Google OAuth route
 router.post('/google', async (req, res) => {
+  console.log('🔐 Google OAuth request received');
+  console.log(`📍 Origin: ${req.get('origin') || 'unknown'}`);
+  console.log(`🌐 User-Agent: ${req.get('user-agent')?.substring(0, 50)}...`);
+
   try {
     const { credential } = req.body; // Google ID token
 
     if (!credential) {
+      console.log('❌ No credential provided in request body');
       return res.status(400).json({
         success: false,
         message: 'Google credential is required'
       });
     }
 
+    console.log('✅ Credential received:', credential.substring(0, 30) + '...');
+
     // Verify Google token
     const { OAuth2Client } = await import('google-auth-library');
-    
+
     if (!process.env.GOOGLE_CLIENT_ID) {
+      console.error('❌ GOOGLE_CLIENT_ID not set in environment variables');
       return res.status(500).json({
         success: false,
         message: 'Google OAuth is not configured on the server'
       });
     }
 
+    console.log('✅ GOOGLE_CLIENT_ID configured:', process.env.GOOGLE_CLIENT_ID.substring(0, 30) + '...');
+
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
     let ticket;
     try {
+      console.log('🔍 Verifying Google token...');
       ticket = await client.verifyIdToken({
         idToken: credential,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
+      console.log('✅ Google token verified successfully');
     } catch (error) {
-      console.error('Google token verification error:', error);
+      console.error('❌ Google token verification error:', error.message);
+      console.error('Error details:', error);
       return res.status(401).json({
         success: false,
-        message: 'Invalid Google token'
+        message: 'Invalid Google token',
+        error: error.message
       });
     }
 
     const payload = ticket.getPayload();
     const { sub: googleId, email, name: fullName, picture } = payload;
+
+    console.log('👤 Google user info:', { googleId: googleId.substring(0, 20) + '...', email, fullName });
 
     // Check if user exists with this Google ID
     let user = await User.findOne({ googleId });
@@ -194,10 +210,12 @@ router.post('/google', async (req, res) => {
     let isLinkedAccount = false;
 
     if (!user) {
+      console.log('🔍 User not found by Google ID, checking by email...');
       // Check if user exists with this email
       user = await User.findOne({ email: email.toLowerCase() });
 
       if (user) {
+        console.log('🔗 Linking Google account to existing user');
         // Link Google account to existing user (login with Google for existing email account)
         user.googleId = googleId;
         user.isGoogleUser = true;
@@ -206,7 +224,9 @@ router.post('/google', async (req, res) => {
         }
         await user.save();
         isLinkedAccount = true;
+        console.log('✅ Google account linked successfully');
       } else {
+        console.log('➕ Creating new user with Google account');
         // Create new user with Google account (signup with Google)
         user = new User({
           fullName: fullName || email.split('@')[0],
@@ -218,11 +238,15 @@ router.post('/google', async (req, res) => {
         });
         await user.save();
         isNewUser = true;
+        console.log('✅ New user created successfully');
       }
+    } else {
+      console.log('✅ Existing Google user found');
     }
 
     // Generate token
     const token = generateToken(user._id);
+    console.log('🎫 JWT token generated');
 
     // Determine appropriate message
     let message = 'Google authentication successful';
@@ -233,6 +257,8 @@ router.post('/google', async (req, res) => {
     } else {
       message = 'Google login successful';
     }
+
+    console.log(`✅ ${message} for user:`, user.email);
 
     // Return success response
     res.status(200).json({
@@ -248,10 +274,12 @@ router.post('/google', async (req, res) => {
       isNewUser
     });
   } catch (error) {
-    console.error('Google OAuth error:', error);
+    console.error('❌ Google OAuth error:', error);
+    console.error('Stack trace:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Server error. Please try again later.'
+      message: 'Server error. Please try again later.',
+      error: error.message
     });
   }
 });

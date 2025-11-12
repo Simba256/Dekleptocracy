@@ -7,14 +7,17 @@ import './Login.css';
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:5000');
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '';
 
-// Debug: Log environment variables (remove in production)
-if (import.meta.env.DEV) {
-  console.log('Environment variables:', {
-    VITE_GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? `${GOOGLE_CLIENT_ID.substring(0, 20)}...` : 'NOT SET',
-    hasGoogleClientId: !!GOOGLE_CLIENT_ID,
-    allEnvKeys: Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'))
-  });
-}
+// Debug: Log environment variables
+console.log('🔧 [Login] Environment configuration:', {
+  mode: import.meta.env.MODE,
+  isDev: import.meta.env.DEV,
+  isProd: import.meta.env.PROD,
+  API_URL: API_URL,
+  VITE_API_URL: import.meta.env.VITE_API_URL,
+  GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? `${GOOGLE_CLIENT_ID.substring(0, 30)}...` : 'NOT SET',
+  hasGoogleClientId: !!GOOGLE_CLIENT_ID,
+  allViteEnvKeys: Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'))
+});
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,11 +37,19 @@ const Login = () => {
 
   // Initialize Google Sign-In
   useEffect(() => {
+    console.log('🔄 [Login] Google Sign-In initialization started');
+    console.log('🔑 [Login] GOOGLE_CLIENT_ID available:', !!GOOGLE_CLIENT_ID);
+    console.log('🎯 [Login] Button ref exists:', !!googleButtonRef.current);
+
     if (GOOGLE_CLIENT_ID && googleButtonRef.current) {
+      console.log('✅ [Login] Prerequisites met, loading Google script...');
       loadGoogleScript().then((google) => {
+        console.log('✅ [Login] Google script loaded successfully');
         google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: async (response) => {
+            console.log('🎉 [Login] Google callback triggered');
+            console.log('🎫 [Login] Response received:', response ? 'Yes' : 'No');
             setLoading(true);
             setError('');
             try {
@@ -46,14 +57,17 @@ const Login = () => {
                 response,
                 API_URL,
                 (data) => {
+                  console.log('✅ [Login] Sign-in successful, navigating to:', from);
                   navigate(from, { replace: true });
                 },
                 (error) => {
+                  console.error('❌ [Login] Sign-in failed:', error);
                   setError(error.message || 'Google sign-in failed. Please try again.');
                   setLoading(false);
                 }
               );
             } catch (error) {
+              console.error('❌ [Login] Exception during sign-in:', error);
               setError(error.message || 'Google sign-in failed. Please try again.');
               setLoading(false);
             }
@@ -61,6 +75,7 @@ const Login = () => {
         });
 
         // Render Google button
+        console.log('🎨 [Login] Rendering Google button...');
         google.accounts.id.renderButton(googleButtonRef.current, {
           type: 'standard',
           theme: 'outline',
@@ -68,9 +83,17 @@ const Login = () => {
           text: 'signin_with',
           width: '100%',
         });
+        console.log('✅ [Login] Google button rendered successfully');
       }).catch((error) => {
-        console.error('Error loading Google script:', error);
+        console.error('❌ [Login] Error loading Google script:', error);
       });
+    } else {
+      if (!GOOGLE_CLIENT_ID) {
+        console.warn('⚠️ [Login] GOOGLE_CLIENT_ID not set');
+      }
+      if (!googleButtonRef.current) {
+        console.warn('⚠️ [Login] Button ref not ready yet');
+      }
     }
   }, [from, navigate]);
 
