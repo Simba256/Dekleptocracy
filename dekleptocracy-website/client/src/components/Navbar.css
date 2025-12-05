@@ -9,19 +9,25 @@
   border-bottom: 1px solid #e2e8f0;
   position: relative;
   z-index: 100;
+  overflow: visible;
 }
 
 .navbar-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 3rem;
+  position: relative;
+  overflow: visible;
 }
 
 .navbar-content {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   height: var(--navbar-height);
+  position: relative;
+  gap: 20px;
+  overflow: visible;
 }
 
 /* Logo */
@@ -63,11 +69,13 @@
   background-color: #FF6B5A;
   border-radius: 2px;
 }
+
 /* Navigation Links Container */
 .navbar-links-wrapper {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .navbar-links {
@@ -172,6 +180,30 @@
 .profile-container {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1000;
+  overflow: visible !important;
+}
+
+.profile-avatar-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+  outline: none;
+}
+
+.profile-avatar-button:hover {
+  transform: scale(1.05);
+}
+
+.profile-avatar-button:focus {
+  outline: 2px solid #FF6B5A;
+  outline-offset: 2px;
 }
 
 .profile-avatar {
@@ -179,15 +211,114 @@
   height: 60px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: #FF6B5A;
-  border: 2px solid #F8F9FA;
+  background-color: #F8F9FA;
+  border: 2px solid #e2e8f0;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.profile-avatar-button:hover .profile-avatar {
+  border-color: #FF6B5A;
+  box-shadow: 0 2px 8px rgba(255, 107, 90, 0.3);
 }
 
 .profile-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.profile-avatar-initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #2c5f3e 0%, #3a7b4e 100%);
+}
+
+.profile-avatar-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  background-color: #F8F9FA;
+}
+
+/* Profile Dropdown Menu */
+.profile-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  width: 180px;
+  min-height: 80px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 99999 !important;
+  overflow: visible;
+  animation: slideDown 0.2s ease;
+  pointer-events: auto;
+  display: block !important;
+  visibility: visible !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-dropdown-link {
+  display: block;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #2E3A2E;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.profile-dropdown-link:last-child {
+  border-bottom: none;
+}
+
+.profile-dropdown-link:hover {
+  background-color: #F8F9FA;
+  color: #FF6B5A;
+}
+
+.profile-dropdown-link.logout-button {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.profile-dropdown-link.logout-button:hover {
+  background-color: #fee2e2;
+  color: #b91c1c;
 }
 
 /* Mobile Menu Button */
@@ -369,10 +500,9 @@
     display: block;
   }
 
-  /* Hide profile avatar on mobile */
-  .profile-avatar {
-    width: 48px;
-    height: 48px;
+  /* Keep profile container visible on mobile */
+  .profile-container {
+    display: flex;
   }
 }
 
@@ -404,7 +534,6 @@
     height: 24px;
   }
 
-
   .mobile-menu {
     width: 260px;
     padding: 20px 0;
@@ -420,8 +549,12 @@
     font-size: 14px;
   }
 
+  .profile-container {
+    display: flex;
+  }
+  
   .profile-avatar {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
   }
 }

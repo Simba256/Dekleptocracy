@@ -16,6 +16,7 @@ import Topics from './pages/Topics';
 import HouseholdExpense from './pages/HouseholdExpense';
 import Dashboard from './pages/Dashboard';
 import ContactUs from './pages/ContactUs';
+import Profile from './pages/Profile';
 
 function AppContent() {
   const location = useLocation();
@@ -56,6 +57,14 @@ function AppContent() {
         <Route path="/household-expense" element={<HouseholdExpense />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
       {!shouldHideFooter && <Footer />}
     </div>

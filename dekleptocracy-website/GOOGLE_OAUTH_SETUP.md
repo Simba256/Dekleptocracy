@@ -24,13 +24,25 @@ This guide will help you set up Google OAuth authentication for the Dekleptocrac
 4. Create OAuth client ID:
    - Application type: "Web application"
    - Name: "Dekleptocracy"
-   - Authorized JavaScript origins:
-     - `http://localhost:5173` (for development)
-     - Your production domain (e.g., `https://yourdomain.com`)
-   - Authorized redirect URIs:
-     - `http://localhost:5173` (for development)
-     - Your production domain
+   - **Authorized JavaScript origins** (CRITICAL - must match your app's URL exactly):
+     - Click "+ ADD URI"
+     - Add `http://localhost:5173` (for development - Vite default port)
+     - **Important:** If your app runs on a different port, use that port instead
+     - For production: Add your production domain (e.g., `https://yourdomain.com`)
+     - **Note:** No trailing slashes, include protocol and port
+   - **Authorized redirect URIs:**
+     - Click "+ ADD URI"
+     - Add `http://localhost:5173` (for development)
+     - For production: Add your production domain
    - Click "Create"
+
+**⚠️ IMPORTANT:** The "Authorized JavaScript origins" must **exactly** match the URL in your browser's address bar, including:
+- Protocol: `http://` or `https://`
+- Domain: `localhost` or your domain
+- Port: `:5173` (or whatever port your app uses)
+- **NO trailing slash** (`/`)
+
+If you get a "no registered origin" error, double-check this section!
 
 5. Copy the Client ID (you'll need this for both frontend and backend)
 

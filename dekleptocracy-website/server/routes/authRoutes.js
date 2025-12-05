@@ -135,7 +135,9 @@ router.post('/login', async (req, res) => {
       user: {
         id: user._id,
         fullName: user.fullName,
-        email: user.email
+        email: user.email,
+        profilePhoto: user.profilePhoto,
+        isGoogleUser: user.isGoogleUser
       }
     });
   } catch (error) {
@@ -222,6 +224,10 @@ router.post('/google', async (req, res) => {
         if (!user.fullName && fullName) {
           user.fullName = fullName;
         }
+        // Save Google profile picture if user doesn't have one
+        if (!user.profilePhoto && picture) {
+          user.profilePhoto = picture;
+        }
         await user.save();
         isLinkedAccount = true;
         console.log('✅ Google account linked successfully');
@@ -234,7 +240,8 @@ router.post('/google', async (req, res) => {
           googleId,
           isGoogleUser: true,
           agreeToTerms: true, // Assume user agrees when using Google OAuth
-          password: undefined // No password for Google users
+          password: undefined, // No password for Google users
+          profilePhoto: picture || null // Save Google profile picture
         });
         await user.save();
         isNewUser = true;
@@ -242,6 +249,11 @@ router.post('/google', async (req, res) => {
       }
     } else {
       console.log('✅ Existing Google user found');
+      // Update profile picture if it's a Google URL and user doesn't have a custom one
+      if (!user.profilePhoto && picture) {
+        user.profilePhoto = picture;
+        await user.save();
+      }
     }
 
     // Generate token
@@ -269,7 +281,8 @@ router.post('/google', async (req, res) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        picture: picture || null
+        profilePhoto: user.profilePhoto || picture || null,
+        isGoogleUser: true
       },
       isNewUser
     });

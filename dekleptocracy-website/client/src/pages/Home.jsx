@@ -747,7 +747,7 @@ const Home = () => {
 
           <div className="timeline-card">
             <div className="timeline-header">
-              <h3 className="timeline-title">Slide to Select Your Starting Point:</h3>
+              <h3 id="timeline-slider-label" className="timeline-title">Slide to Select Your Starting Point:</h3>
             </div>
 
             <div className="timeline-slider-container">
@@ -780,11 +780,15 @@ const Home = () => {
 
               <input
                 type="range"
+                id="timeline-slider"
                 min="0"
                 max="100"
                 value={timelineDate}
                 onChange={(e) => setTimelineDate(e.target.value)}
                 className="timeline-slider"
+                aria-labelledby="timeline-slider-label"
+                aria-label="Select timeline starting point"
+                title="Select timeline starting point"
                 style={{
                   background: `linear-gradient(to right, #FF6B5A 0%, #FF6B5A ${timelineDate}%, #e5e7eb ${timelineDate}%, #e5e7eb 100%)`
                 }}

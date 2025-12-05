@@ -1,17 +1,80 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { isAuthenticated, logout } from '../utils/auth';
 import './Navbar.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Navbar = () => {
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const profileMenuRef = useRef(null);
 
   const isActive = (path) => location.pathname === path;
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const authenticated = isAuthenticated();
+      setIsLoggedIn(authenticated);
+      
+      if (authenticated) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            setUserProfile(user);
+          } catch (e) {
+            console.error('Error parsing user data:', e);
+          }
+        }
+      } else {
+        setUserProfile(null);
+      }
+    };
+
+    checkAuth();
+    const interval = setInterval(checkAuth, 1500);
+    return () => clearInterval(interval);
+  }, [location.pathname]);
+
+  // Close dropdown on Escape and on route change
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    setIsProfileDropdownOpen(false);
+  }, [location.pathname]);
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
     setIsInsightsOpen(false);
+  };
+
+  const toggleProfileDropdown = useCallback(() => {
+    setIsProfileDropdownOpen(prev => !prev);
+    setIsInsightsOpen(false);
+  }, []);
+
+  const closeProfileDropdown = () => {
+    setIsProfileDropdownOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsProfileDropdownOpen(false);
+    navigate('/');
   };
 
   return (
@@ -65,7 +128,7 @@ const Navbar = () => {
 
                 {/* Dropdown Menu */}
                 {isInsightsOpen && (
-                  <div className="dropdown-menu">
+                  <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
                     <Link
                       to="/insights"
                       onClick={() => setIsInsightsOpen(false)}
@@ -122,14 +185,84 @@ const Navbar = () => {
             </svg>
           </button>
 
-          {/* Profile Avatar */}
-          <div className="profile-container">
-            <div className="profile-avatar">
-              <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-                alt="Profile"
-              />
-            </div>
+          {/* Profile Avatar with Dropdown */}
+          <div className="profile-container" ref={profileMenuRef}>
+            <button 
+              className="profile-avatar-button"
+              onClick={toggleProfileDropdown}
+              aria-label="Profile menu"
+              aria-expanded={isProfileDropdownOpen}
+              aria-controls="profile-dropdown-menu"
+              type="button"
+            >
+              <div className="profile-avatar">
+                {isLoggedIn && userProfile?.profilePhoto ? (
+                  <img
+                    src={userProfile.profilePhoto.startsWith('http') 
+                      ? userProfile.profilePhoto 
+                      : `${API_URL}/${userProfile.profilePhoto}`}
+                    alt="Profile"
+                    onError={(e) => {
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.fullName || 'User')}&background=ff6b35&color=fff&size=128`;
+                    }}
+                  />
+                ) : isLoggedIn ? (
+                  <div className="profile-avatar-initials">
+                    {(userProfile?.fullName || 'U').charAt(0).toUpperCase()}
+                  </div>
+                ) : (
+                  <div className="profile-avatar-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </button>
+
+            {/* Profile Dropdown Menu */}
+            {isProfileDropdownOpen && (
+              <div
+                id="profile-dropdown-menu"
+                className="profile-dropdown-menu"
+              >
+                {isLoggedIn ? (
+                  <>
+                    <Link 
+                      to="/profile" 
+                      className="profile-dropdown-link"
+                      onClick={closeProfileDropdown}
+                    >
+                      My Profile
+                    </Link>
+                    <button 
+                      className="profile-dropdown-link logout-button"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link 
+                      to="/chatbot/login" 
+                      className="profile-dropdown-link"
+                      onClick={closeProfileDropdown}
+                    >
+                      Login
+                    </Link>
+                    <Link 
+                      to="/chatbot/create-account" 
+                      className="profile-dropdown-link"
+                      onClick={closeProfileDropdown}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -225,6 +358,25 @@ const Navbar = () => {
               >
                 Contact Us
               </Link>
+
+              {/* Mobile Profile/Login Link */}
+              {isLoggedIn ? (
+                <Link 
+                  to="/profile" 
+                  className={`mobile-menu-link ${isActive('/profile') ? 'active' : ''}`}
+                  onClick={closeMobileMenu}
+                >
+                  My Profile
+                </Link>
+              ) : (
+                <Link 
+                  to="/chatbot/login" 
+                  className={`mobile-menu-link ${isActive('/chatbot/login') ? 'active' : ''}`}
+                  onClick={closeMobileMenu}
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}
@@ -234,4 +386,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

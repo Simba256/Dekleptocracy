@@ -2,7 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -44,6 +50,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`📨 ${req.method} ${req.path} from ${req.get('origin') || 'unknown'}`);
@@ -56,6 +65,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -99,6 +109,7 @@ async function start() {
       console.log(`🚀 API listening on http://localhost:${port}`);
       console.log(`📝 Health check: http://localhost:${port}/api/health`);
       console.log(`🔐 Auth routes: http://localhost:${port}/api/auth`);
+      console.log(`👤 User routes: http://localhost:${port}/api/user`);
     });
   } catch (err) {
     console.error('❌ Failed to start server:', err);

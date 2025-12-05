@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { isAuthenticated, verifyToken } from '../utils/auth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './Chatbot.css';
@@ -115,6 +116,7 @@ const generateChatTitle = async (messages, mcpServerUrl) => {
 
 const Chatbot = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
       id: '1',
@@ -128,12 +130,40 @@ const Chatbot = () => {
   const [currentChatId, setCurrentChatId] = useState(null);
   const [chatHistory, setChatHistory] = useState(() => getChatHistory());
   const [showHistory, setShowHistory] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
   const hasSubmittedInitialQuery = useRef(false);
 
   // MCP Server URL - uses environment variable in production, localhost in development
   const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8000';
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!isAuthenticated()) {
+        navigate('/chatbot/login', { state: { from: { pathname: '/chatbot' } } });
+        return;
+      }
+
+      // Verify token with backend
+      try {
+        const isValid = await verifyToken();
+        if (!isValid) {
+          navigate('/chatbot/login', { state: { from: { pathname: '/chatbot' } } });
+          return;
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        navigate('/chatbot/login', { state: { from: { pathname: '/chatbot' } } });
+        return;
+      }
+
+      setAuthChecked(true);
+    };
+
+    checkAuth();
+  }, [navigate]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -372,6 +402,38 @@ const Chatbot = () => {
       abortControllerRef.current.abort();
     }
   };
+
+  // Show loading state while checking authentication
+  if (!authChecked) {
+    return (
+      <div className="chatbot-page">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #ff6b35',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          <p style={{ color: '#666' }}>Checking authentication...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chatbot-page">
