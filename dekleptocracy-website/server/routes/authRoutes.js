@@ -11,10 +11,36 @@ const generateToken = (userId) => {
   });
 };
 
+const normalizePreferences = (preferences = {}) => {
+  const toArray = (value) => Array.isArray(value)
+    ? value.map(item => (typeof item === 'string' ? item.trim() : String(item || '')))
+        .filter(Boolean)
+        .slice(0, 12)
+    : [];
+
+  const toString = (value) => (typeof value === 'string' ? value.trim() : '');
+
+  return {
+    conversationStyles: toArray(preferences.conversationStyles),
+    topicsOfInterest: toArray(preferences.topicsOfInterest),
+    householdExpenseFocus: toString(preferences.householdExpenseFocus)
+  };
+};
+
+const mergePreferences = (existing = {}, incoming = {}) => ({
+  conversationStyles: incoming.conversationStyles?.length
+    ? incoming.conversationStyles
+    : existing.conversationStyles || [],
+  topicsOfInterest: incoming.topicsOfInterest?.length
+    ? incoming.topicsOfInterest
+    : existing.topicsOfInterest || [],
+  householdExpenseFocus: incoming.householdExpenseFocus || existing.householdExpenseFocus || ''
+});
+
 // Signup route
 router.post('/signup', async (req, res) => {
   try {
-    const { fullName, email, password, agreeToTerms } = req.body;
+    const { fullName, email, password, agreeToTerms, preferences } = req.body;
 
     // Validation
     if (!fullName || !email || !password) {
@@ -45,7 +71,8 @@ router.post('/signup', async (req, res) => {
       fullName,
       email: email.toLowerCase(),
       password,
-      agreeToTerms
+      agreeToTerms,
+      preferences: normalizePreferences(preferences)
     });
 
     await user.save();
@@ -61,7 +88,8 @@ router.post('/signup', async (req, res) => {
       user: {
         id: user._id,
         fullName: user.fullName,
-        email: user.email
+        email: user.email,
+        preferences: user.preferences
       }
     });
   } catch (error) {
@@ -137,7 +165,8 @@ router.post('/login', async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         profilePhoto: user.profilePhoto,
-        isGoogleUser: user.isGoogleUser
+        isGoogleUser: user.isGoogleUser,
+        preferences: user.preferences
       }
     });
   } catch (error) {
@@ -156,7 +185,8 @@ router.post('/google', async (req, res) => {
   console.log(`🌐 User-Agent: ${req.get('user-agent')?.substring(0, 50)}...`);
 
   try {
-    const { credential } = req.body; // Google ID token
+    const { credential, preferences } = req.body; // Google ID token
+    const normalizedPreferences = normalizePreferences(preferences);
 
     if (!credential) {
       console.log('❌ No credential provided in request body');
@@ -240,6 +270,7 @@ router.post('/google', async (req, res) => {
           googleId,
           isGoogleUser: true,
           agreeToTerms: true, // Assume user agrees when using Google OAuth
+          preferences: normalizedPreferences,
           password: undefined, // No password for Google users
           profilePhoto: picture || null // Save Google profile picture
         });
@@ -254,6 +285,15 @@ router.post('/google', async (req, res) => {
         user.profilePhoto = picture;
         await user.save();
       }
+    }
+
+    const hasIncomingPreferences = normalizedPreferences.conversationStyles.length ||
+      normalizedPreferences.topicsOfInterest.length ||
+      normalizedPreferences.householdExpenseFocus;
+
+    if (hasIncomingPreferences) {
+      user.preferences = mergePreferences(user.preferences, normalizedPreferences);
+      await user.save();
     }
 
     // Generate token
@@ -282,7 +322,8 @@ router.post('/google', async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         profilePhoto: user.profilePhoto || picture || null,
-        isGoogleUser: true
+        isGoogleUser: true,
+        preferences: user.preferences
       },
       isNewUser
     });
@@ -350,7 +391,8 @@ router.get('/verify', verifyToken, async (req, res) => {
       user: {
         id: user._id,
         fullName: user.fullName,
-        email: user.email
+        email: user.email,
+        preferences: user.preferences
       }
     });
   } catch (error) {

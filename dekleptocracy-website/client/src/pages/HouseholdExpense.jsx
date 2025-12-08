@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { loadPreferences, savePreferences } from '../utils/preferences';
 import './HouseholdExpense.css';
 
 const HouseholdExpense = () => {
@@ -13,14 +14,19 @@ const HouseholdExpense = () => {
     'Others'
   ];
 
+  useEffect(() => {
+    const saved = loadPreferences();
+    if (saved.householdExpenseFocus) {
+      setSelectedExpense(saved.householdExpenseFocus);
+    }
+  }, []);
+
   const handleExpenseSelect = (expense) => {
     setSelectedExpense(expense);
   };
 
   const handleNext = () => {
-    // Handle expense selection submission here
-    console.log('Selected expense:', selectedExpense);
-    // Navigate to dashboard page
+    savePreferences({ householdExpenseFocus: selectedExpense });
     window.location.href = '/dashboard';
   };
 
@@ -49,7 +55,15 @@ const HouseholdExpense = () => {
           </div>
 
           <div className="navigation-buttons">
-            <Link to="/dashboard" className="skip-button">
+            <Link
+              to="/dashboard"
+              className="skip-button"
+              onClick={() => {
+                if (selectedExpense) {
+                  savePreferences({ householdExpenseFocus: selectedExpense });
+                }
+              }}
+            >
               Skip
             </Link>
             <button 

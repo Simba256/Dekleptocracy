@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loadGoogleScript, handleGoogleSignIn } from '../utils/googleAuth';
+import { clearPreferences, loadPreferences } from '../utils/preferences';
 import './CreateAccount.css';
 
 // Use proxy in development, or full URL in production
@@ -44,9 +45,10 @@ const CreateAccount = () => {
                 response,
                 API_URL,
                 (data) => {
+                  clearPreferences();
                   setSuccess(true);
                   setTimeout(() => {
-                    navigate('/chatbot');
+                    navigate('/survey');
                   }, 1500);
                 },
                 (error) => {
@@ -91,12 +93,16 @@ const CreateAccount = () => {
     setLoading(true);
 
     try {
+      const preferences = loadPreferences();
       const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          preferences
+        }),
       });
 
       const data = await response.json();
@@ -112,10 +118,11 @@ const CreateAccount = () => {
       }
 
       setSuccess(true);
+      clearPreferences();
       
-      // Redirect to chatbot after successful signup
+      // Redirect to preferences flow after successful signup
       setTimeout(() => {
-        navigate('/chatbot');
+        navigate('/survey');
       }, 1500);
     } catch (err) {
       setError(err.message || 'An error occurred. Please try again.');

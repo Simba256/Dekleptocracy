@@ -58,7 +58,11 @@ const Login = () => {
                 API_URL,
                 (data) => {
                   console.log('✅ [Login] Sign-in successful, navigating to:', from);
-                  navigate(from, { replace: true });
+                  if (data?.isNewUser) {
+                    navigate('/survey', { replace: true });
+                  } else {
+                    navigate(from, { replace: true });
+                  }
                 },
                 (error) => {
                   console.error('❌ [Login] Sign-in failed:', error);

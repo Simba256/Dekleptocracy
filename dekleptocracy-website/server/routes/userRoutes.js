@@ -100,6 +100,7 @@ router.get('/profile', verifyToken, async (req, res) => {
         email: user.email,
         profilePhoto: user.profilePhoto,
         isGoogleUser: user.isGoogleUser,
+        preferences: user.preferences,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
       }

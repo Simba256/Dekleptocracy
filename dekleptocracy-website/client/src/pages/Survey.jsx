@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { loadPreferences, savePreferences } from '../utils/preferences';
 import './Survey.css';
 
 const Survey = () => {
@@ -13,6 +14,13 @@ const Survey = () => {
     "Creative And Engaging"
   ];
 
+  useEffect(() => {
+    const saved = loadPreferences();
+    if (saved.conversationStyles.length) {
+      setSelectedOptions(saved.conversationStyles);
+    }
+  }, []);
+
   const handleOptionToggle = (option) => {
     setSelectedOptions(prev => 
       prev.includes(option) 
@@ -22,8 +30,7 @@ const Survey = () => {
   };
 
   const handleNext = () => {
-    // Handle survey submission here
-    console.log('Selected options:', selectedOptions);
+    savePreferences({ conversationStyles: selectedOptions });
     window.location.href = '/topics';
   };
 
@@ -52,7 +59,11 @@ const Survey = () => {
           </div>
 
           <div className="navigation-buttons">
-            <Link to="/topics" className="skip-button">
+            <Link
+              to="/topics"
+              className="skip-button"
+              onClick={() => savePreferences({ conversationStyles: selectedOptions })}
+            >
               Skip
             </Link>
             <button 

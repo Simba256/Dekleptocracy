@@ -1,4 +1,5 @@
 // Google OAuth utility functions
+import { clearPreferences, loadPreferences } from './preferences';
 
 // Load Google Identity Services script
 export const loadGoogleScript = () => {
@@ -63,7 +64,10 @@ export const handleGoogleSignIn = async (response, apiUrl, onSuccess, onError) =
     const requestUrl = `${apiUrl}/api/auth/google`;
     console.log('📤 [Frontend] Sending request to:', requestUrl);
 
-    const requestBody = { credential: response.credential };
+    const requestBody = { 
+      credential: response.credential,
+      preferences: loadPreferences(),
+    };
     console.log('📦 [Frontend] Request body:', { credential: requestBody.credential?.substring(0, 30) + '...' });
 
     const res = await fetch(requestUrl, {
@@ -97,6 +101,7 @@ export const handleGoogleSignIn = async (response, apiUrl, onSuccess, onError) =
     } else {
       console.warn('⚠️ [Frontend] No token in response');
     }
+    clearPreferences();
 
     console.log('✅ [Frontend] Google Sign-In successful');
     onSuccess(data);

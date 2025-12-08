@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -8,7 +8,6 @@ import Reports from './pages/Reports';
 import DistrictReport from './pages/DistrictReport';
 import Insights from './pages/Insights';
 import Chatbot from './pages/Chatbot';
-import ChatbotDebug from './pages/ChatbotDebug';
 import CreateAccount from './pages/CreateAccount';
 import Login from './pages/Login';
 import Survey from './pages/Survey';
@@ -42,14 +41,7 @@ function AppContent() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/chatbot/debug" 
-          element={
-            <ProtectedRoute>
-              <ChatbotDebug />
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="/chatbot/debug" element={<Navigate to="/chatbot" replace />} />
         <Route path="/chatbot/create-account" element={<CreateAccount />} />
         <Route path="/chatbot/login" element={<Login />} />
         <Route path="/survey" element={<Survey />} />

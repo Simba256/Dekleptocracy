@@ -39,6 +39,20 @@ const userSchema = new mongoose.Schema({
     },
     default: false
   },
+  preferences: {
+    conversationStyles: {
+      type: [String],
+      default: []
+    },
+    topicsOfInterest: {
+      type: [String],
+      default: []
+    },
+    householdExpenseFocus: {
+      type: String,
+      default: ''
+    }
+  },
   profilePhoto: {
     type: String,
     default: null

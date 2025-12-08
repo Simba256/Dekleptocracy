@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { loadPreferences, savePreferences } from '../utils/preferences';
 import './Topics.css';
 
 const Topics = () => {
@@ -38,6 +39,13 @@ const Topics = () => {
     }
   ];
 
+  useEffect(() => {
+    const saved = loadPreferences();
+    if (saved.topicsOfInterest.length) {
+      setSelectedTopics(saved.topicsOfInterest);
+    }
+  }, []);
+
   const handleTopicToggle = (topicId) => {
     setSelectedTopics(prev => 
       prev.includes(topicId) 
@@ -47,9 +55,7 @@ const Topics = () => {
   };
 
   const handleNext = () => {
-    // Handle topic selection submission here
-    console.log('Selected topics:', selectedTopics);
-    // Navigate to household expense page
+    savePreferences({ topicsOfInterest: selectedTopics });
     window.location.href = '/household-expense';
   };
 
@@ -81,7 +87,11 @@ const Topics = () => {
           </div>
 
           <div className="navigation-buttons">
-            <Link to="/household-expense" className="skip-button">
+            <Link
+              to="/household-expense"
+              className="skip-button"
+              onClick={() => savePreferences({ topicsOfInterest: selectedTopics })}
+            >
               Skip
             </Link>
             <button 
