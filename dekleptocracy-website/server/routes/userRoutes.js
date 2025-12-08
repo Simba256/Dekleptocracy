@@ -80,6 +80,21 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
+const normalizePreferences = (preferences = {}) => {
+  const toArray = (value) => Array.isArray(value)
+    ? value.map(item => (typeof item === 'string' ? item.trim() : String(item || '')))
+        .filter(Boolean)
+        .slice(0, 20)
+    : [];
+  const toString = (value) => (typeof value === 'string' ? value.trim() : '');
+
+  return {
+    conversationStyles: toArray(preferences.conversationStyles),
+    topicsOfInterest: toArray(preferences.topicsOfInterest),
+    householdExpenseFocus: toString(preferences.householdExpenseFocus)
+  };
+};
+
 // Get user profile
 router.get('/profile', verifyToken, async (req, res) => {
   try {
@@ -118,6 +133,16 @@ router.get('/profile', verifyToken, async (req, res) => {
 router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, res) => {
   try {
     const { fullName } = req.body;
+    let incomingPreferences = null;
+    if (req.body.preferences) {
+      try {
+        incomingPreferences = typeof req.body.preferences === 'string'
+          ? JSON.parse(req.body.preferences)
+          : req.body.preferences;
+      } catch (err) {
+        console.error('Failed to parse preferences', err);
+      }
+    }
     const user = await User.findById(req.userId);
 
     if (!user) {
@@ -130,6 +155,10 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
     // Update full name if provided
     if (fullName) {
       user.fullName = fullName;
+    }
+
+    if (incomingPreferences) {
+      user.preferences = normalizePreferences(incomingPreferences);
     }
 
     // Handle profile photo upload

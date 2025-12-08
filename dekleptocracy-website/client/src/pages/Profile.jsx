@@ -5,6 +5,32 @@ import './Profile.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+const TOPIC_OPTIONS = [
+  'Household Costs',
+  'Lobbying & Influence',
+  'Taxes & Tariffs',
+  'Healthcare & Education',
+  'Environment & Climate'
+];
+
+const STYLE_OPTIONS = [
+  'Casual And Friendly',
+  'Professional And Formal',
+  'Informative And Detailed',
+  'Quick And To The Point',
+  'Creative And Engaging'
+];
+
+const HOUSEHOLD_OPTIONS = ['Groceries', 'Rent / Mortgage', 'Utilities', 'Healthcare', 'Others'];
+
+const getInitials = (name) => {
+  if (!name) return 'UU';
+  const parts = name.trim().split(/\s+/);
+  const first = parts[0]?.[0] || 'U';
+  const second = parts[1]?.[0] || parts[0]?.[1] || 'U';
+  return `${first}${second}`.toUpperCase();
+};
+
 const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -14,7 +40,10 @@ const Profile = () => {
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
-    profilePhoto: null
+    profilePhoto: null,
+    selectedTopics: [],
+    selectedStyles: [],
+    householdExpenseFocus: ''
   });
   const [preview, setPreview] = useState(null);
 
@@ -46,7 +75,10 @@ const Profile = () => {
       setUser(data.user);
       setFormData({
         fullName: data.user.fullName || '',
-        profilePhoto: null
+        profilePhoto: null,
+        selectedTopics: data.user.preferences?.topicsOfInterest || [],
+        selectedStyles: data.user.preferences?.conversationStyles || [],
+        householdExpenseFocus: data.user.preferences?.householdExpenseFocus || ''
       });
 
       // Set preview if profile photo exists
@@ -105,6 +137,17 @@ const Profile = () => {
     }
   };
 
+  const toggleSelection = (key, value) => {
+    setFormData(prev => {
+      const current = prev[key] || [];
+      const exists = current.includes(value);
+      const next = exists ? current.filter(v => v !== value) : [...current, value];
+      return { ...prev, [key]: next };
+    });
+    setError('');
+    setSuccess('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -118,6 +161,14 @@ const Profile = () => {
       if (formData.fullName) {
         formDataToSend.append('fullName', formData.fullName);
       }
+
+      const preferences = {
+        topicsOfInterest: formData.selectedTopics,
+        conversationStyles: formData.selectedStyles,
+        householdExpenseFocus: formData.householdExpenseFocus.trim()
+      };
+
+      formDataToSend.append('preferences', JSON.stringify(preferences));
 
       if (formData.profilePhoto) {
         formDataToSend.append('profilePhoto', formData.profilePhoto);
@@ -204,10 +255,7 @@ const Profile = () => {
                   <img src={preview} alt="Profile" className="profile-photo" />
                 ) : (
                   <div className="profile-photo-placeholder">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+                    {getInitials(formData.fullName || user?.fullName || 'User')}
                   </div>
                 )}
                 <label htmlFor="profilePhoto" className="photo-upload-label">
@@ -236,6 +284,54 @@ const Profile = () => {
                   className="form-input"
                   placeholder="Enter your full name"
                 />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Topics of interest</label>
+                <div className="chip-row">
+                  {TOPIC_OPTIONS.map((topic) => (
+                    <button
+                      type="button"
+                      key={topic}
+                      className={`chip ${formData.selectedTopics.includes(topic) ? 'chip-selected' : ''}`}
+                      onClick={() => toggleSelection('selectedTopics', topic)}
+                    >
+                      {topic}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Conversation styles</label>
+                <div className="chip-row">
+                  {STYLE_OPTIONS.map((style) => (
+                    <button
+                      type="button"
+                      key={style}
+                      className={`chip ${formData.selectedStyles.includes(style) ? 'chip-selected' : ''}`}
+                      onClick={() => toggleSelection('selectedStyles', style)}
+                    >
+                      {style}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Household focus</label>
+                <div className="chip-row">
+                  {HOUSEHOLD_OPTIONS.map((option) => (
+                    <button
+                      type="button"
+                      key={option}
+                      className={`chip ${formData.householdExpenseFocus === option ? 'chip-selected' : ''}`}
+                      onClick={() => setFormData(prev => ({ ...prev, householdExpenseFocus: option }))}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="form-group">

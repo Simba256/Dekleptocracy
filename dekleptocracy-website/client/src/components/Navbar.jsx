@@ -230,6 +230,13 @@ const Navbar = () => {
                 {isLoggedIn ? (
                   <>
                     <Link 
+                      to="/dashboard" 
+                      className="profile-dropdown-link"
+                      onClick={closeProfileDropdown}
+                    >
+                      Dashboard
+                    </Link>
+                    <Link 
                       to="/profile" 
                       className="profile-dropdown-link"
                       onClick={closeProfileDropdown}
@@ -349,6 +356,14 @@ const Navbar = () => {
                 onClick={closeMobileMenu}
               >
                 Chatbot
+              </Link>
+
+              <Link 
+                to="/dashboard" 
+                className={`mobile-menu-link ${isActive('/dashboard') ? 'active' : ''}`}
+                onClick={closeMobileMenu}
+              >
+                Dashboard
               </Link>
 
               <Link 
