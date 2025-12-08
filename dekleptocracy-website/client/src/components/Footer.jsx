@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 const Footer = () => {
@@ -13,27 +14,26 @@ const Footer = () => {
               <span className="logo-light">kleptocracy</span>
             </div>
             <div className="footer-links">
-              <a href="#" className="footer-link">Privacy Policy</a>
-              <a href="#" className="footer-link">Terms of Service</a>
-              <a href="#" className="footer-link">Copyright Policy</a>
-              <a href="#" className="footer-link">Data Policy</a>
-              <a href="#" className="footer-link">Accessibility</a>
-              <a href="#" className="footer-link">Help</a>
+              <Link to="/privacy-policy" className="footer-link">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="footer-link">Terms of Service</Link>
+              <Link to="/copyright-policy" className="footer-link">Copyright Policy</Link>
+              <Link to="/data-policy" className="footer-link">Data Policy</Link>
+              <Link to="/accessibility" className="footer-link">Accessibility</Link>
+              <Link to="/help" className="footer-link">Help</Link>
             </div>
           </div>
           
           <div className="footer-right">
             <div className="footer-nav-links">
-              <a href="/about" className="footer-nav-link">About Us</a>
-              <a href="#" className="footer-nav-link">Services</a>
-              <a href="#" className="footer-nav-link">Testimonials</a>
-              <a href="/contact" className="footer-nav-link">Contact Us</a>
+              <Link to="/about" className="footer-nav-link">About Us</Link>
+              <Link to="/services" className="footer-nav-link">Services</Link>
+              <Link to="/contact" className="footer-nav-link">Contact Us</Link>
             </div>
           </div>
         </div>
         
         <div className="footer-copyright">
-          © 2023 Dekleptocracy, All rights reserved
+          © 2025 Dekleptocracy, All rights reserved
         </div>
       </div>
     </footer>

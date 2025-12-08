@@ -1,0 +1,130 @@
+.accessibility-page {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 80px 20px 60px;
+}
+
+.accessibility-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  padding: 60px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.accessibility-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.accessibility-date {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 50px;
+}
+
+.accessibility-section {
+  margin-bottom: 40px;
+}
+
+.accessibility-section h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
+
+.accessibility-section h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #3e5132;
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.accessibility-section p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #4a5568;
+  margin-bottom: 15px;
+}
+
+.accessibility-section ul {
+  margin-left: 30px;
+  margin-bottom: 20px;
+}
+
+.accessibility-section li {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #4a5568;
+  margin-bottom: 10px;
+}
+
+.accessibility-section strong {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.accessibility-section a {
+  color: #3e5132;
+  text-decoration: underline;
+}
+
+.accessibility-section a:hover {
+  color: #6B7F5F;
+}
+
+.accessibility-commitment {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #3e5132;
+  padding: 30px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .accessibility-container {
+    padding: 40px 30px;
+  }
+
+  .accessibility-title {
+    font-size: 2.2rem;
+  }
+
+  .accessibility-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .accessibility-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .accessibility-section p,
+  .accessibility-section li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .accessibility-page {
+    padding: 60px 15px 40px;
+  }
+
+  .accessibility-container {
+    padding: 30px 20px;
+  }
+
+  .accessibility-title {
+    font-size: 1.8rem;
+  }
+}

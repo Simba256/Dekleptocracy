@@ -16,6 +16,13 @@ import HouseholdExpense from './pages/HouseholdExpense';
 import Dashboard from './pages/Dashboard';
 import ContactUs from './pages/ContactUs';
 import Profile from './pages/Profile';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CopyrightPolicy from './pages/CopyrightPolicy';
+import DataPolicy from './pages/DataPolicy';
+import Accessibility from './pages/Accessibility';
+import Help from './pages/Help';
+import Services from './pages/Services';
 
 function AppContent() {
   const location = useLocation();
@@ -28,6 +35,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/services" element={<Services />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/reports/district-report" element={<DistrictReport />} />
         <Route path="/insights" element={<Insights />} />
@@ -49,6 +57,12 @@ function AppContent() {
         <Route path="/household-expense" element={<HouseholdExpense />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/copyright-policy" element={<CopyrightPolicy />} />
+        <Route path="/data-policy" element={<DataPolicy />} />
+        <Route path="/accessibility" element={<Accessibility />} />
+        <Route path="/help" element={<Help />} />
         <Route 
           path="/profile" 
           element={

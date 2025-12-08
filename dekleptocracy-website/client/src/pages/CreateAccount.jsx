@@ -244,7 +244,9 @@ const CreateAccount = () => {
                     className="checkbox-input"
                     required
                   />
-                  <span className="checkbox-text">I agree to terms & conditions</span>
+                  <span className="checkbox-text">
+                    I agree to <Link to="/terms-of-service" target="_blank" style={{ color: '#3e5132', textDecoration: 'underline' }}>terms & conditions</Link>
+                  </span>
                 </label>
               </div>
 
