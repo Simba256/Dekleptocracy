@@ -54,6 +54,7 @@ allowed_origins = [
     "http://localhost:3001",      # Next.js alternative port
     "http://localhost:5173",      # Vite dev server (dekleptocracy-website)
     "http://localhost:5174",      # Vite alternative port
+    "http://localhost:5000",      # Backend dev server
     "https://dekleptocracy.vercel.app",  # Production Vercel frontend
 ]
 
@@ -72,8 +73,10 @@ app.add_middleware(
     allow_origins=allowed_origins,
     allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel preview URLs
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
 
 # Initialize API clients

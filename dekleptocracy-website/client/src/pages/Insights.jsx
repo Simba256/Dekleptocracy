@@ -389,7 +389,7 @@ const AllInsightsView = ({ articles, state }) => {
         {/* Title */}
         <h1 className="insights-page-title">Latest Policy Impact Articles</h1>
         <p style={{ fontSize: '16px', color: '#6b7280', marginBottom: '40px' }}>
-          AI-generated insights based on verified data sources, updated every 2-3 hours
+          AI-generated insights based on verified data sources, updated weekly
         </p>
 
         {/* Insights Grid */}
@@ -405,54 +405,8 @@ const AllInsightsView = ({ articles, state }) => {
             <div style={{ fontSize: '48px', marginBottom: '20px' }}>📰</div>
             <h2 style={{ color: '#4A5D3F', marginBottom: '15px' }}>No Articles Yet</h2>
             <p style={{ color: '#6b7280', marginBottom: '25px', maxWidth: '500px', margin: '0 auto 25px' }}>
-              Articles are automatically generated every 2 hours using your MCP server. 
-              The first batch of articles will appear shortly!
+              Articles are automatically generated weekly. Check back soon for new policy impact analysis!
             </p>
-            <button
-              onClick={async () => {
-                try {
-                  const response = await fetch(`${API_URL}/api/articles/generate`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ count: 5 })
-                  });
-                  if (response.ok) {
-                    alert('Articles are being generated! Refresh the page in a minute.');
-                  }
-                } catch (error) {
-                  console.error('Error generating articles:', error);
-                  alert('Error generating articles. Make sure your MCP server is running.');
-                }
-              }}
-              style={{
-                padding: '12px 30px',
-                backgroundColor: '#4A5D3F',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: '600',
-                marginRight: '10px'
-              }}
-            >
-              🚀 Generate Articles Now
-            </button>
-            <button
-              onClick={() => window.location.reload()}
-              style={{
-                padding: '12px 30px',
-                backgroundColor: '#6b7280',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: '600'
-              }}
-            >
-              🔄 Refresh Page
-            </button>
           </div>
         ) : (
           <div className="all-insights-grid">
