@@ -78,45 +78,138 @@ const articleTemplates = [
 
 // LLM prompt template for generating articles
 const generateArticlePrompt = (category, topic, sources) => {
-  return `Generate a detailed article about ${topic} in the ${category} category for our policy impact tracking website "Dekleptocracy".
+  return `You are a senior economic journalist writing for "Dekleptocracy," a policy impact tracking platform. Generate a comprehensive, professional article about ${topic} in the ${category} category.
 
-Requirements:
-1. Title: Create an engaging, newsworthy title (max 80 characters)
-2. Description: Write a one-line summary (max 150 characters)
-3. Main Text: Write 2-3 paragraphs explaining the current situation and its impact on households
-4. Price Information: Provide specific price data with change percentage
-5. Impact Score: Rate the impact on household budgets (0-100)
-6. Why It Happened: List 3 reasons with titles and detailed descriptions explaining the causes
-7. Chart Data: Provide 7 months of price trend data (January to July 2025)
-8. Location: Specify if it's nationwide or state-specific
+WRITING STYLE REQUIREMENTS:
+- Write in a clear, authoritative journalistic tone
+- Use AP Style formatting
+- Include specific data points, statistics, and monetary figures
+- Explain economic concepts in accessible language
+- Connect policy decisions to real household impacts
+- Be factual and objective, not sensational
 
-Use these verified sources for data:
+ARTICLE STRUCTURE REQUIREMENTS:
+
+1. **Title** (60-80 characters)
+   - Newsworthy and specific
+   - Include percentage or dollar amount when possible
+   - Example: "Egg Prices Surge 28% in California, Hitting $5.90 Per Dozen"
+
+2. **Description** (130-150 characters)
+   - Compelling one-sentence summary
+   - Include key statistic and timeframe
+   - Example: "A dozen eggs hit $5.90 in February 2025, nearly $3 higher than last year, as tariffs and avian flu squeeze supply."
+
+3. **Main Text** (4-6 comprehensive paragraphs, 600-800 words total)
+   
+   Paragraph 1: Lead with the most important information
+   - Current price and comparison to previous year
+   - Specific monetary impact on average household
+   - Timeframe and geographic scope
+   
+   Paragraph 2: Economic context and scale
+   - Industry-wide trends and data
+   - Market dynamics and supply/demand factors
+   - Comparison to national averages or other regions
+   
+   Paragraph 3: Policy connections
+   - Specific policies, tariffs, or regulations driving the change
+   - Government agencies or departments involved
+   - Timeline of policy implementation
+   
+   Paragraph 4: Consumer and business impact
+   - How businesses are responding (price increases, substitutions)
+   - Consumer behavior changes
+   - Impact on different income brackets
+   
+   Paragraph 5: Expert analysis (optional)
+   - Economic forecasts
+   - Industry expert perspectives
+   - Historical context or precedents
+   
+   Paragraph 6: Future outlook
+   - Expected trends for next 3-6 months
+   - Potential policy changes or market corrections
+   - What consumers should watch for
+
+4. **Price Information**
+   - Current price: Exact dollar amount (e.g., "$5.90")
+   - Price unit: Specific measurement (e.g., "per dozen", "per gallon", "monthly average")
+   - Price change: Percentage increase/decrease with timeframe (e.g., "+28% from Q4 2024")
+
+5. **Impact Score** (0-100 scale)
+   - 0-30: Low impact (minor budget adjustment)
+   - 31-60: Medium impact (noticeable household expense change)
+   - 61-85: High impact (significant budget strain)
+   - 86-100: Critical impact (household financial crisis)
+   - Impact level: "low", "medium", "high", or "critical"
+
+6. **Why It Happened** (3-4 detailed reasons)
+   - Each reason must have a bold title and 2-3 sentence explanation
+   - Include specific percentages, dollar amounts, or data points
+   - Connect to verifiable policy decisions or economic factors
+   - Example format:
+     * "Federal Tariffs on Imported Grain: The 15% tariff imposed in October 2024 on corn and soy imports increased feed costs by $0.12 per dozen eggs, according to USDA analysis."
+     * "Avian Flu Outbreak: H5N1 outbreaks eliminated 5.2 million laying hens across 12 states in Q4 2024, reducing national egg supply by 8% according to CDC agricultural reports."
+
+7. **Chart Data** (7 data points: January through July 2025)
+   - Provide realistic month-by-month price progression
+   - Show gradual increases or decreases (not random jumps)
+   - Values should align with the narrative
+   - Format: [{ "month": "Jan", "value": 4.20 }, { "month": "Feb", "value": 4.45 }, ...]
+
+8. **Location**
+   - Specify geographic scope: "California", "Nationwide", "Northeast Region", etc.
+   - If state-specific, explain why this region is particularly affected
+
+Use these verified data sources:
 ${sources.map((s, i) => `${i + 1}. ${s.title} - ${s.url}`).join('\n')}
 
-Return the response in JSON format with this exact structure:
+CRITICAL REQUIREMENTS:
+✓ Write at a college reading level (clear but sophisticated)
+✓ Every statistic must be specific (no vague "many" or "significant")
+✓ Include at least 5 concrete numbers or percentages
+✓ Connect policy decisions to price impacts
+✓ Explain WHY consumers should care
+✓ Provide actionable context (trends, forecasts)
+
+Return ONLY valid JSON with this exact structure (no additional text):
 {
-  "title": "Article title here",
-  "description": "One-line summary",
-  "mainText": "Full article text with 2-3 paragraphs",
-  "price": "$X.XX or +X%",
-  "priceUnit": "per unit or timeframe",
+  "title": "Specific, data-driven title with percentage or dollar amount",
+  "description": "Compelling one-sentence summary with key statistic (130-150 chars)",
+  "mainText": "Four to six well-structured paragraphs (600-800 words). Each paragraph should flow naturally. Include specific data points, policy connections, and real-world impacts. Use transitions between paragraphs. Write professionally but accessibly.",
+  "price": "$X.XX",
+  "priceUnit": "per [unit]",
   "priceChange": "+X.X%",
   "impactScore": 75,
   "impactLevel": "high",
-  "location": "California or Nationwide",
+  "location": "California",
   "whyItHappened": [
     {
-      "title": "Reason Title:",
-      "description": "Detailed explanation of this reason"
+      "title": "Specific Policy or Factor Title:",
+      "description": "Detailed 2-3 sentence explanation with specific data points, percentages, dates, and sources. Connect cause to effect clearly."
+    },
+    {
+      "title": "Second Major Factor:",
+      "description": "Another detailed explanation with concrete numbers and timeframes."
+    },
+    {
+      "title": "Third Contributing Factor:",
+      "description": "Third detailed explanation with specific economic or policy connections."
     }
   ],
   "chartData": [
-    { "month": "Jan", "value": 100 },
-    ...
+    { "month": "Jan", "value": 4.20 },
+    { "month": "Feb", "value": 4.45 },
+    { "month": "Mar", "value": 4.75 },
+    { "month": "Apr", "value": 5.10 },
+    { "month": "May", "value": 5.40 },
+    { "month": "Jun", "value": 5.65 },
+    { "month": "Jul", "value": 5.90 }
   ]
 }
 
-Important: Make the article factual, data-driven, and focused on how policy decisions impact consumer costs. Include specific numbers and percentages.`;
+Remember: You are writing for informed citizens who want to understand how government policies affect their daily expenses. Be thorough, specific, and analytical.`;
 };
 
 // Call your MCP Server to generate articles
@@ -136,7 +229,7 @@ async function callLLM(prompt) {
         messages: [
           {
             role: "system",
-            content: "You are a data journalist specializing in economic policy and consumer price impacts. Generate factual, data-driven articles with specific numbers and citations. Always return valid JSON in your response."
+            content: "You are a senior economic journalist writing for Dekleptocracy, a policy impact tracking platform. Write comprehensive, professional articles (600-800 words) analyzing how government policies affect consumer costs. Use AP Style, include specific statistics and data points, explain economic concepts clearly, and connect policy decisions to household impacts. Always return ONLY valid JSON with no additional text or markdown."
           },
           {
             role: "user",
@@ -146,7 +239,8 @@ async function callLLM(prompt) {
         use_mcp_tools: true,
         stream: false,
         max_iterations: 5,
-        max_total_tools: 8
+        max_total_tools: 10,
+        max_context_tokens: 8000
       })
     });
     
@@ -191,12 +285,12 @@ async function callLLM(prompt) {
   }
 }
 
-// Mock data fallback
+// Mock data fallback - high-quality example article
 function getMockArticleData() {
   return {
-    title: "Egg Prices Surge 28% in California",
-    description: "A dozen eggs hit $5.90 in February 2025, nearly $3 higher than last year.",
-    mainText: "In February 2025, the price of a dozen eggs in California climbed to $5.90, almost double last year's price. Families are now paying nearly $25 more per month just for eggs, a staple in most households. This surge represents a 28% increase from the previous quarter and has become one of the most visible signs of grocery inflation affecting American consumers.",
+    title: "Egg Prices Surge 28% in California, Hitting $5.90 Per Dozen",
+    description: "A dozen eggs hit $5.90 in February 2025, nearly $3 higher than last year, as federal tariffs and avian flu outbreaks squeeze supply.",
+    mainText: "In February 2025, the price of a dozen Grade A large eggs in California climbed to $5.90, representing a dramatic 28% increase from the previous quarter and an 87% jump compared to February 2024's $3.15 price point. For the average California household consuming approximately 18 dozen eggs annually, this translates to an additional $50 in yearly grocery expenses—a significant burden for families already grappling with broader inflation.\n\nThe surge reflects a perfect storm of supply constraints and policy-driven cost increases affecting the entire poultry industry. Nationwide, egg production has fallen by 8% since October 2024, while demand has remained steady. California, which produces approximately 6.4 billion eggs annually through its 13.5 million laying hens, has been hit particularly hard due to its stricter cage-free requirements, which increase per-unit production costs by an estimated 15-20% compared to conventional housing systems.\n\nFederal agricultural policy has played a central role in driving up costs. The 15% tariff on imported corn and soy, implemented in October 2024 as part of broader trade negotiations, has increased feed costs—which represent 60-70% of total egg production expenses—by approximately $0.12 per dozen. The USDA estimates that these tariffs have added $780 million in costs to the domestic poultry industry annually. Simultaneously, ongoing H5N1 avian influenza outbreaks have forced the depopulation of 5.2 million laying hens across 12 states, including 800,000 in California alone, according to CDC agricultural monitoring reports.\n\nGrocery retailers and food service providers are adapting to the price shock in various ways. Major chains like Safeway and Kroger have begun prominently featuring egg substitutes and plant-based alternatives, while restaurants have quietly reduced portion sizes or substituted eggs in menu items. Lower-income households have been disproportionately affected, with food bank requests for egg donations up 34% in the first quarter of 2025 compared to the same period in 2024, according to the California Association of Food Banks.\n\nIndustry analysts project that egg prices will remain elevated through at least mid-2025. The American Egg Board forecasts that prices could reach $6.20-$6.50 per dozen by April before beginning a gradual decline as new laying hens reach production age—a process that takes approximately 20-22 weeks. However, the timeline for recovery remains uncertain and highly dependent on whether additional avian flu outbreaks occur during the spring migration season. Agricultural economists at UC Davis warn that if tariffs remain in place through 2026, the baseline price for eggs may permanently reset 25-30% higher than pre-2024 levels, fundamentally changing the economics of this dietary staple for American households.",
     price: "$5.90",
     priceUnit: "per dozen",
     priceChange: "+28%",
@@ -205,26 +299,30 @@ function getMockArticleData() {
     location: "California",
     whyItHappened: [
       {
-        title: "Feed Tariffs:",
-        description: "New tariffs on imported grains like corn and soy — critical for chicken feed — increased production costs by approximately 15%."
+        title: "Federal Tariffs on Imported Grain:",
+        description: "The 15% tariff imposed in October 2024 on corn and soy imports—critical components of chicken feed—increased feed costs by approximately $0.12 per dozen eggs. Feed represents 60-70% of total production costs, making this policy change the single largest driver of price increases. The USDA estimates these tariffs have added $780 million annually to domestic poultry industry costs."
       },
       {
-        title: "Avian Flu Outbreak:",
-        description: "Ongoing outbreaks of avian flu reduced poultry supply nationwide, eliminating over 5 million laying hens from production."
+        title: "H5N1 Avian Influenza Outbreak:",
+        description: "Ongoing H5N1 outbreaks eliminated 5.2 million laying hens across 12 states in Q4 2024, reducing national egg supply by 8% according to CDC agricultural reports. California lost 800,000 laying hens, representing 6% of the state's production capacity. The depopulation and biosecurity measures have cost the industry an estimated $140 million in direct losses."
       },
       {
-        title: "Rising Energy Costs:",
-        description: "Increased electricity and heating costs for chicken farms added to overall production expenses."
+        title: "California Cage-Free Requirements:",
+        description: "California's Proposition 12, requiring cage-free housing for all egg-laying hens, adds 15-20% to per-unit production costs compared to conventional systems. These requirements, while improving animal welfare, necessitate larger facilities, more labor, and higher mortality rates. The policy affects all eggs sold in California, regardless of origin, limiting the availability of lower-cost alternatives."
+      },
+      {
+        title: "Rising Energy and Labor Costs:",
+        description: "Electricity costs for climate-controlled poultry facilities increased by 18% in 2024, while agricultural labor costs rose 12% due to California's $16 minimum wage. These operational expense increases compound the impact of feed and disease-related challenges, with energy alone adding approximately $0.08 per dozen to production costs."
       }
     ],
     chartData: [
-      { month: "Jan", value: 3.2 },
-      { month: "Feb", value: 3.5 },
-      { month: "Mar", value: 3.8 },
-      { month: "Apr", value: 4.2 },
-      { month: "May", value: 4.8 },
-      { month: "Jun", value: 5.4 },
-      { month: "Jul", value: 5.9 }
+      { month: "Jan", value: 4.20 },
+      { month: "Feb", value: 4.45 },
+      { month: "Mar", value: 4.75 },
+      { month: "Apr", value: 5.10 },
+      { month: "May", value: 5.40 },
+      { month: "Jun", value: 5.65 },
+      { month: "Jul", value: 5.90 }
     ]
   };
 }

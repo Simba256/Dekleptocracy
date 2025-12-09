@@ -248,50 +248,75 @@ const Insights = () => {
           {/* Chart */}
           <div className="insights-chart-section">
             <div className="insights-chart-container">
-              <div className="insights-chart-y-labels">
-                <span>16</span>
-                <span>12</span>
-                <span>8</span>
-                <span>4</span>
-                <span>0</span>
-              </div>
-              <div className="insights-chart-area">
-                <svg className="insights-line-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
-                  {/* Grid lines */}
-                  <line x1="0" y1="0" x2="400" y2="0" stroke="#f3f4f6" strokeWidth="1" />
-                  <line x1="0" y1="50" x2="400" y2="50" stroke="#f3f4f6" strokeWidth="1" />
-                  <line x1="0" y1="100" x2="400" y2="100" stroke="#f3f4f6" strokeWidth="1" />
-                  <line x1="0" y1="150" x2="400" y2="150" stroke="#f3f4f6" strokeWidth="1" />
-                  <line x1="0" y1="200" x2="400" y2="200" stroke="#f3f4f6" strokeWidth="1" />
-                  
-                  {/* Line path */}
-                  <polyline
-                    points="0,150 66,135 133,120 200,95 266,65 333,35 400,10"
-                    fill="none"
-                    stroke="#FF6B5A"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  
-                  {/* Data point with tooltip */}
-                  <circle cx="400" cy="10" r="5" fill="#FF6B5A" />
-                  <g transform="translate(300, 10)">
-                    <rect x="0" y="-40" width="95" height="35" rx="4" fill="#2d3748" />
-                    <text x="47.5" y="-20" textAnchor="middle" fill="white" fontSize="11" fontWeight="500">
-                      price trend
-                    </text>
-                    <text x="47.5" y="-10" textAnchor="middle" fill="white" fontSize="11" fontWeight="500">
-                      rising
-                    </text>
-                  </g>
-                </svg>
-                <div className="insights-chart-x-labels">
-                  {insightData.chartData && insightData.chartData.map((data, index) => (
-                    <span key={index}>{data.month}</span>
-                  ))}
-                </div>
-              </div>
+              {(() => {
+                // Calculate chart data dynamically
+                const chartData = insightData.chartData || [];
+                const maxValue = Math.max(...chartData.map(d => d.value), 16);
+                const yLabels = [maxValue, maxValue * 0.75, maxValue * 0.5, maxValue * 0.25, 0].map(v => Math.round(v));
+                
+                // Generate points for the polyline
+                const points = chartData.map((d, i) => {
+                  const x = (i / (chartData.length - 1)) * 400;
+                  const y = 200 - (d.value / maxValue) * 200;
+                  return `${x},${y}`;
+                }).join(' ');
+                
+                // Last point for the tooltip
+                const lastPoint = chartData.length > 0 ? {
+                  x: 400,
+                  y: 200 - (chartData[chartData.length - 1].value / maxValue) * 200,
+                  value: chartData[chartData.length - 1].value
+                } : { x: 400, y: 10, value: 0 };
+                
+                return (
+                  <>
+                    <div className="insights-chart-y-labels">
+                      {yLabels.map((label, i) => (
+                        <span key={i}>{label}</span>
+                      ))}
+                    </div>
+                    <div className="insights-chart-area">
+                      <svg className="insights-line-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
+                        {/* Grid lines */}
+                        <line x1="0" y1="0" x2="400" y2="0" stroke="#f3f4f6" strokeWidth="1" />
+                        <line x1="0" y1="50" x2="400" y2="50" stroke="#f3f4f6" strokeWidth="1" />
+                        <line x1="0" y1="100" x2="400" y2="100" stroke="#f3f4f6" strokeWidth="1" />
+                        <line x1="0" y1="150" x2="400" y2="150" stroke="#f3f4f6" strokeWidth="1" />
+                        <line x1="0" y1="200" x2="400" y2="200" stroke="#f3f4f6" strokeWidth="1" />
+                        
+                        {/* Line path with actual data */}
+                        {points && (
+                          <polyline
+                            points={points}
+                            fill="none"
+                            stroke="#FF6B5A"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        )}
+                        
+                        {/* Data point with tooltip showing actual value */}
+                        <circle cx={lastPoint.x} cy={lastPoint.y} r="5" fill="#FF6B5A" />
+                        <g transform={`translate(${Math.min(lastPoint.x - 50, 300)}, ${lastPoint.y})`}>
+                          <rect x="0" y="-40" width="95" height="35" rx="4" fill="#2d3748" />
+                          <text x="47.5" y="-20" textAnchor="middle" fill="white" fontSize="11" fontWeight="500">
+                            {insightData.priceUnit}
+                          </text>
+                          <text x="47.5" y="-10" textAnchor="middle" fill="white" fontSize="11" fontWeight="500">
+                            {lastPoint.value.toFixed(2)}
+                          </text>
+                        </g>
+                      </svg>
+                      <div className="insights-chart-x-labels">
+                        {chartData.map((data, index) => (
+                          <span key={index}>{data.month}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
 
@@ -335,22 +360,6 @@ const Insights = () => {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
-
-        {/* Generated By Tag */}
-        {insightData.generatedBy === 'llm' && (
-          <div style={{ 
-            textAlign: 'center', 
-            marginTop: '40px', 
-            padding: '20px',
-            backgroundColor: '#f9fafb',
-            borderRadius: '8px'
-          }}>
-            <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
-              This article was generated by AI using verified data sources • 
-              Published on {new Date(insightData.publishedAt).toLocaleDateString()}
-            </p>
           </div>
         )}
       </div>
