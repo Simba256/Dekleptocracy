@@ -54,6 +54,7 @@ allowed_origins = [
     "http://localhost:3001",      # Next.js alternative port
     "http://localhost:5173",      # Vite dev server (dekleptocracy-website)
     "http://localhost:5174",      # Vite alternative port
+    "https://dekleptocracy.vercel.app",  # Production Vercel frontend
 ]
 
 # Add production frontend URL from environment variable
@@ -64,13 +65,12 @@ if frontend_url:
     if frontend_url.startswith("http://"):
         allowed_origins.append(frontend_url.replace("http://", "https://"))
 
-# For development, you can also allow all Vercel preview deployments
-if os.getenv("ALLOW_VERCEL_PREVIEWS") == "true":
-    allowed_origins.append("https://*.vercel.app")
-
+# Allow all Vercel preview deployments (for testing)
+# This uses regex pattern matching
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel preview URLs
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
