@@ -6,6 +6,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import articleRoutes from './routes/articleRoutes.js';
+import { scheduleArticleGeneration, triggerArticleGeneration, getSchedulerStatus } from './services/articleScheduler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +68,23 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/articles', articleRoutes);
+
+// Article generation endpoints
+app.post('/api/articles/generate', async (req, res) => {
+  try {
+    const { count = 7 } = req.body;
+    const result = await triggerArticleGeneration(count);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/articles/scheduler/status', (req, res) => {
+  const status = getSchedulerStatus();
+  res.json(status);
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -110,6 +129,12 @@ async function start() {
       console.log(`📝 Health check: http://localhost:${port}/api/health`);
       console.log(`🔐 Auth routes: http://localhost:${port}/api/auth`);
       console.log(`👤 User routes: http://localhost:${port}/api/user`);
+      console.log(`📰 Article routes: http://localhost:${port}/api/articles`);
+      
+      // Start the article generation scheduler (every 2 hours)
+      console.log('\n📅 Starting article generation scheduler...');
+      scheduleArticleGeneration(2); // Generate articles every 2 hours
+      console.log('✅ Scheduler started successfully\n');
     });
   } catch (err) {
     console.error('❌ Failed to start server:', err);
