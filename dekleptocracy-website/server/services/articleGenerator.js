@@ -642,45 +642,59 @@ function generateSources(category, topic) {
 
 // Hero image selection based on category
 function selectHeroImage(category) {
+  // Using high-quality, policy-relevant images from reliable sources
   const images = {
-    groceries: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=1200&h=400&fit=crop',
-    fuel: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop',
-    utilities: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&h=400&fit=crop',
-    tech: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&h=400&fit=crop',
-    housing: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=400&fit=crop',
-    healthcare: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1200&h=400&fit=crop',
-    education: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=400&fit=crop',
-    transportation: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=400&fit=crop'
+    groceries: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=600&fit=crop&q=80',
+    fuel: 'https://images.unsplash.com/photo-1545262810-77515befe149?w=1200&h=600&fit=crop&q=80',
+    utilities: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&h=600&fit=crop&q=80',
+    tech: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=600&fit=crop&q=80',
+    housing: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=1200&h=600&fit=crop&q=80',
+    healthcare: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop&q=80',
+    education: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=600&fit=crop&q=80',
+    transportation: 'https://images.unsplash.com/photo-1485463611174-f302f6a5c1c9?w=1200&h=600&fit=crop&q=80'
   };
 
   // Normalize category name (lowercase, trim spaces)
   const normalizedCategory = category?.toLowerCase().trim();
-  return images[normalizedCategory] || images.groceries;
+  const imageUrl = images[normalizedCategory] || images.groceries;
+  
+  console.log(`🖼️  Selected image for ${category}: ${imageUrl}`);
+  return imageUrl;
 }
 
-// Clean up duplicate articles (keep the newest one)
+// Clean up duplicate articles (keep the newest one, delete older ones)
 async function removeDuplicateArticles() {
   try {
-    const articles = await Article.find({}).sort({ createdAt: -1 });
-    const seenSlugs = new Set();
-    const duplicates = [];
+    console.log('🧹 Checking for duplicate articles...');
     
-    for (const article of articles) {
-      if (seenSlugs.has(article.slug)) {
-        duplicates.push(article._id);
+    // Get all articles
+    const allArticles = await Article.find({}).sort({ createdAt: -1 });
+    const slugMap = new Map();
+    const duplicateIds = [];
+    
+    // Track duplicates
+    for (const article of allArticles) {
+      if (slugMap.has(article.slug)) {
+        // This is a duplicate - mark for deletion
+        duplicateIds.push(article._id);
+        console.log(`   ❌ Found duplicate: "${article.title}" (${article.slug})`);
       } else {
-        seenSlugs.add(article.slug);
+        // First occurrence - keep it
+        slugMap.set(article.slug, article._id);
       }
     }
     
-    if (duplicates.length > 0) {
-      await Article.deleteMany({ _id: { $in: duplicates } });
-      console.log(`🧹 Removed ${duplicates.length} duplicate articles`);
+    // Delete all duplicates
+    if (duplicateIds.length > 0) {
+      const result = await Article.deleteMany({ _id: { $in: duplicateIds } });
+      console.log(`🧹 Removed ${result.deletedCount} duplicate articles`);
+      return result.deletedCount;
+    } else {
+      console.log('✅ No duplicates found');
+      return 0;
     }
-    
-    return duplicates.length;
   } catch (error) {
-    console.error('Error removing duplicates:', error);
+    console.error('❌ Error removing duplicates:', error);
     return 0;
   }
 }
@@ -807,13 +821,31 @@ async function generateArticles(count = 7) {
         const llmResponse = await callLLMWithContext(enhancedPrompt, template.category, template.selectedTopic);
         
         // Create article object
-        const slug = llmResponse.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        let baseSlug = llmResponse.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         
         // Check if article with same slug already exists
-        const existingArticle = await Article.findOne({ slug });
-        if (existingArticle) {
-          console.log(`  ⚠️  Article with slug "${slug}" already exists, skipping...`);
-          continue;
+        let slug = baseSlug;
+        let slugExists = await Article.findOne({ slug });
+        let slugCounter = 1;
+        
+        // If slug exists, add a counter until we find a unique one
+        while (slugExists) {
+          slug = `${baseSlug}-${slugCounter}`;
+          slugExists = await Article.findOne({ slug });
+          slugCounter++;
+          
+          if (slugCounter > 10) {
+            console.log(`  ⚠️  Too many articles with similar titles, skipping...`);
+            continue;
+          }
+        }
+        
+        console.log(`  📝 Creating article with slug: ${slug}`);
+        
+        // Get hero image
+        const heroImage = selectHeroImage(template.category);
+        if (!heroImage) {
+          console.log(`  ⚠️  No hero image found for category: ${template.category}`);
         }
         
         const articleData = {
@@ -822,7 +854,7 @@ async function generateArticles(count = 7) {
           category: template.category,
           icon: template.icon,
           iconBg: template.iconBg,
-          heroImage: selectHeroImage(template.category) || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=400&fit=crop',
+          heroImage: heroImage,
           description: llmResponse.description,
           mainText: llmResponse.mainText,
           price: llmResponse.price,
@@ -841,12 +873,22 @@ async function generateArticles(count = 7) {
           publishedAt: new Date()
         };
         
-        // Save to database
-        const article = new Article(articleData);
-        await article.save();
-        
-        generatedArticles.push(article);
-        console.log(`  ✅ Article saved to MongoDB: ${article.title}`);
+        // Save to database with error handling
+        try {
+          const article = new Article(articleData);
+          await article.save();
+          generatedArticles.push(article);
+          console.log(`  ✅ Article saved: ${article.title}`);
+          console.log(`     📍 Slug: ${article.slug}`);
+          console.log(`     🖼️  Image: ${article.heroImage ? 'Yes' : 'NO IMAGE!'}`);
+        } catch (saveError) {
+          if (saveError.code === 11000) {
+            // Duplicate key error
+            console.log(`  ⚠️  Duplicate detected during save, skipping: ${llmResponse.title}`);
+          } else {
+            console.error(`  ❌ Error saving article:`, saveError.message);
+          }
+        }
         
       } catch (error) {
         console.error(`  ❌ Error generating article for ${template.category}:`, error.message);

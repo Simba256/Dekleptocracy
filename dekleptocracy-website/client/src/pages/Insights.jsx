@@ -163,7 +163,14 @@ const Insights = () => {
 
         {/* Hero Image */}
         <div className="insights-hero-image">
-          <img src={insightData.heroImage} alt={insightData.title} />
+          <img 
+            src={insightData.heroImage} 
+            alt={insightData.title}
+            onError={(e) => {
+              e.target.onerror = null; // Prevent infinite loop
+              e.target.src = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=600&fit=crop&q=80';
+            }}
+          />
         </div>
 
         {/* Main Content Grid */}
@@ -452,7 +459,14 @@ const AllInsightsView = ({ articles, state }) => {
             {articles.map((article) => (
               <div key={article._id} className="all-insights-card">
                 <div className="all-insights-hero">
-                  <img src={article.heroImage} alt={article.title} />
+                  <img 
+                    src={article.heroImage} 
+                    alt={article.title}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=600&fit=crop&q=80';
+                    }}
+                  />
                   <div className="all-insights-category-badge">{article.category}</div>
                 </div>
               

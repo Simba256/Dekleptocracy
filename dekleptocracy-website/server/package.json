@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "start": "node index.js",
-    "generate-secret": "node generate-jwt-secret.js"
+    "generate-secret": "node generate-jwt-secret.js",
+    "cleanup-duplicates": "node scripts/cleanupDuplicates.js"
   },
   "keywords": [],
   "author": "",
