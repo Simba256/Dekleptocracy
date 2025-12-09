@@ -1,198 +1,154 @@
-import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import './Insights.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Insights = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const category = searchParams.get('category') || 'all';
+  const slug = searchParams.get('slug');
   const state = searchParams.get('state') || 'CALIFORNIA';
 
-  // Data based on category and state
-  const getInsightData = (category, state) => {
-    const dataMap = {
-      groceries: {
-        location: state,
-        title: 'Top Wallet Shocks This Week',
-        heroImage: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=1200&h=400&fit=crop',
-        icon: '🥚',
-        iconBg: '#fef3c7',
-        category: 'Groceries',
-        description: 'A dozen eggs hit $5.90 in February 2025 nearly $3 higher than last year.',
-        price: '$5.90',
-        priceUnit: 'per dozen',
-        priceChange: '+5.7%',
-        impactScore: 83,
-        impactLevel: 'high',
-        mainText: 'In February 2025, the price of a dozen eggs in California climbed to $5.90, almost double last year\'s price. Families are now paying nearly $25 more per month just for eggs, a staple in most households.',
-        whyItHappened: [
-          {
-            title: 'Feed Tariffs:',
-            description: 'New tariffs on imported grains like corn and soy — critical for chicken feed — increased production costs.'
-          },
-          {
-            title: 'Supply Issues:',
-            description: 'Ongoing outbreaks of avian flu reduced poultry supply nationwide.'
-          },
-          {
-            title: 'Market Demand:',
-            description: 'Holiday demand for eggs (baking, festive dishes) amplified the price surge.'
+  const [articles, setArticles] = useState([]);
+  const [currentArticle, setCurrentArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch articles from API
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        let url = `${API_URL}/api/articles`;
+        
+        // If slug is provided, fetch single article
+        if (slug) {
+          url = `${API_URL}/api/articles/${slug}`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Failed to fetch article');
+          const data = await response.json();
+          setCurrentArticle(data.article);
+        } 
+        // If category is specified, fetch by category
+        else if (category !== 'all') {
+          url = `${API_URL}/api/articles/category/${category}?limit=10`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Failed to fetch articles');
+          const data = await response.json();
+          setArticles(data.articles);
+          if (data.articles.length > 0) {
+            setCurrentArticle(data.articles[0]);
           }
-        ],
-        chartData: [
-          { month: 'Jan', value: 3.2 },
-          { month: 'Feb', value: 3.5 },
-          { month: 'Mar', value: 3.8 },
-          { month: 'Apr', value: 4.2 },
-          { month: 'May', value: 4.8 },
-          { month: 'Jun', value: 5.4 },
-          { month: 'Jul', value: 5.9 }
-        ],
-        sources: [
-          { title: 'USDA Weekly Egg Market Report', url: '#' },
-          { title: 'California Agriculture Dept. Bulletin', url: '#' },
-          { title: 'Reuters: Egg Prices and Policy Impact', url: '#' }
-        ]
-      },
-      fuel: {
-        location: state,
-        title: 'Top Wallet Shocks This Week',
-        heroImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop',
-        icon: '⛽',
-        iconBg: '#fef3c7',
-        category: 'Fuel',
-        description: 'Gas prices tick up 2¢ in the last week to reach $3.15/gal nationwide.',
-        price: '$3.15',
-        priceUnit: 'per gallon',
-        priceChange: '+2¢',
-        impactScore: 63,
-        impactLevel: 'medium',
-        mainText: 'Gas prices have been steadily climbing across the nation, with California seeing some of the highest increases. The recent 2-cent jump brings the national average to $3.15 per gallon, putting additional strain on commuters and families.',
-        whyItHappened: [
-          {
-            title: 'Crude Oil Prices:',
-            description: 'Global crude oil prices have increased due to supply chain disruptions and geopolitical tensions.'
-          },
-          {
-            title: 'Refinery Issues:',
-            description: 'Several refineries have experienced maintenance issues, reducing gasoline production capacity.'
-          },
-          {
-            title: 'Transportation Costs:',
-            description: 'Increased costs for transporting fuel from refineries to gas stations.'
-          }
-        ],
-        chartData: [
-          { month: 'Jan', value: 2.8 },
-          { month: 'Feb', value: 2.9 },
-          { month: 'Mar', value: 3.0 },
-          { month: 'Apr', value: 3.1 },
-          { month: 'May', value: 3.2 },
-          { month: 'Jun', value: 3.15 },
-          { month: 'Jul', value: 3.15 }
-        ],
-        sources: [
-          { title: 'AAA Gas Price Report', url: '#' },
-          { title: 'Energy Information Administration', url: '#' },
-          { title: 'California Energy Commission', url: '#' }
-        ]
-      },
-      utilities: {
-        location: state,
-        title: 'Top Wallet Shocks This Week',
-        heroImage: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&h=400&fit=crop',
-        icon: '💡',
-        iconBg: '#fef3c7',
-        category: 'Utilities',
-        description: 'U.S. residential electricity rates rose about 6.7% in the past year.',
-        price: '+6.7%',
-        priceUnit: 'nationwide',
-        priceChange: '+0.6%',
-        impactScore: 72,
-        impactLevel: 'medium',
-        mainText: 'Electricity costs have surged across the United States, with residential rates increasing by 6.7% over the past year. This translates to an average increase of $15-25 per month for typical households.',
-        whyItHappened: [
-          {
-            title: 'Natural Gas Prices:',
-            description: 'Rising natural gas prices have increased the cost of electricity generation.'
-          },
-          {
-            title: 'Grid Infrastructure:',
-            description: 'Aging grid infrastructure requires significant investment, costs passed to consumers.'
-          },
-          {
-            title: 'Renewable Energy Transition:',
-            description: 'Investment in renewable energy infrastructure has led to short-term cost increases.'
-          }
-        ],
-        chartData: [
-          { month: 'Jan', value: 12.5 },
-          { month: 'Feb', value: 12.8 },
-          { month: 'Mar', value: 13.2 },
-          { month: 'Apr', value: 13.5 },
-          { month: 'May', value: 13.8 },
-          { month: 'Jun', value: 14.1 },
-          { month: 'Jul', value: 14.3 }
-        ],
-        sources: [
-          { title: 'U.S. Energy Information Administration', url: '#' },
-          { title: 'Federal Energy Regulatory Commission', url: '#' },
-          { title: 'State Public Utility Commissions', url: '#' }
-        ]
-      },
-      tech: {
-        location: state,
-        title: 'Top Wallet Shocks This Week',
-        heroImage: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&h=400&fit=crop',
-        icon: '📱',
-        iconBg: '#fef3c7',
-        category: 'Tech',
-        description: 'iPhone 17 expected to cost $50 more due to tariff increases.',
-        price: '+$50',
-        priceUnit: 'projected',
-        priceChange: '+2.1%',
-        impactScore: 45,
-        impactLevel: 'low',
-        mainText: 'New tariffs on imported electronics components are expected to increase the cost of the upcoming iPhone 17 by approximately $50. This represents a 2.1% increase over previous models.',
-        whyItHappened: [
-          {
-            title: 'Component Tariffs:',
-            description: 'New tariffs on imported semiconductors and electronic components increase manufacturing costs.'
-          },
-          {
-            title: 'Supply Chain Costs:',
-            description: 'Increased costs for shipping and logistics due to global supply chain disruptions.'
-          },
-          {
-            title: 'Currency Fluctuations:',
-            description: 'Exchange rate changes between the dollar and other currencies affect component costs.'
-          }
-        ],
-        chartData: [
-          { month: 'Jan', value: 999 },
-          { month: 'Feb', value: 1005 },
-          { month: 'Mar', value: 1010 },
-          { month: 'Apr', value: 1015 },
-          { month: 'May', value: 1020 },
-          { month: 'Jun', value: 1025 },
-          { month: 'Jul', value: 1049 }
-        ],
-        sources: [
-          { title: 'Apple Inc. Financial Reports', url: '#' },
-          { title: 'U.S. Trade Representative', url: '#' },
-          { title: 'Consumer Technology Association', url: '#' }
-        ]
+        }
+        // Fetch all articles
+        else {
+          url = `${API_URL}/api/articles?status=published&limit=20`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Failed to fetch articles');
+          const data = await response.json();
+          setArticles(data.articles);
+        }
+      } catch (err) {
+        console.error('Error fetching articles:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
-    return dataMap[category] || dataMap.groceries;
-  };
+    fetchArticles();
+  }, [category, slug]);
 
-  // If category is 'all', show all insights overview
-  if (category === 'all') {
-    return <AllInsightsView state={state} />;
+  if (loading) {
+    return (
+      <div className="insights-page">
+        <div className="insights-container">
+          <div style={{ textAlign: 'center', padding: '100px 20px' }}>
+            <div className="loading-spinner" style={{ 
+              width: '50px', 
+              height: '50px', 
+              border: '4px solid #f3f4f6', 
+              borderTop: '4px solid #4A5D3F',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 20px'
+            }}></div>
+            <p style={{ color: '#6b7280', fontSize: '16px' }}>Loading articles...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const insightData = getInsightData(category, state);
+  if (error) {
+    return (
+      <div className="insights-page">
+        <div className="insights-container">
+          <div style={{ textAlign: 'center', padding: '100px 20px' }}>
+            <h2 style={{ color: '#ef4444', marginBottom: '20px' }}>Error Loading Articles</h2>
+            <p style={{ color: '#6b7280', marginBottom: '30px' }}>{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '12px 30px',
+                backgroundColor: '#4A5D3F',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If category is 'all', show all insights overview
+  if (category === 'all' && !slug) {
+    return <AllInsightsView articles={articles} state={state} />;
+  }
+
+  // Show single article view
+  const insightData = currentArticle;
+
+  if (!insightData) {
+    return (
+      <div className="insights-page">
+        <div className="insights-container">
+          <div style={{ textAlign: 'center', padding: '100px 20px' }}>
+            <h2 style={{ color: '#4A5D3F' }}>No Articles Found</h2>
+            <p style={{ color: '#6b7280', margin: '20px 0' }}>
+              There are no articles available in this category yet.
+            </p>
+            <button 
+              onClick={() => navigate('/insights')}
+              style={{
+                padding: '12px 30px',
+                backgroundColor: '#4A5D3F',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}
+            >
+              View All Articles
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="insights-page">
@@ -207,7 +163,7 @@ const Insights = () => {
 
         {/* Hero Image */}
         <div className="insights-hero-image">
-          <img src={insightData.heroImage} alt="Eggs on shelf" />
+          <img src={insightData.heroImage} alt={insightData.title} />
         </div>
 
         {/* Main Content Grid */}
@@ -221,7 +177,6 @@ const Insights = () => {
               </div>
               <p className="insights-description">{insightData.description}</p>
             </div>
-
 
             {/* Main Text */}
             <p className="insights-main-text">{insightData.mainText}</p>
@@ -252,7 +207,7 @@ const Insights = () => {
 
             {/* Impact Score Gauge */}
             <div className="insights-impact-score">
-              <h3 className="insights-impact-title">Egg Price Impact Score</h3>
+              <h3 className="insights-impact-title">Impact Score</h3>
               <span className="insights-impact-level">{insightData.impactLevel}</span>
               
               <div className="insights-gauge-wrapper">
@@ -282,7 +237,7 @@ const Insights = () => {
               </div>
 
               <p className="insights-impact-description">
-                This score reflects the impact of rising egg prices on household grocery budgets compared to last year. A higher score indicates stronger inflationary pressure and a greater consumer burden.
+                This score reflects the impact on household budgets. A higher score indicates stronger inflationary pressure and greater consumer burden.
               </p>
             </div>
           </div>
@@ -324,15 +279,15 @@ const Insights = () => {
                   <g transform="translate(300, 10)">
                     <rect x="0" y="-40" width="95" height="35" rx="4" fill="#2d3748" />
                     <text x="47.5" y="-20" textAnchor="middle" fill="white" fontSize="11" fontWeight="500">
-                      rising egg
+                      price trend
                     </text>
                     <text x="47.5" y="-10" textAnchor="middle" fill="white" fontSize="11" fontWeight="500">
-                      prices
+                      rising
                     </text>
                   </g>
                 </svg>
                 <div className="insights-chart-x-labels">
-                  {insightData.chartData.map((data, index) => (
+                  {insightData.chartData && insightData.chartData.map((data, index) => (
                     <span key={index}>{data.month}</span>
                   ))}
                 </div>
@@ -358,81 +313,54 @@ const Insights = () => {
         </div>
 
         {/* Sources */}
-        <div className="insights-sources">
-          <h3 className="insights-sources-title">Sources:</h3>
-          <ul className="insights-sources-list">
-            {insightData.sources.map((source, index) => (
-              <li key={index}>
-                <a href={source.url} className="insights-source-link">{source.title}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {insightData.sources && insightData.sources.length > 0 && (
+          <div className="insights-sources">
+            <h3 className="insights-sources-title">Sources:</h3>
+            <ul className="insights-sources-list">
+              {insightData.sources.map((source, index) => (
+                <li key={index}>
+                  <a 
+                    href={source.url} 
+                    className="insights-source-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {source.title}
+                  </a>
+                  {source.publishedDate && (
+                    <span style={{ color: '#9ca3af', fontSize: '13px', marginLeft: '10px' }}>
+                      ({new Date(source.publishedDate).toLocaleDateString()})
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Generated By Tag */}
+        {insightData.generatedBy === 'llm' && (
+          <div style={{ 
+            textAlign: 'center', 
+            marginTop: '40px', 
+            padding: '20px',
+            backgroundColor: '#f9fafb',
+            borderRadius: '8px'
+          }}>
+            <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
+              This article was generated by AI using verified data sources • 
+              Published on {new Date(insightData.publishedAt).toLocaleDateString()}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 // All Insights Overview Component
-const AllInsightsView = ({ state }) => {
-  const allInsights = [
-    {
-      id: 'groceries',
-      category: 'Groceries',
-      icon: '🥚',
-      iconBg: '#fef3c7',
-      title: 'Egg prices hit $5.90 in February 2025',
-      description: 'A dozen eggs hit $5.90 in February 2025 nearly $3 higher than last year.',
-      price: '$5.90',
-      priceUnit: 'per dozen',
-      priceChange: '+5.7%',
-      impactScore: 83,
-      impactLevel: 'high',
-      heroImage: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400&h=300&fit=crop'
-    },
-    {
-      id: 'fuel',
-      category: 'Fuel',
-      icon: '⛽',
-      iconBg: '#fef3c7',
-      title: 'Gas prices tick up 2¢ to reach $3.15/gal',
-      description: 'Gas prices tick up 2¢ in the last week to reach $3.15/gal nationwide.',
-      price: '$3.15',
-      priceUnit: 'per gallon',
-      priceChange: '+2¢',
-      impactScore: 63,
-      impactLevel: 'medium',
-      heroImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'
-    },
-    {
-      id: 'utilities',
-      category: 'Utilities',
-      icon: '💡',
-      iconBg: '#fef3c7',
-      title: 'Electricity rates rose 6.7% nationwide',
-      description: 'U.S. residential electricity rates rose about 6.7% in the past year.',
-      price: '+6.7%',
-      priceUnit: 'nationwide',
-      priceChange: '+0.6%',
-      impactScore: 72,
-      impactLevel: 'medium',
-      heroImage: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=300&fit=crop'
-    },
-    {
-      id: 'tech',
-      category: 'Tech',
-      icon: '📱',
-      iconBg: '#fef3c7',
-      title: 'iPhone 17 expected to cost $50 more',
-      description: 'iPhone 17 expected to cost $50 more due to tariff increases.',
-      price: '+$50',
-      priceUnit: 'projected',
-      priceChange: '+2.1%',
-      impactScore: 45,
-      impactLevel: 'low',
-      heroImage: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop'
-    }
-  ];
+const AllInsightsView = ({ articles, state }) => {
+  const navigate = useNavigate();
 
   return (
     <div className="insights-page">
@@ -443,54 +371,130 @@ const AllInsightsView = ({ state }) => {
         </div>
 
         {/* Title */}
-        <h1 className="insights-page-title">All Wallet Shocks This Week</h1>
+        <h1 className="insights-page-title">Latest Policy Impact Articles</h1>
+        <p style={{ fontSize: '16px', color: '#6b7280', marginBottom: '40px' }}>
+          AI-generated insights based on verified data sources, updated every 2-3 hours
+        </p>
 
         {/* Insights Grid */}
-        <div className="all-insights-grid">
-          {allInsights.map((insight) => (
-            <div key={insight.id} className="all-insights-card">
-              <div className="all-insights-hero">
-                <img src={insight.heroImage} alt={insight.category} />
-                <div className="all-insights-category-badge">{insight.category}</div>
-              </div>
+        {articles.length === 0 ? (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '60px 20px',
+            backgroundColor: '#f9fafb',
+            borderRadius: '12px',
+            border: '2px dashed #e5e7eb',
+            marginTop: '20px'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '20px' }}>📰</div>
+            <h2 style={{ color: '#4A5D3F', marginBottom: '15px' }}>No Articles Yet</h2>
+            <p style={{ color: '#6b7280', marginBottom: '25px', maxWidth: '500px', margin: '0 auto 25px' }}>
+              Articles are automatically generated every 2 hours using your MCP server. 
+              The first batch of articles will appear shortly!
+            </p>
+            <button
+              onClick={async () => {
+                try {
+                  const response = await fetch(`${API_URL}/api/articles/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ count: 5 })
+                  });
+                  if (response.ok) {
+                    alert('Articles are being generated! Refresh the page in a minute.');
+                  }
+                } catch (error) {
+                  console.error('Error generating articles:', error);
+                  alert('Error generating articles. Make sure your MCP server is running.');
+                }
+              }}
+              style={{
+                padding: '12px 30px',
+                backgroundColor: '#4A5D3F',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '600',
+                marginRight: '10px'
+              }}
+            >
+              🚀 Generate Articles Now
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '12px 30px',
+                backgroundColor: '#6b7280',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}
+            >
+              🔄 Refresh Page
+            </button>
+          </div>
+        ) : (
+          <div className="all-insights-grid">
+            {articles.map((article) => (
+              <div key={article._id} className="all-insights-card">
+                <div className="all-insights-hero">
+                  <img src={article.heroImage} alt={article.title} />
+                  <div className="all-insights-category-badge">{article.category}</div>
+                </div>
               
               <div className="all-insights-content">
                 <div className="all-insights-header">
-                  <div className="all-insights-icon" style={{ backgroundColor: insight.iconBg }}>
-                    {insight.icon}
+                  <div className="all-insights-icon" style={{ backgroundColor: article.iconBg }}>
+                    {article.icon}
                   </div>
                   <div className="all-insights-text">
-                    <h3 className="all-insights-title">{insight.title}</h3>
-                    <p className="all-insights-description">{insight.description}</p>
+                    <h3 className="all-insights-title">{article.title}</h3>
+                    <p className="all-insights-description">{article.description}</p>
                   </div>
                 </div>
 
                 <div className="all-insights-price-section">
                   <div className="all-insights-price">
-                    <span className="all-insights-price-value">{insight.price}</span>
-                    <span className="all-insights-price-unit">{insight.priceUnit}</span>
+                    <span className="all-insights-price-value">{article.price}</span>
+                    <span className="all-insights-price-unit">{article.priceUnit}</span>
                   </div>
-                  <span className="all-insights-price-change">{insight.priceChange}</span>
+                  <span className="all-insights-price-change">{article.priceChange}</span>
                 </div>
 
                 <div className="all-insights-impact">
                   <div className="all-insights-impact-score">
                     <span className="all-insights-score-label">Impact Score</span>
-                    <span className="all-insights-score-value">{insight.impactScore}</span>
-                    <span className="all-insights-score-level">{insight.impactLevel}</span>
+                    <span className="all-insights-score-value">{article.impactScore}</span>
+                    <span className="all-insights-score-level">{article.impactLevel}</span>
                   </div>
+                </div>
+
+                <div style={{ 
+                  fontSize: '12px', 
+                  color: '#9ca3af', 
+                  marginBottom: '15px',
+                  paddingTop: '10px',
+                  borderTop: '1px solid #f3f4f6'
+                }}>
+                  Published: {new Date(article.publishedAt).toLocaleDateString()} • Views: {article.views || 0}
                 </div>
 
                 <button 
                   className="all-insights-see-details"
-                  onClick={() => window.location.href = `/insights?category=${insight.id}&state=${state}`}
+                  onClick={() => navigate(`/insights?category=${article.category}&slug=${article.slug}&state=${state}`)}
                 >
                   See details →
-              </button>
+                </button>
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
