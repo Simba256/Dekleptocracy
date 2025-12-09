@@ -247,7 +247,7 @@ async function callLLM(prompt) {
     if (!response.ok) {
       console.error(`MCP Server error: ${response.status} ${response.statusText}`);
       console.log('⚠️  Falling back to mock data...');
-      return getMockArticleData();
+      throw new Error('MCP Server request failed');
     }
     
     const data = await response.json();
@@ -268,7 +268,7 @@ async function callLLM(prompt) {
         articleData = JSON.parse(jsonMatch[0]);
       } else {
         console.error('Could not parse JSON from MCP response');
-        return getMockArticleData();
+        throw new Error('Invalid JSON from MCP server');
       }
     }
     
@@ -281,13 +281,25 @@ async function callLLM(prompt) {
     console.error('Error calling MCP Server:', error.message);
     console.log('⚠️  Is your MCP server running? Start it with: cd mcp_server && python http_server.py');
     console.log('⚠️  Falling back to mock data...');
-    return getMockArticleData();
+    throw error;
+  }
+}
+
+// Wrapper to pass category/topic context to LLM fallback
+async function callLLMWithContext(prompt, category, topic) {
+  try {
+    return await callLLM(prompt);
+  } catch (error) {
+    // If LLM fails, return category-specific mock data
+    return getMockArticleData(category, topic);
   }
 }
 
 // Mock data fallback - high-quality example article
-function getMockArticleData() {
-  return {
+function getMockArticleData(category = 'groceries', topic = 'egg prices') {
+  // Generate different mock articles based on category
+  const mockArticles = {
+    groceries: {
     title: "Egg Prices Surge 28% in California, Hitting $5.90 Per Dozen",
     description: "A dozen eggs hit $5.90 in February 2025, nearly $3 higher than last year, as federal tariffs and avian flu outbreaks squeeze supply.",
     mainText: "In February 2025, the price of a dozen Grade A large eggs in California climbed to $5.90, representing a dramatic 28% increase from the previous quarter and an 87% jump compared to February 2024's $3.15 price point. For the average California household consuming approximately 18 dozen eggs annually, this translates to an additional $50 in yearly grocery expenses—a significant burden for families already grappling with broader inflation.\n\nThe surge reflects a perfect storm of supply constraints and policy-driven cost increases affecting the entire poultry industry. Nationwide, egg production has fallen by 8% since October 2024, while demand has remained steady. California, which produces approximately 6.4 billion eggs annually through its 13.5 million laying hens, has been hit particularly hard due to its stricter cage-free requirements, which increase per-unit production costs by an estimated 15-20% compared to conventional housing systems.\n\nFederal agricultural policy has played a central role in driving up costs. The 15% tariff on imported corn and soy, implemented in October 2024 as part of broader trade negotiations, has increased feed costs—which represent 60-70% of total egg production expenses—by approximately $0.12 per dozen. The USDA estimates that these tariffs have added $780 million in costs to the domestic poultry industry annually. Simultaneously, ongoing H5N1 avian influenza outbreaks have forced the depopulation of 5.2 million laying hens across 12 states, including 800,000 in California alone, according to CDC agricultural monitoring reports.\n\nGrocery retailers and food service providers are adapting to the price shock in various ways. Major chains like Safeway and Kroger have begun prominently featuring egg substitutes and plant-based alternatives, while restaurants have quietly reduced portion sizes or substituted eggs in menu items. Lower-income households have been disproportionately affected, with food bank requests for egg donations up 34% in the first quarter of 2025 compared to the same period in 2024, according to the California Association of Food Banks.\n\nIndustry analysts project that egg prices will remain elevated through at least mid-2025. The American Egg Board forecasts that prices could reach $6.20-$6.50 per dozen by April before beginning a gradual decline as new laying hens reach production age—a process that takes approximately 20-22 weeks. However, the timeline for recovery remains uncertain and highly dependent on whether additional avian flu outbreaks occur during the spring migration season. Agricultural economists at UC Davis warn that if tariffs remain in place through 2026, the baseline price for eggs may permanently reset 25-30% higher than pre-2024 levels, fundamentally changing the economics of this dietary staple for American households.",
@@ -324,7 +336,260 @@ function getMockArticleData() {
       { month: "Jun", value: 5.65 },
       { month: "Jul", value: 5.90 }
     ]
+    },
+    fuel: {
+      title: "Gas Prices Jump 12% Nationwide, Hitting $3.45 Per Gallon",
+      description: "Nationwide gas prices reached $3.45 per gallon in December 2025, up 12% from September, driven by OPEC production cuts and refinery maintenance.",
+      mainText: "As of December 2025, the national average price for regular unleaded gasoline has climbed to $3.45 per gallon, representing a 12% increase from the $3.08 price point recorded in September. For American households that drive an average of 13,500 miles annually, this translates to approximately $240 in additional fuel costs per year. The impact is particularly pronounced in California, where drivers are paying $4.75 per gallon, and in rural areas where public transportation alternatives are limited.\n\nThe price surge reflects a combination of global supply constraints and domestic refinery challenges. OPEC+ announced production cuts of 1.2 million barrels per day in October 2024, tightening global crude oil supply and pushing Brent crude prices to $92 per barrel—a 15% increase since summer. Meanwhile, scheduled maintenance at major U.S. refineries reduced domestic gasoline production capacity by approximately 8% during the critical fall period.\n\nGeopolitical tensions in the Middle East have added a risk premium to oil prices, with analysts estimating that uncertainty adds $6-8 per barrel to crude prices. The Biden administration has resisted calls to release additional Strategic Petroleum Reserve supplies, citing the need to maintain emergency stocks after the 180 million barrel release in 2022. Instead, the administration has focused on encouraging increased domestic production, though oil companies have been hesitant to expand drilling operations given market volatility.\n\nConsumers are adapting by reducing discretionary travel, carpooling, and switching to more fuel-efficient vehicles. Auto industry data shows a 23% increase in hybrid vehicle sales in Q4 2024 compared to the previous year. However, lower-income households that rely on older, less efficient vehicles are disproportionately affected, with transportation costs now consuming 8-12% of monthly income for families earning less than $50,000 annually.\n\nEnergy analysts project that gas prices will remain elevated through Q1 2025, potentially reaching $3.65-$3.80 per gallon by March if current supply constraints persist. The outlook for relief depends heavily on whether OPEC+ adjusts its production targets in response to economic slowdown concerns and whether refinery capacity returns to normal levels after maintenance cycles complete.",
+      price: "$3.45",
+      priceUnit: "per gallon",
+      priceChange: "+12%",
+      impactScore: 68,
+      impactLevel: "high",
+      location: "Nationwide",
+      whyItHappened: [
+        {
+          title: "OPEC+ Production Cuts:",
+          description: "In October 2024, OPEC+ announced production cuts of 1.2 million barrels per day, tightening global crude oil supply. This policy decision pushed Brent crude prices from $80 to $92 per barrel, a 15% increase that directly affects gasoline prices. The cuts represent 1.2% of global oil demand and were implemented to support higher oil prices amid concerns about global economic growth."
+        },
+        {
+          title: "Domestic Refinery Maintenance:",
+          description: "Scheduled maintenance at major U.S. refineries reduced domestic gasoline production capacity by approximately 8% during Q4 2024. Key facilities in Texas and Louisiana underwent maintenance, creating regional supply bottlenecks. The Energy Information Administration reports that refinery utilization dropped to 86%, down from typical 92-94% rates."
+        },
+        {
+          title: "Middle East Geopolitical Tensions:",
+          description: "Ongoing conflicts and political instability in key oil-producing regions have added a $6-8 per barrel risk premium to crude oil prices. Concerns about potential supply disruptions from the Strait of Hormuz, through which 21% of global petroleum passes, have kept prices elevated even as physical supply remains adequate."
+        }
+      ],
+      chartData: [
+        { month: "Jan", value: 3.08 },
+        { month: "Feb", value: 3.12 },
+        { month: "Mar", value: 3.18 },
+        { month: "Apr", value: 3.25 },
+        { month: "May", value: 3.32 },
+        { month: "Jun", value: 3.38 },
+        { month: "Jul", value: 3.45 }
+      ]
+    },
+    utilities: {
+      title: "Electricity Bills Rise 15% as Grid Modernization Costs Mount",
+      description: "Average U.S. electricity bills reached $145 monthly in 2025, up 15% from 2024, as utilities pass infrastructure upgrade costs to consumers.",
+      mainText: "American households are facing significantly higher electricity costs in 2025, with the average monthly bill reaching $145—a 15% increase from the $126 average in 2024. This surge affects approximately 130 million households and adds roughly $228 to annual household expenses. The increases have been particularly steep in states like California, New York, and Texas, where bills have risen 18-22% as utilities undertake major grid modernization projects required by federal infrastructure mandates.\n\nThe price increases stem primarily from massive investments in electrical grid infrastructure. The Infrastructure Investment and Jobs Act of 2021 allocated $65 billion for grid improvements, but utilities have passed much of the actual implementation costs to ratepayers through state public utility commission-approved rate increases. Industry data shows utilities plan to invest over $150 billion in transmission and distribution upgrades between 2024-2028, with ratepayers funding approximately 70% of these costs through higher bills.\n\nClimate-related weather events have also contributed significantly to cost increases. Extreme weather caused $25 billion in grid damage in 2024 alone, according to the National Oceanic and Atmospheric Administration. Utilities are hardening infrastructure against increasingly severe storms, wildfires, and temperature extremes—expenses that regulatory frameworks allow them to recover from customers. In Florida and California, storm hardening programs have added $8-12 per month to average bills.\n\nThe transition to renewable energy, while beneficial long-term, carries short-term cost implications. Decommissioning older coal and natural gas plants while building new solar and wind capacity requires substantial upfront investment. Additionally, the intermittent nature of renewables necessitates expensive battery storage systems and grid management technology. The Federal Energy Regulatory Commission estimates these transition costs will add 12-15% to electricity prices over the next five years.\n\nEnergy policy experts project that residential electricity prices will continue rising 4-6% annually through 2027 before stabilizing as infrastructure projects complete and renewable energy sources achieve better economies of scale. Low-income households, which spend 8-12% of income on utilities compared to 2-3% for higher-income families, face particular hardship. Some states have expanded energy assistance programs, but funding hasn't kept pace with need—assistance requests are up 35% year-over-year.",
+      price: "$145",
+      priceUnit: "monthly average",
+      priceChange: "+15%",
+      impactScore: 72,
+      impactLevel: "high",
+      location: "Nationwide",
+      whyItHappened: [
+        {
+          title: "Grid Modernization Infrastructure Costs:",
+          description: "Utilities are investing over $150 billion in transmission and distribution upgrades between 2024-2028 to comply with federal infrastructure mandates. State regulators have approved rate increases allowing utilities to recover approximately 70% of these costs from ratepayers, adding $15-20 monthly to average bills. The Infrastructure Investment and Jobs Act requires significant grid improvements, but implementation costs exceed initial projections."
+        },
+        {
+          title: "Extreme Weather and Climate Adaptation:",
+          description: "Climate-related weather events caused $25 billion in grid damage in 2024 according to NOAA. Utilities are hardening infrastructure against storms, wildfires, and temperature extremes—investments that regulatory frameworks allow them to pass to customers. Storm hardening programs in high-risk states like Florida and California add $8-12 per month to bills, with costs expected to continue rising as extreme weather increases in frequency and severity."
+        },
+        {
+          title: "Renewable Energy Transition Costs:",
+          description: "The transition from fossil fuel plants to renewable energy requires substantial upfront investment in new generation capacity, transmission infrastructure, and battery storage systems. The Federal Energy Regulatory Commission estimates these transition costs will add 12-15% to electricity prices over five years. While renewables offer long-term savings, near-term capital expenses for decommissioning old plants and building new infrastructure are being recovered through higher rates."
+        }
+      ],
+      chartData: [
+        { month: "Jan", value: 126 },
+        { month: "Feb", value: 129 },
+        { month: "Mar", value: 132 },
+        { month: "Apr", value: 136 },
+        { month: "May", value: 139 },
+        { month: "Jun", value: 142 },
+        { month: "Jul", value: 145 }
+      ]
+    },
+    tech: {
+      title: "Smartphone Prices Surge 18% as Component Tariffs Bite",
+      description: "Average smartphone prices hit $875 in 2025, up 18% from $742 in 2024, as semiconductor and battery tariffs raise production costs.",
+      mainText: "Consumer electronics prices have soared in 2025, with smartphones leading the surge. The average smartphone now costs $875, marking an 18% increase from the $742 average in 2024. This represents an additional $133 that consumers must pay for devices that have become essential for work, education, and daily communication. Premium flagship models from Apple and Samsung now regularly exceed $1,200, while even budget Android devices have crossed the $400 threshold.\n\nThe primary driver is the 25% tariff on imported semiconductors and electronic components implemented in March 2024 as part of broader technology trade policy. These tariffs target products from major manufacturing centers in China, Taiwan, and South Korea—regions that produce 92% of global smartphone components. The Consumer Technology Association estimates that these tariffs add $115-140 to the manufacturing cost of a typical smartphone, costs that manufacturers have passed directly to consumers.\n\nSupply chain disruptions have compounded tariff impacts. A shortage of advanced semiconductor nodes has reduced production capacity while demand has remained strong. TSMC and Samsung foundries are operating at 95% capacity but cannot meet demand for the most advanced chips needed for 5G capabilities and AI features. Lead times for premium components have stretched to 16-20 weeks, forcing manufacturers to either delay launches or accept higher spot prices for urgent supplies.\n\nManufacturers are adapting by extending product lifecycles and reducing the frequency of new model releases. Apple announced it will maintain its iPhone 15 lineup for an additional six months before launching the next generation. Meanwhile, consumers are holding devices longer—the average smartphone replacement cycle has extended from 2.8 years in 2023 to 3.4 years in 2025, according to IDC data. The pre-owned smartphone market has grown 34% as consumers seek alternatives to expensive new devices.\n\nIndustry analysts project smartphone prices will remain elevated through 2026. The Technology Trade Council forecasts that if current tariffs remain in place, average prices could reach $950-1,000 by late 2025. However, increased domestic chip manufacturing from CHIPS Act investments may begin moderating prices in 2027-2028 as new U.S. foundries come online.",
+      price: "$875",
+      priceUnit: "average device",
+      priceChange: "+18%",
+      impactScore: 65,
+      impactLevel: "medium",
+      location: "Nationwide",
+      whyItHappened: [
+        {
+          title: "Semiconductor and Component Tariffs:",
+          description: "The 25% tariff on imported semiconductors and electronic components implemented in March 2024 has added $115-140 to manufacturing costs per device. These tariffs target products from China, Taiwan, and South Korea, which produce 92% of global smartphone components. Manufacturers have passed these costs directly to consumers, as the industry operates on thin margins that cannot absorb such significant cost increases."
+        },
+        {
+          title: "Advanced Chip Shortage:",
+          description: "Global demand for advanced 5nm and 3nm semiconductors exceeds production capacity at TSMC and Samsung foundries. These facilities operate at 95% capacity but cannot meet smartphone demand while also serving auto, AI, and data center markets. Component lead times have stretched to 16-20 weeks, forcing manufacturers to pay premium spot prices that add 12-15% to component costs."
+        },
+        {
+          title: "Supply Chain Complexity and Logistics Costs:",
+          description: "Smartphone manufacturing involves components from 40-50 countries, making devices highly sensitive to trade policy and logistics costs. International shipping costs remain 60% above pre-pandemic levels, while manufacturers face pressure to diversify away from China, requiring expensive new factory setups in India and Vietnam. These supply chain changes add approximately 8-10% to final product costs."
+        }
+      ],
+      chartData: [
+        { month: "Jan", value: 742 },
+        { month: "Feb", value: 768 },
+        { month: "Mar", value: 795 },
+        { month: "Apr", value: 815 },
+        { month: "May", value: 835 },
+        { month: "Jun", value: 855 },
+        { month: "Jul", value: 875 }
+      ]
+    },
+    housing: {
+      title: "Median Rent Reaches $1,950 Nationwide, Up 9% Year-Over-Year",
+      description: "U.S. median rent hit $1,950 monthly in 2025, a 9% increase from $1,789 in 2024, as housing supply fails to keep pace with demand.",
+      mainText: "Housing affordability continues to deteriorate across the United States, with median rent reaching $1,950 per month in 2025—a 9% increase from the $1,789 median recorded in 2024. This adds approximately $1,932 to annual housing costs for the nation's 44 million renter households. In major metropolitan areas like New York, San Francisco, and Miami, median rents exceed $2,800, while even mid-sized cities have seen double-digit percentage increases as remote work redistributes population patterns.\n\nThe rental crisis stems from a fundamental mismatch between housing supply and demand. The National Association of Home Builders estimates the U.S. needs 1.5 million new housing units annually to keep pace with household formation, but construction has averaged only 1.1 million units per year since 2020. This 400,000-unit annual deficit compounds each year, creating increasingly severe shortages. Restrictive zoning regulations in high-demand cities limit where and what can be built, with single-family zoning covering 70% of residential land in most major cities.\n\nConstruction costs have surged due to materials inflation and labor shortages. Lumber prices increased 45% since 2021 despite recent moderation, while skilled construction labor shortages have driven up wages 18-22% in hot markets. The National Association of Realtors reports that building a typical multifamily unit now costs $375,000, up from $265,000 in 2020. These increased costs make it economically unfeasible to build affordable housing without substantial subsidies, as rents would need to be $2,400+ monthly to justify construction costs.\n\nInterest rate policy has indirect but significant effects on rental markets. The Federal Reserve's elevated interest rates make home ownership less accessible, keeping more households in the rental market longer. First-time homebuyer applications dropped 28% in 2024 as mortgage rates remained above 7%, adding approximately 1.2 million households to rental demand who would have purchased homes in a lower-rate environment.\n\nHousing policy experts project rents will continue rising 5-7% annually through 2026 absent major policy interventions. The White House has proposed initiatives to increase housing supply through federal land use incentives and construction tax credits, but implementation faces significant political and logistical challenges. Meanwhile, the rental burden—the percentage of income spent on housing—now exceeds 30% for 21 million renter households, up from 17 million in 2020.",
+      price: "$1,950",
+      priceUnit: "median monthly",
+      priceChange: "+9%",
+      impactScore: 78,
+      impactLevel: "high",
+      location: "Nationwide",
+      whyItHappened: [
+        {
+          title: "Housing Supply Shortage:",
+          description: "The U.S. needs 1.5 million new housing units annually but has averaged only 1.1 million since 2020, creating a compounding 400,000-unit annual deficit. Restrictive zoning regulations prevent density increases in high-demand areas, with single-family zoning covering 70% of residential land in major cities. The National Low Income Housing Coalition estimates a shortage of 7.3 million affordable rental homes for extremely low-income renters."
+        },
+        {
+          title: "Construction Cost Inflation:",
+          description: "Building a typical multifamily unit now costs $375,000, up from $265,000 in 2020. Lumber prices remain 45% above 2021 levels, while skilled construction labor shortages have driven wages up 18-22% in competitive markets. These cost increases make it economically unfeasible to build affordable housing without subsidies, as projects need to charge $2,400+ monthly rents to justify construction costs and achieve acceptable returns for developers."
+        },
+        {
+          title: "High Interest Rates Limiting Homeownership:",
+          description: "Federal Reserve interest rate policy has kept mortgage rates above 7%, reducing first-time homebuyer applications by 28% in 2024. This keeps approximately 1.2 million households that would have purchased homes in the rental market, increasing rental demand. Additionally, higher rates make apartment development more expensive, as construction financing costs have doubled, discouraging new rental property development."
+        }
+      ],
+      chartData: [
+        { month: "Jan", value: 1789 },
+        { month: "Feb", value: 1820 },
+        { month: "Mar", value: 1845 },
+        { month: "Apr", value: 1870 },
+        { month: "May", value: 1895 },
+        { month: "Jun", value: 1920 },
+        { month: "Jul", value: 1950 }
+      ]
+    },
+    healthcare: {
+      title: "Health Insurance Premiums Jump 11%, Averaging $785 Monthly",
+      description: "Average family health insurance premiums reached $785 monthly in 2025, an 11% increase from 2024, as medical costs outpace inflation.",
+      mainText: "Healthcare costs continue their relentless climb, with average family health insurance premiums reaching $785 per month in 2025—an 11% increase from the $707 monthly average in 2024. This adds $936 to annual household healthcare expenses for the 156 million Americans covered through employer-sponsored insurance. When combined with rising deductibles and out-of-pocket maximums, the total cost burden for families with comprehensive coverage now exceeds $12,000 annually even before receiving any medical care.\n\nThe premium increases reflect underlying medical cost inflation that continues to significantly outpace general inflation. Hospital service costs rose 14% in 2024, while prescription drug spending increased 12%, according to the Centers for Medicare & Medicaid Services. Advanced medical treatments, particularly specialty drugs for cancer and rare diseases that can cost $100,000+ per year, drive much of this spending growth. Additionally, the aging Baby Boomer population requires more intensive and expensive care, with per-capita healthcare spending for those 65+ being 3-4 times higher than for working-age adults.\n\nThe structure of the U.S. healthcare system creates unique cost pressures not seen in other developed nations. Administrative expenses—insurance processing, billing, coding, and compliance—consume 25-30% of healthcare dollars, far exceeding the 12-15% typical in countries with single-payer systems. Hospital consolidation has reduced competition in many markets, enabling larger health systems to command higher prices from insurers. Studies show that in markets dominated by 1-2 hospital systems, prices are 30-40% higher than in competitive markets.\n\nPharmaceutical costs pose particular challenges. While the Inflation Reduction Act allowed Medicare to negotiate prices for some drugs, this affects only a small fraction of medications. U.S. consumers pay 2-3 times more for brand-name drugs than patients in other developed nations, differences that pharmaceutical companies justify through higher U.S. research and development costs. Patent extensions and minor formulation changes allow manufacturers to maintain exclusivity and high prices for decades.\n\nHealth policy experts project premium growth will continue at 8-10% annually through 2027. The Kaiser Family Foundation forecasts that by 2027, average family premiums could reach $950-1,000 monthly. Without significant policy reforms—potentially including Medicare expansion, drug price controls, or administrative simplification—healthcare costs will continue consuming an increasing share of household budgets, particularly affecting families earning below $75,000 annually.",
+      price: "$785",
+      priceUnit: "monthly family",
+      priceChange: "+11%",
+      impactScore: 81,
+      impactLevel: "high",
+      location: "Nationwide",
+      whyItHappened: [
+        {
+          title: "Medical Cost Inflation Exceeding General Inflation:",
+          description: "Hospital service costs rose 14% and prescription drug spending increased 12% in 2024, according to CMS data. Advanced medical treatments, particularly specialty drugs costing $100,000+ annually, drive spending growth. The aging Baby Boomer population requires more intensive care, with per-capita healthcare spending for those 65+ being 3-4 times higher than working-age adults. These underlying medical costs translate directly to higher insurance premiums."
+        },
+        {
+          title: "Administrative Complexity and Inefficiency:",
+          description: "Administrative expenses consume 25-30% of U.S. healthcare spending—double the 12-15% typical in single-payer systems. Insurance processing, medical billing, coding, and regulatory compliance create massive overhead. The American Hospital Association estimates hospitals spend $39 billion annually just on administrative interactions with insurers. These costs are passed through to consumers via higher premiums with minimal direct healthcare value."
+        },
+        {
+          title: "Hospital Consolidation Reducing Competition:",
+          description: "Hospital mergers have reduced competition in many markets, enabling larger systems to command higher prices from insurers. Studies show that in markets dominated by 1-2 hospital systems, prices are 30-40% higher than in competitive markets. The American Medical Association reports that 50% of U.S. metropolitan areas are now highly concentrated hospital markets. Insurers pass these higher provider costs to policyholders through premium increases."
+        },
+        {
+          title: "Pharmaceutical Pricing and Patent Protection:",
+          description: "U.S. consumers pay 2-3 times more for brand-name drugs than patients in other developed nations. While the Inflation Reduction Act allows Medicare to negotiate some drug prices, this affects only 10-15 medications initially. Patent extensions and minor formulation changes let manufacturers maintain exclusivity and high prices for decades. Specialty drugs now account for 50% of total drug spending despite representing only 2% of prescriptions."
+        }
+      ],
+      chartData: [
+        { month: "Jan", value: 707 },
+        { month: "Feb", value: 722 },
+        { month: "Mar", value: 735 },
+        { month: "Apr", value: 748 },
+        { month: "May", value: 761 },
+        { month: "Jun", value: 773 },
+        { month: "Jul", value: 785 }
+      ]
+    },
+    education: {
+      title: "College Tuition Increases 8%, Public Universities Now Average $28,400",
+      description: "Average public university tuition and fees reached $28,400 for 2025-26, an 8% increase as state funding fails to keep pace with costs.",
+      mainText: "Higher education costs continue their decades-long upward trajectory, with average tuition and fees at public four-year universities reaching $28,400 for the 2025-26 academic year—an 8% increase from the previous year's $26,296. When including room, board, books, and other expenses, the total annual cost of attendance at public universities now exceeds $44,000. This represents a crushing financial burden for the 15 million students enrolled at public institutions, contributing to the nation's $1.7 trillion student loan crisis.\n\nDeclining state support for public higher education is the primary driver of tuition increases. State funding for public colleges has fallen 13% per student over the past decade when adjusted for inflation, according to the State Higher Education Executive Officers Association. As states face budget pressures from Medicaid, K-12 education, and infrastructure needs, higher education funding has become an increasingly lower priority. Universities have responded by shifting costs to students through tuition increases, with students now covering 70% of instructional costs compared to 50% in 2000.\n\nUniversities face genuine cost pressures that necessitate some increases. Federal compliance requirements for Title IX, disability accommodations, cybersecurity, and research ethics have added layers of administrative overhead. The American Council on Education estimates that compliance costs consume 11% of university operating budgets. Additionally, competition for faculty has driven up salaries, particularly in high-demand fields like computer science, engineering, and business where universities must compete with private sector salaries that often exceed $150,000.\n\nThe explosion in administrative positions at universities has drawn particular scrutiny. Between 2000 and 2023, administrative positions at public universities grew 50% while student enrollment increased only 15%, according to Department of Education data. Many of these positions support services demanded by students—mental health counseling, career services, diversity initiatives—but critics argue this administrative bloat drives costs without proportional educational value. Faculty positions have grown only 8% over the same period.\n\nHigher education policy experts project tuition will continue rising 6-8% annually unless significant reforms are implemented. Proposals include performance-based state funding that rewards efficiency, consolidation of duplicative programs, and greater use of technology to reduce instructional costs. However, these reforms face resistance from faculty, staff, and students who worry about educational quality. In the meantime, students increasingly question whether a traditional four-year degree justifies its escalating cost, with enrollment at public universities declining 8% since 2019.",
+      price: "$28,400",
+      priceUnit: "annual tuition",
+      priceChange: "+8%",
+      impactScore: 76,
+      impactLevel: "high",
+      location: "Nationwide",
+      whyItHappened: [
+        {
+          title: "Declining State Funding for Higher Education:",
+          description: "State funding for public colleges has fallen 13% per student over the past decade when adjusted for inflation, according to SHEEO. As states prioritize Medicaid, K-12 education, and infrastructure, higher education receives declining support. Students now cover 70% of instructional costs compared to 50% in 2000. Universities compensate for lost state appropriations by increasing tuition, effectively privatizing what were once heavily subsidized public institutions."
+        },
+        {
+          title: "Federal Compliance and Administrative Overhead:",
+          description: "Federal requirements for Title IX, disability accommodations, cybersecurity, research ethics, and financial reporting have created extensive administrative requirements. The American Council on Education estimates compliance costs consume 11% of university operating budgets. Each new regulation requires dedicated staff, systems, and processes. While these requirements serve important purposes, they add significant costs that universities pass to students through higher tuition."
+        },
+        {
+          title: "Faculty Salary Competition and Credential Inflation:",
+          description: "Universities must compete with private sector salaries to recruit faculty in high-demand fields. Computer science, engineering, and business professors command salaries often exceeding $150,000, driven by industry competition. Additionally, credential inflation has increased costs—positions that once required master's degrees now demand PhDs. Faculty health insurance and retirement benefits add 30-35% to direct salary costs, and tenure guarantees lock in compensation for decades."
+        },
+        {
+          title: "Administrative Growth Exceeding Enrollment Growth:",
+          description: "Administrative positions at public universities grew 50% between 2000 and 2023 while student enrollment increased only 15%, per Department of Education data. New positions support expanded services—mental health counseling, career development, diversity initiatives, IT support—that students and accreditors demand. However, this administrative expansion has not been offset by efficiency gains in core academic functions, driving up per-student costs significantly."
+        }
+      ],
+      chartData: [
+        { month: "Jan", value: 26296 },
+        { month: "Feb", value: 26820 },
+        { month: "Mar", value: 27150 },
+        { month: "Apr", value: 27520 },
+        { month: "May", value: 27850 },
+        { month: "Jun", value: 28100 },
+        { month: "Jul", value: 28400 }
+      ]
+    },
+    transportation: {
+      title: "Used Car Prices Remain 22% Above Pre-Pandemic Levels",
+      description: "Average used car prices stand at $29,200 in 2025, still 22% higher than 2019 despite slight declines from 2023 peaks.",
+      mainText: "The used car market continues to impose significant financial burdens on American consumers, with average prices remaining at $29,200 in December 2025. While this represents a modest 6% decline from the 2023 peak of $31,100, prices remain 22% higher than the $23,950 pre-pandemic average from 2019. For the millions of Americans who need to replace vehicles, this persistent elevation adds $5,250 to vehicle acquisition costs compared to pre-pandemic norms—a substantial barrier for lower and middle-income households.\n\nThe used car price surge originated during the pandemic when semiconductor shortages crippled new vehicle production. Between 2020 and 2022, new vehicle production fell 25% below normal levels, creating a cascade effect in the used market. Consumers unable to buy new vehicles competed for used inventory, driving prices up 45% at the peak. While chip supply has recovered and new production normalized, the used market hasn't fully corrected because those missing vehicles from 2020-2022 created permanent supply gaps in the 2-5 year old car market that buyers prefer.\n\nLease return dynamics have failed to replenish inventory as expected. Before the pandemic, lease returns provided steady flow of late-model used vehicles. However, the pandemic disrupted this cycle—fewer leases were signed in 2020-2021, and many lessees chose to purchase their vehicles at lease-end given favorable equity positions. Cox Automotive reports that lease returns are running 25% below pre-pandemic levels, removing approximately 2 million vehicles annually from the used market. This supply constraint props up prices despite weakening consumer demand.\n\nElevated interest rates compound affordability challenges. The average auto loan rate for used vehicles reached 11.5% in 2024, up from 8.3% in 2020. This means a consumer financing a $29,200 used car over 60 months at 11.5% pays $640 monthly—$112 more per month than the same purchase would have cost at 2020 rates. Total interest paid over the loan term now exceeds $9,200, adding 31% to the vehicle's cost. Subprime borrowers face rates approaching 18-20%, making reliable transportation increasingly unaffordable.\n\nAuto market analysts project used car prices will decline another 4-6% through 2025 as three factors converge: increased new vehicle production creating more trade-ins, rising loan defaults forcing repossessions that add inventory, and consumer affordability limits reducing demand. However, structural changes in the auto market—fewer vehicles per capita, longer ownership periods, and higher quality vehicles lasting longer—suggest prices may permanently reset 12-15% above pre-pandemic levels. The Congressional Budget Office warns this transportation cost burden particularly affects rural and suburban Americans who have no viable public transit alternatives.",
+      price: "$29,200",
+      priceUnit: "average vehicle",
+      priceChange: "+22% vs 2019",
+      impactScore: 74,
+      impactLevel: "high",
+      location: "Nationwide",
+      whyItHappened: [
+        {
+          title: "Pandemic-Era New Vehicle Production Shortfall:",
+          description: "Semiconductor shortages caused new vehicle production to fall 25% below normal levels between 2020-2022, with approximately 8 million fewer new vehicles produced than typical. This created permanent gaps in the used car inventory pipeline, as those missing vehicles would normally enter the used market 2-5 years later. The supply shortage pushed used prices up 45% at peak, and while chip supply recovered, the inventory gap persists because you cannot retroactively produce vehicles that weren't made."
+        },
+        {
+          title: "Reduced Lease Returns Constraining Supply:",
+          description: "Lease returns traditionally provide steady flow of late-model used vehicles but are running 25% below pre-pandemic levels according to Cox Automotive. Fewer leases were signed during 2020-2021, and pandemic-era lessees often purchased their vehicles at lease-end rather than returning them. This removes approximately 2 million vehicles annually from used inventory. Lease penetration remains below historical norms as consumers avoid committing to fixed payments in an uncertain economy."
+        },
+        {
+          title: "Elevated Auto Loan Interest Rates:",
+          description: "Federal Reserve interest rate policy drove average used car loan rates to 11.5%, up from 8.3% in 2020. This adds $112 monthly to payments on a typical $29,200 used vehicle, with total interest exceeding $9,200 over a 60-month loan. High rates reduce consumer demand at any given price point, but also trap existing owners in their current vehicles (due to equity/rate concerns), reducing trade-in inventory and perpetuating supply constraints."
+        },
+        {
+          title: "Higher Quality Standards and Longer Vehicle Lifespans:",
+          description: "Modern vehicles last significantly longer than older generations—median lifespan increased from 11 years in 2000 to 14 years in 2025. This means fewer vehicles leave the fleet annually relative to population growth. Additionally, stricter emissions and safety standards make newer used vehicles more desirable relative to older alternatives. These factors permanently reduce used vehicle supply per capita, supporting higher price floors."
+        }
+      ],
+      chartData: [
+        { month: "Jan", value: 29800 },
+        { month: "Feb", value: 29650 },
+        { month: "Mar", value: 29500 },
+        { month: "Apr", value: 29400 },
+        { month: "May", value: 29300 },
+        { month: "Jun", value: 29250 },
+        { month: "Jul", value: 29200 }
+      ]
+    }
   };
+
+  return mockArticles[category] || mockArticles.groceries;
 }
 
 // Generate sources based on category
@@ -495,7 +760,7 @@ async function generateArticles(count = 7) {
         }
         
         // Call MCP server to generate article content
-        const llmResponse = await callLLM(enhancedPrompt);
+        const llmResponse = await callLLMWithContext(enhancedPrompt, template.category, template.selectedTopic);
         
         // Create article object
         const articleData = {
