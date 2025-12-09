@@ -145,12 +145,14 @@ ARTICLE STRUCTURE REQUIREMENTS:
    - Impact level: "low", "medium", "high", or "critical"
 
 6. **Why It Happened** (3-4 detailed reasons)
-   - Each reason must have a bold title and 2-3 sentence explanation
-   - Include specific percentages, dollar amounts, or data points
-   - Connect to verifiable policy decisions or economic factors
-   - Example format:
-     * "Federal Tariffs on Imported Grain: The 15% tariff imposed in October 2024 on corn and soy imports increased feed costs by $0.12 per dozen eggs, according to USDA analysis."
-     * "Avian Flu Outbreak: H5N1 outbreaks eliminated 5.2 million laying hens across 12 states in Q4 2024, reducing national egg supply by 8% according to CDC agricultural reports."
+   - Each reason should use REALISTIC, CONSERVATIVE language
+   - Use RANGES and ESTIMATES, not overly precise numbers
+   - Good examples:
+     * "Supply Chain Pressures: Industry reports suggest transportation costs increased 10-15% in 2024, contributing to higher prices."
+     * "Regional Weather Patterns: Drought conditions in key production areas reduced supply by an estimated 5-8%, according to agricultural reports."
+   - Avoid examples like:
+     * "Federal Tariffs increased costs by exactly $0.12 per unit" (too precise without verification)
+     * "5.2 million units were affected" (overly specific invented numbers)
 
 7. **Chart Data** (7 data points: January through July 2025)
    - Provide realistic month-by-month price progression
@@ -165,51 +167,54 @@ ARTICLE STRUCTURE REQUIREMENTS:
 Use these verified data sources:
 ${sources.map((s, i) => `${i + 1}. ${s.title} - ${s.url}`).join('\n')}
 
-CRITICAL REQUIREMENTS:
-✓ Write at a college reading level (clear but sophisticated)
-✓ Every statistic must be specific (no vague "many" or "significant")
-✓ Include at least 5 concrete numbers or percentages
-✓ Connect policy decisions to price impacts
-✓ Explain WHY consumers should care
-✓ Provide actionable context (trends, forecasts)
+CRITICAL REQUIREMENTS FOR REALISTIC, CREDIBLE ARTICLES:
+✓ Use HEDGING LANGUAGE: "approximately", "around", "estimated", "reported", "according to"
+✓ Provide RANGES not exact numbers: "15-20%" not "17.3%"
+✓ Add CAVEATS: "data suggests", "analysts estimate", "preliminary reports indicate"
+✓ Be CONSERVATIVE with claims - avoid exaggeration or speculation
+✓ Use RECENT, VERIFIABLE data only - don't invent specific statistics
+✓ Include uncertainty where appropriate: "could reach", "may increase", "is projected to"
+✓ Avoid overly dramatic language - maintain professional, measured tone
+✓ Connect to publicly available data sources when possible
+✓ Don't present projections as certainties
 
 Return ONLY valid JSON with this exact structure (no additional text):
 {
-  "title": "Specific, data-driven title with percentage or dollar amount",
-  "description": "Compelling one-sentence summary with key statistic (130-150 chars)",
-  "mainText": "Four to six well-structured paragraphs (600-800 words). Each paragraph should flow naturally. Include specific data points, policy connections, and real-world impacts. Use transitions between paragraphs. Write professionally but accessibly.",
+  "title": "Moderate, fact-based title with approximate data (avoid sensationalism)",
+  "description": "One-sentence summary with general trend information (130-150 chars)",
+  "mainText": "Four to six well-structured paragraphs (600-800 words). USE HEDGING LANGUAGE: 'approximately', 'around', 'estimated', 'reported', 'analysts suggest'. Provide RANGES not exact numbers: '15-20%' not '17.3%'. Mark projections as estimates: 'could reach', 'may increase'. Be CONSERVATIVE and REALISTIC - avoid exaggeration. Write professionally and credibly.",
   "price": "$X.XX",
   "priceUnit": "per [unit]",
-  "priceChange": "+X.X%",
+  "priceChange": "+X%",
   "impactScore": 75,
   "impactLevel": "high",
-  "location": "California",
+  "location": "Nationwide",
   "whyItHappened": [
     {
-      "title": "Specific Policy or Factor Title:",
-      "description": "Detailed 2-3 sentence explanation with specific data points, percentages, dates, and sources. Connect cause to effect clearly."
+      "title": "Primary Contributing Factor:",
+      "description": "2-3 sentence explanation using realistic ranges and hedging language. Example: 'Industry reports suggest costs increased 10-15% in 2024.' Avoid overly precise invented statistics."
     },
     {
-      "title": "Second Major Factor:",
-      "description": "Another detailed explanation with concrete numbers and timeframes."
+      "title": "Secondary Market Force:",
+      "description": "Another explanation with conservative estimates and appropriate caveats about uncertainty."
     },
     {
-      "title": "Third Contributing Factor:",
-      "description": "Third detailed explanation with specific economic or policy connections."
+      "title": "Additional Economic Factor:",
+      "description": "Third explanation emphasizing verifiable trends rather than speculation."
     }
   ],
   "chartData": [
-    { "month": "Jan", "value": 4.20 },
-    { "month": "Feb", "value": 4.45 },
-    { "month": "Mar", "value": 4.75 },
-    { "month": "Apr", "value": 5.10 },
-    { "month": "May", "value": 5.40 },
-    { "month": "Jun", "value": 5.65 },
-    { "month": "Jul", "value": 5.90 }
+    { "month": "Jan", "value": 100 },
+    { "month": "Feb", "value": 103 },
+    { "month": "Mar", "value": 106 },
+    { "month": "Apr", "value": 109 },
+    { "month": "May", "value": 112 },
+    { "month": "Jun", "value": 115 },
+    { "month": "Jul", "value": 118 }
   ]
 }
 
-Remember: You are writing for informed citizens who want to understand how government policies affect their daily expenses. Be thorough, specific, and analytical.`;
+Remember: Write REALISTIC, CREDIBLE articles. Use conservative estimates, hedging language, and ranges. Avoid sensationalism and unverifiable claims. Your goal is accuracy and credibility, not drama.`;
 };
 
 // Call your MCP Server to generate articles
@@ -229,7 +234,7 @@ async function callLLM(prompt) {
         messages: [
           {
             role: "system",
-            content: "You are a senior economic journalist writing for Dekleptocracy, a policy impact tracking platform. Write comprehensive, professional articles (600-800 words) analyzing how government policies affect consumer costs. Use AP Style, include specific statistics and data points, explain economic concepts clearly, and connect policy decisions to household impacts. Always return ONLY valid JSON with no additional text or markdown."
+            content: "You are a credible economic journalist writing realistic, fact-based articles for Dekleptocracy. CRITICAL: Use HEDGING LANGUAGE ('approximately', 'estimated', 'around', 'reported'), provide RANGES not exact numbers ('15-20%' not '17.3%'), add CAVEATS ('analysts suggest', 'data indicates'), and be CONSERVATIVE - avoid exaggeration or speculation. Mark projections clearly as estimates ('could reach', 'may increase'). Use moderate, professional tone. Write 600-800 words explaining economic trends WITHOUT inventing overly specific statistics. Always return ONLY valid JSON with no additional text or markdown."
           },
           {
             role: "user",
@@ -300,46 +305,42 @@ function getMockArticleData(category = 'groceries', topic = 'egg prices') {
   // Generate different mock articles based on category
   const mockArticles = {
     groceries: {
-      title: "Egg Prices Surge 40% in California, Hitting $5.90 Per Dozen",
-      description: "A dozen eggs hit $5.90 in July 2025, nearly $3 higher than January, as federal tariffs and avian flu outbreaks squeeze supply.",
-      mainText: "In July 2025, the price of a dozen Grade A large eggs in California climbed to $5.90, representing a dramatic 40% increase over the past six months from January's $4.20 price point. For the average California household consuming approximately 18 dozen eggs annually, this translates to an additional $30 in yearly grocery expenses—a significant burden for families already grappling with broader inflation.\n\nThe surge reflects a perfect storm of supply constraints and policy-driven cost increases affecting the entire poultry industry. Nationwide, egg production has fallen by 8% since October 2024, while demand has remained steady. California, which produces approximately 6.4 billion eggs annually through its 13.5 million laying hens, has been hit particularly hard due to its stricter cage-free requirements, which increase per-unit production costs by an estimated 15-20% compared to conventional housing systems.\n\nFederal agricultural policy has played a central role in driving up costs. The 15% tariff on imported corn and soy, implemented in October 2024 as part of broader trade negotiations, has increased feed costs—which represent 60-70% of total egg production expenses—by approximately $0.12 per dozen. The USDA estimates that these tariffs have added $780 million in costs to the domestic poultry industry annually. Simultaneously, ongoing H5N1 avian influenza outbreaks have forced the depopulation of 5.2 million laying hens across 12 states, including 800,000 in California alone, according to CDC agricultural monitoring reports.\n\nGrocery retailers and food service providers are adapting to the price shock in various ways. Major chains like Safeway and Kroger have begun prominently featuring egg substitutes and plant-based alternatives, while restaurants have quietly reduced portion sizes or substituted eggs in menu items. Lower-income households have been disproportionately affected, with food bank requests for egg donations up 34% in the first half of 2025 compared to the same period in 2024, according to the California Association of Food Banks.\n\nIndustry analysts project that egg prices will remain elevated through the end of 2025. The American Egg Board forecasts that prices could reach $6.20-$6.50 per dozen by fall before beginning a gradual decline as new laying hens reach production age—a process that takes approximately 20-22 weeks. However, the timeline for recovery remains uncertain and highly dependent on whether additional avian flu outbreaks occur during the winter migration season. Agricultural economists at UC Davis warn that if tariffs remain in place through 2026, the baseline price for eggs may permanently reset 25-30% higher than pre-2024 levels, fundamentally changing the economics of this dietary staple for American households.",
-    price: "$5.90",
-    priceUnit: "per dozen",
-    priceChange: "+40%",
+      title: "Egg Prices Rise in California Markets, Reports Show",
+      description: "Recent data suggests egg prices increased in California markets, with industry reports citing supply pressures and production costs.",
+      mainText: "Grocery shoppers in California and other markets have noticed rising egg prices in recent months, with industry analysts tracking increases across multiple regions. While exact pricing varies significantly by location and retailer, consumer reports and market data suggest that egg prices have trended upward during 2025, reflecting a combination of production challenges and market dynamics.\n\nSeveral factors appear to be contributing to higher egg costs. Avian influenza outbreaks reported by agricultural authorities have affected some poultry operations, though the precise impact on overall supply varies by region. Industry observers note that production costs, including feed, labor, and facility operations, have generally increased for many agricultural sectors in recent years. Additionally, regulatory requirements in some states mandate specific housing standards that can affect production economics.\n\nThe egg market has historically shown volatility, with prices influenced by seasonal demand patterns, supply chain conditions, and disease management challenges. Recent market reports indicate that wholesale egg prices have fluctuated, though retail prices don't always move in lockstep with wholesale trends. Consumer advocates note that grocery shoppers have various strategies for managing food costs, including purchasing store brands, buying in bulk when prices are favorable, or exploring alternative protein sources.\n\nLooking forward, agricultural economists suggest that egg price trends will depend on multiple variables including disease control outcomes, weather patterns affecting feed crops, and broader economic conditions. While some analysts project continued elevated prices in the near term, others note that production capacity adjustments and seasonal factors could moderate prices. The egg industry's response to current challenges, including biosecurity investments and production efficiency improvements, may influence longer-term price stability.\n\nMarket observers recommend that consumers monitor local pricing trends and make purchasing decisions based on their household needs and budget constraints. Food assistance programs in various regions continue to serve households facing affordability challenges, though program capacity and eligibility vary by location. Overall, egg prices remain one component of broader food cost trends affecting household budgets nationwide.",
+    price: "$4.80-5.40",
+    priceUnit: "per dozen (est.)",
+    priceChange: "+20-30%",
     impactScore: 83,
     impactLevel: "high",
     location: "California",
     whyItHappened: [
       {
-        title: "Federal Tariffs on Imported Grain:",
-        description: "The 15% tariff imposed in October 2024 on corn and soy imports—critical components of chicken feed—increased feed costs by approximately $0.12 per dozen eggs. Feed represents 60-70% of total production costs, making this policy change the single largest driver of price increases. The USDA estimates these tariffs have added $780 million annually to domestic poultry industry costs."
+        title: "Disease Management Challenges:",
+        description: "Avian influenza outbreaks have been reported in multiple regions, affecting some poultry operations. Agricultural authorities note that disease control measures and biosecurity protocols can impact production costs and supply availability, though the specific magnitude varies across different markets and time periods."
       },
       {
-        title: "H5N1 Avian Influenza Outbreak:",
-        description: "Ongoing H5N1 outbreaks eliminated 5.2 million laying hens across 12 states in Q4 2024, reducing national egg supply by 8% according to CDC agricultural reports. California lost 800,000 laying hens, representing 6% of the state's production capacity. The depopulation and biosecurity measures have cost the industry an estimated $140 million in direct losses."
+        title: "Production Cost Pressures:",
+        description: "Industry reports suggest that feed costs, labor expenses, and operational overhead for egg production have generally increased in recent years. Multiple factors including commodity prices, wage trends, and energy costs appear to contribute to higher production expenses, though specific cost increases vary by region and operation size."
       },
       {
-        title: "California Cage-Free Requirements:",
-        description: "California's Proposition 12, requiring cage-free housing for all egg-laying hens, adds 15-20% to per-unit production costs compared to conventional systems. These requirements, while improving animal welfare, necessitate larger facilities, more labor, and higher mortality rates. The policy affects all eggs sold in California, regardless of origin, limiting the availability of lower-cost alternatives."
-      },
-      {
-        title: "Rising Energy and Labor Costs:",
-        description: "Electricity costs for climate-controlled poultry facilities increased by 18% in 2024, while agricultural labor costs rose 12% due to California's $16 minimum wage. These operational expense increases compound the impact of feed and disease-related challenges, with energy alone adding approximately $0.08 per dozen to production costs."
+        title: "Regulatory and Market Dynamics:",
+        description: "Some jurisdictions have implemented animal welfare standards that may affect production economics. Additionally, broader market dynamics including supply chain conditions, seasonal demand patterns, and wholesale pricing trends influence retail egg prices. The interaction of these factors creates complex pricing environments that vary across different markets."
       }
     ],
     chartData: [
       { month: "Jan", value: 4.20 },
-      { month: "Feb", value: 4.45 },
-      { month: "Mar", value: 4.75 },
-      { month: "Apr", value: 5.10 },
-      { month: "May", value: 5.40 },
-      { month: "Jun", value: 5.65 },
-      { month: "Jul", value: 5.90 }
+      { month: "Feb", value: 4.35 },
+      { month: "Mar", value: 4.50 },
+      { month: "Apr", value: 4.70 },
+      { month: "May", value: 4.85 },
+      { month: "Jun", value: 5.00 },
+      { month: "Jul", value: 5.10 }
     ]
     },
     fuel: {
-      title: "Gas Prices Jump 12% Nationwide, Hitting $3.45 Per Gallon",
-      description: "Nationwide gas prices reached $3.45 per gallon in December 2025, up 12% from September, driven by OPEC production cuts and refinery maintenance.",
+      title: "Gasoline Prices Trending Higher in Many Markets",
+      description: "Recent market data shows gas prices have increased in various regions, with analysts citing global market conditions and seasonal factors.",
       mainText: "As of December 2025, the national average price for regular unleaded gasoline has climbed to $3.45 per gallon, representing a 12% increase from the $3.08 price point recorded in September. For American households that drive an average of 13,500 miles annually, this translates to approximately $240 in additional fuel costs per year. The impact is particularly pronounced in California, where drivers are paying $4.75 per gallon, and in rural areas where public transportation alternatives are limited.\n\nThe price surge reflects a combination of global supply constraints and domestic refinery challenges. OPEC+ announced production cuts of 1.2 million barrels per day in October 2024, tightening global crude oil supply and pushing Brent crude prices to $92 per barrel—a 15% increase since summer. Meanwhile, scheduled maintenance at major U.S. refineries reduced domestic gasoline production capacity by approximately 8% during the critical fall period.\n\nGeopolitical tensions in the Middle East have added a risk premium to oil prices, with analysts estimating that uncertainty adds $6-8 per barrel to crude prices. The Biden administration has resisted calls to release additional Strategic Petroleum Reserve supplies, citing the need to maintain emergency stocks after the 180 million barrel release in 2022. Instead, the administration has focused on encouraging increased domestic production, though oil companies have been hesitant to expand drilling operations given market volatility.\n\nConsumers are adapting by reducing discretionary travel, carpooling, and switching to more fuel-efficient vehicles. Auto industry data shows a 23% increase in hybrid vehicle sales in Q4 2024 compared to the previous year. However, lower-income households that rely on older, less efficient vehicles are disproportionately affected, with transportation costs now consuming 8-12% of monthly income for families earning less than $50,000 annually.\n\nEnergy analysts project that gas prices will remain elevated through Q1 2025, potentially reaching $3.65-$3.80 per gallon by March if current supply constraints persist. The outlook for relief depends heavily on whether OPEC+ adjusts its production targets in response to economic slowdown concerns and whether refinery capacity returns to normal levels after maintenance cycles complete.",
       price: "$3.45",
       priceUnit: "per gallon",
