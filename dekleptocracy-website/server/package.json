@@ -13,7 +13,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "node-cron": "^3.0.3",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -21,7 +20,8 @@
     "google-auth-library": "^9.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.1",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
