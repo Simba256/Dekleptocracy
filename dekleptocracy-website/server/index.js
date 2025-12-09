@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import { scheduleArticleGeneration, triggerArticleGeneration, getSchedulerStatus } from './services/articleScheduler.js';
+import { removeDuplicateArticles } from './services/articleGenerator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,6 +85,24 @@ app.post('/api/articles/generate', async (req, res) => {
 app.get('/api/articles/scheduler/status', (req, res) => {
   const status = getSchedulerStatus();
   res.json(status);
+});
+
+// Clean up duplicate articles
+app.post('/api/articles/cleanup-duplicates', async (req, res) => {
+  try {
+    const count = await removeDuplicateArticles();
+    res.json({
+      success: true,
+      message: `Removed ${count} duplicate articles`,
+      count: count
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to clean up duplicates',
+      error: error.message
+    });
+  }
 });
 
 // Error handling middleware

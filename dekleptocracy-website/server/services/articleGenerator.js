@@ -653,7 +653,36 @@ function selectHeroImage(category) {
     transportation: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=400&fit=crop'
   };
 
-  return images[category] || images.groceries;
+  // Normalize category name (lowercase, trim spaces)
+  const normalizedCategory = category?.toLowerCase().trim();
+  return images[normalizedCategory] || images.groceries;
+}
+
+// Clean up duplicate articles (keep the newest one)
+async function removeDuplicateArticles() {
+  try {
+    const articles = await Article.find({}).sort({ createdAt: -1 });
+    const seenSlugs = new Set();
+    const duplicates = [];
+    
+    for (const article of articles) {
+      if (seenSlugs.has(article.slug)) {
+        duplicates.push(article._id);
+      } else {
+        seenSlugs.add(article.slug);
+      }
+    }
+    
+    if (duplicates.length > 0) {
+      await Article.deleteMany({ _id: { $in: duplicates } });
+      console.log(`🧹 Removed ${duplicates.length} duplicate articles`);
+    }
+    
+    return duplicates.length;
+  } catch (error) {
+    console.error('Error removing duplicates:', error);
+    return 0;
+  }
 }
 
 // Fetch real data from MCP server before generating article
@@ -722,13 +751,28 @@ async function generateArticles(count = 7) {
     console.log(`\n🚀 Starting article generation: ${count} articles`);
     console.log(`📡 Using MCP Server at: ${process.env.MCP_SERVER_URL || 'http://localhost:8000'}`);
     
-    // Select random categories and topics
+    // Clean up any existing duplicates first
+    await removeDuplicateArticles();
+    
+    // Select random categories and topics (avoid duplicates)
     const selectedTemplates = [];
-    for (let i = 0; i < count; i++) {
+    const usedCombinations = new Set();
+    
+    let attempts = 0;
+    while (selectedTemplates.length < count && attempts < count * 3) {
+      attempts++;
       const template = articleTemplates[Math.floor(Math.random() * articleTemplates.length)];
       const topic = template.topics[Math.floor(Math.random() * template.topics.length)];
-      selectedTemplates.push({ ...template, selectedTopic: topic });
+      const combination = `${template.category}-${topic}`;
+      
+      // Skip if we've already selected this combination
+      if (!usedCombinations.has(combination)) {
+        usedCombinations.add(combination);
+        selectedTemplates.push({ ...template, selectedTopic: topic });
+      }
     }
+    
+    console.log(`📋 Selected ${selectedTemplates.length} unique article topics`);
     
     // Generate articles for each template
     for (const template of selectedTemplates) {
@@ -763,13 +807,22 @@ async function generateArticles(count = 7) {
         const llmResponse = await callLLMWithContext(enhancedPrompt, template.category, template.selectedTopic);
         
         // Create article object
+        const slug = llmResponse.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        
+        // Check if article with same slug already exists
+        const existingArticle = await Article.findOne({ slug });
+        if (existingArticle) {
+          console.log(`  ⚠️  Article with slug "${slug}" already exists, skipping...`);
+          continue;
+        }
+        
         const articleData = {
           title: llmResponse.title,
-          slug: llmResponse.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+          slug: slug,
           category: template.category,
           icon: template.icon,
           iconBg: template.iconBg,
-          heroImage: selectHeroImage(template.category),
+          heroImage: selectHeroImage(template.category) || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=400&fit=crop',
           description: llmResponse.description,
           mainText: llmResponse.mainText,
           price: llmResponse.price,
@@ -812,5 +865,6 @@ async function generateArticles(count = 7) {
 export {
   generateArticles,
   articleTemplates,
-  generateArticlePrompt
+  generateArticlePrompt,
+  removeDuplicateArticles
 };
