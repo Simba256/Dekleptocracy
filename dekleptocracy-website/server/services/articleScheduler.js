@@ -3,13 +3,24 @@ import { generateArticles } from './articleGenerator.js';
 
 let isRunning = false;
 
-// Schedule article generation every 2-3 hours
-// Cron expression: '0 */2 * * *' = every 2 hours
-// Cron expression: '0 */3 * * *' = every 3 hours
-function scheduleArticleGeneration(interval = 2) {
-  const cronExpression = `0 */${interval} * * *`;
+/**
+ * Schedule article generation once a week
+ * 
+ * @param {number} dayOfWeek - Day of week (0=Sunday, 1=Monday, 2=Tuesday, ..., 6=Saturday)
+ * @param {number} hour - Hour of day (0-23, in 24-hour format)
+ * 
+ * Examples:
+ * - scheduleArticleGeneration(1, 9)  // Every Monday at 9:00 AM
+ * - scheduleArticleGeneration(0, 10) // Every Sunday at 10:00 AM
+ * - scheduleArticleGeneration(5, 14) // Every Friday at 2:00 PM
+ * 
+ * Cron expression format: '0 [hour] * * [dayOfWeek]'
+ */
+function scheduleArticleGeneration(dayOfWeek = 1, hour = 9) {
+  const cronExpression = `0 ${hour} * * ${dayOfWeek}`;
   
-  console.log(`📅 Article generation scheduled: Every ${interval} hours`);
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  console.log(`📅 Article generation scheduled: Every ${days[dayOfWeek]} at ${hour}:00`);
   console.log(`📅 Cron expression: ${cronExpression}`);
   
   // Schedule the job
@@ -83,8 +94,9 @@ async function triggerArticleGeneration(count = 7) {
 function getSchedulerStatus() {
   return {
     isRunning,
-    nextRun: 'Check cron schedule',
-    timezone: 'America/New_York'
+    schedule: 'Once a week (Every Monday at 9:00 AM)',
+    timezone: 'America/New_York',
+    note: 'To change schedule, modify scheduleArticleGeneration() parameters in index.js'
   };
 }
 

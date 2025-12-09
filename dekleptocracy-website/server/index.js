@@ -150,9 +150,9 @@ async function start() {
       console.log(`👤 User routes: http://localhost:${port}/api/user`);
       console.log(`📰 Article routes: http://localhost:${port}/api/articles`);
       
-      // Start the article generation scheduler (every 2 hours)
+      // Start the article generation scheduler (once a week)
       console.log('\n📅 Starting article generation scheduler...');
-      scheduleArticleGeneration(2); // Generate articles every 2 hours
+      scheduleArticleGeneration(1, 9); // Generate articles every Monday at 9:00 AM
       console.log('✅ Scheduler started successfully\n');
     });
   } catch (err) {
