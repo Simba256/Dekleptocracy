@@ -120,6 +120,7 @@ class ChatRequest(BaseModel):
     max_total_tools: int = Field(default=8, description="Maximum total number of tools to call")
     max_context_tokens: Optional[int] = Field(default=None, description="Maximum tokens for context (if None, uses model default)")
     preserve_recent_messages: int = Field(default=3, description="Number of recent messages to preserve when truncating")
+    system_prompt: Optional[str] = Field(default=None, description="Optional override for system prompt (e.g., synthetic research mode)")
 
 class TitleRequest(BaseModel):
     """Model for title generation requests"""
@@ -499,7 +500,8 @@ async def intelligent_chat_v2_endpoint(request: ChatRequest):
             max_iterations=request.max_iterations,
             max_total_tools=request.max_total_tools,
             max_context_tokens=request.max_context_tokens,
-            preserve_recent_messages=request.preserve_recent_messages
+            preserve_recent_messages=request.preserve_recent_messages,
+            system_prompt_override=request.system_prompt
         )
 
         return {
