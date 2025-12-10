@@ -391,90 +391,53 @@ const Insights = () => {
 
 // All Insights Overview Component
 const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
-  const handleFilterChange = (filter) => {
-    if (filter === 'all') {
-      navigate('/insights');
-    } else if (filter === 'article') {
-      navigate('/insights/articles');
-    } else if (filter === 'research') {
-      navigate('/insights/research');
-    }
-  };
-
+  const [selectedLocation, setSelectedLocation] = useState('all');
+  
+  // Get unique locations from articles
+  const uniqueLocations = ['All Locations', ...new Set(articles.map(a => a.location).filter(Boolean))];
+  
+  // Filter articles by location
+  const filteredArticles = selectedLocation === 'all' 
+    ? articles 
+    : articles.filter(article => article.location === selectedLocation);
+  
   return (
     <div className="insights-page">
       <div className="insights-container">
-        {/* Location Badge */}
+        {/* Location Filter Badge */}
         <div className="insights-badge-wrapper">
-          <span className="insights-location-badge">{state}</span>
+          <select
+            value={selectedLocation}
+            onChange={(e) => setSelectedLocation(e.target.value)}
+            className="insights-location-badge"
+            style={{
+              border: 'none',
+              outline: 'none',
+              cursor: 'pointer',
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              paddingRight: '30px',
+              backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 10px center',
+              backgroundSize: '14px'
+            }}
+          >
+            <option value="all" style={{ backgroundColor: 'white', color: '#374151' }}>All Locations</option>
+            {uniqueLocations.filter(loc => loc !== 'All Locations').map(location => (
+              <option key={location} value={location} style={{ backgroundColor: 'white', color: '#374151' }}>
+                {location}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Title */}
         <h1 className="insights-page-title">Latest Policy Impact Content</h1>
-        <p style={{ fontSize: '16px', color: '#6b7280', marginBottom: '30px' }}>
-          AI-generated insights based on verified data sources, updated weekly
-        </p>
-
-        {/* Content Type Filter Tabs */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '10px', 
-          marginBottom: '40px',
-          borderBottom: '2px solid #e5e7eb',
-          paddingBottom: '10px'
-        }}>
-          <button
-            onClick={() => handleFilterChange('all')}
-            style={{
-              padding: '10px 24px',
-              backgroundColor: contentTypeFilter === 'all' ? '#4A5D3F' : 'transparent',
-              color: contentTypeFilter === 'all' ? 'white' : '#6b7280',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '15px',
-              fontWeight: '600',
-              transition: 'all 0.3s'
-            }}
-          >
-            All ({articles.length})
-          </button>
-          <button
-            onClick={() => handleFilterChange('article')}
-            style={{
-              padding: '10px 24px',
-              backgroundColor: contentTypeFilter === 'article' ? '#4A5D3F' : 'transparent',
-              color: contentTypeFilter === 'article' ? 'white' : '#6b7280',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '15px',
-              fontWeight: '600',
-              transition: 'all 0.3s'
-            }}
-          >
-            📰 Articles ({articles.filter(a => a.contentType === 'article').length})
-          </button>
-          <button
-            onClick={() => handleFilterChange('research')}
-            style={{
-              padding: '10px 24px',
-              backgroundColor: contentTypeFilter === 'research' ? '#4A5D3F' : 'transparent',
-              color: contentTypeFilter === 'research' ? 'white' : '#6b7280',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '15px',
-              fontWeight: '600',
-              transition: 'all 0.3s'
-            }}
-          >
-            🔬 Research ({articles.filter(a => a.contentType === 'research').length})
-          </button>
-        </div>
 
         {/* Insights Grid */}
-        {articles.length === 0 ? (
+        {filteredArticles.length === 0 ? (
           <div style={{ 
             textAlign: 'center', 
             padding: '60px 20px',
@@ -484,14 +447,18 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
             marginTop: '20px'
           }}>
             <div style={{ fontSize: '48px', marginBottom: '20px' }}>📰</div>
-            <h2 style={{ color: '#4A5D3F', marginBottom: '15px' }}>No Articles Yet</h2>
+            <h2 style={{ color: '#4A5D3F', marginBottom: '15px' }}>
+              {selectedLocation === 'all' ? 'No Articles Yet' : `No Articles for ${selectedLocation}`}
+            </h2>
             <p style={{ color: '#6b7280', marginBottom: '25px', maxWidth: '500px', margin: '0 auto 25px' }}>
-              Articles are automatically generated weekly. Check back soon for new policy impact analysis!
+              {selectedLocation === 'all' 
+                ? 'Articles are automatically generated weekly. Check back soon for new policy impact analysis!'
+                : 'Try selecting a different location to see more articles.'}
             </p>
           </div>
         ) : (
           <div className="all-insights-grid">
-            {articles
+            {filteredArticles
               .filter(article => 
                 contentTypeFilter === 'all' || 
                 article.contentType === contentTypeFilter ||
@@ -509,11 +476,12 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
                     }}
                   />
                   <div className="all-insights-category-badge">{article.category}</div>
-                  {/* Content Type Badge */}
+                  
+                  {/* Content Type Badge - RIGHT */}
                   <div style={{
                     position: 'absolute',
                     top: '10px',
-                    left: '10px',
+                    right: '10px',
                     padding: '4px 12px',
                     borderRadius: '20px',
                     fontSize: '12px',

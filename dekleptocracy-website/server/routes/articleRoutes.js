@@ -212,23 +212,33 @@ router.get('/stats/overview', async (req, res) => {
   }
 });
 
-// Cleanup duplicate articles
+// Cleanup duplicate articles (by title - keeps newest)
 router.post('/cleanup-duplicates', async (req, res) => {
   try {
-    console.log('🧹 Starting duplicate cleanup...');
+    console.log('🧹 Starting duplicate cleanup by title...');
     
     // Get all articles sorted by creation date (newest first)
     const articles = await Article.find({}).sort({ createdAt: -1 });
     
-    const slugMap = new Map();
+    const titleMap = new Map();
     const duplicateIds = [];
+    const duplicateTitles = [];
     
-    // Track duplicates (keep the first occurrence, mark rest as duplicates)
+    // Track duplicates by normalized title (keep the newest occurrence)
     for (const article of articles) {
-      if (slugMap.has(article.slug)) {
+      const normalizedTitle = article.title.trim().toLowerCase();
+      
+      if (titleMap.has(normalizedTitle)) {
+        // This is a duplicate - mark for deletion
         duplicateIds.push(article._id);
+        if (!duplicateTitles.includes(article.title)) {
+          duplicateTitles.push(article.title);
+        }
+        console.log(`   ❌ Duplicate: "${article.title}" (${article.slug})`);
       } else {
-        slugMap.set(article.slug, article._id);
+        // First occurrence (newest) - keep it
+        titleMap.set(normalizedTitle, article._id);
+        console.log(`   ✅ Keeping: "${article.title}" (${article.slug})`);
       }
     }
     
@@ -237,7 +247,8 @@ router.post('/cleanup-duplicates', async (req, res) => {
         success: true,
         message: 'No duplicates found',
         duplicatesRemoved: 0,
-        totalArticles: articles.length
+        totalArticles: articles.length,
+        uniqueArticles: titleMap.size
       });
     }
     
@@ -245,12 +256,15 @@ router.post('/cleanup-duplicates', async (req, res) => {
     const result = await Article.deleteMany({ _id: { $in: duplicateIds } });
     
     console.log(`✅ Removed ${result.deletedCount} duplicate articles`);
+    console.log(`📋 Duplicate titles: ${duplicateTitles.join(', ')}`);
     
     res.json({
       success: true,
       message: `Successfully removed ${result.deletedCount} duplicates`,
       duplicatesRemoved: result.deletedCount,
-      totalArticles: articles.length - result.deletedCount
+      totalArticles: titleMap.size,
+      uniqueArticles: titleMap.size,
+      duplicateTitles: duplicateTitles
     });
     
   } catch (error) {

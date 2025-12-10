@@ -531,9 +531,10 @@
 /* All Insights View */
 .all-insights-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 450px));
+  gap: 60px;
   margin-top: 40px;
+  justify-content: center;
 }
 
 .all-insights-card {
@@ -712,7 +713,7 @@
 /* Responsive Design for All Insights */
 @media (max-width: 1024px) {
   .all-insights-grid {
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 400px));
     gap: 24px;
   }
 }

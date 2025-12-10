@@ -671,32 +671,34 @@ function selectHeroImage(category) {
   return imageUrl;
 }
 
-// Clean up duplicate articles (keep the newest one, delete older ones)
+// Clean up duplicate articles by title (keep the newest one, delete older ones)
 async function removeDuplicateArticles() {
   try {
-    console.log('🧹 Checking for duplicate articles...');
+    console.log('🧹 Checking for duplicate articles by title...');
     
-    // Get all articles
+    // Get all articles sorted by creation date (newest first)
     const allArticles = await Article.find({}).sort({ createdAt: -1 });
-    const slugMap = new Map();
+    const titleMap = new Map();
     const duplicateIds = [];
     
-    // Track duplicates
+    // Track duplicates by normalized title
     for (const article of allArticles) {
-      if (slugMap.has(article.slug)) {
+      const normalizedTitle = article.title.trim().toLowerCase();
+      
+      if (titleMap.has(normalizedTitle)) {
         // This is a duplicate - mark for deletion
         duplicateIds.push(article._id);
         console.log(`   ❌ Found duplicate: "${article.title}" (${article.slug})`);
       } else {
-        // First occurrence - keep it
-        slugMap.set(article.slug, article._id);
+        // First occurrence (newest) - keep it
+        titleMap.set(normalizedTitle, article._id);
       }
     }
     
     // Delete all duplicates
     if (duplicateIds.length > 0) {
       const result = await Article.deleteMany({ _id: { $in: duplicateIds } });
-      console.log(`🧹 Removed ${result.deletedCount} duplicate articles`);
+      console.log(`🧹 Removed ${result.deletedCount} duplicate articles (${titleMap.size} unique remain)`);
       return result.deletedCount;
     } else {
       console.log('✅ No duplicates found');
@@ -848,8 +850,17 @@ async function generateArticles(count = 7) {
         // Call MCP server to generate article content
         const llmResponse = await callLLMWithContext(enhancedPrompt, template.category, template.selectedTopic);
         
+        // Add date to title to make it unique
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        }); // e.g., "Dec 10, 2025"
+        const uniqueTitle = `${llmResponse.title} - ${dateStr}`;
+        
         // Create article object
-        let baseSlug = llmResponse.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        let baseSlug = uniqueTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         
         // Check if article with same slug already exists
         let slug = baseSlug;
@@ -882,7 +893,7 @@ async function generateArticles(count = 7) {
         }
         
         const articleData = {
-          title: llmResponse.title,
+          title: uniqueTitle,
           slug: slug,
           contentType: 'article', // Can be 'article' or 'research'
           category: template.category,
