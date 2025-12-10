@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import './Insights.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -7,6 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const Insights = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const category = searchParams.get('category') || 'all';
   const slug = searchParams.get('slug');
   const state = searchParams.get('state') || 'CALIFORNIA';
@@ -15,8 +16,21 @@ const Insights = () => {
   const [currentArticle, setCurrentArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [contentTypeFilter, setContentTypeFilter] = useState('all'); // 'all', 'article', 'research'
+  
+  // Determine content type filter from URL path
+  const getContentTypeFromPath = () => {
+    if (location.pathname === '/insights/articles') return 'article';
+    if (location.pathname === '/insights/research') return 'research';
+    return 'all';
+  };
+  
+  const [contentTypeFilter, setContentTypeFilter] = useState(getContentTypeFromPath());
 
+  // Update filter when path changes
+  useEffect(() => {
+    setContentTypeFilter(getContentTypeFromPath());
+  }, [location.pathname]);
+  
   // Fetch articles from API
   useEffect(() => {
     const fetchArticles = async () => {
@@ -115,7 +129,7 @@ const Insights = () => {
 
   // If category is 'all', show all insights overview
   if (category === 'all' && !slug) {
-    return <AllInsightsView articles={articles} state={state} />;
+    return <AllInsightsView articles={articles} state={state} contentTypeFilter={contentTypeFilter} navigate={navigate} />;
   }
 
   // Show single article view
@@ -376,9 +390,16 @@ const Insights = () => {
 };
 
 // All Insights Overview Component
-const AllInsightsView = ({ articles, state }) => {
-  const navigate = useNavigate();
-  const [contentTypeFilter, setContentTypeFilter] = useState('all'); // 'all', 'article', 'research'
+const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
+  const handleFilterChange = (filter) => {
+    if (filter === 'all') {
+      navigate('/insights');
+    } else if (filter === 'article') {
+      navigate('/insights/articles');
+    } else if (filter === 'research') {
+      navigate('/insights/research');
+    }
+  };
 
   return (
     <div className="insights-page">
@@ -403,7 +424,7 @@ const AllInsightsView = ({ articles, state }) => {
           paddingBottom: '10px'
         }}>
           <button
-            onClick={() => setContentTypeFilter('all')}
+            onClick={() => handleFilterChange('all')}
             style={{
               padding: '10px 24px',
               backgroundColor: contentTypeFilter === 'all' ? '#4A5D3F' : 'transparent',
@@ -419,7 +440,7 @@ const AllInsightsView = ({ articles, state }) => {
             All ({articles.length})
           </button>
           <button
-            onClick={() => setContentTypeFilter('article')}
+            onClick={() => handleFilterChange('article')}
             style={{
               padding: '10px 24px',
               backgroundColor: contentTypeFilter === 'article' ? '#4A5D3F' : 'transparent',
@@ -435,7 +456,7 @@ const AllInsightsView = ({ articles, state }) => {
             📰 Articles ({articles.filter(a => a.contentType === 'article').length})
           </button>
           <button
-            onClick={() => setContentTypeFilter('research')}
+            onClick={() => handleFilterChange('research')}
             style={{
               padding: '10px 24px',
               backgroundColor: contentTypeFilter === 'research' ? '#4A5D3F' : 'transparent',
