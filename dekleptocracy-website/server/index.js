@@ -172,9 +172,9 @@ async function start() {
       scheduleArticleGeneration(7); // Generate articles every 7 days at 9:00 AM
       console.log('✅ Article scheduler started successfully');
       
-      // Start the research generation scheduler (every 1 minute for testing)
+      // Start the research generation scheduler (every 7 days)
       console.log('\n📅 Starting research generation scheduler...');
-      scheduleResearchGeneration(); // TESTING: Generate research every 1 minute
+      scheduleResearchGeneration(7); // Generate research every 7 days at 10:00 AM
       console.log('✅ Research scheduler started successfully\n');
     });
   } catch (err) {

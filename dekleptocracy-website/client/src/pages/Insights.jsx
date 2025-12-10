@@ -392,6 +392,8 @@ const Insights = () => {
 // All Insights Overview Component
 const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
   const [selectedLocation, setSelectedLocation] = useState('all');
+  const [generating, setGenerating] = useState(false);
+  const [generateMessage, setGenerateMessage] = useState('');
   
   // Get unique locations from articles
   const uniqueLocations = ['All Locations', ...new Set(articles.map(a => a.location).filter(Boolean))];
@@ -400,6 +402,38 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
   const filteredArticles = selectedLocation === 'all' 
     ? articles 
     : articles.filter(article => article.location === selectedLocation);
+  
+  // Handle research generation
+  const handleGenerateResearch = async () => {
+    setGenerating(true);
+    setGenerateMessage('');
+    
+    try {
+      const response = await fetch(`${API_URL}/api/research/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ count: 3 }) // Generate 3 research reports
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setGenerateMessage(`✅ Successfully generated ${data.count} research reports!`);
+        // Reload the page after 2 seconds to show new research
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        setGenerateMessage(`❌ Error: ${data.error || 'Failed to generate research'}`);
+      }
+    } catch (error) {
+      setGenerateMessage(`❌ Error: ${error.message}`);
+    } finally {
+      setGenerating(false);
+    }
+  };
   
   return (
     <div className="insights-page">
@@ -435,6 +469,66 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
 
         {/* Title */}
         <h1 className="insights-page-title">Latest Policy Impact Content</h1>
+
+        {/* Generate Research Button - Only show on research page */}
+        {contentTypeFilter === 'research' && (
+          <div style={{ 
+            marginBottom: '30px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '15px',
+            flexWrap: 'wrap'
+          }}>
+            <button
+              onClick={handleGenerateResearch}
+              disabled={generating}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: generating ? '#9ca3af' : '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: generating ? 'not-allowed' : 'pointer',
+                fontSize: '15px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s'
+              }}
+              onMouseOver={(e) => !generating && (e.target.style.backgroundColor = '#2563eb')}
+              onMouseOut={(e) => !generating && (e.target.style.backgroundColor = '#3b82f6')}
+            >
+              {generating ? (
+                <>
+                  <span style={{ 
+                    display: 'inline-block',
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid white',
+                    borderTop: '2px solid transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }}></span>
+                  Generating Research...
+                </>
+              ) : (
+                <>
+                  🔬 Generate Research Reports
+                </>
+              )}
+            </button>
+            {generateMessage && (
+              <span style={{ 
+                fontSize: '14px', 
+                color: generateMessage.includes('✅') ? '#10b981' : '#ef4444',
+                fontWeight: '500'
+              }}>
+                {generateMessage}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Insights Grid */}
         {filteredArticles.length === 0 ? (
