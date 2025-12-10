@@ -12,7 +12,7 @@ let isRunning = false;
  * - scheduleArticleGeneration(1)  // Every day at 9:00 AM
  * - scheduleArticleGeneration(7)  // Every 7 days (weekly) at 9:00 AM
  * 
- * Cron expression format: '0 9 */[days] * *' (every N days at 9 AM)
+ * Cron expression format: '0 9 star-slash-N star star' (every N days at 9 AM)
  */
 function scheduleArticleGeneration(days = 7) {
   const cronExpression = `0 9 */${days} * *`;

@@ -212,4 +212,55 @@ router.get('/stats/overview', async (req, res) => {
   }
 });
 
+// Cleanup duplicate articles
+router.post('/cleanup-duplicates', async (req, res) => {
+  try {
+    console.log('🧹 Starting duplicate cleanup...');
+    
+    // Get all articles sorted by creation date (newest first)
+    const articles = await Article.find({}).sort({ createdAt: -1 });
+    
+    const slugMap = new Map();
+    const duplicateIds = [];
+    
+    // Track duplicates (keep the first occurrence, mark rest as duplicates)
+    for (const article of articles) {
+      if (slugMap.has(article.slug)) {
+        duplicateIds.push(article._id);
+      } else {
+        slugMap.set(article.slug, article._id);
+      }
+    }
+    
+    if (duplicateIds.length === 0) {
+      return res.json({
+        success: true,
+        message: 'No duplicates found',
+        duplicatesRemoved: 0,
+        totalArticles: articles.length
+      });
+    }
+    
+    // Delete duplicates
+    const result = await Article.deleteMany({ _id: { $in: duplicateIds } });
+    
+    console.log(`✅ Removed ${result.deletedCount} duplicate articles`);
+    
+    res.json({
+      success: true,
+      message: `Successfully removed ${result.deletedCount} duplicates`,
+      duplicatesRemoved: result.deletedCount,
+      totalArticles: articles.length - result.deletedCount
+    });
+    
+  } catch (error) {
+    console.error('❌ Error cleaning up duplicates:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error cleaning up duplicates',
+      error: error.message
+    });
+  }
+});
+
 export default router;

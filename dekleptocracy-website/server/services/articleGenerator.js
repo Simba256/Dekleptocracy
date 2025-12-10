@@ -779,8 +779,26 @@ async function generateArticles(count = 7) {
     
     // Select random categories and topics (avoid duplicates)
     const selectedTemplates = [];
+    const usedCategories = new Set();
     const usedCombinations = new Set();
     
+    // First, try to pick one article per category (maximum variety)
+    const shuffledTemplates = [...articleTemplates].sort(() => Math.random() - 0.5);
+    
+    for (const template of shuffledTemplates) {
+      if (selectedTemplates.length >= count) break;
+      
+      if (!usedCategories.has(template.category)) {
+        const topic = template.topics[Math.floor(Math.random() * template.topics.length)];
+        const combination = `${template.category}-${topic}`;
+        
+        usedCategories.add(template.category);
+        usedCombinations.add(combination);
+        selectedTemplates.push({ ...template, selectedTopic: topic });
+      }
+    }
+    
+    // If we still need more articles, pick different topics from used categories
     let attempts = 0;
     while (selectedTemplates.length < count && attempts < count * 3) {
       attempts++;
@@ -788,7 +806,7 @@ async function generateArticles(count = 7) {
       const topic = template.topics[Math.floor(Math.random() * template.topics.length)];
       const combination = `${template.category}-${topic}`;
       
-      // Skip if we've already selected this combination
+      // Skip if we've already selected this exact combination
       if (!usedCombinations.has(combination)) {
         usedCombinations.add(combination);
         selectedTemplates.push({ ...template, selectedTopic: topic });
@@ -796,6 +814,7 @@ async function generateArticles(count = 7) {
     }
     
     console.log(`📋 Selected ${selectedTemplates.length} unique article topics`);
+    console.log(`   Categories: ${[...usedCategories].join(', ')}`);
     
     // Generate articles for each template
     for (const template of selectedTemplates) {
@@ -844,9 +863,14 @@ async function generateArticles(count = 7) {
           slugCounter++;
           
           if (slugCounter > 10) {
-            console.log(`  ⚠️  Too many articles with similar titles, skipping...`);
-            continue;
+            console.log(`  ⚠️  Article with slug "${baseSlug}" already exists, skipping duplicate...`);
+            break; // Use break instead of continue to exit the while loop
           }
+        }
+        
+        // Skip saving if we hit too many duplicates
+        if (slugCounter > 10) {
+          continue;
         }
         
         console.log(`  📝 Creating article with slug: ${slug}`);
