@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import { scheduleArticleGeneration, triggerArticleGeneration, getSchedulerStatus } from './services/articleScheduler.js';
+import { scheduleResearchGeneration, triggerResearchGeneration, getResearchSchedulerStatus } from './services/researchScheduler.js';
 import { removeDuplicateArticles } from './services/articleGenerator.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -82,6 +83,22 @@ app.post('/api/articles/generate', async (req, res) => {
   }
 });
 
+// Research generation endpoint
+app.post('/api/research/generate', async (req, res) => {
+  try {
+    const { count = 5 } = req.body;
+    const result = await triggerResearchGeneration(count);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/research/scheduler/status', (req, res) => {
+  const status = getResearchSchedulerStatus();
+  res.json(status);
+});
+
 app.get('/api/articles/scheduler/status', (req, res) => {
   const status = getSchedulerStatus();
   res.json(status);
@@ -153,7 +170,12 @@ async function start() {
       // Start the article generation scheduler (every 7 days)
       console.log('\n📅 Starting article generation scheduler...');
       scheduleArticleGeneration(7); // Generate articles every 7 days at 9:00 AM
-      console.log('✅ Scheduler started successfully\n');
+      console.log('✅ Article scheduler started successfully');
+      
+      // Start the research generation scheduler (every 14 days)
+      console.log('\n📅 Starting research generation scheduler...');
+      scheduleResearchGeneration(14); // Generate research every 14 days at 10:00 AM
+      console.log('✅ Research scheduler started successfully\n');
     });
   } catch (err) {
     console.error('❌ Failed to start server:', err);
