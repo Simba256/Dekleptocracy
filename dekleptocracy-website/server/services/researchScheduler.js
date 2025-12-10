@@ -55,17 +55,30 @@ function scheduleResearchGeneration(days = 7) {
 
 // Manual trigger for testing
 async function triggerResearchGeneration(count = 5) {
+  console.log(`\n${'='.repeat(80)}`);
+  console.log(`🚀 MANUAL RESEARCH GENERATION TRIGGERED`);
+  console.log(`${'='.repeat(80)}`);
+  console.log(`Requested count: ${count}`);
+  console.log(`Currently running: ${isRunning}`);
+  console.log(`Time: ${new Date().toLocaleString()}`);
+  console.log(`${'='.repeat(80)}\n`);
+  
   if (isRunning) {
     console.log('⚠️  Research generation already in progress');
     return { success: false, message: 'Generation already in progress' };
   }
   
   isRunning = true;
-  console.log(`\n🚀 Manual research generation triggered: ${count} reports`);
   
   try {
+    console.log(`Starting research generation with count=${count}...\n`);
     const research = await generateResearch(count);
-    console.log(`✅ Successfully generated ${research.length} research reports`);
+    
+    console.log(`\n${'='.repeat(80)}`);
+    console.log(`✅ MANUAL GENERATION COMPLETE`);
+    console.log(`${'='.repeat(80)}`);
+    console.log(`Generated: ${research.length} research reports`);
+    console.log(`${'='.repeat(80)}\n`);
     
     return {
       success: true,
@@ -77,13 +90,21 @@ async function triggerResearchGeneration(count = 5) {
       }))
     };
   } catch (error) {
-    console.error('❌ Error during manual research generation:', error);
+    console.error(`\n${'='.repeat(80)}`);
+    console.error('❌ ERROR DURING MANUAL RESEARCH GENERATION');
+    console.error(`${'='.repeat(80)}`);
+    console.error('Error:', error.message);
+    console.error('Stack:', error.stack);
+    console.error(`${'='.repeat(80)}\n`);
+    
     return {
       success: false,
-      error: error.message
+      error: error.message,
+      stack: error.stack
     };
   } finally {
     isRunning = false;
+    console.log('Research generation lock released\n');
   }
 }
 

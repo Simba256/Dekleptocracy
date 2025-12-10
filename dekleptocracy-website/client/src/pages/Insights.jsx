@@ -405,33 +405,59 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
   
   // Handle research generation
   const handleGenerateResearch = async () => {
+    console.log('🔬 Starting research generation...');
+    console.log('API URL:', API_URL);
+    
     setGenerating(true);
-    setGenerateMessage('');
+    setGenerateMessage('Generating research reports...');
     
     try {
+      const requestBody = { count: 3 };
+      console.log('Request body:', requestBody);
+      
       const response = await fetch(`${API_URL}/api/research/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ count: 3 }) // Generate 3 research reports
+        body: JSON.stringify(requestBody)
       });
       
+      console.log('Response status:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+      }
+      
       const data = await response.json();
+      console.log('Response data:', data);
       
       if (data.success) {
-        setGenerateMessage(`✅ Successfully generated ${data.count} research reports!`);
+        const message = `✅ Successfully generated ${data.count} research reports!`;
+        console.log(message);
+        console.log('Generated research:', data.research);
+        setGenerateMessage(message);
+        
         // Reload the page after 2 seconds to show new research
         setTimeout(() => {
+          console.log('Reloading page to show new research...');
           window.location.reload();
         }, 2000);
       } else {
-        setGenerateMessage(`❌ Error: ${data.error || 'Failed to generate research'}`);
+        const errorMsg = `❌ Error: ${data.error || 'Failed to generate research'}`;
+        console.error(errorMsg);
+        console.error('Full error data:', data);
+        setGenerateMessage(errorMsg);
       }
     } catch (error) {
-      setGenerateMessage(`❌ Error: ${error.message}`);
+      const errorMsg = `❌ Error: ${error.message}`;
+      console.error('Fetch error:', error);
+      setGenerateMessage(errorMsg);
     } finally {
       setGenerating(false);
+      console.log('Generation process complete');
     }
   };
   

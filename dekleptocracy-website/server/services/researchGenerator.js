@@ -296,62 +296,105 @@ async function callLLM(prompt) {
   const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'http://localhost:8000';
   
   try {
-    console.log('📡 Calling MCP Server for research generation...');
+    console.log(`📡 Calling MCP Server: ${MCP_SERVER_URL}/chat/intelligent/v2`);
+    console.log(`   Prompt length: ${prompt.length} chars`);
+    
+    const requestBody = {
+      messages: [
+        {
+          role: "system",
+          content: "You are a senior economic researcher writing comprehensive, data-driven research reports for Dekleptocracy. CRITICAL: Use formal academic tone, extensive data with ranges and statistics, multiple data points across time periods and regions, proper hedging language ('data suggests', 'analysis indicates', 'studies show'), comparative analysis, methodological transparency, and acknowledge uncertainty. Write 1200-1800 words with 8-12 sections covering introduction, methodology, key findings, economic analysis, demographic impact, policy implications, projections, and conclusions. Always return ONLY valid JSON with no additional text or markdown."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      use_mcp_tools: true,
+      stream: false,
+      max_iterations: 5,
+      max_total_tools: 10,
+      max_context_tokens: 12000
+    };
+    
+    console.log(`   Request config:`, JSON.stringify({
+      use_mcp_tools: requestBody.use_mcp_tools,
+      max_iterations: requestBody.max_iterations,
+      max_total_tools: requestBody.max_total_tools,
+      max_context_tokens: requestBody.max_context_tokens
+    }));
     
     const response = await fetch(`${MCP_SERVER_URL}/chat/intelligent/v2`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        messages: [
-          {
-            role: "system",
-            content: "You are a senior economic researcher writing comprehensive, data-driven research reports for Dekleptocracy. CRITICAL: Use formal academic tone, extensive data with ranges and statistics, multiple data points across time periods and regions, proper hedging language ('data suggests', 'analysis indicates', 'studies show'), comparative analysis, methodological transparency, and acknowledge uncertainty. Write 1200-1800 words with 8-12 sections covering introduction, methodology, key findings, economic analysis, demographic impact, policy implications, projections, and conclusions. Always return ONLY valid JSON with no additional text or markdown."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        use_mcp_tools: true,
-        stream: false,
-        max_iterations: 5,
-        max_total_tools: 10,
-        max_context_tokens: 12000  // More tokens for longer research content
-      })
+      body: JSON.stringify(requestBody)
     });
     
+    console.log(`   Response status: ${response.status} ${response.statusText}`);
+    
     if (!response.ok) {
-      console.error(`MCP Server error: ${response.status} ${response.statusText}`);
-      throw new Error('MCP Server request failed');
+      const errorText = await response.text();
+      console.error(`❌ MCP Server error: ${response.status} ${response.statusText}`);
+      console.error(`   Error response:`, errorText);
+      throw new Error(`MCP Server request failed: ${response.status} ${response.statusText}`);
     }
     
+    console.log(`   ✅ Response received, parsing JSON...`);
     const data = await response.json();
+    console.log(`   Response keys:`, Object.keys(data));
+    console.log(`   Content length: ${data.content?.length || 0} chars`);
+    console.log(`   Tokens used: ${data.metadata?.tokens_used || 'unknown'}`);
+    console.log(`   Tools called: ${data.tool_calls?.length || 0}`);
     const content = data.content;
+    console.log(`   Content preview: ${content.substring(0, 200)}...`);
     
     // Parse JSON from response
+    console.log(`   Parsing JSON from content...`);
     let researchData;
     try {
       researchData = JSON.parse(content);
+      console.log(`   ✅ JSON parsed successfully`);
+      console.log(`   Research title: ${researchData.title?.substring(0, 60)}...`);
     } catch (e) {
+      console.log(`   ⚠️  Direct JSON parse failed, trying to extract JSON...`);
+      console.log(`   Error: ${e.message}`);
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
+        console.log(`   Found JSON in content, attempting to parse...`);
         researchData = JSON.parse(jsonMatch[0]);
+        console.log(`   ✅ JSON extracted and parsed successfully`);
       } else {
-        console.error('Could not parse JSON from MCP response');
-        throw new Error('Invalid JSON from MCP server');
+        console.error(`   ❌ Could not find JSON in MCP response`);
+        console.error(`   Content:`, content.substring(0, 500));
+        throw new Error('Invalid JSON from MCP server - no JSON found in response');
       }
     }
     
-    console.log(`✓ Research generated via MCP Server (${data.metadata?.tokens_used || 0} tokens)`);
-    console.log(`✓ Tools used: ${data.tool_calls?.length || 0}`);
+    // Validate required fields
+    const requiredFields = ['title', 'description', 'mainText', 'price', 'priceUnit', 'priceChange', 
+                           'impactScore', 'impactLevel', 'whyItHappened', 'chartData'];
+    const missingFields = requiredFields.filter(field => !researchData[field]);
+    
+    if (missingFields.length > 0) {
+      console.error(`   ❌ Missing required fields:`, missingFields);
+      throw new Error(`Invalid research data: missing fields ${missingFields.join(', ')}`);
+    }
+    
+    console.log(`   ✅ All required fields present`);
+    console.log(`✓ Research generated successfully`);
     
     return researchData;
     
   } catch (error) {
-    console.error('Error calling MCP Server:', error.message);
-    console.log('⚠️  Is your MCP server running? Start it with: cd mcp_server && python http_server.py');
+    console.error(`\n❌ ERROR calling MCP Server:`);
+    console.error(`   Error type: ${error.constructor.name}`);
+    console.error(`   Message: ${error.message}`);
+    console.error(`   Stack:`, error.stack);
+    console.error(`\n⚠️  Is your MCP server running?`);
+    console.error(`   Start it with: cd mcp_server && python http_server.py`);
+    console.error(`   Or: python mcp_server/http_server.py`);
     throw error;
   }
 }
@@ -465,11 +508,18 @@ async function generateResearch(count = 5) {
   const generatedResearch = [];
   
   try {
-    console.log(`\n🔬 Starting research generation: ${count} reports`);
-    console.log(`📡 Using MCP Server at: ${process.env.MCP_SERVER_URL || 'http://localhost:8000'}`);
+    console.log(`\n${'='.repeat(80)}`);
+    console.log(`🔬 RESEARCH GENERATION STARTED`);
+    console.log(`${'='.repeat(80)}`);
+    console.log(`📊 Target count: ${count} reports`);
+    console.log(`📡 MCP Server: ${process.env.MCP_SERVER_URL || 'http://localhost:8000'}`);
+    console.log(`⏰ Time: ${new Date().toLocaleString()}`);
+    console.log(`${'='.repeat(80)}\n`);
     
     // Clean up any existing duplicates first
-    await removeDuplicateArticles();
+    console.log('🧹 Cleaning up duplicates...');
+    const duplicatesRemoved = await removeDuplicateArticles();
+    console.log(`✅ Duplicates cleanup complete (${duplicatesRemoved} removed)\n`);
     
     // Select random categories and topics
     const selectedTemplates = [];
@@ -490,23 +540,43 @@ async function generateResearch(count = 5) {
       }
     }
     
-    console.log(`📋 Selected ${selectedTemplates.length} research topics\n`);
+    console.log(`📋 Selected ${selectedTemplates.length} research topics:`);
+    selectedTemplates.forEach((t, i) => {
+      console.log(`   ${i + 1}. ${t.category} - ${t.selectedTopic}`);
+    });
+    console.log('');
     
     // Generate each research report
-    for (const template of selectedTemplates) {
+    let successCount = 0;
+    let failCount = 0;
+    
+    for (let i = 0; i < selectedTemplates.length; i++) {
+      const template = selectedTemplates[i];
       try {
-        console.log(`📊 Generating: ${template.category} - ${template.selectedTopic}`);
+        console.log(`\n${'─'.repeat(80)}`);
+        console.log(`📊 [${i + 1}/${selectedTemplates.length}] Generating: ${template.category} - ${template.selectedTopic}`);
+        console.log(`${'─'.repeat(80)}`);
         
         // Generate mock sources
+        console.log('📚 Generating mock sources...');
         const sources = generateMockSources(template.category, template.selectedTopic);
+        console.log(`✅ Generated ${sources.length} sources`);
         
         // Create research prompt
+        console.log('📝 Creating research prompt...');
         const enhancedPrompt = generateResearchPrompt(template.category, template.selectedTopic, sources);
+        console.log(`✅ Prompt created (${enhancedPrompt.length} chars)`);
         
         // Call MCP server to generate research content
+        console.log('🤖 Calling MCP server for content generation...');
         const llmResponse = await callLLMWithContext(enhancedPrompt, template.category, template.selectedTopic);
+        console.log('✅ LLM response received');
+        console.log(`   Title: ${llmResponse.title?.substring(0, 60)}...`);
+        console.log(`   Description length: ${llmResponse.description?.length || 0} chars`);
+        console.log(`   Main text length: ${llmResponse.mainText?.length || 0} chars`);
         
         // Add date to title to make it unique
+        console.log('📅 Adding date to title...');
         const now = new Date();
         const dateStr = now.toLocaleDateString('en-US', { 
           month: 'short', 
@@ -514,9 +584,12 @@ async function generateResearch(count = 5) {
           year: 'numeric' 
         });
         const uniqueTitle = `${llmResponse.title} - ${dateStr}`;
+        console.log(`✅ Unique title: ${uniqueTitle.substring(0, 80)}...`);
         
         // Create slug from title
+        console.log('🔗 Generating slug...');
         let baseSlug = uniqueTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        console.log(`   Base slug: ${baseSlug.substring(0, 60)}...`);
         
         // Check if research with same slug already exists
         let slug = baseSlug;
@@ -524,12 +597,14 @@ async function generateResearch(count = 5) {
         let slugCounter = 1;
         
         while (slugExists) {
+          console.log(`   ⚠️  Slug "${slug}" exists, trying counter ${slugCounter}...`);
           slug = `${baseSlug}-${slugCounter}`;
           slugExists = await Article.findOne({ slug });
           slugCounter++;
           
           if (slugCounter > 10) {
-            console.log(`  ⚠️  Research with slug "${baseSlug}" already exists, skipping...`);
+            console.log(`  ❌ Too many duplicates for slug "${baseSlug}", skipping...`);
+            failCount++;
             break;
           }
         }
@@ -538,11 +613,14 @@ async function generateResearch(count = 5) {
           continue;
         }
         
-        console.log(`  📝 Creating research with slug: ${slug}`);
+        console.log(`✅ Final slug: ${slug}`);
         
         // Get hero image
+        console.log('🖼️  Selecting hero image...');
         const heroImage = selectHeroImage(template.category);
+        console.log(`✅ Hero image: ${heroImage.substring(0, 60)}...`);
         
+        console.log('📦 Building research data object...');
         const researchData = {
           title: uniqueTitle,
           slug: slug,
@@ -570,31 +648,74 @@ async function generateResearch(count = 5) {
         };
         
         // Save to database
+        console.log('💾 Saving to database...');
         try {
           const research = new Article(researchData);
+          console.log('   Creating Article document...');
           await research.save();
+          console.log('   ✅ Saved to MongoDB');
           generatedResearch.push(research);
-          console.log(`  ✅ Research saved: ${research.title}`);
-          console.log(`     📍 Slug: ${research.slug}`);
-          console.log(`     🔬 Type: Research Report`);
+          successCount++;
+          
+          console.log(`\n✅ SUCCESS: Research report created`);
+          console.log(`   Title: ${research.title.substring(0, 70)}...`);
+          console.log(`   Slug: ${research.slug}`);
+          console.log(`   Category: ${research.category}`);
+          console.log(`   Type: ${research.contentType}`);
+          console.log(`   Impact: ${research.impactLevel} (${research.impactScore}/100)`);
+          console.log(`   Word count: ~${research.mainText.split(' ').length} words`);
+          console.log(`   Sources: ${research.sources.length}`);
+          console.log(`   Chart data points: ${research.chartData.length}`);
+          
         } catch (saveError) {
+          failCount++;
           if (saveError.code === 11000) {
-            console.log(`  ⚠️  Duplicate detected during save, skipping: ${llmResponse.title}`);
+            console.log(`\n❌ DUPLICATE ERROR: Slug already exists`);
+            console.log(`   Title: ${llmResponse.title}`);
+            console.log(`   Slug: ${slug}`);
           } else {
-            console.error(`  ❌ Error saving research:`, saveError.message);
+            console.error(`\n❌ DATABASE ERROR:`, saveError.message);
+            console.error(`   Full error:`, saveError);
           }
         }
         
       } catch (error) {
-        console.error(`  ❌ Error generating research for ${template.category}:`, error.message);
+        failCount++;
+        console.error(`\n❌ GENERATION ERROR for ${template.category}:`);
+        console.error(`   Topic: ${template.selectedTopic}`);
+        console.error(`   Error: ${error.message}`);
+        console.error(`   Stack:`, error.stack);
       }
     }
+    }
     
-    console.log(`\n✅ Research generation complete: ${generatedResearch.length}/${count} reports created\n`);
+    console.log(`\n${'='.repeat(80)}`);
+    console.log(`📊 RESEARCH GENERATION COMPLETE`);
+    console.log(`${'='.repeat(80)}`);
+    console.log(`✅ Successfully generated: ${successCount}/${selectedTemplates.length} reports`);
+    console.log(`❌ Failed: ${failCount}/${selectedTemplates.length} reports`);
+    console.log(`📝 Total saved to database: ${generatedResearch.length}`);
+    
+    if (generatedResearch.length > 0) {
+      console.log(`\n📋 Generated Research Reports:`);
+      generatedResearch.forEach((r, i) => {
+        console.log(`   ${i + 1}. ${r.title.substring(0, 70)}...`);
+        console.log(`      Category: ${r.category}, Slug: ${r.slug}`);
+      });
+    } else {
+      console.log(`\n⚠️  WARNING: No research reports were saved to database!`);
+    }
+    
+    console.log(`${'='.repeat(80)}\n`);
     return generatedResearch;
     
   } catch (error) {
-    console.error('Error in research generation:', error);
+    console.error(`\n${'='.repeat(80)}`);
+    console.error('❌ FATAL ERROR in research generation');
+    console.error(`${'='.repeat(80)}`);
+    console.error('Error:', error.message);
+    console.error('Stack:', error.stack);
+    console.error(`${'='.repeat(80)}\n`);
     throw error;
   }
 }
