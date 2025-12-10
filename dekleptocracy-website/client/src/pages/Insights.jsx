@@ -378,6 +378,7 @@ const Insights = () => {
 // All Insights Overview Component
 const AllInsightsView = ({ articles, state }) => {
   const navigate = useNavigate();
+  const [contentTypeFilter, setContentTypeFilter] = useState('all'); // 'all', 'article', 'research'
 
   return (
     <div className="insights-page">
