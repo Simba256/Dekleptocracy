@@ -6,19 +6,18 @@ let isRunning = false;
 /**
  * Schedule article generation at specified interval
  * 
- * @param {number} minutes - Interval in minutes (1 = every minute, 60 = every hour, etc.)
+ * @param {number} days - Interval in days (1 = daily, 7 = weekly, etc.)
  * 
  * Examples:
- * - scheduleArticleGeneration(1)    // Every 1 minute (testing)
- * - scheduleArticleGeneration(60)   // Every hour
- * - scheduleArticleGeneration(120)  // Every 2 hours
+ * - scheduleArticleGeneration(1)  // Every day at 9:00 AM
+ * - scheduleArticleGeneration(7)  // Every 7 days (weekly) at 9:00 AM
  * 
- * Cron expression format: '* * * * *' (every minute)
+ * Cron expression format: '0 9 */[days] * *' (every N days at 9 AM)
  */
-function scheduleArticleGeneration(minutes = 1) {
-  const cronExpression = `*/${minutes} * * * *`;
+function scheduleArticleGeneration(days = 7) {
+  const cronExpression = `0 9 */${days} * *`;
   
-  console.log(`📅 Article generation scheduled: Every ${minutes} minute(s)`);
+  console.log(`📅 Article generation scheduled: Every ${days} day(s) at 9:00 AM`);
   console.log(`📅 Cron expression: ${cronExpression}`);
   
   // Schedule the job
@@ -92,7 +91,7 @@ async function triggerArticleGeneration(count = 7) {
 function getSchedulerStatus() {
   return {
     isRunning,
-    schedule: 'Every 1 minute',
+    schedule: 'Every 7 days at 9:00 AM',
     timezone: 'America/New_York',
     note: 'To change schedule, modify scheduleArticleGeneration() parameter in index.js'
   };
