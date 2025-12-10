@@ -12,6 +12,12 @@ const articleSchema = new mongoose.Schema({
     unique: true,
     lowercase: true
   },
+  contentType: {
+    type: String,
+    required: true,
+    enum: ['article', 'research'],
+    default: 'article'
+  },
   category: {
     type: String,
     required: true,
@@ -125,6 +131,7 @@ const articleSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
+articleSchema.index({ contentType: 1, publishedAt: -1 });
 articleSchema.index({ category: 1, publishedAt: -1 });
 articleSchema.index({ slug: 1 });
 articleSchema.index({ status: 1, publishedAt: -1 });

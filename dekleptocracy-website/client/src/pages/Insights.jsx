@@ -15,6 +15,7 @@ const Insights = () => {
   const [currentArticle, setCurrentArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [contentTypeFilter, setContentTypeFilter] = useState('all'); // 'all', 'article', 'research'
 
   // Fetch articles from API
   useEffect(() => {
@@ -387,10 +388,68 @@ const AllInsightsView = ({ articles, state }) => {
         </div>
 
         {/* Title */}
-        <h1 className="insights-page-title">Latest Policy Impact Articles</h1>
-        <p style={{ fontSize: '16px', color: '#6b7280', marginBottom: '40px' }}>
+        <h1 className="insights-page-title">Latest Policy Impact Content</h1>
+        <p style={{ fontSize: '16px', color: '#6b7280', marginBottom: '30px' }}>
           AI-generated insights based on verified data sources, updated weekly
         </p>
+
+        {/* Content Type Filter Tabs */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '10px', 
+          marginBottom: '40px',
+          borderBottom: '2px solid #e5e7eb',
+          paddingBottom: '10px'
+        }}>
+          <button
+            onClick={() => setContentTypeFilter('all')}
+            style={{
+              padding: '10px 24px',
+              backgroundColor: contentTypeFilter === 'all' ? '#4A5D3F' : 'transparent',
+              color: contentTypeFilter === 'all' ? 'white' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '15px',
+              fontWeight: '600',
+              transition: 'all 0.3s'
+            }}
+          >
+            All ({articles.length})
+          </button>
+          <button
+            onClick={() => setContentTypeFilter('article')}
+            style={{
+              padding: '10px 24px',
+              backgroundColor: contentTypeFilter === 'article' ? '#4A5D3F' : 'transparent',
+              color: contentTypeFilter === 'article' ? 'white' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '15px',
+              fontWeight: '600',
+              transition: 'all 0.3s'
+            }}
+          >
+            📰 Articles ({articles.filter(a => a.contentType === 'article').length})
+          </button>
+          <button
+            onClick={() => setContentTypeFilter('research')}
+            style={{
+              padding: '10px 24px',
+              backgroundColor: contentTypeFilter === 'research' ? '#4A5D3F' : 'transparent',
+              color: contentTypeFilter === 'research' ? 'white' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '15px',
+              fontWeight: '600',
+              transition: 'all 0.3s'
+            }}
+          >
+            🔬 Research ({articles.filter(a => a.contentType === 'research').length})
+          </button>
+        </div>
 
         {/* Insights Grid */}
         {articles.length === 0 ? (
@@ -410,7 +469,13 @@ const AllInsightsView = ({ articles, state }) => {
           </div>
         ) : (
           <div className="all-insights-grid">
-            {articles.map((article) => (
+            {articles
+              .filter(article => 
+                contentTypeFilter === 'all' || 
+                article.contentType === contentTypeFilter ||
+                !article.contentType // backwards compatibility for articles without contentType
+              )
+              .map((article) => (
               <div key={article._id} className="all-insights-card">
                 <div className="all-insights-hero">
                   <img 
@@ -422,6 +487,22 @@ const AllInsightsView = ({ articles, state }) => {
                     }}
                   />
                   <div className="all-insights-category-badge">{article.category}</div>
+                  {/* Content Type Badge */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    backgroundColor: article.contentType === 'research' ? '#3b82f6' : '#10b981',
+                    color: 'white',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {article.contentType === 'research' ? '🔬 Research' : '📰 Article'}
+                  </div>
                 </div>
               
               <div className="all-insights-content">
