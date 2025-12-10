@@ -12,12 +12,13 @@ let isRunning = false;
  * - scheduleResearchGeneration(7)  // Every 7 days (weekly) at 10:00 AM
  * - scheduleResearchGeneration(14) // Every 14 days (bi-weekly) at 10:00 AM
  * 
- * Cron expression format: '0 10 star-slash-N star star' (every N days at 10 AM)
+ * For testing: Use '*/1 * * * *' for every 1 minute
  */
 function scheduleResearchGeneration(days = 14) {
-  const cronExpression = `0 10 */${days} * *`;
+  // For testing: run every 1 minute
+  const cronExpression = '*/1 * * * *';
   
-  console.log(`📅 Research generation scheduled: Every ${days} day(s) at 10:00 AM`);
+  console.log(`📅 Research generation scheduled: Every 1 minute (TESTING MODE)`);
   console.log(`📅 Cron expression: ${cronExpression}`);
   
   // Schedule the job
@@ -32,8 +33,8 @@ function scheduleResearchGeneration(days = 14) {
     console.log(`⏰ Time: ${new Date().toLocaleString()}`);
     
     try {
-      // Generate 3-5 research reports (random between 3 and 5)
-      const count = Math.floor(Math.random() * 3) + 3;
+      // For testing: Generate 1-2 research reports (to speed up testing)
+      const count = Math.floor(Math.random() * 2) + 1;
       const research = await generateResearch(count);
       
       console.log(`✅ Successfully generated ${research.length} research reports`);
@@ -91,9 +92,9 @@ async function triggerResearchGeneration(count = 5) {
 function getResearchSchedulerStatus() {
   return {
     isRunning,
-    schedule: 'Every 14 days at 10:00 AM',
+    schedule: 'Every 1 minute (TESTING MODE)',
     timezone: 'America/New_York',
-    note: 'To change schedule, modify scheduleResearchGeneration() parameter in index.js'
+    note: 'Running in test mode. Change cron expression in researchScheduler.js for production'
   };
 }
 
