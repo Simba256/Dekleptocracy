@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './StateReport.css';
 
@@ -7,125 +7,128 @@ const StateReport = () => {
   const name = searchParams.get('name') || 'California Resident';
   const stateName = searchParams.get('state') || 'California';
   const role = searchParams.get('role') || 'VOTER';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const [reportData, setReportData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const keyMetrics = [
-    {
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-          <polyline points="9,22 9,12 15,12 15,22"/>
-        </svg>
-      ),
-      title: "Average Monthly Rent Increase",
-      value: "+$340",
-      change: "▲ 18% since 2022",
-      color: "#FF6B5A"
-    },
-    {
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          <path d="M2 17l10 5 10-5"/>
-          <path d="M2 12l10 5 10-5"/>
-        </svg>
-      ),
-      title: "Green Jobs Created (IRA)",
-      value: "1,200",
-      change: "▲ +450 this quarter",
-      color: "#FF6B5A"
-    },
-    {
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-          <line x1="12" y1="8" x2="12" y2="16"/>
-          <line x1="8" y1="12" x2="16" y2="12"/>
-        </svg>
-      ),
-      title: "Residents Still Uninsured",
-      value: "12%",
-      change: "▲ Down from 15%",
-      color: "#FF6B5A"
-    },
-    {
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-          <polyline points="14,2 14,8 20,8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10,9 9,9 8,9"/>
-        </svg>
-      ),
-      title: "DACA Recipients Protected",
-      value: "4,847",
-      change: "▲ +340 this month",
-      color: "#FF6B5A"
-    }
-  ];
+  const fallbackReport = useMemo(() => ({
+    name,
+    stateName,
+    role,
+    overviewTitle: 'State Impact Overview',
+    overviewStatement: 'Lobbyists and corporations profit while working families and schools lose',
+    comparisonCards: [
+      {
+        value: '+68%',
+        label: 'Energy Costs Rising',
+        description: 'Our electricity and gas bills increased by 68% since tariffs, directly impacting household budgets'
+      },
+      {
+        value: '-$2,847',
+        label: 'Per-Student School Funding Cut',
+        description: 'Local schools lost $2,847 per student while Washington lobbyists gained $9.2M in your state'
+      }
+    ],
+    keyMetrics: [
+      { title: 'Average Monthly Rent Increase', value: '+$340', change: '▲ 18% since 2022', color: '#FF6B5A' },
+      { title: 'Green Jobs Created (IRA)', value: '1,200', change: '▲ +450 this quarter', color: '#FF6B5A' },
+      { title: 'Residents Still Uninsured', value: '12%', change: '▲ Down from 15%', color: '#FF6B5A' },
+      { title: 'DACA Recipients Protected', value: '4,847', change: '▲ +340 this month', color: '#FF6B5A' },
+    ],
+    trendData: [
+      {
+        title: 'Monthly Average Rent',
+        currentValue: '$1,200',
+        data: [
+          { month: 'Jan', value: 800, color: '#4A5D3F' },
+          { month: 'Feb', value: 850, color: '#4A5D3F' },
+          { month: 'March', value: 900, color: '#4A5D3F' },
+          { month: 'April', value: 950, color: '#FF6B5A' },
+          { month: 'June', value: 1200, color: '#FF6B5A' }
+        ]
+      },
+      {
+        title: 'Fuel Prices Over Time',
+        currentValue: '$1,200',
+        data: [
+          { month: 'Jan', value: 600, color: '#4A5D3F' },
+          { month: 'Feb', value: 650, color: '#4A5D3F' },
+          { month: 'March', value: 700, color: '#4A5D3F' },
+          { month: 'April', value: 800, color: '#FF6B5A' },
+          { month: 'June', value: 1200, color: '#FF6B5A' }
+        ]
+      },
+      {
+        title: 'Grocery Basket Trend',
+        currentValue: '$1,200',
+        data: [
+          { month: 'Jan', value: 700, color: '#4A5D3F' },
+          { month: 'Feb', value: 750, color: '#4A5D3F' },
+          { month: 'March', value: 800, color: '#4A5D3F' },
+          { month: 'April', value: 900, color: '#FF6B5A' },
+          { month: 'June', value: 1200, color: '#FF6B5A' }
+        ]
+      }
+    ],
+    comparisonData: [
+      {
+        category: 'Grocery basket',
+        change: '+4% higher',
+        stateValue: '$412',
+        nationalValue: '$395'
+      },
+      {
+        category: 'Fuel Price',
+        change: '+3.8% higher',
+        stateValue: '$3.84',
+        nationalValue: '$3.70'
+      },
+      {
+        category: 'Electricity Bill',
+        change: '+69% higher',
+        stateValue: '$282',
+        nationalValue: '$167'
+      },
+      {
+        category: 'Books & Printing',
+        change: '+12% higher',
+        stateValue: '$4.6',
+        nationalValue: '$4.1'
+      }
+    ]
+  }), [name, role, stateName]);
 
-  const trendData = [
-    {
-      title: "Monthly Average Rent",
-      currentValue: "$1,200",
-      data: [
-        { month: "Jan", value: 800, color: "#4A5D3F" },
-        { month: "Feb", value: 850, color: "#4A5D3F" },
-        { month: "March", value: 900, color: "#4A5D3F" },
-        { month: "April", value: 950, color: "#FF6B5A" },
-        { month: "June", value: 1200, color: "#FF6B5A" }
-      ]
-    },
-    {
-      title: "Fuel Prices Over Time",
-      currentValue: "$1,200",
-      data: [
-        { month: "Jan", value: 600, color: "#4A5D3F" },
-        { month: "Feb", value: 650, color: "#4A5D3F" },
-        { month: "March", value: 700, color: "#4A5D3F" },
-        { month: "April", value: 800, color: "#FF6B5A" },
-        { month: "June", value: 1200, color: "#FF6B5A" }
-      ]
-    },
-    {
-      title: "Grocery Basket Trend",
-      currentValue: "$1,200",
-      data: [
-        { month: "Jan", value: 700, color: "#4A5D3F" },
-        { month: "Feb", value: 750, color: "#4A5D3F" },
-        { month: "March", value: 800, color: "#4A5D3F" },
-        { month: "April", value: 900, color: "#FF6B5A" },
-        { month: "June", value: 1200, color: "#FF6B5A" }
-      ]
-    }
-  ];
+  useEffect(() => {
+    const controller = new AbortController();
+    async function loadReport() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(`${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}`, {
+          signal: controller.signal
+        });
 
-  const comparisonData = [
-    {
-      category: "Grocery basket",
-      change: "+4% higher",
-      stateValue: "$412",
-      nationalValue: "$395"
-    },
-    {
-      category: "Fuel Price",
-      change: "+3.8% higher",
-      stateValue: "$3.84",
-      nationalValue: "$3.70"
-    },
-    {
-      category: "Electricity Bill",
-      change: "+69% higher",
-      stateValue: "$282",
-      nationalValue: "$167"
-    },
-    {
-      category: "Books & Printing",
-      change: "+12% higher",
-      stateValue: "$4.6",
-      nationalValue: "$4.1"
+        if (!response.ok) {
+          throw new Error(`Failed to fetch state report: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setReportData(data.report || null);
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        setError(err.message);
+        setReportData(null);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+
+    loadReport();
+    return () => controller.abort();
+  }, [API_URL, name, role, stateName]);
+
+  const data = reportData || fallbackReport;
 
   return (
     <div className="district-report-page">
@@ -136,10 +139,10 @@ const StateReport = () => {
             {name.split(' ').map(n => n[0]).join('')}
           </div>
           <div className="district-report-info">
-            <h1 className="district-report-name">{name}</h1>
+            <h1 className="district-report-name">{data.name}</h1>
             <div className="district-report-tags">
-              <span className="district-report-tag">{stateName}</span>
-              <span className="district-report-tag">{role}</span>
+              <span className="district-report-tag">{data.stateName}</span>
+              <span className="district-report-tag">{data.role}</span>
             </div>
             <p className="district-report-description">
               Generate personalized reports showing how federal policies impact your community. 
@@ -165,54 +168,61 @@ const StateReport = () => {
       <div className="district-report-overview">
         <div className="district-report-overview-container">
           <div className="district-report-overview-header">
-            <h2 className="district-report-overview-title">State Impact Overview</h2>
+            <h2 className="district-report-overview-title">{data.overviewTitle || 'State Impact Overview'}</h2>
           </div>
           <p className="district-report-overview-statement">
-            Lobbyists and corporations profit while working families and schools lose
+            {data.overviewStatement || 'Lobbyists and corporations profit while working families and schools lose'}
           </p>
           
           <div className="district-report-comparison">
-          <div className="district-report-comparison-card">
-            <div className="district-report-comparison-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
-              </svg>
+          {data.comparisonCards?.[0] && (
+            <div className="district-report-comparison-card">
+              <div className="district-report-comparison-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
+                </svg>
+              </div>
+                <div className="district-report-comparison-value">{data.comparisonCards[0].value}</div>
+              <div className="district-report-comparison-label">{data.comparisonCards[0].label}</div>
+              <p className="district-report-comparison-description">
+                {data.comparisonCards[0].description}
+              </p>
             </div>
-              <div className="district-report-comparison-value">+68%</div>
-            <div className="district-report-comparison-label">Energy Costs Rising</div>
-            <p className="district-report-comparison-description">
-              Our electricity and gas bills increased by 68% since tariffs, directly impacting household budgets
-            </p>
-          </div>
+          )}
           
           <div className="district-report-vs">VS</div>
           
-          <div className="district-report-comparison-card">
-            <div className="district-report-comparison-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 9l-10-4-10 4 10 4 10-4z"/>
-                <path d="M22 9v6l-10 4-10-4V9"/>
-                <path d="M12 5v14"/>
-              </svg>
+          {data.comparisonCards?.[1] && (
+            <div className="district-report-comparison-card">
+              <div className="district-report-comparison-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 9l-10-4-10 4 10 4 10-4z"/>
+                  <path d="M22 9v6l-10 4-10-4V9"/>
+                  <path d="M12 5v14"/>
+                </svg>
+              </div>
+                <div className="district-report-comparison-value">{data.comparisonCards[1].value}</div>
+              <div className="district-report-comparison-label">{data.comparisonCards[1].label}</div>
+              <p className="district-report-comparison-description">
+                {data.comparisonCards[1].description}
+              </p>
             </div>
-              <div className="district-report-comparison-value">-$2,847</div>
-            <div className="district-report-comparison-label">Per-Student School Funding Cut</div>
-            <p className="district-report-comparison-description">
-              Local schools lost $2,847 per student while Washington lobbyists gained $9.2M in your state
-            </p>
-          </div>
+          )}
         </div>
         </div>
       </div>
 
       {/* Key Metrics */}
       <div className="district-report-metrics">
-        <h2 className="district-report-section-title">Real-time data showing how federal policies affect {stateName} residents.</h2>
+        <h2 className="district-report-section-title">Real-time data showing how federal policies affect {data.stateName} residents.</h2>
         <div className="district-report-metrics-grid">
-          {keyMetrics.map((metric, index) => (
+          {data.keyMetrics?.map((metric, index) => (
             <div key={index} className="district-report-metric-card">
               <div className="district-report-metric-icon">
-                {metric.icon}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
               </div>
               <div className="district-report-metric-title">{metric.title}</div>
               <div className="district-report-metric-value" style={{ color: metric.color }}>
@@ -230,7 +240,9 @@ const StateReport = () => {
       <div className="district-report-trends">
         <h2 className="district-report-section-title">Trend Over Time</h2>
         <div className="district-report-trends-grid">
-          {trendData.map((trend, index) => (
+          {data.trendData?.map((trend, index) => {
+            if (!trend.data || trend.data.length === 0) return null;
+            return (
             <div key={index} className="district-report-trend-card">
               <h3 className="district-report-trend-title">{trend.title}</h3>
               <div className="district-report-trend-value">{trend.currentValue}</div>
@@ -295,7 +307,7 @@ const StateReport = () => {
                 </svg>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
 
@@ -316,7 +328,7 @@ const StateReport = () => {
           <div className="district-report-comparison-box">
             <h3 className="district-report-comparison-box-title">Your state vs. national average</h3>
             <div className="district-report-comparison-grid">
-              {comparisonData.map((item, index) => (
+              {data.comparisonData?.map((item, index) => (
                 <div key={index} className="district-report-comparison-item">
                   <div className="district-report-comparison-item-title">{item.category}</div>
                   <div className="district-report-comparison-item-change">{item.change}</div>
