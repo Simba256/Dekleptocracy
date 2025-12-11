@@ -5,7 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Reports from './pages/Reports';
-import DistrictReport from './pages/DistrictReport';
+import StateReport from './pages/StateReport';
 import Insights from './pages/Insights';
 import Chatbot from './pages/Chatbot';
 import CreateAccount from './pages/CreateAccount';
@@ -37,7 +37,7 @@ function AppContent() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/services" element={<Services />} />
         <Route path="/reports" element={<Reports />} />
-        <Route path="/reports/district-report" element={<DistrictReport />} />
+        <Route path="/reports/state-report" element={<StateReport />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/insights/articles" element={<Insights />} />
         <Route path="/insights/research" element={<Insights />} />

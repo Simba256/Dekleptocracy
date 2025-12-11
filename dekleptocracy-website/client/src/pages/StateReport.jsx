@@ -1,11 +1,11 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import './DistrictReport.css';
+import './StateReport.css';
 
-const DistrictReport = () => {
+const StateReport = () => {
   const [searchParams] = useSearchParams();
-  const name = searchParams.get('name') || 'Alexandria Ocasio-Cortez';
-  const district = searchParams.get('district') || 'NY-14 (BRONX & QUEENS)';
+  const name = searchParams.get('name') || 'California Resident';
+  const stateName = searchParams.get('state') || 'California';
   const role = searchParams.get('role') || 'VOTER';
 
   const keyMetrics = [
@@ -138,7 +138,7 @@ const DistrictReport = () => {
           <div className="district-report-info">
             <h1 className="district-report-name">{name}</h1>
             <div className="district-report-tags">
-              <span className="district-report-tag">{district}</span>
+              <span className="district-report-tag">{stateName}</span>
               <span className="district-report-tag">{role}</span>
             </div>
             <p className="district-report-description">
@@ -161,11 +161,11 @@ const DistrictReport = () => {
         </div>
       </div>
 
-      {/* District Impact Overview */}
+      {/* State Impact Overview */}
       <div className="district-report-overview">
         <div className="district-report-overview-container">
           <div className="district-report-overview-header">
-            <h2 className="district-report-overview-title">District Impact Overview</h2>
+            <h2 className="district-report-overview-title">State Impact Overview</h2>
           </div>
           <p className="district-report-overview-statement">
             Lobbyists and corporations profit while working families and schools lose
@@ -178,7 +178,7 @@ const DistrictReport = () => {
                 <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
               </svg>
             </div>
-            <div className="district-report-comparison-value">+68%</div>
+              <div className="district-report-comparison-value">+68%</div>
             <div className="district-report-comparison-label">Energy Costs Rising</div>
             <p className="district-report-comparison-description">
               Our electricity and gas bills increased by 68% since tariffs, directly impacting household budgets
@@ -195,10 +195,10 @@ const DistrictReport = () => {
                 <path d="M12 5v14"/>
               </svg>
             </div>
-            <div className="district-report-comparison-value">-$2,847</div>
+              <div className="district-report-comparison-value">-$2,847</div>
             <div className="district-report-comparison-label">Per-Student School Funding Cut</div>
             <p className="district-report-comparison-description">
-              Local schools lost $2,847 per student while Washington lobbyists gained $9.2M in your district
+              Local schools lost $2,847 per student while Washington lobbyists gained $9.2M in your state
             </p>
           </div>
         </div>
@@ -207,7 +207,7 @@ const DistrictReport = () => {
 
       {/* Key Metrics */}
       <div className="district-report-metrics">
-        <h2 className="district-report-section-title">Real-time data showing how federal policies affect {district} residents.</h2>
+        <h2 className="district-report-section-title">Real-time data showing how federal policies affect {stateName} residents.</h2>
         <div className="district-report-metrics-grid">
           {keyMetrics.map((metric, index) => (
             <div key={index} className="district-report-metric-card">
@@ -299,9 +299,9 @@ const DistrictReport = () => {
         </div>
       </div>
 
-      {/* District Comparison */}
+      {/* State Comparison */}
       <div className="district-report-comparison-section">
-        <h2 className="district-report-section-title">District Comparison</h2>
+        <h2 className="district-report-section-title">State Comparison</h2>
         <div className="district-report-comparison-content">
           <div className="district-report-comparison-text">
             <p>
@@ -310,7 +310,7 @@ const DistrictReport = () => {
               Books and printing costs have also increased significantly.
             </p>
             <p>
-              These increases directly impact your wallet and make it harder for families to make ends meet in your district.
+              These increases directly impact your wallet and make it harder for families to make ends meet in your state.
             </p>
           </div>
           <div className="district-report-comparison-box">
@@ -333,4 +333,4 @@ const DistrictReport = () => {
   );
 };
 
-export default DistrictReport;
+export default StateReport;

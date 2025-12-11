@@ -5,7 +5,7 @@ import './Reports.css';
 const Reports = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState('voter');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedState, setSelectedState] = useState('');
   const [name, setName] = useState('');
 
   const roles = [
@@ -49,70 +49,68 @@ const Reports = () => {
     }
   ];
 
-  const districts = [
-    'California District 1',
-    'California District 2',
-    'California District 3',
-    'California District 4',
-    'California District 5',
-    'California District 6',
-    'California District 7',
-    'California District 8',
-    'California District 9',
-    'California District 10',
-    'California District 11',
-    'California District 12',
-    'California District 13',
-    'California District 14',
-    'California District 15',
-    'California District 16',
-    'California District 17',
-    'California District 18',
-    'California District 19',
-    'California District 20',
-    'California District 21',
-    'California District 22',
-    'California District 23',
-    'California District 24',
-    'California District 25',
-    'California District 26',
-    'California District 27',
-    'California District 28',
-    'California District 29',
-    'California District 30',
-    'California District 31',
-    'California District 32',
-    'California District 33',
-    'California District 34',
-    'California District 35',
-    'California District 36',
-    'California District 37',
-    'California District 38',
-    'California District 39',
-    'California District 40',
-    'California District 41',
-    'California District 42',
-    'California District 43',
-    'California District 44',
-    'California District 45',
-    'California District 46',
-    'California District 47',
-    'California District 48',
-    'California District 49',
-    'California District 50',
-    'California District 51',
-    'California District 52',
-    'California District 53'
+  const states = [
+    'Alabama',
+    'Alaska',
+    'Arizona',
+    'Arkansas',
+    'California',
+    'Colorado',
+    'Connecticut',
+    'Delaware',
+    'District of Columbia',
+    'Florida',
+    'Georgia',
+    'Hawaii',
+    'Idaho',
+    'Illinois',
+    'Indiana',
+    'Iowa',
+    'Kansas',
+    'Kentucky',
+    'Louisiana',
+    'Maine',
+    'Maryland',
+    'Massachusetts',
+    'Michigan',
+    'Minnesota',
+    'Mississippi',
+    'Missouri',
+    'Montana',
+    'Nebraska',
+    'Nevada',
+    'New Hampshire',
+    'New Jersey',
+    'New Mexico',
+    'New York',
+    'North Carolina',
+    'North Dakota',
+    'Ohio',
+    'Oklahoma',
+    'Oregon',
+    'Pennsylvania',
+    'Rhode Island',
+    'South Carolina',
+    'South Dakota',
+    'Tennessee',
+    'Texas',
+    'Utah',
+    'Vermont',
+    'Virginia',
+    'Washington',
+    'West Virginia',
+    'Wisconsin',
+    'Wyoming'
   ];
 
   const handleGenerateReports = () => {
-    // Navigate to district report with parameters
+    // Navigate to state report with parameters
     const params = new URLSearchParams();
     if (name) params.append('name', name);
-    if (selectedDistrict) params.append('district', selectedDistrict);
+    if (selectedState) params.append('state', selectedState);
     if (selectedRole) params.append('role', selectedRole);
     
-    navigate(`/reports/district-report?${params.toString()}`);
+    navigate(`/reports/state-report?${params.toString()}`);
   };
 
   return (
@@ -124,7 +122,7 @@ const Reports = () => {
         </div>
 
         {/* Main Title */}
-        <h1 className="reports-title">Custom District Reports</h1>
+        <h1 className="reports-title">Custom State Reports</h1>
 
         {/* Subtitle */}
         <div className="reports-subtitle">
@@ -135,8 +133,8 @@ const Reports = () => {
         {/* Main Card */}
         <div className="reports-card">
           <div className="reports-card-header">
-            <h2 className="reports-card-title">Create Your District Report</h2>
-            <p className="reports-card-subtitle">Choose your district and get started</p>
+            <h2 className="reports-card-title">Create Your State Report</h2>
+            <p className="reports-card-subtitle">Choose your state and get started</p>
           </div>
 
           {/* I am a... Section */}
@@ -161,19 +159,19 @@ const Reports = () => {
             </div>
           </div>
 
-          {/* Your District Section */}
+          {/* Your State Section */}
           <div className="reports-district-section">
-            <label className="reports-section-label">Your District</label>
+            <label className="reports-section-label">Your State</label>
             <div className="reports-dropdown-wrapper">
               <select
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
                 className="reports-dropdown"
               >
-                <option value="">Select your district...</option>
-                {districts.map((district) => (
-                  <option key={district} value={district}>
-                    {district}
+                <option value="">Select your state...</option>
+                {states.map((state) => (
+                  <option key={state} value={state}>
+                    {state}
                   </option>
                 ))}
               </select>
