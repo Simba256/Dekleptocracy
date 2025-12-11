@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -21,6 +23,15 @@ const Home = () => {
   const [mapStateSearch, setMapStateSearch] = useState('');
   const [walletShocksStateSearch, setWalletShocksStateSearch] = useState('');
   const [costImpactStateSearch, setCostImpactStateSearch] = useState('');
+
+  // API data states
+  const [walletShocks, setWalletShocks] = useState([]);
+  const [costDrivers, setCostDrivers] = useState([]);
+  const [stats, setStats] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState(null);
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
 
   const quickQuestions = [
     'How does the new tax hit my grocery bill in my city?',
@@ -49,54 +60,170 @@ const Home = () => {
     );
   };
 
-  const walletShocks = [
-    {
-      category: 'Groceries',
-      icon: '🥚',
-      iconBg: '#fef3c7',
-      title: 'A dozen eggs hit $5.90 in February 2025 nearly $3 higher than last year.',
-      price: '$5.90',
-      unit: 'per dozen',
-      change: '+5.7%',
-      chartColor: '#ef4444',
-      chartPath: 'M 0 60 L 50 55 L 100 50 L 150 45 L 200 40'
-    },
-    {
-      category: 'Fuel',
-      icon: '⛽',
-      iconBg: '#fef3c7',
-      title: 'Gas prices tick up 2c in the last week to reach $3.15/gal nationwide.',
-      price: '$0.27',
-      unit: 'last 14 days',
-      change: '+3.2%',
-      chartColor: '#ef4444',
-      chartPath: 'M 0 65 L 50 60 L 100 58 L 150 52 L 200 45'
-    },
-    {
-      category: 'Utilities',
-      icon: '💡',
-      iconBg: '#fef3c7',
-      title: 'U.S. residential electricity rates rose about 6.7% in the past year.',
-      price: '+6.7%',
-      unit: 'nationwide',
-      change: '+0.6%',
-      chartColor: '#3b82f6',
-      chartPath: 'M 0 60 L 50 58 L 100 55 L 150 50 L 200 45'
-    },
-    {
-      category: 'Tech',
-      icon: '📱',
-      iconBg: '#fef3c7',
-      title: 'iPhone 17 expected to cost $50 more due to tariff increases.',
-      price: '+$50',
-      unit: 'projected',
-      change: '+2.1%',
-      chartColor: '#ef4444',
-      chartPath: 'M 0 65 L 50 62 L 100 58 L 150 52 L 200 45'
-    }
-  ];
+  // Fetch homepage data from API
+  useEffect(() => {
+    // Don't fetch until preferences are loaded
+    if (!preferencesLoaded) return;
 
-  const costDrivers = [
+    async function fetchHomepageData() {
+      // Use isRefreshing for subsequent fetches (after initial load)
+      if (loading === false) {
+        setIsRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+
+      try {
+        const state = userSelectedState || 'California';
+
+        // Fetch wallet shocks
+        const shocksRes = await fetch(`${API_URL}/api/homepage/wallet-shocks?state=${state}&limit=4`);
+        if (!shocksRes.ok) throw new Error('Failed to fetch wallet shocks');
+        const shocksData = await shocksRes.json();
+        setWalletShocks(shocksData.shocks || []);
+
+        // Fetch cost drivers
+        const driversRes = await fetch(`${API_URL}/api/homepage/cost-drivers?state=${state}&period=${timePeriod}`);
+        if (!driversRes.ok) throw new Error('Failed to fetch cost drivers');
+        const driversData = await driversRes.json();
+        setCostDrivers(driversData.drivers || []);
+
+        // Fetch stats
+        const statsRes = await fetch(`${API_URL}/api/homepage/stats?state=${state}`);
+        if (!statsRes.ok) throw new Error('Failed to fetch stats');
+        const statsData = await statsRes.json();
+        setStats(statsData.stats || {});
+
+      } catch (err) {
+        console.error('Error fetching homepage data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        setIsRefreshing(false);
+      }
+    }
+
+    fetchHomepageData();
+  }, [userSelectedState, timePeriod, preferencesLoaded]);
+
+  // Load user preferences on mount
+  useEffect(() => {
+    async function loadUserPreferences() {
+      try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          // No token, mark preferences as loaded with defaults
+          setPreferencesLoaded(true);
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/api/user/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.user.preferences) {
+            // Set state and time period from saved preferences
+            if (data.user.preferences.selectedState) {
+              setUserSelectedState(data.user.preferences.selectedState);
+            }
+            if (data.user.preferences.defaultTimePeriod) {
+              setTimePeriod(data.user.preferences.defaultTimePeriod);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error loading user preferences:', err);
+      } finally {
+        // Mark preferences as loaded (either from server or using defaults)
+        setPreferencesLoaded(true);
+      }
+    }
+
+    loadUserPreferences();
+  }, []); // Run only once on mount
+
+  // Download PDF report
+  const handleDownloadReport = () => {
+    const state = userSelectedState || 'California';
+    const period = timePeriod || 'YoY';
+
+    // Direct link approach - let the browser handle the download
+    window.location.href = `${API_URL}/api/homepage/download/report?state=${encodeURIComponent(state)}&period=${period}`;
+  };
+
+  // Download CSV export
+  const handleDownloadCSV = () => {
+    const state = userSelectedState || 'California';
+    const url = `${API_URL}/api/homepage/download/csv?state=${encodeURIComponent(state)}`;
+    window.open(url, '_blank');
+  };
+
+  // Handle reaction clicks
+  const handleReaction = async (shockId, reactionType) => {
+    try {
+      const response = await fetch(`${API_URL}/api/homepage/wallet-shocks/${shockId}/react`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reactionType })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Update local state with new reaction counts
+        setWalletShocks(prev => prev.map(shock =>
+          shock._id === shockId
+            ? { ...shock, reactions: data.reactions }
+            : shock
+        ));
+      }
+    } catch (err) {
+      console.error('Error adding reaction:', err);
+    }
+  };
+
+  // Save user preferences (state and time period)
+  const saveUserPreferences = async (updates) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return; // Only save if user is logged in
+
+      const response = await fetch(`${API_URL}/api/user/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      });
+
+      if (response.ok) {
+        console.log('Preferences saved successfully');
+      }
+    } catch (err) {
+      console.error('Error saving preferences:', err);
+    }
+  };
+
+  // Handle state change with preference saving
+  const handleStateChange = (newState) => {
+    setUserSelectedState(newState);
+    saveUserPreferences({ selectedState: newState });
+  };
+
+  // Handle time period change with preference saving
+  const handleTimePeriodChange = (newPeriod) => {
+    setTimePeriod(newPeriod);
+    saveUserPreferences({ defaultTimePeriod: newPeriod });
+  };
+
+  // Fallback hardcoded costDrivers for sections that haven't been migrated yet
+  const fallbackCostDrivers = [
     { label: 'Tariffs', percentage: 34, color: '#3E5132', type: 'direct' },
     { label: 'Fuels', percentage: 22, color: '#6B7F5F', type: 'direct' },
     { label: 'Labor', percentage: 20, color: '#A8B89C', type: 'direct' },
@@ -175,6 +302,63 @@ const Home = () => {
       likes: '134.6k'
     }
   ];
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="home-page">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid #f3f4f6',
+            borderTop: '4px solid #4A5D3F',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          <p style={{ color: '#6b7280', fontSize: '16px' }}>Loading homepage data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="home-page">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
+          <p style={{ color: '#ef4444', fontSize: '18px' }}>Error loading data: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#4A5D3F',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="home-page">
@@ -296,7 +480,7 @@ const Home = () => {
                             key={index}
                             className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
                             onClick={() => {
-                              setUserSelectedState(state);
+                              handleStateChange(state);
                               setIsHeroStateDropdownOpen(false);
                               setHeroStateSearch('');
                             }}
@@ -447,7 +631,14 @@ const Home = () => {
             {states.map((state) => (
               <button
                 key={state}
-                onClick={() => setSelectedState(state)}
+                onClick={() => {
+                  setSelectedState(state);
+                  // Convert uppercase state to proper case for API (TEXAS -> Texas)
+                  const properCaseState = state.split(' ').map(word =>
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  ).join(' ');
+                  handleStateChange(properCaseState);
+                }}
                 className={`state-tab ${selectedState === state ? 'active' : ''}`}
               >
                 {state}
@@ -509,7 +700,7 @@ const Home = () => {
                             key={index}
                             className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
                             onClick={() => {
-                              setUserSelectedState(state);
+                              handleStateChange(state);
                               setIsWalletShocksDropdownOpen(false);
                               setWalletShocksStateSearch('');
                             }}
@@ -529,7 +720,7 @@ const Home = () => {
           </div>
 
           {/* Wallet Shock Cards */}
-          <div className="wallet-cards">
+          <div className="wallet-cards" style={{ opacity: isRefreshing ? 0.6 : 1, transition: 'opacity 0.3s' }}>
             {walletShocks.map((shock, index) => (
               <div key={index} className="wallet-card">
                 <div className="wallet-card-header">
@@ -569,9 +760,24 @@ const Home = () => {
                     See details →
                   </button>
                   <div className="reactions">
-                    <span>😮 6</span>
-                    <span>😡 3</span>
-                    <span>😢 6</span>
+                    <span
+                      onClick={() => handleReaction(shock._id, 'shock')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      😮 {shock.reactions?.shock || 0}
+                    </span>
+                    <span
+                      onClick={() => handleReaction(shock._id, 'angry')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      😡 {shock.reactions?.angry || 0}
+                    </span>
+                    <span
+                      onClick={() => handleReaction(shock._id, 'sad')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      😢 {shock.reactions?.sad || 0}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -649,7 +855,7 @@ const Home = () => {
                               key={index}
                               className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
                               onClick={() => {
-                                setUserSelectedState(state);
+                                handleStateChange(state);
                                 setIsCostImpactDropdownOpen(false);
                                 setCostImpactStateSearch('');
                               }}
@@ -670,7 +876,7 @@ const Home = () => {
                 {['YoY', '3 months', '30 days'].map((period) => (
                   <button
                     key={period}
-                    onClick={() => setTimePeriod(period)}
+                    onClick={() => handleTimePeriodChange(period)}
                     className={`period-btn ${timePeriod === period ? 'active' : ''}`}
                   >
                     {period}
@@ -731,7 +937,7 @@ const Home = () => {
 
           {/* Action Buttons */}
           <div className="cost-impact-actions">
-            <button className="action-btn primary">Download report (PDF)</button>
+            <button className="action-btn primary" onClick={handleDownloadReport}>Download report (PDF)</button>
             <button className="action-btn secondary">Compare states</button>
           </div>
         </div>
@@ -1074,7 +1280,7 @@ const Home = () => {
                               key={index}
                               className={`custom-dropdown-item ${userSelectedState === state ? 'selected' : ''}`}
                               onClick={() => {
-                                setUserSelectedState(state);
+                                handleStateChange(state);
                                 setIsMapStateDropdownOpen(false);
                                 setMapStateSearch('');
                               }}

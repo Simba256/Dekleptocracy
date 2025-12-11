@@ -88,11 +88,23 @@ const normalizePreferences = (preferences = {}) => {
     : [];
   const toString = (value) => (typeof value === 'string' ? value.trim() : '');
 
-  return {
+  const normalized = {
     conversationStyles: toArray(preferences.conversationStyles),
     topicsOfInterest: toArray(preferences.topicsOfInterest),
     householdExpenseFocus: toString(preferences.householdExpenseFocus)
   };
+
+  // Add selectedState if provided
+  if (preferences.selectedState !== undefined) {
+    normalized.selectedState = toString(preferences.selectedState) || 'California';
+  }
+
+  // Add defaultTimePeriod if provided
+  if (preferences.defaultTimePeriod !== undefined) {
+    normalized.defaultTimePeriod = toString(preferences.defaultTimePeriod) || 'YoY';
+  }
+
+  return normalized;
 };
 
 // Get user profile
@@ -204,6 +216,58 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
     res.status(500).json({
       success: false,
       message: 'Server error. Please try again later.'
+    });
+  }
+});
+
+// Update user preferences (homepage state, time period, etc.)
+router.put('/preferences', verifyToken, async (req, res) => {
+  try {
+    const { selectedState, defaultTimePeriod, conversationStyles, topicsOfInterest, householdExpenseFocus } = req.body;
+
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Update preferences
+    const updates = {};
+    if (selectedState !== undefined) {
+      updates['preferences.selectedState'] = selectedState;
+    }
+    if (defaultTimePeriod !== undefined) {
+      updates['preferences.defaultTimePeriod'] = defaultTimePeriod;
+    }
+    if (conversationStyles !== undefined) {
+      updates['preferences.conversationStyles'] = conversationStyles;
+    }
+    if (topicsOfInterest !== undefined) {
+      updates['preferences.topicsOfInterest'] = topicsOfInterest;
+    }
+    if (householdExpenseFocus !== undefined) {
+      updates['preferences.householdExpenseFocus'] = householdExpenseFocus;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.status(200).json({
+      success: true,
+      message: 'Preferences updated successfully',
+      preferences: updatedUser.preferences
+    });
+  } catch (error) {
+    console.error('Update preferences error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error. Please try again later.'
     });
   }
 });

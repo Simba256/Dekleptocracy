@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
+import homepageRoutes from './routes/homepageRoutes.js';
 import { scheduleArticleGeneration, triggerArticleGeneration, getSchedulerStatus } from './services/articleScheduler.js';
 import { scheduleResearchGeneration, triggerResearchGeneration, getResearchSchedulerStatus } from './services/researchScheduler.js';
 import { removeDuplicateArticles } from './services/articleGenerator.js';
@@ -71,6 +72,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/articles', articleRoutes);
+app.use('/api/homepage', homepageRoutes);
 
 // Article generation endpoints
 app.post('/api/articles/generate', async (req, res) => {
@@ -166,6 +168,7 @@ async function start() {
       console.log(`🔐 Auth routes: http://localhost:${port}/api/auth`);
       console.log(`👤 User routes: http://localhost:${port}/api/user`);
       console.log(`📰 Article routes: http://localhost:${port}/api/articles`);
+      console.log(`🏠 Homepage routes: http://localhost:${port}/api/homepage`);
       
       // Start the article generation scheduler (every 7 days)
       console.log('\n📅 Starting article generation scheduler...');
