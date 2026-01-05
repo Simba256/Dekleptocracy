@@ -76,21 +76,34 @@ const Home = () => {
 
       try {
         const state = userSelectedState || 'California';
+        const token = localStorage.getItem('token');
+
+        // Prepare headers with optional authentication
+        const headers = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
 
         // Fetch wallet shocks
-        const shocksRes = await fetch(`${API_URL}/api/homepage/wallet-shocks?state=${state}&limit=4`);
+        const shocksRes = await fetch(`${API_URL}/api/homepage/wallet-shocks?state=${state}&limit=4`, {
+          headers
+        });
         if (!shocksRes.ok) throw new Error('Failed to fetch wallet shocks');
         const shocksData = await shocksRes.json();
         setWalletShocks(shocksData.shocks || []);
 
         // Fetch cost drivers
-        const driversRes = await fetch(`${API_URL}/api/homepage/cost-drivers?state=${state}&period=${timePeriod}`);
+        const driversRes = await fetch(`${API_URL}/api/homepage/cost-drivers?state=${state}&period=${timePeriod}`, {
+          headers
+        });
         if (!driversRes.ok) throw new Error('Failed to fetch cost drivers');
         const driversData = await driversRes.json();
         setCostDrivers(driversData.drivers || []);
 
         // Fetch stats
-        const statsRes = await fetch(`${API_URL}/api/homepage/stats?state=${state}`);
+        const statsRes = await fetch(`${API_URL}/api/homepage/stats?state=${state}`, {
+          headers
+        });
         if (!statsRes.ok) throw new Error('Failed to fetch stats');
         const statsData = await statsRes.json();
         setStats(statsData.stats || {});

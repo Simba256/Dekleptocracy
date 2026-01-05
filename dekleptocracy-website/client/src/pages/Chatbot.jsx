@@ -131,12 +131,14 @@ const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState(() => getChatHistory());
   const [showHistory, setShowHistory] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [userLocation, setUserLocation] = useState(null); // null = uninitialized, only set when user selects
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
   const hasSubmittedInitialQuery = useRef(false);
 
   // MCP Server URL - uses environment variable in production, localhost in development
   const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8000';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   // Check authentication on mount
   useEffect(() => {
@@ -164,6 +166,59 @@ const Chatbot = () => {
 
     checkAuth();
   }, [navigate]);
+
+  // Load user location preference from backend
+  useEffect(() => {
+    const loadUserLocation = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch(`${API_URL}/api/user/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.user.preferences?.selectedState) {
+            // Only set location if user has explicitly selected one
+            setUserLocation(data.user.preferences.selectedState);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading user location:', err);
+      }
+    };
+
+    if (authChecked) {
+      loadUserLocation();
+    }
+  }, [authChecked, API_URL]);
+
+  // Update welcome message when userLocation is loaded
+  useEffect(() => {
+    if (userLocation && messages.length === 1 && messages[0].id === '1') {
+      // Update the initial welcome message with location context
+      const updatedWelcomeMessage = `Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:
+
+• Trade statistics and economic data
+• Tariff rates and policy impacts
+• Stock market and financial information
+• News and trade policy updates
+• General questions about policy impacts on your budget
+
+I see you're in **${userLocation}**. When you ask about prices or impacts without specifying a location, I'll provide ${userLocation}-specific information by default.
+
+How can I help you today?`;
+
+      setMessages([{
+        ...messages[0],
+        content: updatedWelcomeMessage
+      }]);
+    }
+  }, [userLocation]); // Only run when userLocation changes
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -231,11 +286,25 @@ const Chatbot = () => {
   };
 
   const startNewChat = () => {
+    const welcomeMessage = userLocation
+      ? `Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:
+
+• Trade statistics and economic data
+• Tariff rates and policy impacts
+• Stock market and financial information
+• News and trade policy updates
+• General questions about policy impacts on your budget
+
+I see you're in **${userLocation}**. When you ask about prices or impacts without specifying a location, I'll provide ${userLocation}-specific information by default.
+
+How can I help you today?`
+      : 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?';
+
     setMessages([
       {
         id: '1',
         role: 'assistant',
-        content: 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?',
+        content: welcomeMessage,
         timestamp: new Date(),
       },
     ]);
@@ -291,16 +360,46 @@ const Chatbot = () => {
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController();
 
+      // Prepare messages with location context as system instruction
+      const conversationMessages = [...messages, userMessage].map(({ role, content }) => ({
+        role,
+        content,
+      }));
+
+      // Add system message with location handling instructions at the start
+      const systemMessage = {
+        role: 'system',
+        content: `You are an AI assistant helping users understand how government policies, tariffs, and economic decisions impact their budget and daily expenses.
+
+LOCATION CONTEXT HANDLING:
+${userLocation
+  ? `- User's selected location: ${userLocation}
+- When the user asks about prices, costs, or impacts WITHOUT specifying a location, use ${userLocation} as the default context
+- PRIORITY ORDER for location context:
+  1. HIGHEST: Locations explicitly mentioned in the user's question (e.g., "in Texas", "California prices")
+  2. SECOND: User's saved location (${userLocation}) when no location is mentioned
+  3. Use nationwide/general data only when appropriate or when comparing multiple states`
+  : `- User has not selected a specific location yet
+- When asked about prices or impacts, provide nationwide/general information
+- If specific location data would be helpful, politely suggest that they can set their location in their profile for more personalized insights
+- PRIORITY: Always use locations explicitly mentioned in the user's question first`}
+
+IMPORTANT GUIDELINES:
+- When analyzing prices, tariffs, or policy impacts, always consider the location context
+- If you find state-specific data that's relevant to the user's location, prioritize showing it
+- Be clear about which location your data refers to in your responses
+- If data for the user's location is not available, mention this and provide the closest relevant data`
+      };
+
+      const messagesWithContext = [systemMessage, ...conversationMessages];
+
       const response = await fetch(`${MCP_SERVER_URL}/chat/intelligent/v2`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map(({ role, content }) => ({
-            role,
-            content,
-          })),
+          messages: messagesWithContext,
           use_mcp_tools: true,
           // Context window management parameters (optional)
           max_iterations: 10,          // Maximum tool calling iterations
@@ -509,6 +608,22 @@ const Chatbot = () => {
             <p className="chatbot-subtitle">
               Powered by GPT-5 with real-time trade analysis tools
             </p>
+            {userLocation && (
+              <div style={{
+                marginTop: '8px',
+                fontSize: '14px',
+                color: '#666',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <span style={{ fontSize: '16px' }}>📍</span>
+                <span>Location context: <strong>{userLocation}</strong></span>
+                <span style={{ fontSize: '12px', color: '#999' }}>
+                  (AI will use this when you don't specify a location)
+                </span>
+              </div>
+            )}
           </div>
           {messages.length > 1 && (
             <button className="new-chat-btn-header" onClick={startNewChat}>

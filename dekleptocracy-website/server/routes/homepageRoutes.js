@@ -50,16 +50,25 @@ const optionalAuth = async (req, res, next) => {
  */
 router.get('/wallet-shocks', optionalAuth, async (req, res) => {
   try {
-    // Determine state: user preference > query param > default
+    // Determine state: query param > user preference (from token) > default
     let state = req.query.state;
+    let stateSource = 'query';
 
     if (!state && req.userPreferences?.selectedState) {
       state = req.userPreferences.selectedState;
+      stateSource = 'user-preference';
     }
 
     if (!state) {
       state = 'nationwide';
+      stateSource = 'default';
     }
+
+    logger.info(`Fetching wallet shocks for state: ${state} (source: ${stateSource})`, {
+      userId: req.userId,
+      queryState: req.query.state,
+      preferenceState: req.userPreferences?.selectedState
+    });
 
     const limit = parseInt(req.query.limit) || 4;
     const sortBy = req.query.sortBy || 'date'; // 'date', 'change', 'abs-change'
@@ -110,27 +119,41 @@ router.get('/wallet-shocks', optionalAuth, async (req, res) => {
  */
 router.get('/cost-drivers', optionalAuth, async (req, res) => {
   try {
-    // Determine state: user preference > query param > default
+    // Determine state: query param > user preference (from token) > default
     let state = req.query.state;
+    let stateSource = 'query';
 
     if (!state && req.userPreferences?.selectedState) {
       state = req.userPreferences.selectedState;
+      stateSource = 'user-preference';
     }
 
     if (!state) {
       state = 'nationwide';
+      stateSource = 'default';
     }
 
-    // Determine time period
+    // Determine time period: query param > user preference (from token) > default
     let period = req.query.period;
+    let periodSource = 'query';
 
     if (!period && req.userPreferences?.defaultTimePeriod) {
       period = req.userPreferences.defaultTimePeriod;
+      periodSource = 'user-preference';
     }
 
     if (!period) {
       period = 'YoY';
+      periodSource = 'default';
     }
+
+    logger.info(`Fetching cost drivers for state: ${state} (${stateSource}), period: ${period} (${periodSource})`, {
+      userId: req.userId,
+      queryState: req.query.state,
+      queryPeriod: req.query.period,
+      preferenceState: req.userPreferences?.selectedState,
+      preferencePeriod: req.userPreferences?.defaultTimePeriod
+    });
 
     // Query cost drivers
     const drivers = await CostDriver.find({
@@ -169,16 +192,25 @@ router.get('/cost-drivers', optionalAuth, async (req, res) => {
  */
 router.get('/stats', optionalAuth, async (req, res) => {
   try {
-    // Determine state: user preference > query param > default
+    // Determine state: query param > user preference (from token) > default
     let state = req.query.state;
+    let stateSource = 'query';
 
     if (!state && req.userPreferences?.selectedState) {
       state = req.userPreferences.selectedState;
+      stateSource = 'user-preference';
     }
 
     if (!state) {
       state = 'nationwide';
+      stateSource = 'default';
     }
+
+    logger.info(`Fetching stats for state: ${state} (source: ${stateSource})`, {
+      userId: req.userId,
+      queryState: req.query.state,
+      preferenceState: req.userPreferences?.selectedState
+    });
 
     // Query all stat types for this state
     const stats = await StatsSummary.find({
