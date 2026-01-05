@@ -7,7 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const Home = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [userSelectedState, setUserSelectedState] = useState('California');
+  const [userSelectedState, setUserSelectedState] = useState(null); // null = no selection yet, will use 'nationwide'
   const [selectedState, setSelectedState] = useState('CALIFORNIA');
   const [searchState, setSearchState] = useState('');
   const [impactState, setImpactState] = useState('California');
@@ -71,7 +71,8 @@ const Home = () => {
       setError(null);
 
       try {
-        const state = userSelectedState || 'California';
+        // Use selected state, or 'nationwide' if none selected
+        const state = userSelectedState || 'nationwide';
         const token = localStorage.getItem('token');
 
         // Prepare headers with optional authentication
@@ -181,7 +182,7 @@ const Home = () => {
 
   // Download PDF report
   const handleDownloadReport = () => {
-    const state = userSelectedState || 'California';
+    const state = userSelectedState || 'nationwide';
     const period = timePeriod || 'YoY';
 
     // Direct link approach - let the browser handle the download
@@ -190,7 +191,7 @@ const Home = () => {
 
   // Download CSV export
   const handleDownloadCSV = () => {
-    const state = userSelectedState || 'California';
+    const state = userSelectedState || 'nationwide';
     const url = `${API_URL}/api/homepage/download/csv?state=${encodeURIComponent(state)}`;
     window.open(url, '_blank');
   };

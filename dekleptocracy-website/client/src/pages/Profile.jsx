@@ -60,6 +60,33 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
+
+      // Load from cache first for instant display
+      const cachedProfile = localStorage.getItem('user_profile');
+      if (cachedProfile) {
+        try {
+          const data = JSON.parse(cachedProfile);
+          setUser(data);
+          setFormData({
+            fullName: data.fullName || '',
+            profilePhoto: null,
+            selectedTopics: data.preferences?.topicsOfInterest || [],
+            selectedStyles: data.preferences?.conversationStyles || [],
+            householdExpenseFocus: data.preferences?.householdExpenseFocus || ''
+          });
+
+          if (data.profilePhoto) {
+            const photoUrl = data.profilePhoto.startsWith('http')
+              ? data.profilePhoto
+              : `${API_URL}/${data.profilePhoto}`;
+            setPreview(photoUrl);
+          }
+        } catch (e) {
+          console.error('Error parsing cached profile:', e);
+        }
+      }
+
+      // Fetch fresh data in background
       const response = await fetch(`${API_URL}/api/user/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -70,6 +97,12 @@ const Profile = () => {
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to fetch profile');
+      }
+
+      // Cache profile data
+      localStorage.setItem('user_profile', JSON.stringify(data.user));
+      if (data.user.preferences) {
+        localStorage.setItem('user_preferences', JSON.stringify(data.user.preferences));
       }
 
       setUser(data.user);
@@ -83,8 +116,8 @@ const Profile = () => {
 
       // Set preview if profile photo exists
       if (data.user.profilePhoto) {
-        const photoUrl = data.user.profilePhoto.startsWith('http') 
-          ? data.user.profilePhoto 
+        const photoUrl = data.user.profilePhoto.startsWith('http')
+          ? data.user.profilePhoto
           : `${API_URL}/${data.user.profilePhoto}`;
         setPreview(photoUrl);
       }
