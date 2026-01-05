@@ -31,7 +31,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
 
   const quickQuestions = [
     'How does the new tax hit my grocery bill in my city?',
@@ -62,9 +61,6 @@ const Home = () => {
 
   // Fetch homepage data from API
   useEffect(() => {
-    // Don't fetch until preferences are loaded
-    if (!preferencesLoaded) return;
-
     async function fetchHomepageData() {
       // Use isRefreshing for subsequent fetches (after initial load)
       if (loading === false) {
@@ -84,28 +80,28 @@ const Home = () => {
           headers['Authorization'] = `Bearer ${token}`;
         }
 
-        // Fetch wallet shocks
-        const shocksRes = await fetch(`${API_URL}/api/homepage/wallet-shocks?state=${state}&limit=4`, {
-          headers
-        });
+        // Fetch all data in parallel for faster loading
+        const [shocksRes, driversRes, statsRes] = await Promise.all([
+          fetch(`${API_URL}/api/homepage/wallet-shocks?state=${state}&limit=4`, { headers }),
+          fetch(`${API_URL}/api/homepage/cost-drivers?state=${state}&period=${timePeriod}`, { headers }),
+          fetch(`${API_URL}/api/homepage/stats?state=${state}`, { headers })
+        ]);
+
+        // Check responses
         if (!shocksRes.ok) throw new Error('Failed to fetch wallet shocks');
-        const shocksData = await shocksRes.json();
-        setWalletShocks(shocksData.shocks || []);
-
-        // Fetch cost drivers
-        const driversRes = await fetch(`${API_URL}/api/homepage/cost-drivers?state=${state}&period=${timePeriod}`, {
-          headers
-        });
         if (!driversRes.ok) throw new Error('Failed to fetch cost drivers');
-        const driversData = await driversRes.json();
-        setCostDrivers(driversData.drivers || []);
-
-        // Fetch stats
-        const statsRes = await fetch(`${API_URL}/api/homepage/stats?state=${state}`, {
-          headers
-        });
         if (!statsRes.ok) throw new Error('Failed to fetch stats');
-        const statsData = await statsRes.json();
+
+        // Parse all responses in parallel
+        const [shocksData, driversData, statsData] = await Promise.all([
+          shocksRes.json(),
+          driversRes.json(),
+          statsRes.json()
+        ]);
+
+        // Update state with all data at once
+        setWalletShocks(shocksData.shocks || []);
+        setCostDrivers(driversData.drivers || []);
         setStats(statsData.stats || {});
 
       } catch (err) {
@@ -118,20 +114,42 @@ const Home = () => {
     }
 
     fetchHomepageData();
-  }, [userSelectedState, timePeriod, preferencesLoaded]);
+  }, [userSelectedState, timePeriod]);
 
-  // Load user preferences on mount
+  // Load user preferences on mount - with caching for faster subsequent loads
   useEffect(() => {
     async function loadUserPreferences() {
       try {
         const token = localStorage.getItem('token');
 
         if (!token) {
-          // No token, mark preferences as loaded with defaults
-          setPreferencesLoaded(true);
+          // No token, check if we have cached preferences
+          const cachedPrefs = localStorage.getItem('user_preferences');
+          if (cachedPrefs) {
+            try {
+              const prefs = JSON.parse(cachedPrefs);
+              if (prefs.selectedState) setUserSelectedState(prefs.selectedState);
+              if (prefs.defaultTimePeriod) setTimePeriod(prefs.defaultTimePeriod);
+            } catch (e) {
+              console.error('Error parsing cached preferences:', e);
+            }
+          }
           return;
         }
 
+        // Check cache first for instant load
+        const cachedPrefs = localStorage.getItem('user_preferences');
+        if (cachedPrefs) {
+          try {
+            const prefs = JSON.parse(cachedPrefs);
+            if (prefs.selectedState) setUserSelectedState(prefs.selectedState);
+            if (prefs.defaultTimePeriod) setTimePeriod(prefs.defaultTimePeriod);
+          } catch (e) {
+            console.error('Error parsing cached preferences:', e);
+          }
+        }
+
+        // Fetch fresh data in background
         const response = await fetch(`${API_URL}/api/user/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -141,7 +159,10 @@ const Home = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.user.preferences) {
-            // Set state and time period from saved preferences
+            // Cache preferences for next time
+            localStorage.setItem('user_preferences', JSON.stringify(data.user.preferences));
+
+            // Update state if different from cache
             if (data.user.preferences.selectedState) {
               setUserSelectedState(data.user.preferences.selectedState);
             }
@@ -152,9 +173,6 @@ const Home = () => {
         }
       } catch (err) {
         console.error('Error loading user preferences:', err);
-      } finally {
-        // Mark preferences as loaded (either from server or using defaults)
-        setPreferencesLoaded(true);
       }
     }
 
@@ -203,9 +221,23 @@ const Home = () => {
   // Save user preferences (state and time period)
   const saveUserPreferences = async (updates) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return; // Only save if user is logged in
+      // Update cache immediately for instant updates
+      const cachedPrefs = localStorage.getItem('user_preferences');
+      let prefs = {};
+      if (cachedPrefs) {
+        try {
+          prefs = JSON.parse(cachedPrefs);
+        } catch (e) {
+          console.error('Error parsing cached preferences:', e);
+        }
+      }
+      const updatedPrefs = { ...prefs, ...updates };
+      localStorage.setItem('user_preferences', JSON.stringify(updatedPrefs));
 
+      const token = localStorage.getItem('token');
+      if (!token) return; // Only save to backend if user is logged in
+
+      // Save to backend in background
       const response = await fetch(`${API_URL}/api/user/preferences`, {
         method: 'PUT',
         headers: {

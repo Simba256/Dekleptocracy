@@ -140,40 +140,56 @@ const Chatbot = () => {
   const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8000';
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-  // Check authentication on mount
+  // Check authentication on mount - optimized for speed
   useEffect(() => {
     const checkAuth = async () => {
+      // Quick check: just verify token exists in localStorage
       if (!isAuthenticated()) {
         navigate('/chatbot/login', { state: { from: { pathname: '/chatbot' } } });
         return;
       }
 
-      // Verify token with backend
+      // Set auth as checked immediately (optimistic)
+      setAuthChecked(true);
+
+      // Verify token with backend in background (non-blocking)
+      // Only redirect if token is actually invalid
       try {
         const isValid = await verifyToken();
         if (!isValid) {
           navigate('/chatbot/login', { state: { from: { pathname: '/chatbot' } } });
-          return;
         }
       } catch (error) {
-        console.error('Auth check error:', error);
-        navigate('/chatbot/login', { state: { from: { pathname: '/chatbot' } } });
-        return;
+        console.error('Auth verification error:', error);
+        // Don't redirect on network error, just log it
       }
-
-      setAuthChecked(true);
     };
 
     checkAuth();
   }, [navigate]);
 
-  // Load user location preference from backend
+  // Load user location preference from backend - with caching
   useEffect(() => {
     const loadUserLocation = async () => {
       try {
         const token = localStorage.getItem('token');
+
+        // Load from cache first (instant)
+        const cachedPrefs = localStorage.getItem('user_preferences');
+        if (cachedPrefs) {
+          try {
+            const prefs = JSON.parse(cachedPrefs);
+            if (prefs.selectedState) {
+              setUserLocation(prefs.selectedState);
+            }
+          } catch (e) {
+            console.error('Error parsing cached preferences:', e);
+          }
+        }
+
         if (!token) return;
 
+        // Fetch fresh data in background
         const response = await fetch(`${API_URL}/api/user/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -183,7 +199,9 @@ const Chatbot = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.user.preferences?.selectedState) {
-            // Only set location if user has explicitly selected one
+            // Update cache
+            localStorage.setItem('user_preferences', JSON.stringify(data.user.preferences));
+            // Update state if different from cache
             setUserLocation(data.user.preferences.selectedState);
           }
         }
