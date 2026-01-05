@@ -219,6 +219,9 @@ const Chatbot = () => {
   useEffect(() => {
     if (userLocation && messages.length === 1 && messages[0].id === '1') {
       // Update the initial welcome message with location context
+      const locationDisplay = userLocation === 'nationwide' ? 'All States' : userLocation;
+      const locationContext = userLocation === 'nationwide' ? 'nationwide' : `${userLocation}-specific`;
+
       const updatedWelcomeMessage = `Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:
 
 • Trade statistics and economic data
@@ -227,7 +230,7 @@ const Chatbot = () => {
 • News and trade policy updates
 • General questions about policy impacts on your budget
 
-I see you're in **${userLocation}**. When you ask about prices or impacts without specifying a location, I'll provide ${userLocation}-specific information by default.
+I see you're looking at **${locationDisplay}** data. When you ask about prices or impacts without specifying a location, I'll provide ${locationContext} information by default.
 
 How can I help you today?`;
 
@@ -304,6 +307,9 @@ How can I help you today?`;
   };
 
   const startNewChat = () => {
+    const locationDisplay = userLocation === 'nationwide' ? 'All States' : userLocation;
+    const locationContext = userLocation === 'nationwide' ? 'nationwide' : `${userLocation}-specific`;
+
     const welcomeMessage = userLocation
       ? `Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:
 
@@ -313,7 +319,7 @@ How can I help you today?`;
 • News and trade policy updates
 • General questions about policy impacts on your budget
 
-I see you're in **${userLocation}**. When you ask about prices or impacts without specifying a location, I'll provide ${userLocation}-specific information by default.
+I see you're looking at **${locationDisplay}** data. When you ask about prices or impacts without specifying a location, I'll provide ${locationContext} information by default.
 
 How can I help you today?`
       : 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?';
@@ -636,7 +642,7 @@ IMPORTANT GUIDELINES:
                 gap: '6px'
               }}>
                 <span style={{ fontSize: '16px' }}>📍</span>
-                <span>Location context: <strong>{userLocation}</strong></span>
+                <span>Location context: <strong>{userLocation === 'nationwide' ? 'All States' : userLocation}</strong></span>
                 <span style={{ fontSize: '12px', color: '#999' }}>
                   (AI will use this when you don't specify a location)
                 </span>

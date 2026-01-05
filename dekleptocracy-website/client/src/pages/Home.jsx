@@ -258,8 +258,10 @@ const Home = () => {
 
   // Handle state change with preference saving
   const handleStateChange = (newState) => {
-    setUserSelectedState(newState);
-    saveUserPreferences({ selectedState: newState });
+    // Convert "All states" display text to "nationwide" for backend
+    const stateValue = newState === 'All states' ? 'nationwide' : newState;
+    setUserSelectedState(stateValue);
+    saveUserPreferences({ selectedState: stateValue });
   };
 
   // Handle time period change with preference saving
@@ -705,7 +707,9 @@ const Home = () => {
                   }}
                 >
                   <span>Current Location</span>
-                  <span className="dropdown-selected-value">{userSelectedState}</span>
+                  <span className="dropdown-selected-value">
+                    {userSelectedState === 'nationwide' ? 'All States' : (userSelectedState || 'All States')}
+                  </span>
                   <svg
                     className={`dropdown-arrow ${isWalletShocksDropdownOpen ? 'open' : ''}`}
                     width="16"
@@ -860,7 +864,9 @@ const Home = () => {
                     }}
                   >
                     <span>Current Location</span>
-                    <span className="dropdown-selected-value">{userSelectedState}</span>
+                    <span className="dropdown-selected-value">
+                      {userSelectedState === 'nationwide' ? 'All States' : (userSelectedState || 'All States')}
+                    </span>
                     <svg
                       className={`dropdown-arrow ${isCostImpactDropdownOpen ? 'open' : ''}`}
                       width="16"
