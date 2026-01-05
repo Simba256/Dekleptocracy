@@ -132,6 +132,7 @@ const Chatbot = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [userLocation, setUserLocation] = useState(null); // null = uninitialized, only set when user selects
+  const [showCopyNotification, setShowCopyNotification] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
   const hasSubmittedInitialQuery = useRef(false);
@@ -526,6 +527,58 @@ IMPORTANT GUIDELINES:
     }
   };
 
+  const copyMessageToClipboard = (content) => {
+    navigator.clipboard.writeText(content).then(() => {
+      setShowCopyNotification(true);
+      setTimeout(() => setShowCopyNotification(false), 3000);
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+    });
+  };
+
+  const regenerateResponse = async (messageId) => {
+    // Find the user message that triggered this response
+    const messageIndex = messages.findIndex(msg => msg.id === messageId);
+    if (messageIndex <= 0) return;
+
+    const userMessage = messages[messageIndex - 1];
+    if (userMessage.role !== 'user') return;
+
+    // Remove the assistant message and regenerate
+    setMessages(prev => prev.slice(0, messageIndex));
+    await submitMessage(userMessage.content);
+  };
+
+  const clearConversation = () => {
+    if (window.confirm('Are you sure you want to clear this conversation?')) {
+      startNewChat();
+    }
+  };
+
+  const exportChat = () => {
+    const chatContent = messages
+      .filter(msg => msg.id !== '1') // Exclude welcome message
+      .map(msg => `${msg.role === 'user' ? 'You' : 'AI Assistant'}: ${msg.content}`)
+      .join('\n\n');
+
+    const blob = new Blob([chatContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chat-export-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const suggestedPrompts = [
+    { icon: '📊', text: 'Show tariff impacts in my state' },
+    { icon: '💰', text: 'Compare prices with national average' },
+    { icon: '📈', text: 'What are the top price increases?' },
+    { icon: '🏘️', text: 'How do policies affect my budget?' }
+  ];
+
   // Show loading state while checking authentication
   if (!authChecked) {
     return (
@@ -623,6 +676,13 @@ IMPORTANT GUIDELINES:
         />
       )}
 
+      {/* Copy Notification */}
+      {showCopyNotification && (
+        <div className="copy-notification">
+          ✓ Copied to clipboard
+        </div>
+      )}
+
       {/* Main Chat Container */}
       <div className="chatbot-main">
         {/* Header */}
@@ -692,6 +752,36 @@ IMPORTANT GUIDELINES:
                     minute: '2-digit',
                   })}
                 </div>
+                {!message.isLoading && message.id !== '1' && (
+                  <div className="message-actions">
+                    <button
+                      className="action-btn"
+                      onClick={() => copyMessageToClipboard(message.content)}
+                      title="Copy message"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy
+                    </button>
+                    {message.role === 'assistant' && (
+                      <button
+                        className="action-btn"
+                        onClick={() => regenerateResponse(message.id)}
+                        title="Regenerate response"
+                        disabled={isLoading}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="23 4 23 10 17 10"></polyline>
+                          <polyline points="1 20 1 14 7 14"></polyline>
+                          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        Regenerate
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -701,37 +791,136 @@ IMPORTANT GUIDELINES:
         {/* Input Area */}
         <div className="chatbot-input-area">
           <form onSubmit={handleSubmit} className="chatbot-form">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about trade, tariffs, stocks, or policy impacts..."
-              className="chatbot-input"
-              rows={2}
-              disabled={isLoading}
-            />
-            <div className="chatbot-actions-row">
+            <div className="input-wrapper">
+              <div className="input-tools">
+                <button
+                  type="button"
+                  className="input-tool-btn"
+                  title="Attach file"
+                  onClick={() => alert('File attachment coming soon!')}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="input-tool-btn"
+                  title="Add emoji"
+                  onClick={() => alert('Emoji picker coming soon!')}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="input-tool-btn"
+                  title="Voice input"
+                  onClick={() => alert('Voice input coming soon!')}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
+                  </svg>
+                </button>
+              </div>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask about trade, tariffs, stocks, or policy impacts..."
+                className="chatbot-input"
+                rows={1}
+                disabled={isLoading}
+              />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
                 className="chatbot-send-btn"
               >
-                {isLoading ? 'Thinking...' : 'Send'}
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25"/>
+                      <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" opacity="0.75"/>
+                    </svg>
+                    Thinking...
+                  </>
+                ) : (
+                  <>
+                    Send
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                  </>
+                )}
               </button>
-              {isLoading && (
+            </div>
+
+            <div className="chatbot-actions-row">
+              <div className="quick-actions-row">
                 <button
                   type="button"
-                  onClick={stopRequest}
-                  className="chatbot-stop-btn"
+                  className="quick-action-btn danger"
+                  onClick={clearConversation}
+                  disabled={messages.length <= 1}
                 >
-                  Stop
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  Clear
                 </button>
-              )}
+                <button
+                  type="button"
+                  className="quick-action-btn"
+                  onClick={exportChat}
+                  disabled={messages.length <= 1}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Export
+                </button>
+                {isLoading && (
+                  <button
+                    type="button"
+                    onClick={stopRequest}
+                    className="chatbot-stop-btn"
+                  >
+                    Stop
+                  </button>
+                )}
+              </div>
+              <div className="chatbot-hint">
+                Press Enter to send, Shift+Enter for new line
+              </div>
             </div>
           </form>
-          <div className="chatbot-hint">
-            Press Enter to send, Shift+Enter for new line
-          </div>
+
+          {/* Suggested Prompts - Only show when chat is empty or just welcome message */}
+          {messages.length <= 1 && !input && (
+            <div className="suggested-prompts">
+              {suggestedPrompts.map((prompt, index) => (
+                <button
+                  key={index}
+                  className="prompt-chip"
+                  onClick={() => {
+                    setInput(prompt.text);
+                    setTimeout(() => handleSubmit(new Event('submit')), 100);
+                  }}
+                >
+                  <span>{prompt.icon}</span>
+                  <span>{prompt.text}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
