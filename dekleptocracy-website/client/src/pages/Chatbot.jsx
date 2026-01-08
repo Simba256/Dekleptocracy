@@ -133,6 +133,7 @@ const Chatbot = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [userLocation, setUserLocation] = useState(null); // null = uninitialized, only set when user selects
   const [showCopyNotification, setShowCopyNotification] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('');
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
   const hasSubmittedInitialQuery = useRef(false);
@@ -381,6 +382,22 @@ How can I help you today?`
 
     setMessages((prev) => [...prev, assistantMessage]);
 
+    // Set initial loading status
+    const statusMessages = [
+      'Analyzing your question...',
+      'Searching trade data...',
+      'Processing information...',
+      'Generating response...'
+    ];
+    let statusIndex = 0;
+    setLoadingStatus(statusMessages[0]);
+
+    // Rotate status messages during loading
+    const statusInterval = setInterval(() => {
+      statusIndex = (statusIndex + 1) % statusMessages.length;
+      setLoadingStatus(statusMessages[statusIndex]);
+    }, 2000);
+
     try {
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController();
@@ -483,6 +500,7 @@ IMPORTANT GUIDELINES:
         console.log('Tools used:', data.tools_used);
       }
     } catch (error) {
+      clearInterval(statusInterval);
       if (error.name === 'AbortError') {
         console.log('Request aborted');
       } else {
@@ -500,7 +518,9 @@ IMPORTANT GUIDELINES:
         );
       }
     } finally {
+      clearInterval(statusInterval);
       setIsLoading(false);
+      setLoadingStatus('');
       abortControllerRef.current = null;
     }
   };
@@ -579,6 +599,130 @@ IMPORTANT GUIDELINES:
     { icon: '🏘️', text: 'How do policies affect my budget?' }
   ];
 
+  const welcomeCards = [
+    {
+      icon: '📊',
+      title: 'Tariff Analysis',
+      description: 'Understand how tariffs affect prices in your state',
+      query: 'How do tariffs impact prices in my state?'
+    },
+    {
+      icon: '💰',
+      title: 'Price Comparisons',
+      description: 'Compare local vs national average costs',
+      query: 'Compare prices in my state with national average'
+    },
+    {
+      icon: '📈',
+      title: 'Market Trends',
+      description: 'Track stock market and economic indicators',
+      query: 'What are the current market trends?'
+    },
+    {
+      icon: '🏛️',
+      title: 'Policy Impact',
+      description: 'See how government decisions affect your budget',
+      query: 'How do recent policies affect my household budget?'
+    }
+  ];
+
+  // Generate contextual follow-up questions based on the conversation
+  const generateFollowUps = (lastMessage) => {
+    const content = lastMessage.content.toLowerCase();
+
+    if (content.includes('tariff') || content.includes('tax')) {
+      return [
+        'How will this affect grocery prices?',
+        'Compare with last year\'s data',
+        'Show me state-by-state differences'
+      ];
+    } else if (content.includes('price') || content.includes('cost')) {
+      return [
+        'What\'s driving these price changes?',
+        'Show me historical trends',
+        'How does this compare nationally?'
+      ];
+    } else if (content.includes('stock') || content.includes('market')) {
+      return [
+        'What sectors are most affected?',
+        'Show me related companies',
+        'What\'s the outlook for next quarter?'
+      ];
+    } else if (content.includes('budget') || content.includes('impact')) {
+      return [
+        'Break down the cost increases',
+        'What can I do to reduce impact?',
+        'Show me similar cases'
+      ];
+    }
+
+    // Default follow-ups
+    return [
+      'Tell me more about this',
+      'Show me related data',
+      'How does this affect my state?'
+    ];
+  };
+
+  // Helper function to get icon based on chat content
+  const getChatIcon = (chat) => {
+    const firstUserMsg = chat.messages.find(msg => msg.role === 'user');
+    if (!firstUserMsg) return '💬';
+
+    const content = firstUserMsg.content.toLowerCase();
+
+    if (content.includes('tariff') || content.includes('tax')) return '📊';
+    if (content.includes('price') || content.includes('cost') || content.includes('$')) return '💰';
+    if (content.includes('stock') || content.includes('market')) return '📈';
+    if (content.includes('budget') || content.includes('impact')) return '🏘️';
+    if (content.includes('policy') || content.includes('government')) return '🏛️';
+
+    return '💬';
+  };
+
+  // Helper function to get message preview
+  const getMessagePreview = (chat) => {
+    const firstUserMsg = chat.messages.find(msg => msg.role === 'user');
+    if (!firstUserMsg) return '';
+
+    const preview = firstUserMsg.content.replace(/\n/g, ' ').trim();
+    return preview.length > 60 ? preview.substring(0, 60) + '...' : preview;
+  };
+
+  // Helper function to group chats by date
+  const groupChatsByDate = (chats) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const lastWeek = new Date(today);
+    lastWeek.setDate(lastWeek.getDate() - 7);
+
+    const groups = {
+      'Today': [],
+      'Yesterday': [],
+      'Last 7 Days': [],
+      'Older': []
+    };
+
+    chats.forEach(chat => {
+      const chatDate = new Date(chat.updatedAt);
+      const chatDay = new Date(chatDate.getFullYear(), chatDate.getMonth(), chatDate.getDate());
+
+      if (chatDay.getTime() === today.getTime()) {
+        groups['Today'].push(chat);
+      } else if (chatDay.getTime() === yesterday.getTime()) {
+        groups['Yesterday'].push(chat);
+      } else if (chatDate >= lastWeek) {
+        groups['Last 7 Days'].push(chat);
+      } else {
+        groups['Older'].push(chat);
+      }
+    });
+
+    return groups;
+  };
+
   // Show loading state while checking authentication
   if (!authChecked) {
     return (
@@ -643,27 +787,46 @@ IMPORTANT GUIDELINES:
           {chatHistory.chats.length === 0 ? (
             <div className="history-empty">No chat history yet</div>
           ) : (
-            chatHistory.chats.map((chat) => (
-              <div
-                key={chat.id}
-                className={`history-item ${chat.id === currentChatId ? 'active' : ''}`}
-                onClick={() => loadChat(chat.id)}
-              >
-                <div className="history-item-content">
-                  <div className="history-item-title">{chat.title}</div>
-                  <div className="history-item-date">
-                    {new Date(chat.updatedAt).toLocaleDateString()}
+            (() => {
+              const groupedChats = groupChatsByDate(chatHistory.chats);
+              return Object.entries(groupedChats).map(([groupName, chats]) => {
+                if (chats.length === 0) return null;
+
+                return (
+                  <div key={groupName} className="history-date-group">
+                    <div className="history-date-header">{groupName}</div>
+                    {chats.map((chat) => (
+                      <div
+                        key={chat.id}
+                        className={`history-item ${chat.id === currentChatId ? 'active' : ''}`}
+                        onClick={() => loadChat(chat.id)}
+                      >
+                        <div className="history-item-icon">
+                          {getChatIcon(chat)}
+                        </div>
+                        <div className="history-item-content">
+                          <div className="history-item-title">{chat.title}</div>
+                          <div className="history-item-preview">{getMessagePreview(chat)}</div>
+                          <div className="history-item-date">
+                            {new Date(chat.updatedAt).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
+                        </div>
+                        <button
+                          className="history-delete-btn"
+                          onClick={(e) => deleteChat(chat.id, e)}
+                          title="Delete chat"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <button
-                  className="history-delete-btn"
-                  onClick={(e) => deleteChat(chat.id, e)}
-                  title="Delete chat"
-                >
-                  🗑️
-                </button>
-              </div>
-            ))
+                );
+              });
+            })()
           )}
         </div>
       </div>
@@ -688,24 +851,25 @@ IMPORTANT GUIDELINES:
         {/* Header */}
         <div className="chatbot-header">
           <div className="header-content">
-            <h1 className="chatbot-title">AI Trade & Tariff Assistant</h1>
-            <p className="chatbot-subtitle">
-              Powered by GPT-5 with real-time trade analysis tools
-            </p>
+            <div className="header-text">
+              <h1 className="chatbot-title">
+                AI Trade & Tariff Assistant
+                <div className="ai-status">
+                  <span className="status-dot"></span>
+                  <span>Online</span>
+                </div>
+              </h1>
+              <p className="chatbot-subtitle">
+                Powered by GPT-5 with real-time trade analysis tools
+              </p>
+            </div>
             {userLocation && (
-              <div style={{
-                marginTop: '8px',
-                fontSize: '14px',
-                color: '#666',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}>
-                <span style={{ fontSize: '16px' }}>📍</span>
-                <span>Location context: <strong>{userLocation === 'nationwide' ? 'All States' : userLocation}</strong></span>
-                <span style={{ fontSize: '12px', color: '#999' }}>
-                  (AI will use this when you don't specify a location)
-                </span>
+              <div className="header-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span>{userLocation === 'nationwide' ? 'All States' : userLocation}</span>
               </div>
             )}
           </div>
@@ -733,9 +897,40 @@ IMPORTANT GUIDELINES:
                 <div className="message-text">
                   {message.isLoading ? (
                     <div className="loading-indicator">
-                      <span className="loading-dot"></span>
-                      <span className="loading-dot"></span>
-                      <span className="loading-dot"></span>
+                      <div className="loading-dots">
+                        <span className="loading-dot"></span>
+                        <span className="loading-dot"></span>
+                        <span className="loading-dot"></span>
+                      </div>
+                      {loadingStatus && (
+                        <div className="loading-status">{loadingStatus}</div>
+                      )}
+                    </div>
+                  ) : message.id === '1' ? (
+                    // Enhanced welcome message with cards
+                    <div>
+                      <ReactMarkdown
+                        className="markdown-content"
+                        remarkPlugins={[remarkGfm]}
+                      >
+                        {message.content.split('\n\n')[0]}
+                      </ReactMarkdown>
+                      <div className="welcome-cards">
+                        {welcomeCards.map((card, index) => (
+                          <div
+                            key={index}
+                            className="welcome-card"
+                            onClick={() => {
+                              setInput(card.query);
+                              setTimeout(() => handleSubmit(new Event('submit')), 100);
+                            }}
+                          >
+                            <div className="welcome-card-icon">{card.icon}</div>
+                            <div className="welcome-card-title">{card.title}</div>
+                            <div className="welcome-card-description">{card.description}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     <ReactMarkdown
@@ -753,34 +948,59 @@ IMPORTANT GUIDELINES:
                   })}
                 </div>
                 {!message.isLoading && message.id !== '1' && (
-                  <div className="message-actions">
-                    <button
-                      className="action-btn"
-                      onClick={() => copyMessageToClipboard(message.content)}
-                      title="Copy message"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                      </svg>
-                      Copy
-                    </button>
-                    {message.role === 'assistant' && (
+                  <>
+                    <div className="message-actions">
                       <button
                         className="action-btn"
-                        onClick={() => regenerateResponse(message.id)}
-                        title="Regenerate response"
-                        disabled={isLoading}
+                        onClick={() => copyMessageToClipboard(message.content)}
+                        title="Copy message"
                       >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="23 4 23 10 17 10"></polyline>
-                          <polyline points="1 20 1 14 7 14"></polyline>
-                          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                         </svg>
-                        Regenerate
+                        Copy
                       </button>
+                      {message.role === 'assistant' && (
+                        <button
+                          className="action-btn"
+                          onClick={() => regenerateResponse(message.id)}
+                          title="Regenerate response"
+                          disabled={isLoading}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                          </svg>
+                          Regenerate
+                        </button>
+                      )}
+                    </div>
+                    {/* Follow-up suggestions for assistant messages */}
+                    {message.role === 'assistant' && !isLoading && (
+                      <div className="follow-up-suggestions">
+                        <div className="follow-up-label">Suggested follow-ups</div>
+                        <div className="follow-up-chips">
+                          {generateFollowUps(message).slice(0, 3).map((followUp, idx) => (
+                            <button
+                              key={idx}
+                              className="follow-up-chip"
+                              onClick={() => {
+                                setInput(followUp);
+                                setTimeout(() => handleSubmit(new Event('submit')), 100);
+                              }}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="9 18 15 12 9 6" />
+                              </svg>
+                              {followUp}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     )}
-                  </div>
+                  </>
                 )}
               </div>
             </div>
