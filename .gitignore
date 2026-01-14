@@ -234,3 +234,8 @@ Desktop.ini
 # Project specific
 *.json.bak
 *.csv.bak
+
+
+
+
+*env*
