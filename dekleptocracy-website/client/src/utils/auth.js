@@ -1,12 +1,60 @@
 // Authentication utilities
 
 /**
- * Check if user is authenticated
- * @returns {boolean} True if user has a valid token
+ * Decode a JWT token without verification (client-side only)
+ * @param {string} token - JWT token
+ * @returns {object|null} Decoded payload or null if invalid
+ */
+const decodeToken = (token) => {
+  try {
+    // JWT format: header.payload.signature
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    // Decode the payload (base64url encoded)
+    const payload = parts[1];
+    // Handle base64url encoding (replace - with + and _ with /)
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = atob(base64);
+    return JSON.parse(decoded);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};
+
+/**
+ * Check if a token is expired
+ * @param {string} token - JWT token
+ * @returns {boolean} True if token is expired or invalid
+ */
+const isTokenExpired = (token) => {
+  const decoded = decodeToken(token);
+  if (!decoded || !decoded.exp) return true;
+
+  // exp is in seconds, Date.now() is in milliseconds
+  // Add 60 second buffer to handle clock skew
+  const expirationTime = decoded.exp * 1000;
+  return Date.now() >= expirationTime;
+};
+
+/**
+ * Check if user is authenticated (token exists and is not expired)
+ * @returns {boolean} True if user has a valid, non-expired token
  */
 export const isAuthenticated = () => {
   const token = localStorage.getItem('token');
-  return !!token;
+  if (!token) return false;
+
+  // Check if token is expired
+  if (isTokenExpired(token)) {
+    // Clear expired token and user data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return false;
+  }
+
+  return true;
 };
 
 /**

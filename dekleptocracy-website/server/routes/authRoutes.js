@@ -5,9 +5,10 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 // Generate JWT Token
+// Token expires in 30 days - users stay logged in unless they explicitly log out
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET || 'your-secret-key-change-in-production', {
-    expiresIn: '7d'
+    expiresIn: '30d'
   });
 };
 
