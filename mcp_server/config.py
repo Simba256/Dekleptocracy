@@ -79,6 +79,32 @@ class Config:
             "gemini": APIConfig(
                 base_url="https://generativelanguage.googleapis.com/v1beta",
                 api_key=os.getenv("GEMINI_API_KEY")
+            ),
+            # New APIs for state report real data
+            "bls": APIConfig(
+                base_url="https://api.bls.gov/publicAPI/v2/timeseries/data",
+                api_key=os.getenv("BLS_API_KEY"),
+                rate_limit={"requests_per_day": 500}  # v2 registered users
+            ),
+            "fred": APIConfig(
+                base_url="https://api.stlouisfed.org/fred",
+                api_key=os.getenv("FRED_API_KEY"),
+                rate_limit={"requests_per_second": 2}
+            ),
+            "eia": APIConfig(
+                base_url="https://api.eia.gov/v2",
+                api_key=os.getenv("EIA_API_KEY"),
+                rate_limit={"requests_per_hour": 1000}
+            ),
+            "hud": APIConfig(
+                base_url="https://www.huduser.gov/hudapi/public",
+                token=os.getenv("HUD_API_TOKEN"),
+                rate_limit={"requests_per_day": 1000}
+            ),
+            "usda": APIConfig(
+                base_url="https://api.ers.usda.gov/data",
+                api_key=os.getenv("USDA_API_KEY"),
+                rate_limit={"requests_per_day": 500}
             )
         }
     

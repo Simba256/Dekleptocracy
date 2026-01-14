@@ -12,6 +12,7 @@ import reportRoutes from './routes/reportRoutes.js';
 import { scheduleArticleGeneration, triggerArticleGeneration, getSchedulerStatus } from './services/articleScheduler.js';
 import { scheduleResearchGeneration, triggerResearchGeneration, getResearchSchedulerStatus } from './services/researchScheduler.js';
 import { removeDuplicateArticles } from './services/articleGenerator.js';
+import { initializeScheduler as initStateDataScheduler } from './services/stateDataScheduler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -180,7 +181,12 @@ async function start() {
       // Start the research generation scheduler (every 7 days)
       console.log('\n📅 Starting research generation scheduler...');
       scheduleResearchGeneration(7); // Generate research every 7 days at 10:00 AM
-      console.log('✅ Research scheduler started successfully\n');
+      console.log('✅ Research scheduler started successfully');
+
+      // Start the state data scheduler (daily at 2 AM, gas prices every 6 hours)
+      console.log('\n📅 Starting state data scheduler...');
+      initStateDataScheduler();
+      console.log('✅ State data scheduler started successfully\n');
     });
   } catch (err) {
     console.error('❌ Failed to start server:', err);

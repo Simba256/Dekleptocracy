@@ -55,7 +55,8 @@ from utils import (
 )
 from apis import (
     BEAAPIClient, CensusAPIClient, DataWebAPIClient,
-    FederalRegisterAPIClient, GNewsAPIClient, GeminiAPIClient
+    FederalRegisterAPIClient, GNewsAPIClient, GeminiAPIClient,
+    BLSAPIClient, FREDAPIClient, EIAAPIClient, HUDAPIClient, USDAAPIClient
 )
 
 # Configure logging
@@ -75,7 +76,13 @@ api_clients = {
     "dataweb": DataWebAPIClient(config.get_api_config("dataweb")),
     "federal_register": FederalRegisterAPIClient(config.get_api_config("federal_register")),
     "gnews": GNewsAPIClient(config.get_api_config("gnews")),
-    "gemini": GeminiAPIClient(config.get_api_config("gemini"))
+    "gemini": GeminiAPIClient(config.get_api_config("gemini")),
+    # New API clients for state report real data
+    "bls": BLSAPIClient(config.get_api_config("bls")),
+    "fred": FREDAPIClient(config.get_api_config("fred")),
+    "eia": EIAAPIClient(config.get_api_config("eia")),
+    "hud": HUDAPIClient(config.get_api_config("hud")),
+    "usda": USDAAPIClient(config.get_api_config("usda"))
 }
 
 # ===== UTILITY TOOLS =====
@@ -525,6 +532,195 @@ def clear_system_cache() -> Dict[str, Any]:
         }
     except Exception as e:
         logger.error(f"Error clearing cache: {e}")
+        return {"status": "error", "error": str(e)}
+
+# ===== STATE DATA API TOOLS =====
+# These tools provide real economic data for state reports
+
+@mcp.tool()
+def get_bls_unemployment_by_state(state_name: str, start_year: str = "2023", end_year: str = "2024") -> Dict[str, Any]:
+    """Get state unemployment rate from Bureau of Labor Statistics"""
+    try:
+        return api_clients["bls"].get_unemployment_by_state(state_name, start_year, end_year)
+    except Exception as e:
+        logger.error(f"Error getting BLS unemployment data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_bls_cpi_for_state(state_name: str, start_year: str = "2023", end_year: str = "2024") -> Dict[str, Any]:
+    """Get regional Consumer Price Index for a state from BLS"""
+    try:
+        return api_clients["bls"].get_regional_cpi_for_state(state_name, start_year, end_year)
+    except Exception as e:
+        logger.error(f"Error getting BLS CPI data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_bls_wages_by_state(state_name: str, start_year: str = "2022", end_year: str = "2023") -> Dict[str, Any]:
+    """Get average weekly wages for a state from BLS QCEW data"""
+    try:
+        return api_clients["bls"].get_average_wages_by_state(state_name, start_year, end_year)
+    except Exception as e:
+        logger.error(f"Error getting BLS wage data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_fred_state_gdp(state_name: str) -> Dict[str, Any]:
+    """Get state GDP from Federal Reserve Economic Data (FRED)"""
+    try:
+        return api_clients["fred"].get_state_gdp(state_name)
+    except Exception as e:
+        logger.error(f"Error getting FRED GDP data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_fred_state_personal_income(state_name: str) -> Dict[str, Any]:
+    """Get state per capita personal income from FRED"""
+    try:
+        return api_clients["fred"].get_state_personal_income(state_name)
+    except Exception as e:
+        logger.error(f"Error getting FRED personal income data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_fred_state_unemployment(state_name: str) -> Dict[str, Any]:
+    """Get state unemployment rate from FRED"""
+    try:
+        return api_clients["fred"].get_state_unemployment_rate(state_name)
+    except Exception as e:
+        logger.error(f"Error getting FRED unemployment data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_fred_series(series_id: str, observation_start: str = "", observation_end: str = "") -> Dict[str, Any]:
+    """Get any FRED economic data series by ID"""
+    try:
+        return api_clients["fred"].get_series_data(
+            series_id,
+            observation_start if observation_start else None,
+            observation_end if observation_end else None
+        )
+    except Exception as e:
+        logger.error(f"Error getting FRED series data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_electricity_prices_by_state(state_name: str, sector: str = "RES") -> Dict[str, Any]:
+    """Get electricity prices for a state from EIA (sectors: RES, COM, IND)"""
+    try:
+        return api_clients["eia"].get_electricity_prices_by_state(state_name, sector)
+    except Exception as e:
+        logger.error(f"Error getting EIA electricity data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_gasoline_prices_by_state(state_name: str) -> Dict[str, Any]:
+    """Get gasoline prices for a state's region from EIA"""
+    try:
+        return api_clients["eia"].get_gasoline_prices_by_region(state_name=state_name)
+    except Exception as e:
+        logger.error(f"Error getting EIA gasoline data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_natural_gas_prices_by_state(state_name: str, sector: str = "RES") -> Dict[str, Any]:
+    """Get natural gas prices for a state from EIA"""
+    try:
+        return api_clients["eia"].get_natural_gas_prices_by_state(state_name, sector)
+    except Exception as e:
+        logger.error(f"Error getting EIA natural gas data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_hud_fair_market_rent(state_name: str, year: str = "") -> Dict[str, Any]:
+    """Get HUD Fair Market Rent data for a state"""
+    try:
+        return api_clients["hud"].get_state_fmr(state_name, year if year else None)
+    except Exception as e:
+        logger.error(f"Error getting HUD FMR data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_hud_rent_history(state_name: str, years: int = 5) -> Dict[str, Any]:
+    """Get historical HUD Fair Market Rent data for trend analysis"""
+    try:
+        return api_clients["hud"].get_fmr_history(state_name, years)
+    except Exception as e:
+        logger.error(f"Error getting HUD rent history: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_usda_food_prices(state_name: str = "") -> Dict[str, Any]:
+    """Get USDA food price data, optionally adjusted for a state"""
+    try:
+        if state_name:
+            return api_clients["usda"].get_state_food_prices(state_name)
+        else:
+            return api_clients["usda"].get_food_price_cpi()
+    except Exception as e:
+        logger.error(f"Error getting USDA food price data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_usda_grocery_basket(state_name: str) -> Dict[str, Any]:
+    """Get grocery basket cost comparison for a state vs national average"""
+    try:
+        return api_clients["usda"].get_grocery_basket_comparison(state_name)
+    except Exception as e:
+        logger.error(f"Error getting USDA grocery basket data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_state_economic_data(state_name: str) -> Dict[str, Any]:
+    """Get comprehensive economic data for a state from all available sources"""
+    try:
+        results = {
+            "state": state_name,
+            "status": "success",
+            "data": {},
+            "errors": []
+        }
+
+        # Unemployment
+        try:
+            results["data"]["unemployment"] = api_clients["bls"].get_unemployment_by_state(state_name)
+        except Exception as e:
+            results["errors"].append(f"BLS unemployment: {str(e)}")
+
+        # GDP
+        try:
+            results["data"]["gdp"] = api_clients["fred"].get_state_gdp(state_name)
+        except Exception as e:
+            results["errors"].append(f"FRED GDP: {str(e)}")
+
+        # Electricity prices
+        try:
+            results["data"]["electricity"] = api_clients["eia"].get_electricity_prices_by_state(state_name)
+        except Exception as e:
+            results["errors"].append(f"EIA electricity: {str(e)}")
+
+        # Gas prices
+        try:
+            results["data"]["gasoline"] = api_clients["eia"].get_gasoline_prices_by_region(state_name=state_name)
+        except Exception as e:
+            results["errors"].append(f"EIA gasoline: {str(e)}")
+
+        # Rent
+        try:
+            results["data"]["rent"] = api_clients["hud"].get_fmr_history(state_name)
+        except Exception as e:
+            results["errors"].append(f"HUD rent: {str(e)}")
+
+        # Food prices
+        try:
+            results["data"]["food"] = api_clients["usda"].get_state_food_prices(state_name)
+        except Exception as e:
+            results["errors"].append(f"USDA food: {str(e)}")
+
+        return results
+
+    except Exception as e:
+        logger.error(f"Error getting comprehensive state data: {e}")
         return {"status": "error", "error": str(e)}
 
 # ===== RESOURCES =====

@@ -96,6 +96,32 @@
   border-radius: 50%;
 }
 
+.status-warning {
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+.retry-link {
+  background: none;
+  border: none;
+  color: #2c5f3e;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  font-weight: 600;
+  padding: 0;
+  margin-left: 4px;
+}
+
+.retry-link:hover {
+  color: #1e4a2c;
+}
+
+.retry-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .district-report-buttons {
   display: flex;
   gap: 16px;
@@ -111,11 +137,122 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.district-report-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .district-report-button:hover {
   background-color: #3d4a32;
   transform: translateY(-1px);
+}
+
+/* Fallback Warning Banner */
+.fallback-warning-banner {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin: 20px auto;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #92400e;
+}
+
+.fallback-warning-banner svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Loading and Error States */
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  padding: 40px 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #2c5f3e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-subtext {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.error-container svg {
+  color: #ef4444;
+}
+
+.error-container h2 {
+  font-size: 24px;
+  color: #1f2937;
+  margin: 0;
+}
+
+.error-container p {
+  color: #6b7280;
+  max-width: 500px;
+  text-align: center;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.primary-button, .secondary-button {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #2c5f3e 0%, #3a7b4e 100%);
+  color: white;
+  border: none;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 95, 62, 0.3);
+}
+
+.secondary-button {
+  background: white;
+  color: #2c5f3e;
+  border: 1px solid #2c5f3e;
+}
+
+.secondary-button:hover {
+  background: #f0f5f1;
 }
 
 /* District Impact Overview */

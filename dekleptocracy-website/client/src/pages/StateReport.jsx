@@ -1,103 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import './StateReport.css';
 
 const StateReport = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const name = searchParams.get('name') || 'California Resident';
   const stateName = searchParams.get('state') || 'California';
   const role = searchParams.get('role') || 'VOTER';
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const [reportData, setReportData] = useState(null);
+  const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const fallbackReport = useMemo(() => ({
-    name,
-    stateName,
-    role,
-    overviewTitle: 'State Impact Overview',
-    overviewStatement: 'Lobbyists and corporations profit while working families and schools lose',
-    comparisonCards: [
-      {
-        value: '+68%',
-        label: 'Energy Costs Rising',
-        description: 'Our electricity and gas bills increased by 68% since tariffs, directly impacting household budgets'
-      },
-      {
-        value: '-$2,847',
-        label: 'Per-Student School Funding Cut',
-        description: 'Local schools lost $2,847 per student while Washington lobbyists gained $9.2M in your state'
-      }
-    ],
-    keyMetrics: [
-      { title: 'Average Monthly Rent Increase', value: '+$340', change: '▲ 18% since 2022', color: '#FF6B5A' },
-      { title: 'Green Jobs Created (IRA)', value: '1,200', change: '▲ +450 this quarter', color: '#FF6B5A' },
-      { title: 'Residents Still Uninsured', value: '12%', change: '▲ Down from 15%', color: '#FF6B5A' },
-      { title: 'DACA Recipients Protected', value: '4,847', change: '▲ +340 this month', color: '#FF6B5A' },
-    ],
-    trendData: [
-      {
-        title: 'Monthly Average Rent',
-        currentValue: '$1,200',
-        data: [
-          { month: 'Jan', value: 800, color: '#4A5D3F' },
-          { month: 'Feb', value: 850, color: '#4A5D3F' },
-          { month: 'March', value: 900, color: '#4A5D3F' },
-          { month: 'April', value: 950, color: '#FF6B5A' },
-          { month: 'June', value: 1200, color: '#FF6B5A' }
-        ]
-      },
-      {
-        title: 'Fuel Prices Over Time',
-        currentValue: '$1,200',
-        data: [
-          { month: 'Jan', value: 600, color: '#4A5D3F' },
-          { month: 'Feb', value: 650, color: '#4A5D3F' },
-          { month: 'March', value: 700, color: '#4A5D3F' },
-          { month: 'April', value: 800, color: '#FF6B5A' },
-          { month: 'June', value: 1200, color: '#FF6B5A' }
-        ]
-      },
-      {
-        title: 'Grocery Basket Trend',
-        currentValue: '$1,200',
-        data: [
-          { month: 'Jan', value: 700, color: '#4A5D3F' },
-          { month: 'Feb', value: 750, color: '#4A5D3F' },
-          { month: 'March', value: 800, color: '#4A5D3F' },
-          { month: 'April', value: 900, color: '#FF6B5A' },
-          { month: 'June', value: 1200, color: '#FF6B5A' }
-        ]
-      }
-    ],
-    comparisonData: [
-      {
-        category: 'Grocery basket',
-        change: '+4% higher',
-        stateValue: '$412',
-        nationalValue: '$395'
-      },
-      {
-        category: 'Fuel Price',
-        change: '+3.8% higher',
-        stateValue: '$3.84',
-        nationalValue: '$3.70'
-      },
-      {
-        category: 'Electricity Bill',
-        change: '+69% higher',
-        stateValue: '$282',
-        nationalValue: '$167'
-      },
-      {
-        category: 'Books & Printing',
-        change: '+12% higher',
-        stateValue: '$4.6',
-        nationalValue: '$4.1'
-      }
-    ]
-  }), [name, role, stateName]);
+  const [refreshing, setRefreshing] = useState(false);
+  const reportRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -115,6 +34,7 @@ const StateReport = () => {
 
         const data = await response.json();
         setReportData(data.report || null);
+        setMetadata(data.metadata || null);
       } catch (err) {
         if (err.name === 'AbortError') return;
         setError(err.message);
@@ -128,10 +48,151 @@ const StateReport = () => {
     return () => controller.abort();
   }, [API_URL, name, role, stateName]);
 
-  const data = reportData || fallbackReport;
+  const formatTimestamp = (isoString) => {
+    if (!isoString) return 'recently';
+    const date = new Date(isoString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString();
+  };
+
+  const handleRefresh = async () => {
+    if (refreshing) return;
+
+    setRefreshing(true);
+    try {
+      const response = await fetch(
+        `${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}&t=${Date.now()}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch state report: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setReportData(data.report || null);
+      setMetadata(data.metadata || null);
+      setError(null);
+    } catch (err) {
+      console.error('Refresh failed:', err);
+      setError(err.message);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleDownloadPDF = async (event) => {
+    if (!reportRef.current) return;
+
+    try {
+      const originalText = event.target.textContent;
+      event.target.textContent = 'Generating PDF...';
+      event.target.disabled = true;
+
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        windowWidth: 1200
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= 297;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= 297;
+      }
+
+      const fileName = `${reportData.stateName}-${reportData.role}-Report-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+
+      event.target.textContent = originalText;
+      event.target.disabled = false;
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+      event.target.textContent = 'Download Report';
+      event.target.disabled = false;
+    }
+  };
+
+  const generateComparisonText = (comparisonData, stateName) => {
+    if (!comparisonData || comparisonData.length === 0) {
+      return `Living costs in ${stateName} vary from the national average.`;
+    }
+
+    const items = comparisonData.map(item => {
+      const direction = item.change.includes('+') ? 'higher' : 'lower';
+      return `${item.category} (${item.change} ${direction})`;
+    }).join(', ');
+
+    const avgIncrease = comparisonData.filter(i => i.change.includes('+')).length;
+    const impactLevel = avgIncrease >= 3 ? 'significantly' : avgIncrease >= 2 ? 'notably' : 'slightly';
+
+    return `Living costs in ${stateName} are ${impactLevel} different from the national average. Key differences include: ${items}. These differences directly impact household budgets and purchasing power.`;
+  };
+
+  if (loading) {
+    return (
+      <div className="district-report-page">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Generating report for {stateName}...</p>
+          <p className="loading-subtext">This may take a few seconds</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !reportData) {
+    return (
+      <div className="district-report-page">
+        <div className="error-container">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <h2>Unable to Generate Report</h2>
+          <p>{error}</p>
+          <div className="error-actions">
+            <button onClick={() => navigate('/reports')} className="secondary-button">
+              Go Back
+            </button>
+            <button onClick={() => window.location.reload()} className="primary-button">
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const data = reportData;
 
   return (
-    <div className="district-report-page">
+    <div className="district-report-page" ref={reportRef}>
       {/* Header Section */}
       <div className="district-report-header">
         <div className="district-report-header-content">
@@ -156,13 +217,49 @@ const StateReport = () => {
       <div className="district-report-actions">
         <div className="district-report-status">
           <span className="district-report-dot"></span>
-          Live Data • Last updated 2 hours ago • Next update in 5 days (Tuesday, Oct 8)
+          {metadata?.source === 'fallback' ? (
+            <span className="status-warning">
+              Sample Data • MCP Unavailable • <button onClick={handleRefresh} className="retry-link">Retry</button>
+            </span>
+          ) : (
+            <span>
+              Live Data • Last updated {formatTimestamp(metadata?.generatedAt)} •
+              <button onClick={handleRefresh} className="retry-link" disabled={refreshing}>
+                {refreshing ? 'Refreshing...' : 'Refresh'}
+              </button>
+            </span>
+          )}
         </div>
         <div className="district-report-buttons">
-          <button className="district-report-button">Download Report</button>
-          <button className="district-report-button">Get Widget</button>
+          <button
+            className="district-report-button"
+            onClick={handleDownloadPDF}
+            disabled={!reportData}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px' }}>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Report
+          </button>
         </div>
       </div>
+
+      {/* Fallback Warning Banner */}
+      {metadata?.source === 'fallback' && (
+        <div className="fallback-warning-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>
+            <strong>Sample Data:</strong> Live data generation is temporarily unavailable.
+            Showing generic sample data. <button onClick={handleRefresh} className="retry-link">Try again</button>
+          </span>
+        </div>
+      )}
 
       {/* State Impact Overview */}
       <div className="district-report-overview">
@@ -316,14 +413,7 @@ const StateReport = () => {
         <h2 className="district-report-section-title">State Comparison</h2>
         <div className="district-report-comparison-content">
           <div className="district-report-comparison-text">
-            <p>
-              Living costs are rising faster than the national average. Your grocery baskets cost around 4% more, 
-              fuel prices are 3.8% higher, and electricity bills are nearly 70% higher compared to the national average. 
-              Books and printing costs have also increased significantly.
-            </p>
-            <p>
-              These increases directly impact your wallet and make it harder for families to make ends meet in your state.
-            </p>
+            <p>{generateComparisonText(data?.comparisonData, data?.stateName)}</p>
           </div>
           <div className="district-report-comparison-box">
             <h3 className="district-report-comparison-box-title">Your state vs. national average</h3>

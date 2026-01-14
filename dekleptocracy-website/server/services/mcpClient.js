@@ -166,6 +166,142 @@ export async function getMCPTools() {
   }
 }
 
+// ============================================
+// State Report Data Fetching Functions
+// ============================================
+
+/**
+ * Get unemployment data for a state
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} Unemployment data
+ */
+export async function fetchUnemploymentData(stateName) {
+  try {
+    return await executeMCPTool('get_bls_unemployment_by_state', {
+      state_name: stateName,
+      start_year: '2023',
+      end_year: '2024'
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch unemployment for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Get electricity prices for a state
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} Electricity price data
+ */
+export async function fetchElectricityPrices(stateName) {
+  try {
+    return await executeMCPTool('get_electricity_prices_by_state', {
+      state_name: stateName,
+      sector: 'RES'
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch electricity prices for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Get gasoline prices for a state's region
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} Gas price data
+ */
+export async function fetchGasolinePrices(stateName) {
+  try {
+    return await executeMCPTool('get_gasoline_prices_by_state', {
+      state_name: stateName
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch gas prices for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Get HUD Fair Market Rent data for a state
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} Rent data with history
+ */
+export async function fetchRentData(stateName) {
+  try {
+    return await executeMCPTool('get_hud_rent_history', {
+      state_name: stateName,
+      years: 5
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch rent data for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Get food prices for a state
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} Food price data
+ */
+export async function fetchFoodPrices(stateName) {
+  try {
+    return await executeMCPTool('get_usda_food_prices', {
+      state_name: stateName
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch food prices for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Get grocery basket comparison for a state vs national
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} Grocery comparison data
+ */
+export async function fetchGroceryBasket(stateName) {
+  try {
+    return await executeMCPTool('get_usda_grocery_basket', {
+      state_name: stateName
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch grocery basket for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Get state GDP from FRED
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} GDP data
+ */
+export async function fetchStateGDP(stateName) {
+  try {
+    return await executeMCPTool('get_fred_state_gdp', {
+      state_name: stateName
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch GDP for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
+/**
+ * Get comprehensive economic data for a state (all sources)
+ * @param {string} stateName - Full state name
+ * @returns {Promise<object>} All available economic data
+ */
+export async function fetchAllStateData(stateName) {
+  try {
+    return await executeMCPTool('get_state_economic_data', {
+      state_name: stateName
+    });
+  } catch (error) {
+    logger.warn(`Failed to fetch comprehensive data for ${stateName}`, error);
+    return { status: 'error', error: error.message };
+  }
+}
+
 export default {
   executeMCPTool,
   fetchNews,
@@ -173,5 +309,14 @@ export default {
   fetchBEAData,
   fetchTariffAnnouncements,
   checkMCPHealth,
-  getMCPTools
+  getMCPTools,
+  // New state data functions
+  fetchUnemploymentData,
+  fetchElectricityPrices,
+  fetchGasolinePrices,
+  fetchRentData,
+  fetchFoodPrices,
+  fetchGroceryBasket,
+  fetchStateGDP,
+  fetchAllStateData
 };
