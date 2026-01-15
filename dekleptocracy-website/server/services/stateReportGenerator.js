@@ -141,7 +141,7 @@ function buildKeyMetrics(stateData, stateName) {
 
   // Food prices
   const food = stateData.food_prices;
-  if (food?.processedData && metrics.length < 5) {
+  if (food?.processedData && metrics.length < 6) {
     const isNegative = food.processedData.change > 0;
     metrics.push({
       title: 'Food (per person/month)',
@@ -151,6 +151,35 @@ function buildKeyMetrics(stateData, stateName) {
       source: 'USDA',
       isRealData: true,
       isStale: food.isStale
+    });
+  }
+
+  // Income / Affordability metrics
+  const incomeData = stateData.income_limits;
+  if (incomeData?.processedData && metrics.length < 6) {
+    metrics.push({
+      title: 'Median Income',
+      value: incomeData.processedData.displayValue,
+      change: '',
+      color: '#4A5D3F',
+      source: 'HUD',
+      isRealData: true,
+      isStale: incomeData.isStale
+    });
+  }
+
+  const affordability = stateData.affordability;
+  if (affordability?.processedData && metrics.length < 6) {
+    // If rent takes more than 30% of income, it's considered cost-burdened
+    const isUnaffordable = affordability.processedData.value > 30;
+    metrics.push({
+      title: 'Rent as % of Income',
+      value: affordability.processedData.displayValue,
+      change: isUnaffordable ? 'Cost-burdened' : 'Affordable',
+      color: isUnaffordable ? '#FF6B5A' : '#4A5D3F',
+      source: 'HUD',
+      isRealData: true,
+      isStale: affordability.isStale
     });
   }
 

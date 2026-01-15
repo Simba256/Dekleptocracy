@@ -650,6 +650,42 @@ def get_hud_rent_history(state_name: str, years: int = 5) -> Dict[str, Any]:
         return {"status": "error", "error": str(e)}
 
 @mcp.tool()
+def get_hud_income_limits(state_name: str, year: str = "") -> Dict[str, Any]:
+    """Get HUD Income Limits data for a state (median income thresholds for housing programs)"""
+    try:
+        return api_clients["hud"].get_state_income_limits(state_name, year if year else None)
+    except Exception as e:
+        logger.error(f"Error getting HUD income limits: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_hud_affordability_analysis(state_name: str, year: str = "") -> Dict[str, Any]:
+    """Get housing affordability analysis combining FMR and Income Limits (rent as % of median income)"""
+    try:
+        return api_clients["hud"].get_affordability_analysis(state_name, year if year else None)
+    except Exception as e:
+        logger.error(f"Error getting HUD affordability analysis: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_hud_chas_data(state_name: str, year: str = "") -> Dict[str, Any]:
+    """Get HUD CHAS (Comprehensive Housing Affordability Strategy) data showing cost-burdened households"""
+    try:
+        return api_clients["hud"].get_state_chas(state_name, year if year else None)
+    except Exception as e:
+        logger.error(f"Error getting HUD CHAS data: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
+def get_hud_housing_summary(state_name: str, year: str = "") -> Dict[str, Any]:
+    """Get comprehensive housing summary combining FMR, Income Limits, and affordability analysis"""
+    try:
+        return api_clients["hud"].get_housing_summary(state_name, year if year else None)
+    except Exception as e:
+        logger.error(f"Error getting HUD housing summary: {e}")
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool()
 def get_usda_food_prices(state_name: str = "") -> Dict[str, Any]:
     """Get USDA food price data, optionally adjusted for a state"""
     try:
@@ -710,6 +746,17 @@ def get_state_economic_data(state_name: str) -> Dict[str, Any]:
             results["data"]["rent"] = api_clients["hud"].get_fmr_history(state_name)
         except Exception as e:
             results["errors"].append(f"HUD rent: {str(e)}")
+
+        # Income Limits & Affordability
+        try:
+            results["data"]["income_limits"] = api_clients["hud"].get_state_income_limits(state_name)
+        except Exception as e:
+            results["errors"].append(f"HUD income limits: {str(e)}")
+
+        try:
+            results["data"]["affordability"] = api_clients["hud"].get_affordability_analysis(state_name)
+        except Exception as e:
+            results["errors"].append(f"HUD affordability: {str(e)}")
 
         # Food prices
         try:

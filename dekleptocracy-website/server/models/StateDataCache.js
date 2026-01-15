@@ -24,6 +24,9 @@ const stateDataCacheSchema = new mongoose.Schema({
       'gas_prices',        // EIA gasoline
       'natural_gas_prices', // EIA natural gas
       'rent',              // HUD Fair Market Rent
+      'income_limits',     // HUD Income Limits (median income thresholds)
+      'affordability',     // HUD Affordability Analysis (rent as % of income)
+      'chas',              // HUD CHAS (cost-burdened households)
       'food_prices',       // USDA food prices
       'grocery_basket'     // USDA grocery basket comparison
     ],

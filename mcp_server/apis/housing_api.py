@@ -414,3 +414,321 @@ class HUDAPIClient(BaseAPIClient):
             "note": "Estimated from major metropolitan areas",
             "source": "HUD"
         }
+
+    # =========================================================================
+    # INCOME LIMITS API
+    # =========================================================================
+
+    @cache_result(ttl=86400)
+    def get_state_income_limits(
+        self,
+        state_name: str,
+        year: str = None
+    ) -> Dict[str, Any]:
+        """
+        Get Income Limits data for a state.
+        Income limits determine eligibility for HUD housing programs.
+
+        Args:
+            state_name: Full state name
+            year: Fiscal year (defaults to current)
+
+        Returns:
+            Dict with income limits by category
+        """
+        state_code = STATE_ABBREV.get(state_name)
+        if not state_code:
+            return {"status": "error", "error": f"Unknown state: {state_name}"}
+
+        if not year:
+            current_year = datetime.now().year
+            year = str(current_year)
+
+        endpoint = f"il/statedata/{state_code}"
+        params = {"year": year}
+
+        result = self._make_hud_request(endpoint, params)
+
+        if not result["success"]:
+            return {"status": "error", "error": result.get("error", "HUD API request failed")}
+
+        try:
+            data = result["data"]
+
+            if isinstance(data, dict) and data.get("error"):
+                return {"status": "error", "error": data.get("error")}
+
+            # Process income limits data
+            if isinstance(data, list) and len(data) > 0:
+                # Average across all areas in state
+                median_incomes = []
+                low_incomes = []
+                very_low_incomes = []
+                extremely_low_incomes = []
+
+                for entry in data:
+                    if entry.get("median_income"):
+                        median_incomes.append(float(str(entry["median_income"]).replace(",", "").replace("$", "")))
+                    if entry.get("l50_1"):  # 50% of median (very low income) for 1-person
+                        very_low_incomes.append(float(str(entry["l50_1"]).replace(",", "").replace("$", "")))
+                    if entry.get("l80_1"):  # 80% of median (low income) for 1-person
+                        low_incomes.append(float(str(entry["l80_1"]).replace(",", "").replace("$", "")))
+                    if entry.get("l30_1"):  # 30% of median (extremely low) for 1-person
+                        extremely_low_incomes.append(float(str(entry["l30_1"]).replace(",", "").replace("$", "")))
+
+                avg_median = sum(median_incomes) / len(median_incomes) if median_incomes else None
+
+                return {
+                    "status": "success",
+                    "state": state_name,
+                    "state_code": state_code,
+                    "year": year,
+                    "median_income": avg_median,
+                    "displayValue": f"${avg_median:,.0f}" if avg_median else "N/A",
+                    "avg_low_income_limit": sum(low_incomes) / len(low_incomes) if low_incomes else None,
+                    "avg_very_low_income_limit": sum(very_low_incomes) / len(very_low_incomes) if very_low_incomes else None,
+                    "avg_extremely_low_income_limit": sum(extremely_low_incomes) / len(extremely_low_incomes) if extremely_low_incomes else None,
+                    "areas_count": len(data),
+                    "source": "HUD",
+                    "note": "Area Median Income (AMI) averaged across all areas in state"
+                }
+            else:
+                return {"status": "error", "error": "No income limits data available"}
+
+        except Exception as e:
+            logger.error(f"Error processing HUD Income Limits data: {e}")
+            return {"status": "error", "error": str(e)}
+
+    @cache_result(ttl=86400)
+    def get_affordability_analysis(
+        self,
+        state_name: str,
+        year: str = None
+    ) -> Dict[str, Any]:
+        """
+        Calculate housing affordability metrics for a state.
+        Combines FMR and Income Limits to show affordability.
+
+        Args:
+            state_name: Full state name
+            year: Fiscal year
+
+        Returns:
+            Dict with affordability analysis
+        """
+        # Get FMR data
+        fmr_result = self.get_state_fmr(state_name, year)
+        if fmr_result.get("status") != "success":
+            return {"status": "error", "error": "Could not get FMR data"}
+
+        # Get Income Limits data
+        income_result = self.get_state_income_limits(state_name, year)
+        if income_result.get("status") != "success":
+            return {"status": "error", "error": "Could not get income limits data"}
+
+        try:
+            monthly_rent = fmr_result.get("value", 0)
+            annual_rent = monthly_rent * 12
+            median_income = income_result.get("median_income", 0)
+
+            # Calculate affordability metrics
+            # HUD considers housing affordable if it costs <= 30% of income
+            income_needed_for_affordable = (annual_rent / 0.30) if annual_rent else 0
+            rent_as_percent_of_median = (annual_rent / median_income * 100) if median_income else 0
+
+            # Is median income household rent-burdened?
+            is_affordable_for_median = rent_as_percent_of_median <= 30
+
+            # Income needed to afford
+            hourly_wage_needed = income_needed_for_affordable / 2080  # 40hr/week * 52 weeks
+
+            return {
+                "status": "success",
+                "state": state_name,
+                "year": year or str(datetime.now().year),
+                "monthly_rent_2br": monthly_rent,
+                "annual_rent_2br": annual_rent,
+                "median_income": median_income,
+                "rent_as_percent_of_median": round(rent_as_percent_of_median, 1),
+                "income_needed_for_affordable": round(income_needed_for_affordable, 0),
+                "hourly_wage_needed": round(hourly_wage_needed, 2),
+                "is_affordable_for_median": is_affordable_for_median,
+                "displayValue": f"{rent_as_percent_of_median:.0f}% of median income",
+                "affordability_status": "Affordable" if is_affordable_for_median else "Cost-burdened",
+                "source": "HUD (FMR + Income Limits)",
+                "note": "Housing is considered affordable if it costs ≤30% of household income"
+            }
+
+        except Exception as e:
+            logger.error(f"Error calculating affordability: {e}")
+            return {"status": "error", "error": str(e)}
+
+    # =========================================================================
+    # CHAS (Comprehensive Housing Affordability Strategy) API
+    # =========================================================================
+
+    @cache_result(ttl=86400 * 7)  # Cache for 7 days - CHAS data updates infrequently
+    def get_state_chas(
+        self,
+        state_name: str,
+        year: str = None
+    ) -> Dict[str, Any]:
+        """
+        Get CHAS data for a state.
+        CHAS provides detailed housing affordability statistics.
+
+        Args:
+            state_name: Full state name
+            year: Data year (CHAS data is typically 5-year estimates)
+
+        Returns:
+            Dict with CHAS housing affordability data
+        """
+        state_fips = STATE_FIPS.get(state_name)
+        if not state_fips:
+            return {"status": "error", "error": f"Unknown state: {state_name}"}
+
+        # CHAS endpoint - state level
+        endpoint = f"chas/statedata/{state_fips}"
+        params = {}
+        if year:
+            params["year"] = year
+
+        result = self._make_hud_request(endpoint, params)
+
+        if not result["success"]:
+            return {"status": "error", "error": result.get("error", "HUD CHAS API request failed")}
+
+        try:
+            data = result["data"]
+
+            if isinstance(data, dict) and data.get("error"):
+                return {"status": "error", "error": data.get("error")}
+
+            # Process CHAS data
+            if isinstance(data, list) and len(data) > 0:
+                # Aggregate CHAS data across the state
+                total_households = 0
+                cost_burdened_renters = 0
+                severely_cost_burdened_renters = 0
+                cost_burdened_owners = 0
+                total_renters = 0
+                total_owners = 0
+
+                for entry in data:
+                    # CHAS has various tables - T1 through T18
+                    # Key metrics we want:
+                    # - Cost burden: spending >30% of income on housing
+                    # - Severe cost burden: spending >50% of income on housing
+
+                    if entry.get("T1_est"):  # Total households estimate
+                        total_households += int(entry.get("T1_est", 0) or 0)
+                    if entry.get("T9_est"):  # Renter cost burden
+                        cost_burdened_renters += int(entry.get("T9_est", 0) or 0)
+                    if entry.get("T10_est"):  # Owner cost burden
+                        cost_burdened_owners += int(entry.get("T10_est", 0) or 0)
+
+                # Calculate percentages
+                renter_cost_burden_pct = (cost_burdened_renters / total_renters * 100) if total_renters > 0 else None
+                owner_cost_burden_pct = (cost_burdened_owners / total_owners * 100) if total_owners > 0 else None
+
+                return {
+                    "status": "success",
+                    "state": state_name,
+                    "data_source": "CHAS",
+                    "total_households": total_households,
+                    "cost_burdened_renters": cost_burdened_renters,
+                    "cost_burdened_owners": cost_burdened_owners,
+                    "renter_cost_burden_percent": renter_cost_burden_pct,
+                    "owner_cost_burden_percent": owner_cost_burden_pct,
+                    "source": "HUD CHAS",
+                    "note": "Cost burden = spending >30% of income on housing"
+                }
+
+            # If we don't get the detailed data, try to get summary
+            return {
+                "status": "success",
+                "state": state_name,
+                "raw_data": data,
+                "source": "HUD CHAS"
+            }
+
+        except Exception as e:
+            logger.error(f"Error processing HUD CHAS data: {e}")
+            return {"status": "error", "error": str(e)}
+
+    @cache_result(ttl=86400)
+    def get_housing_summary(
+        self,
+        state_name: str,
+        year: str = None
+    ) -> Dict[str, Any]:
+        """
+        Get a comprehensive housing summary combining FMR, Income Limits, and affordability.
+        This is the primary method for state reports.
+
+        Args:
+            state_name: Full state name
+            year: Fiscal year
+
+        Returns:
+            Dict with comprehensive housing data
+        """
+        results = {
+            "status": "success",
+            "state": state_name,
+            "year": year or str(datetime.now().year),
+            "data": {}
+        }
+
+        # Get Fair Market Rent
+        fmr = self.get_state_fmr(state_name, year)
+        if fmr.get("status") == "success":
+            results["data"]["fair_market_rent"] = {
+                "value": fmr.get("value"),
+                "displayValue": fmr.get("displayValue"),
+                "by_bedroom": fmr.get("fmr_by_bedroom"),
+                "source": "HUD FMR"
+            }
+
+        # Get FMR History for trends
+        fmr_history = self.get_fmr_history(state_name, 5)
+        if fmr_history.get("status") == "success":
+            results["data"]["rent_trend"] = {
+                "change": fmr_history.get("change"),
+                "changeDisplay": fmr_history.get("changeDisplay"),
+                "five_year_change": fmr_history.get("five_year_change"),
+                "time_series": fmr_history.get("time_series"),
+                "source": "HUD FMR"
+            }
+
+        # Get Income Limits
+        income = self.get_state_income_limits(state_name, year)
+        if income.get("status") == "success":
+            results["data"]["income_limits"] = {
+                "median_income": income.get("median_income"),
+                "displayValue": income.get("displayValue"),
+                "low_income_limit": income.get("avg_low_income_limit"),
+                "very_low_income_limit": income.get("avg_very_low_income_limit"),
+                "source": "HUD Income Limits"
+            }
+
+        # Get Affordability Analysis
+        affordability = self.get_affordability_analysis(state_name, year)
+        if affordability.get("status") == "success":
+            results["data"]["affordability"] = {
+                "rent_as_percent_of_median": affordability.get("rent_as_percent_of_median"),
+                "income_needed": affordability.get("income_needed_for_affordable"),
+                "hourly_wage_needed": affordability.get("hourly_wage_needed"),
+                "is_affordable": affordability.get("is_affordable_for_median"),
+                "status": affordability.get("affordability_status"),
+                "displayValue": affordability.get("displayValue"),
+                "source": "HUD (calculated)"
+            }
+
+        # Check if we have any data
+        if not results["data"]:
+            return {"status": "error", "error": "No housing data available"}
+
+        results["source"] = "HUD"
+        return results

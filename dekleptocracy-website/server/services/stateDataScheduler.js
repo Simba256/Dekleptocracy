@@ -213,6 +213,55 @@ const DATA_TYPES = [
       })) || [],
       metadata: { seriesId: result.series_id }
     })
+  },
+  {
+    type: 'income_limits',
+    tool: 'get_hud_income_limits',
+    ttlHours: 168, // Weekly - HUD data is annual
+    processResult: (result) => ({
+      sourceApi: 'hud',
+      rawData: result,
+      processedData: {
+        value: result.median_income,
+        displayValue: result.displayValue,
+        change: null,
+        changeDisplay: '',
+        changeDirection: 'neutral',
+        unit: 'USD/year'
+      },
+      timeSeries: [],
+      metadata: {
+        lowIncomeLimit: result.avg_low_income_limit,
+        veryLowIncomeLimit: result.avg_very_low_income_limit,
+        extremelyLowIncomeLimit: result.avg_extremely_low_income_limit,
+        areasCount: result.areas_count
+      }
+    })
+  },
+  {
+    type: 'affordability',
+    tool: 'get_hud_affordability_analysis',
+    ttlHours: 168, // Weekly - combines FMR and income limits
+    processResult: (result) => ({
+      sourceApi: 'hud',
+      rawData: result,
+      processedData: {
+        value: result.rent_as_percent_of_median,
+        displayValue: result.displayValue,
+        change: null,
+        changeDisplay: result.affordability_status,
+        changeDirection: result.is_affordable_for_median ? 'down' : 'up',
+        unit: 'percent'
+      },
+      timeSeries: [],
+      metadata: {
+        monthlyRent: result.monthly_rent_2br,
+        medianIncome: result.median_income,
+        incomeNeeded: result.income_needed_for_affordable,
+        hourlyWageNeeded: result.hourly_wage_needed,
+        isAffordable: result.is_affordable_for_median
+      }
+    })
   }
 ];
 
