@@ -15,7 +15,9 @@ const StateReport = () => {
   const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [errorCode, setErrorCode] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [triggeringRefresh, setTriggeringRefresh] = useState(false);
   const reportRef = useRef(null);
 
   useEffect(() => {
@@ -24,15 +26,19 @@ const StateReport = () => {
       try {
         setLoading(true);
         setError(null);
+        setErrorCode(null);
         const response = await fetch(`${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}`, {
           signal: controller.signal
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          throw new Error(`Failed to fetch state report: ${response.status}`);
+          // Handle specific error codes
+          setErrorCode(data.errorCode || null);
+          throw new Error(data.message || `Failed to fetch state report: ${response.status}`);
         }
 
-        const data = await response.json();
         setReportData(data.report || null);
         setMetadata(data.metadata || null);
       } catch (err) {
@@ -47,6 +53,29 @@ const StateReport = () => {
     loadReport();
     return () => controller.abort();
   }, [API_URL, name, role, stateName]);
+
+  const triggerDataRefresh = async () => {
+    if (triggeringRefresh) return;
+    setTriggeringRefresh(true);
+    try {
+      const response = await fetch(`${API_URL}/api/reports/state/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: stateName })
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Reload the report after refresh
+        window.location.reload();
+      } else {
+        alert('Failed to refresh data. Please try again later.');
+      }
+    } catch (err) {
+      alert('Failed to refresh data: ' + err.message);
+    } finally {
+      setTriggeringRefresh(false);
+    }
+  };
 
   const formatTimestamp = (isoString) => {
     if (!isoString) return 'recently';
@@ -166,23 +195,48 @@ const StateReport = () => {
   }
 
   if (error && !reportData) {
+    const isNoDataError = errorCode === 'NO_DATA_AVAILABLE';
     return (
       <div className="district-report-page">
         <div className="error-container">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
+            {isNoDataError ? (
+              <>
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+                <path d="M21 3v5h-5"/>
+              </>
+            ) : (
+              <>
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </>
+            )}
           </svg>
-          <h2>Unable to Generate Report</h2>
+          <h2>{isNoDataError ? 'Data Not Yet Available' : 'Unable to Generate Report'}</h2>
           <p>{error}</p>
+          {isNoDataError && (
+            <p className="error-subtext">
+              Government data needs to be fetched first. Click below to start collecting data for {stateName}.
+            </p>
+          )}
           <div className="error-actions">
-            <button onClick={() => navigate('/reports')} className="secondary-button">
-              Go Back
+            <button onClick={() => navigate('/')} className="secondary-button">
+              Go Home
             </button>
-            <button onClick={() => window.location.reload()} className="primary-button">
-              Try Again
-            </button>
+            {isNoDataError ? (
+              <button
+                onClick={triggerDataRefresh}
+                className="primary-button"
+                disabled={triggeringRefresh}
+              >
+                {triggeringRefresh ? 'Fetching Data...' : 'Fetch Data Now'}
+              </button>
+            ) : (
+              <button onClick={() => window.location.reload()} className="primary-button">
+                Try Again
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -216,17 +270,26 @@ const StateReport = () => {
       {/* Data Status and Actions */}
       <div className="district-report-actions">
         <div className="district-report-status">
-          <span className="district-report-dot"></span>
-          {metadata?.source === 'fallback' ? (
-            <span className="status-warning">
-              Sample Data • MCP Unavailable • <button onClick={handleRefresh} className="retry-link">Retry</button>
-            </span>
-          ) : (
+          <span className={`district-report-dot ${metadata?.dataFreshness === 'stale' ? 'dot-stale' : ''}`}></span>
+          {metadata?.source === 'real_data' ? (
             <span>
-              Live Data • Last updated {formatTimestamp(metadata?.generatedAt)} •
+              {metadata?.dataFreshness === 'stale' ? (
+                <span className="status-warning">Cached Data</span>
+              ) : (
+                <span className="status-fresh">Live Data</span>
+              )}
+              {' '} • Last updated {formatTimestamp(metadata?.generatedAt)}
+              {metadata?.sources?.length > 0 && (
+                <span className="data-sources"> • Sources: {metadata.sources.join(', ')}</span>
+              )}
+              {' '} •
               <button onClick={handleRefresh} className="retry-link" disabled={refreshing}>
                 {refreshing ? 'Refreshing...' : 'Refresh'}
               </button>
+            </span>
+          ) : (
+            <span className="status-warning">
+              Sample Data • <button onClick={handleRefresh} className="retry-link">Retry</button>
             </span>
           )}
         </div>
@@ -328,6 +391,12 @@ const StateReport = () => {
               <div className="district-report-metric-change" style={{ color: metric.color }}>
                 {metric.change}
               </div>
+              {metric.source && (
+                <div className="district-report-metric-source">
+                  Source: {metric.source}
+                  {metric.isStale && <span className="stale-indicator"> (older data)</span>}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -339,6 +408,20 @@ const StateReport = () => {
         <div className="district-report-trends-grid">
           {data.trendData?.map((trend, index) => {
             if (!trend.data || trend.data.length === 0) return null;
+
+            // Calculate dynamic scaling based on actual data values
+            const values = trend.data.map(p => p.value);
+            const maxValue = Math.max(...values);
+            const minValue = Math.min(...values);
+            const range = maxValue - minValue || 1;
+            const padding = range * 0.1; // 10% padding
+            const adjustedMin = minValue - padding;
+            const adjustedMax = maxValue + padding;
+            const adjustedRange = adjustedMax - adjustedMin || 1;
+
+            // Helper to calculate Y position (inverted for SVG)
+            const getY = (value) => 100 - ((value - adjustedMin) / adjustedRange) * 80;
+
             return (
             <div key={index} className="district-report-trend-card">
               <h3 className="district-report-trend-title">{trend.title}</h3>
@@ -351,43 +434,43 @@ const StateReport = () => {
                       <stop offset="100%" stopColor={trend.data[trend.data.length-1].color} stopOpacity="0.1"/>
                     </linearGradient>
                   </defs>
-                  
+
                   {/* Grid lines */}
                   <line x1="0" y1="20" x2="300" y2="20" stroke="#e5e7eb" strokeWidth="1"/>
                   <line x1="0" y1="40" x2="300" y2="40" stroke="#e5e7eb" strokeWidth="1"/>
                   <line x1="0" y1="60" x2="300" y2="60" stroke="#e5e7eb" strokeWidth="1"/>
                   <line x1="0" y1="80" x2="300" y2="80" stroke="#e5e7eb" strokeWidth="1"/>
                   <line x1="0" y1="100" x2="300" y2="100" stroke="#e5e7eb" strokeWidth="1"/>
-                  
+
                   {/* Area under the line */}
-                  <path 
-                    d={`M 0,${100 - (trend.data[0].value / 1200) * 80} ${trend.data.map((point, i) => `L ${(i * 60) + 30},${100 - (point.value / 1200) * 80}`).join(' ')} L 270,100 L 0,100 Z`}
-                    fill="url(#gradient-${index})"
+                  <path
+                    d={`M 0,${getY(trend.data[0].value)} ${trend.data.map((point, i) => `L ${(i * 60) + 30},${getY(point.value)}`).join(' ')} L 270,100 L 0,100 Z`}
+                    fill={`url(#gradient-${index})`}
                   />
-                  
+
                   {/* Line path */}
-                  <path 
-                    d={`M 0,${100 - (trend.data[0].value / 1200) * 80} ${trend.data.map((point, i) => `L ${(i * 60) + 30},${100 - (point.value / 1200) * 80}`).join(' ')}`}
+                  <path
+                    d={`M 0,${getY(trend.data[0].value)} ${trend.data.map((point, i) => `L ${(i * 60) + 30},${getY(point.value)}`).join(' ')}`}
                     stroke={trend.data[trend.data.length-1].color}
                     strokeWidth="3"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  
+
                   {/* Data points */}
                   {trend.data.map((point, i) => (
                     <circle
                       key={i}
                       cx={(i * 60) + 30}
-                      cy={100 - (point.value / 1200) * 80}
+                      cy={getY(point.value)}
                       r="4"
                       fill={point.color}
                       stroke="white"
                       strokeWidth="2"
                     />
                   ))}
-                  
+
                   {/* Month labels */}
                   {trend.data.map((point, i) => (
                     <text
