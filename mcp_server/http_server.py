@@ -32,6 +32,12 @@ from apis.gemini_api import GeminiAPIClient
 from apis.yfinance_api import YFinanceAPIClient
 from apis.websearch_api import WebSearchAPIClient
 from apis.openai_api import OpenAIAPIClient
+# State report API clients
+from apis.bls_api import BLSAPIClient
+from apis.fred_api import FREDAPIClient
+from apis.eia_api import EIAAPIClient
+from apis.housing_api import HUDAPIClient
+from apis.usda_api import USDAAPIClient
 from intelligent_chat import IntelligentChatHandler
 from intelligent_chat_v2 import IntelligentChatHandlerV2
 
@@ -90,6 +96,13 @@ yfinance_client = YFinanceAPIClient()
 websearch_client = WebSearchAPIClient()
 openai_client = OpenAIAPIClient()  # Will use OPENAI_API_KEY from env
 
+# Initialize state report API clients
+bls_client = BLSAPIClient(config.apis["bls"])
+fred_client = FREDAPIClient(config.apis["fred"])
+eia_client = EIAAPIClient(config.apis["eia"])
+hud_client = HUDAPIClient(config.apis["hud"])
+usda_client = USDAAPIClient(config.apis["usda"])
+
 # Initialize intelligent chat handler (will be set up after AVAILABLE_TOOLS is defined)
 intelligent_chat_handler = None
 
@@ -125,6 +138,65 @@ class ChatRequest(BaseModel):
 class TitleRequest(BaseModel):
     """Model for title generation requests"""
     message: str = Field(..., description="The user message to generate a title from")
+
+# Helper function for comprehensive state data
+def get_comprehensive_state_data(state_name: str) -> Dict[str, Any]:
+    """Get comprehensive economic data for a state from all available sources"""
+    results = {
+        "state": state_name,
+        "status": "success",
+        "data": {},
+        "errors": []
+    }
+
+    # Unemployment
+    try:
+        results["data"]["unemployment"] = bls_client.get_unemployment_by_state(state_name)
+    except Exception as e:
+        results["errors"].append(f"BLS unemployment: {str(e)}")
+
+    # GDP
+    try:
+        results["data"]["gdp"] = fred_client.get_state_gdp(state_name)
+    except Exception as e:
+        results["errors"].append(f"FRED GDP: {str(e)}")
+
+    # Electricity prices
+    try:
+        results["data"]["electricity"] = eia_client.get_electricity_prices_by_state(state_name)
+    except Exception as e:
+        results["errors"].append(f"EIA electricity: {str(e)}")
+
+    # Gas prices
+    try:
+        results["data"]["gasoline"] = eia_client.get_gasoline_prices_by_region(state_name=state_name)
+    except Exception as e:
+        results["errors"].append(f"EIA gasoline: {str(e)}")
+
+    # Rent
+    try:
+        results["data"]["rent"] = hud_client.get_fmr_history(state_name)
+    except Exception as e:
+        results["errors"].append(f"HUD rent: {str(e)}")
+
+    # Income Limits & Affordability
+    try:
+        results["data"]["income_limits"] = hud_client.get_state_income_limits(state_name)
+    except Exception as e:
+        results["errors"].append(f"HUD income limits: {str(e)}")
+
+    try:
+        results["data"]["affordability"] = hud_client.get_affordability_analysis(state_name)
+    except Exception as e:
+        results["errors"].append(f"HUD affordability: {str(e)}")
+
+    # Food prices
+    try:
+        results["data"]["food"] = usda_client.get_state_food_prices(state_name)
+    except Exception as e:
+        results["errors"].append(f"USDA food: {str(e)}")
+
+    return results
 
 # Tool implementations
 AVAILABLE_TOOLS = {
@@ -251,6 +323,141 @@ AVAILABLE_TOOLS = {
         "handler": lambda params: yfinance_client.get_market_indices(),
         "description": "Get major market indices"
     },
+    # ===== STATE REPORT DATA TOOLS =====
+    # BLS (Bureau of Labor Statistics) Tools
+    "get_bls_unemployment_by_state": {
+        "handler": lambda params: bls_client.get_unemployment_by_state(
+            state_name=params.get("state_name"),
+            start_year=params.get("start_year", "2023"),
+            end_year=params.get("end_year", "2024")
+        ),
+        "description": "Get state unemployment rate from Bureau of Labor Statistics"
+    },
+    "get_bls_cpi_for_state": {
+        "handler": lambda params: bls_client.get_regional_cpi_for_state(
+            state_name=params.get("state_name"),
+            start_year=params.get("start_year", "2023"),
+            end_year=params.get("end_year", "2024")
+        ),
+        "description": "Get regional Consumer Price Index for a state from BLS"
+    },
+    "get_bls_wages_by_state": {
+        "handler": lambda params: bls_client.get_average_wages_by_state(
+            state_name=params.get("state_name"),
+            start_year=params.get("start_year", "2022"),
+            end_year=params.get("end_year", "2023")
+        ),
+        "description": "Get average weekly wages for a state from BLS QCEW data"
+    },
+    # FRED (Federal Reserve Economic Data) Tools
+    "get_fred_state_gdp": {
+        "handler": lambda params: fred_client.get_state_gdp(
+            state_name=params.get("state_name")
+        ),
+        "description": "Get state GDP from Federal Reserve Economic Data (FRED)"
+    },
+    "get_fred_state_personal_income": {
+        "handler": lambda params: fred_client.get_state_personal_income(
+            state_name=params.get("state_name")
+        ),
+        "description": "Get state per capita personal income from FRED"
+    },
+    "get_fred_state_unemployment": {
+        "handler": lambda params: fred_client.get_state_unemployment_rate(
+            state_name=params.get("state_name")
+        ),
+        "description": "Get state unemployment rate from FRED"
+    },
+    "get_fred_series": {
+        "handler": lambda params: fred_client.get_series_data(
+            series_id=params.get("series_id"),
+            observation_start=params.get("observation_start"),
+            observation_end=params.get("observation_end")
+        ),
+        "description": "Get any FRED economic data series by ID"
+    },
+    # EIA (Energy Information Administration) Tools
+    "get_electricity_prices_by_state": {
+        "handler": lambda params: eia_client.get_electricity_prices_by_state(
+            state_name=params.get("state_name"),
+            sector=params.get("sector", "RES")
+        ),
+        "description": "Get electricity prices for a state from EIA (sectors: RES, COM, IND)"
+    },
+    "get_gasoline_prices_by_state": {
+        "handler": lambda params: eia_client.get_gasoline_prices_by_region(
+            state_name=params.get("state_name")
+        ),
+        "description": "Get gasoline prices for a state's region from EIA"
+    },
+    "get_natural_gas_prices_by_state": {
+        "handler": lambda params: eia_client.get_natural_gas_prices_by_state(
+            state_name=params.get("state_name"),
+            sector=params.get("sector", "RES")
+        ),
+        "description": "Get natural gas prices for a state from EIA"
+    },
+    # HUD (Housing and Urban Development) Tools
+    "get_hud_fair_market_rent": {
+        "handler": lambda params: hud_client.get_state_fmr(
+            state_name=params.get("state_name"),
+            year=params.get("year")
+        ),
+        "description": "Get HUD Fair Market Rent data for a state"
+    },
+    "get_hud_rent_history": {
+        "handler": lambda params: hud_client.get_fmr_history(
+            state_name=params.get("state_name"),
+            years=params.get("years", 5)
+        ),
+        "description": "Get historical HUD Fair Market Rent data for trend analysis"
+    },
+    "get_hud_income_limits": {
+        "handler": lambda params: hud_client.get_state_income_limits(
+            state_name=params.get("state_name"),
+            year=params.get("year")
+        ),
+        "description": "Get HUD Income Limits data for a state"
+    },
+    "get_hud_affordability_analysis": {
+        "handler": lambda params: hud_client.get_affordability_analysis(
+            state_name=params.get("state_name"),
+            year=params.get("year")
+        ),
+        "description": "Get housing affordability analysis combining FMR and Income Limits"
+    },
+    "get_hud_chas_data": {
+        "handler": lambda params: hud_client.get_state_chas(
+            state_name=params.get("state_name"),
+            year=params.get("year")
+        ),
+        "description": "Get HUD CHAS data showing cost-burdened households"
+    },
+    "get_hud_housing_summary": {
+        "handler": lambda params: hud_client.get_housing_summary(
+            state_name=params.get("state_name"),
+            year=params.get("year")
+        ),
+        "description": "Get comprehensive housing summary combining FMR, Income Limits, and affordability"
+    },
+    # USDA (Food Prices) Tools
+    "get_usda_food_prices": {
+        "handler": lambda params: usda_client.get_state_food_prices(
+            state_name=params.get("state_name")
+        ) if params.get("state_name") else usda_client.get_food_price_cpi(),
+        "description": "Get USDA food price data, optionally adjusted for a state"
+    },
+    "get_usda_grocery_basket": {
+        "handler": lambda params: usda_client.get_grocery_basket_comparison(
+            state_name=params.get("state_name")
+        ),
+        "description": "Get grocery basket cost comparison for a state vs national average"
+    },
+    # Comprehensive State Economic Data
+    "get_state_economic_data": {
+        "handler": lambda params: get_comprehensive_state_data(params.get("state_name")),
+        "description": "Get comprehensive economic data for a state from all available sources"
+    },
 }
 
 # Initialize intelligent chat handlers
@@ -293,6 +500,12 @@ async def health_check():
             "federal_register": True,  # No API key required
             "gnews_api": config.apis["gnews"].api_key is not None,
             "gemini_api": config.apis["gemini"].api_key is not None,
+            # State report APIs
+            "bls_api": config.apis["bls"].api_key is not None,
+            "fred_api": config.apis["fred"].api_key is not None,
+            "eia_api": config.apis["eia"].api_key is not None,
+            "hud_api": config.apis["hud"].token is not None,
+            "usda_api": True,  # USDA key is optional, uses fallback data
         }
     }
 
@@ -620,10 +833,11 @@ async def mcp_info():
         "server_name": "Trade & Tariff Analysis Server",
         "capabilities": {
             "tools": len(AVAILABLE_TOOLS),
-            "apis": ["BEA", "Census", "USITC", "Federal Register", "GNews", "Gemini"],
+            "apis": ["BEA", "Census", "USITC", "Federal Register", "GNews", "Gemini", "BLS", "FRED", "EIA", "HUD", "USDA"],
             "streaming": True,
             "http_endpoints": True,
-            "intelligent_chat": True
+            "intelligent_chat": True,
+            "state_reports": True
         }
     }
 
