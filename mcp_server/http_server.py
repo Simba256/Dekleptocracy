@@ -111,6 +111,7 @@ class ToolRequest(BaseModel):
     """Model for tool execution requests"""
     tool_name: str = Field(..., description="Name of the tool to execute")
     parameters: Dict[str, Any] = Field(default={}, description="Tool parameters")
+    arguments: Dict[str, Any] = Field(default={}, description="Tool arguments (alias for parameters)")
 
 class ToolResponse(BaseModel):
     """Model for tool execution responses"""
@@ -531,9 +532,12 @@ async def execute_tool(request: ToolRequest):
 
         tool = AVAILABLE_TOOLS[request.tool_name]
 
+        # Use arguments if provided, otherwise use parameters (for backwards compatibility)
+        raw_params = request.arguments if request.arguments else request.parameters
+
         # Validate and sanitize inputs
         sanitized_params = {}
-        for key, value in request.parameters.items():
+        for key, value in raw_params.items():
             if isinstance(value, str):
                 sanitized_params[key] = sanitize_input(value)
             else:
