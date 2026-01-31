@@ -232,11 +232,15 @@ class BLSAPIClient(BaseAPIClient):
 
             processed_data = []
             for point in data_points:
+                # Handle "-" which means data unavailable
+                raw_value = point.get("value", 0)
+                if raw_value == "-" or raw_value is None:
+                    continue  # Skip unavailable data points
                 processed_data.append({
                     "year": point.get("year"),
                     "period": point.get("period"),
                     "periodName": point.get("periodName"),
-                    "value": float(point.get("value", 0))
+                    "value": float(raw_value)
                 })
 
             processed_data.sort(key=lambda x: (x["year"], x["period"]))
@@ -327,11 +331,15 @@ class BLSAPIClient(BaseAPIClient):
 
             processed_data = []
             for point in data_points:
+                # Handle "-" which means data unavailable
+                raw_value = point.get("value", 0)
+                if raw_value == "-" or raw_value is None:
+                    continue  # Skip unavailable data points
                 processed_data.append({
                     "year": point.get("year"),
                     "period": point.get("period"),
                     "periodName": point.get("periodName"),
-                    "value": float(point.get("value", 0))
+                    "value": float(raw_value)
                 })
 
             processed_data.sort(key=lambda x: (x["year"], x["period"]))
