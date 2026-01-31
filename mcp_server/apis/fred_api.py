@@ -109,6 +109,10 @@ class FREDAPIClient(BaseAPIClient):
             return {"status": "error", "error": result.get("error", "API request failed")}
 
         try:
+            # Handle case where API returns non-JSON response
+            if not isinstance(result["data"], dict):
+                return {"status": "error", "error": f"Invalid API response: {str(result['data'])[:200]}"}
+
             observations = result["data"].get("observations", [])
 
             # Process observations

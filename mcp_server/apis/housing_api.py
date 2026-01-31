@@ -111,6 +111,10 @@ class HUDAPIClient(BaseAPIClient):
         try:
             data = result["data"]
 
+            # Handle non-JSON responses
+            if isinstance(data, str):
+                return {"status": "error", "error": f"Invalid API response: {data[:200]}"}
+
             if isinstance(data, dict) and data.get("error"):
                 return {"status": "error", "error": data.get("error")}
 
