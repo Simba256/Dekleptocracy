@@ -271,9 +271,21 @@ const DATA_TYPES = [
 async function refreshDataType(stateName, dataConfig) {
   try {
     const args = { state_name: stateName, ...(dataConfig.args || {}) };
-    const result = await executeMCPTool(dataConfig.tool, args);
+    const mcpResponse = await executeMCPTool(dataConfig.tool, args);
 
-    if (result.status === 'success') {
+    // MCP server returns: { success: bool, result: {...}, error: string|null, timestamp: string }
+    // The actual API result is nested inside mcpResponse.result
+    if (!mcpResponse.success) {
+      const errorMsg = mcpResponse.error || 'MCP request failed';
+      logger.warn(`MCP call failed for ${dataConfig.type} in ${stateName}: ${errorMsg}`);
+      await StateDataCache.markError(stateName, dataConfig.type, errorMsg);
+      return false;
+    }
+
+    const result = mcpResponse.result;
+
+    // Check the actual API result status
+    if (result?.status === 'success') {
       const processedResult = dataConfig.processResult(result);
 
       await StateDataCache.upsertData(
@@ -286,8 +298,9 @@ async function refreshDataType(stateName, dataConfig) {
       logger.info(`Refreshed ${dataConfig.type} data for ${stateName}`);
       return true;
     } else {
-      logger.warn(`Failed to fetch ${dataConfig.type} for ${stateName}: ${result.error}`);
-      await StateDataCache.markError(stateName, dataConfig.type, result.error);
+      const errorMsg = result?.error || 'API returned non-success status';
+      logger.warn(`Failed to fetch ${dataConfig.type} for ${stateName}: ${errorMsg}`);
+      await StateDataCache.markError(stateName, dataConfig.type, errorMsg);
       return false;
     }
   } catch (error) {
