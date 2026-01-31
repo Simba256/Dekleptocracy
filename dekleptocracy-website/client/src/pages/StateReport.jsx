@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { API_URL } from '../utils/apiUrl';
 import './StateReport.css';
 
 const StateReport = () => {
@@ -10,7 +11,6 @@ const StateReport = () => {
   const name = searchParams.get('name') || 'California Resident';
   const stateName = searchParams.get('state') || 'California';
   const role = searchParams.get('role') || 'VOTER';
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const [reportData, setReportData] = useState(null);
   const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +57,8 @@ const StateReport = () => {
   const triggerDataRefresh = async () => {
     if (triggeringRefresh) return;
     setTriggeringRefresh(true);
+    setError(null);
+
     try {
       const response = await fetch(`${API_URL}/api/reports/state/refresh`, {
         method: 'POST',
@@ -64,15 +66,45 @@ const StateReport = () => {
         body: JSON.stringify({ state: stateName })
       });
       const data = await response.json();
+
       if (data.success) {
-        // Reload the report after refresh
-        window.location.reload();
+        if (data.status === 'in_progress') {
+          // Data refresh started in background - poll for completion
+          setError(`Data collection started for ${stateName}. This usually takes 30-60 seconds. The page will reload automatically when data is ready.`);
+          setErrorCode('REFRESHING');
+
+          // Poll for data availability every 10 seconds
+          let attempts = 0;
+          const maxAttempts = 12; // 2 minutes max
+          const pollInterval = setInterval(async () => {
+            attempts++;
+            try {
+              const checkResponse = await fetch(
+                `${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}`
+              );
+              if (checkResponse.ok) {
+                clearInterval(pollInterval);
+                window.location.reload();
+              } else if (attempts >= maxAttempts) {
+                clearInterval(pollInterval);
+                setError('Data collection is taking longer than expected. Please try reloading the page manually.');
+                setErrorCode('NO_DATA_AVAILABLE');
+                setTriggeringRefresh(false);
+              }
+            } catch (e) {
+              // Continue polling
+            }
+          }, 10000);
+        } else {
+          // Refresh completed immediately
+          window.location.reload();
+        }
       } else {
-        alert('Failed to refresh data. Please try again later.');
+        setError('Failed to refresh data. Please try again later.');
+        setTriggeringRefresh(false);
       }
     } catch (err) {
-      alert('Failed to refresh data: ' + err.message);
-    } finally {
+      setError('Failed to refresh data: ' + err.message);
       setTriggeringRefresh(false);
     }
   };
@@ -196,26 +228,38 @@ const StateReport = () => {
 
   if (error && !reportData) {
     const isNoDataError = errorCode === 'NO_DATA_AVAILABLE';
+    const isRefreshing = errorCode === 'REFRESHING';
+
     return (
       <div className="district-report-page">
         <div className="error-container">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {isNoDataError ? (
-              <>
-                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
-                <path d="M21 3v5h-5"/>
-              </>
-            ) : (
-              <>
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </>
-            )}
-          </svg>
-          <h2>{isNoDataError ? 'Data Not Yet Available' : 'Unable to Generate Report'}</h2>
+          {isRefreshing ? (
+            <div className="spinner"></div>
+          ) : (
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {isNoDataError ? (
+                <>
+                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+                  <path d="M21 3v5h-5"/>
+                </>
+              ) : (
+                <>
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </>
+              )}
+            </svg>
+          )}
+          <h2>
+            {isRefreshing
+              ? 'Collecting Data...'
+              : isNoDataError
+                ? 'Data Not Yet Available'
+                : 'Unable to Generate Report'}
+          </h2>
           <p>{error}</p>
-          {isNoDataError && (
+          {isNoDataError && !isRefreshing && (
             <p className="error-subtext">
               Government data needs to be fetched first. Click below to start collecting data for {stateName}.
             </p>
@@ -224,7 +268,7 @@ const StateReport = () => {
             <button onClick={() => navigate('/')} className="secondary-button">
               Go Home
             </button>
-            {isNoDataError ? (
+            {isNoDataError && !isRefreshing ? (
               <button
                 onClick={triggerDataRefresh}
                 className="primary-button"
@@ -232,7 +276,7 @@ const StateReport = () => {
               >
                 {triggeringRefresh ? 'Fetching Data...' : 'Fetch Data Now'}
               </button>
-            ) : (
+            ) : !isRefreshing && (
               <button onClick={() => window.location.reload()} className="primary-button">
                 Try Again
               </button>

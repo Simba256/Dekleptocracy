@@ -85,9 +85,10 @@ router.get('/state/data-status', async (req, res) => {
 /**
  * POST /api/reports/state/refresh
  * Manually trigger data refresh for a state
+ * Starts the refresh in background and returns immediately
  */
 router.post('/state/refresh', async (req, res) => {
-  const { state } = req.body;
+  const { state, waitForCompletion } = req.body;
 
   if (!state) {
     return res.status(400).json({
@@ -97,12 +98,25 @@ router.post('/state/refresh', async (req, res) => {
   }
 
   try {
-    const result = await triggerStateRefresh(state);
+    // If waitForCompletion is true, wait for the refresh (for backwards compatibility)
+    if (waitForCompletion) {
+      const result = await triggerStateRefresh(state);
+      return res.json({
+        success: true,
+        message: `Data refresh completed for ${state}`,
+        result
+      });
+    }
+
+    // Otherwise, start refresh in background and return immediately
+    triggerStateRefresh(state)
+      .then(result => console.log(`Background refresh completed for ${state}:`, result))
+      .catch(err => console.error(`Background refresh failed for ${state}:`, err));
 
     res.json({
       success: true,
-      message: `Data refresh completed for ${state}`,
-      result
+      message: `Data refresh started for ${state}. Please wait 30-60 seconds and reload the page.`,
+      status: 'in_progress'
     });
   } catch (error) {
     res.status(500).json({

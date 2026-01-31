@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthenticated, logout } from '../utils/auth';
+import { API_URL } from '../utils/apiUrl';
 import './Navbar.css';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Navbar = () => {
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);

@@ -7,13 +7,20 @@ import logger from '../utils/logger.js';
 
 const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'http://localhost:8000';
 
+// Default timeout for MCP tool execution (30 seconds)
+const DEFAULT_TOOL_TIMEOUT = 30000;
+
 /**
  * Execute a tool on the MCP server
  * @param {string} toolName - Name of the tool to execute
  * @param {object} args - Arguments for the tool
+ * @param {number} timeout - Timeout in milliseconds (default 30s)
  * @returns {Promise<object>} Tool execution result
  */
-export async function executeMCPTool(toolName, args = {}) {
+export async function executeMCPTool(toolName, args = {}, timeout = DEFAULT_TOOL_TIMEOUT) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
   try {
     const response = await fetch(`${MCP_SERVER_URL}/execute`, {
       method: 'POST',
@@ -23,8 +30,11 @@ export async function executeMCPTool(toolName, args = {}) {
       body: JSON.stringify({
         tool_name: toolName,
         arguments: args
-      })
+      }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`MCP server returned ${response.status}: ${response.statusText}`);
@@ -34,6 +44,11 @@ export async function executeMCPTool(toolName, args = {}) {
     return data;
 
   } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      logger.error(`MCP tool execution timed out after ${timeout}ms: ${toolName}`, null, { toolName, args });
+      throw new Error(`MCP tool execution timed out: ${toolName}`);
+    }
     logger.error(`Error executing MCP tool: ${toolName}`, error, { toolName, args });
     throw error;
   }

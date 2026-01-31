@@ -1,4 +1,5 @@
 // Authentication utilities
+import { getApiUrl } from './apiUrl';
 
 /**
  * Decode a JWT token without verification (client-side only)
@@ -107,7 +108,7 @@ export const verifyToken = async () => {
     return false;
   }
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_URL = getApiUrl();
   
   try {
     const response = await fetch(`${API_URL}/api/auth/verify`, {

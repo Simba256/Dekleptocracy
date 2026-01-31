@@ -140,7 +140,10 @@ const Chatbot = () => {
 
   // MCP Server URL - uses environment variable in production, localhost in development
   const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8000';
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  // Import API_URL from shared utility for consistent production/development handling
+  const API_URL = (typeof window !== 'undefined' && window.location.hostname !== 'localhost')
+    ? (import.meta.env.VITE_API_URL_PRODUCTION || 'https://node-server-production-7f39.up.railway.app')
+    : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
 
   // Check authentication on mount - optimized for speed
   useEffect(() => {
@@ -252,9 +255,12 @@ How can I help you today?`;
   useEffect(() => {
     if (location.state?.initialQuery && !hasSubmittedInitialQuery.current) {
       hasSubmittedInitialQuery.current = true;
-      submitMessage(location.state.initialQuery);
+      const query = location.state.initialQuery;
+      // Clear the location state to prevent resubmission on page reload
+      navigate(location.pathname, { replace: true, state: {} });
+      submitMessage(query);
     }
-  }, [location.state]);
+  }, [location.state, navigate, location.pathname]);
 
   // Save current chat to history after messages change
   useEffect(() => {

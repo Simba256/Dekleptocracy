@@ -2,10 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loadGoogleScript, handleGoogleSignIn } from '../utils/googleAuth';
 import { clearPreferences, loadPreferences } from '../utils/preferences';
+import { API_URL } from '../utils/apiUrl';
 import './CreateAccount.css';
-
-// Use proxy in development, or full URL in production
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '';
 
 // Debug: Log environment variables (remove in production)

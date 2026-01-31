@@ -1,23 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { loadGoogleScript, handleGoogleSignIn } from '../utils/googleAuth';
+import { API_URL } from '../utils/apiUrl';
 import './Login.css';
-
-// Use proxy in development, or full URL in production
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '';
 
-// Debug: Log environment variables
-console.log('🔧 [Login] Environment configuration:', {
-  mode: import.meta.env.MODE,
-  isDev: import.meta.env.DEV,
-  isProd: import.meta.env.PROD,
-  API_URL: API_URL,
-  VITE_API_URL: import.meta.env.VITE_API_URL,
-  GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? `${GOOGLE_CLIENT_ID.substring(0, 30)}...` : 'NOT SET',
-  hasGoogleClientId: !!GOOGLE_CLIENT_ID,
-  allViteEnvKeys: Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'))
-});
+// Debug: Log environment variables (only in development)
+if (import.meta.env.DEV) {
+  console.log('🔧 [Login] Environment configuration:', {
+    mode: import.meta.env.MODE,
+    API_URL: API_URL,
+    GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? `${GOOGLE_CLIENT_ID.substring(0, 30)}...` : 'NOT SET',
+  });
+}
 
 const Login = () => {
   const navigate = useNavigate();

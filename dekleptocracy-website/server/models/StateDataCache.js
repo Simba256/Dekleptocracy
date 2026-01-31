@@ -146,10 +146,11 @@ stateDataCacheSchema.statics.getLatestData = async function(state, dataType) {
  * Static method to get all cached data for a state
  */
 stateDataCacheSchema.statics.getAllStateData = async function(state) {
+  // These data types match what stateDataScheduler actually fetches
   const dataTypes = [
-    'unemployment', 'cpi', 'wages', 'gdp', 'personal_income',
-    'electricity_prices', 'gas_prices', 'natural_gas_prices',
-    'rent', 'food_prices', 'grocery_basket'
+    'unemployment', 'electricity_prices', 'gas_prices', 'rent',
+    'food_prices', 'grocery_basket', 'gdp', 'personal_income',
+    'income_limits', 'affordability'
   ];
 
   const results = {};

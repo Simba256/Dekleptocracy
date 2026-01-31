@@ -388,24 +388,20 @@ export async function generateStateReportData(stateName = 'California', role = '
     // Fetch cached data for the state
     let cachedData = await fetchStateDataFromCache(stateName);
 
-    // If no data available, try to trigger a refresh
+    // If no data available, start a background refresh but don't wait for it
     if (cachedData.availableDataCount === 0) {
-      logger.warn(`No cached data for ${stateName}, attempting refresh...`);
+      logger.warn(`No cached data for ${stateName}, triggering background refresh...`);
 
       const isHealthy = await checkMCPHealth();
       if (isHealthy) {
-        try {
-          await refreshStateData(stateName);
-          cachedData = await fetchStateDataFromCache(stateName);
-        } catch (refreshError) {
-          logger.error('Failed to refresh state data', refreshError);
-        }
+        // Start refresh in background - don't await
+        refreshStateData(stateName)
+          .then(() => logger.info(`Background refresh completed for ${stateName}`))
+          .catch(err => logger.error(`Background refresh failed for ${stateName}`, err));
       }
-    }
 
-    // If still no data, return an error - do NOT return fake data
-    if (cachedData.availableDataCount === 0) {
-      const error = new Error(`No real data available for ${stateName}. Please try again later.`);
+      // Return immediately with NO_DATA_AVAILABLE - don't block the request
+      const error = new Error(`No real data available for ${stateName}. Data collection has been started. Please try again in a minute.`);
       error.code = 'NO_DATA_AVAILABLE';
       throw error;
     }
