@@ -206,8 +206,8 @@ class BLSAPIClient(BaseAPIClient):
         if not fips:
             return {"status": "error", "error": f"Unknown state: {state_name}"}
 
-        # LAUS series format: LASST{FIPS}0000000003 for unemployment rate
-        series_id = f"LASST{fips}0000000003"
+        # LAUS series format: LASST{FIPS}0000000000003 for unemployment rate (21 chars total)
+        series_id = f"LASST{fips}0000000000003"
 
         result = self._make_bls_request([series_id], start_year, end_year)
 
