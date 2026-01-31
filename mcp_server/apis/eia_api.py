@@ -107,8 +107,8 @@ class EIAAPIClient(BaseAPIClient):
             return {"status": "error", "error": f"Unknown state: {state_name}"}
 
         # EIA v2 endpoint for electricity prices
-        # Route: electricity/retail-sales
-        route = "electricity/retail-sales"
+        # Route: electricity/retail-sales/data (must include /data suffix)
+        route = "electricity/retail-sales/data"
 
         params = {
             "frequency": "monthly",
@@ -226,7 +226,7 @@ class EIAAPIClient(BaseAPIClient):
         }
 
         if padd != "US":
-            params["facets[duession][]"] = f"R{padd}0"  # Regional code format
+            params["facets[duoarea][]"] = f"R{padd}0"  # Regional PADD code format
 
         result = self._make_eia_request(route, params)
 
@@ -395,7 +395,7 @@ class EIAAPIClient(BaseAPIClient):
     @cache_result(ttl=3600)
     def get_national_electricity_price(self, sector: str = "RES") -> Dict[str, Any]:
         """Get national average electricity price for comparison"""
-        route = "electricity/retail-sales"
+        route = "electricity/retail-sales/data"
 
         params = {
             "frequency": "monthly",

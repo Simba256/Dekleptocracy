@@ -66,7 +66,8 @@ class HUDAPIClient(BaseAPIClient):
         """Make a request to HUD API with proper headers"""
         headers = {
             "Authorization": f"Bearer {self.token or self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Accept": "application/json"  # HUD API requires this header
         }
 
         result = self._make_request(endpoint, params=params, headers=headers)
