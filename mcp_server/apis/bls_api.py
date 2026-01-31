@@ -117,6 +117,10 @@ class BLSAPIClient(BaseAPIClient):
 
         try:
             data = result["data"]
+            # Handle case where API returns non-JSON response
+            if not isinstance(data, dict):
+                return {"status": "error", "error": f"Invalid API response: {str(data)[:200]}"}
+
             if data.get("status") != "REQUEST_SUCCEEDED":
                 return {"status": "error", "error": data.get("message", "BLS request failed")}
 
@@ -202,6 +206,10 @@ class BLSAPIClient(BaseAPIClient):
 
         try:
             data = result["data"]
+            # Handle case where API returns non-JSON response
+            if not isinstance(data, dict):
+                return {"status": "error", "error": f"Invalid API response: {str(data)[:200]}"}
+
             if data.get("status") != "REQUEST_SUCCEEDED":
                 return {"status": "error", "error": data.get("message", "BLS request failed")}
 

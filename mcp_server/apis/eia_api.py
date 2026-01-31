@@ -126,6 +126,10 @@ class EIAAPIClient(BaseAPIClient):
             return {"status": "error", "error": result.get("error", "EIA API request failed")}
 
         try:
+            # Handle case where API returns non-JSON response
+            if not isinstance(result["data"], dict):
+                return {"status": "error", "error": f"Invalid API response: {str(result['data'])[:200]}"}
+
             response = result["data"].get("response", {})
             data_points = response.get("data", [])
 
@@ -230,6 +234,10 @@ class EIAAPIClient(BaseAPIClient):
             return {"status": "error", "error": result.get("error", "EIA API request failed")}
 
         try:
+            # Handle case where API returns non-JSON response
+            if not isinstance(result["data"], dict):
+                return {"status": "error", "error": f"Invalid API response: {str(result['data'])[:200]}"}
+
             response = result["data"].get("response", {})
             data_points = response.get("data", [])
 
@@ -327,6 +335,10 @@ class EIAAPIClient(BaseAPIClient):
             return {"status": "error", "error": result.get("error", "EIA API request failed")}
 
         try:
+            # Handle case where API returns non-JSON response
+            if not isinstance(result["data"], dict):
+                return {"status": "error", "error": f"Invalid API response: {str(result['data'])[:200]}"}
+
             response = result["data"].get("response", {})
             data_points = response.get("data", [])
 
@@ -401,6 +413,10 @@ class EIAAPIClient(BaseAPIClient):
             return {"status": "error", "error": result.get("error", "EIA API request failed")}
 
         try:
+            # Handle case where API returns non-JSON response
+            if not isinstance(result["data"], dict):
+                return {"status": "error", "error": f"Invalid API response: {str(result['data'])[:200]}"}
+
             response = result["data"].get("response", {})
             data_points = response.get("data", [])
 
@@ -452,6 +468,10 @@ class EIAAPIClient(BaseAPIClient):
             return {"status": "error", "error": result.get("error", "EIA API request failed")}
 
         try:
+            # Handle case where API returns non-JSON response
+            if not isinstance(result["data"], dict):
+                return {"status": "error", "error": f"Invalid API response: {str(result['data'])[:200]}"}
+
             response = result["data"].get("response", {})
             data_points = response.get("data", [])
 
