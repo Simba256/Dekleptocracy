@@ -329,24 +329,24 @@ AVAILABLE_TOOLS = {
     "get_bls_unemployment_by_state": {
         "handler": lambda params: bls_client.get_unemployment_by_state(
             state_name=params.get("state_name"),
-            start_year=params.get("start_year", "2023"),
-            end_year=params.get("end_year", "2024")
+            start_year=params.get("start_year"),  # Defaults to dynamic year in API client
+            end_year=params.get("end_year")
         ),
         "description": "Get state unemployment rate from Bureau of Labor Statistics"
     },
     "get_bls_cpi_for_state": {
         "handler": lambda params: bls_client.get_regional_cpi_for_state(
             state_name=params.get("state_name"),
-            start_year=params.get("start_year", "2023"),
-            end_year=params.get("end_year", "2024")
+            start_year=params.get("start_year"),
+            end_year=params.get("end_year")
         ),
         "description": "Get regional Consumer Price Index for a state from BLS"
     },
     "get_bls_wages_by_state": {
         "handler": lambda params: bls_client.get_average_wages_by_state(
             state_name=params.get("state_name"),
-            start_year=params.get("start_year", "2022"),
-            end_year=params.get("end_year", "2023")
+            start_year=params.get("start_year"),
+            end_year=params.get("end_year")
         ),
         "description": "Get average weekly wages for a state from BLS QCEW data"
     },

@@ -93,9 +93,14 @@ class BLSAPIClient(BaseAPIClient):
     def get_cpi_data(
         self,
         series_id: str,
-        start_year: str = "2023",
-        end_year: str = "2024"
+        start_year: str = None,
+        end_year: str = None
     ) -> Dict[str, Any]:
+        # Default to last 2 years of data
+        if not end_year:
+            end_year = str(datetime.now().year)
+        if not start_year:
+            start_year = str(int(end_year) - 1)
         """
         Get Consumer Price Index data from BLS.
 
@@ -178,9 +183,14 @@ class BLSAPIClient(BaseAPIClient):
     def get_unemployment_by_state(
         self,
         state_name: str,
-        start_year: str = "2023",
-        end_year: str = "2024"
+        start_year: str = None,
+        end_year: str = None
     ) -> Dict[str, Any]:
+        # Default to last 2 years of data
+        if not end_year:
+            end_year = str(datetime.now().year)
+        if not start_year:
+            start_year = str(int(end_year) - 1)
         """
         Get unemployment rate for a specific state.
 
@@ -269,9 +279,15 @@ class BLSAPIClient(BaseAPIClient):
     def get_average_wages_by_state(
         self,
         state_name: str,
-        start_year: str = "2022",
-        end_year: str = "2023"
+        start_year: str = None,
+        end_year: str = None
     ) -> Dict[str, Any]:
+        # Default to last 2 years of data
+        if not end_year:
+            end_year = str(datetime.now().year)
+        if not start_year:
+            start_year = str(int(end_year) - 1)
+
         """
         Get average weekly wages by state from QCEW data.
         Note: QCEW data is quarterly and has some lag.
@@ -356,8 +372,8 @@ class BLSAPIClient(BaseAPIClient):
     def get_regional_cpi_for_state(
         self,
         state_name: str,
-        start_year: str = "2023",
-        end_year: str = "2024"
+        start_year: str = None,
+        end_year: str = None
     ) -> Dict[str, Any]:
         """
         Get CPI data for the region containing a state.
@@ -365,8 +381,8 @@ class BLSAPIClient(BaseAPIClient):
 
         Args:
             state_name: Full state name
-            start_year: Start year
-            end_year: End year
+            start_year: Start year (defaults to current year - 1)
+            end_year: End year (defaults to current year)
 
         Returns:
             Dict with regional CPI data
@@ -387,8 +403,8 @@ class BLSAPIClient(BaseAPIClient):
 
     def get_national_cpi(
         self,
-        start_year: str = "2023",
-        end_year: str = "2024"
+        start_year: str = None,
+        end_year: str = None
     ) -> Dict[str, Any]:
         """Get national CPI data for comparison"""
         return self.get_cpi_data(BLS_REGIONS['US'], start_year, end_year)
