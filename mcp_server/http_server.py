@@ -156,11 +156,11 @@ def get_comprehensive_state_data(state_name: str) -> Dict[str, Any]:
     except Exception as e:
         results["errors"].append(f"BLS unemployment: {str(e)}")
 
-    # GDP
+    # GDP (using BEA instead of FRED to avoid Railway network blocking)
     try:
-        results["data"]["gdp"] = fred_client.get_state_gdp(state_name)
+        results["data"]["gdp"] = bea_client.get_state_gdp(state_name)
     except Exception as e:
-        results["errors"].append(f"FRED GDP: {str(e)}")
+        results["errors"].append(f"BEA GDP: {str(e)}")
 
     # Electricity prices
     try:
@@ -218,6 +218,18 @@ AVAILABLE_TOOLS = {
             frequency=params.get("frequency", "A")
         ),
         "description": "Analyze GDP by industry"
+    },
+    "get_bea_state_gdp": {
+        "handler": lambda params: bea_client.get_state_gdp(
+            state_name=params.get("state_name")
+        ),
+        "description": "Get state GDP from Bureau of Economic Analysis (BEA)"
+    },
+    "get_bea_state_personal_income": {
+        "handler": lambda params: bea_client.get_state_personal_income(
+            state_name=params.get("state_name")
+        ),
+        "description": "Get state per capita personal income from BEA"
     },
     "get_census_trade_data": {
         "handler": lambda params: census_client.get_trade_statistics(

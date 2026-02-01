@@ -170,10 +170,10 @@ const DATA_TYPES = [
   },
   {
     type: 'gdp',
-    tool: 'get_fred_state_gdp',
+    tool: 'get_bea_state_gdp',
     ttlHours: 168, // Weekly - GDP is quarterly
     processResult: (result) => ({
-      sourceApi: 'fred',
+      sourceApi: 'bea',
       rawData: result,
       processedData: {
         value: result.value,
@@ -188,15 +188,15 @@ const DATA_TYPES = [
         value: ts.value,
         label: ts.label
       })) || [],
-      metadata: { seriesId: result.series_id }
+      metadata: { source: result.source }
     })
   },
   {
     type: 'personal_income',
-    tool: 'get_fred_state_personal_income',
+    tool: 'get_bea_state_personal_income',
     ttlHours: 168,
     processResult: (result) => ({
-      sourceApi: 'fred',
+      sourceApi: 'bea',
       rawData: result,
       processedData: {
         value: result.value,
@@ -211,7 +211,7 @@ const DATA_TYPES = [
         value: ts.value,
         label: ts.label
       })) || [],
-      metadata: { seriesId: result.series_id }
+      metadata: { source: result.source }
     })
   },
   {
