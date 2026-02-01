@@ -9,6 +9,7 @@ import logger from '../utils/logger.js';
 import StateDataCache from '../models/StateDataCache.js';
 import { fetchNews, checkMCPHealth, executeMCPTool } from './mcpClient.js';
 import { refreshStateData } from './stateDataScheduler.js';
+import { analyzeTrends, getMetricTypeFromTitle } from './trendAnalyzer.js';
 
 /**
  * Fetch all cached data for a state
@@ -74,7 +75,7 @@ function buildComparisonCards(stateData, stateName) {
 }
 
 /**
- * Build key metrics from real data
+ * Build key metrics from real data with trend analysis
  */
 function buildKeyMetrics(stateData, stateName) {
   const metrics = [];
@@ -83,6 +84,8 @@ function buildKeyMetrics(stateData, stateName) {
   const unemployment = stateData.unemployment;
   if (unemployment?.processedData) {
     const isNegative = unemployment.processedData.change > 0; // Higher unemployment is bad
+    const currentValue = parseFloat(unemployment.processedData.value) || null;
+    const analysis = analyzeTrends(unemployment.timeSeries, 'unemployment', currentValue);
     metrics.push({
       title: 'Unemployment Rate',
       value: unemployment.processedData.displayValue,
@@ -90,7 +93,10 @@ function buildKeyMetrics(stateData, stateName) {
       color: isNegative ? '#FF6B5A' : '#4A5D3F',
       source: 'BLS',
       isRealData: true,
-      isStale: unemployment.isStale
+      isStale: unemployment.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -98,6 +104,8 @@ function buildKeyMetrics(stateData, stateName) {
   const rent = stateData.rent;
   if (rent?.processedData) {
     const isNegative = rent.processedData.change > 0; // Higher rent is bad for consumers
+    const currentValue = parseFloat(rent.processedData.value) || null;
+    const analysis = analyzeTrends(rent.timeSeries, 'rent', currentValue);
     metrics.push({
       title: 'Average Monthly Rent',
       value: rent.processedData.displayValue,
@@ -105,7 +113,10 @@ function buildKeyMetrics(stateData, stateName) {
       color: isNegative ? '#FF6B5A' : '#4A5D3F',
       source: 'HUD',
       isRealData: true,
-      isStale: rent.isStale
+      isStale: rent.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -113,6 +124,8 @@ function buildKeyMetrics(stateData, stateName) {
   const gasoline = stateData.gas_prices;
   if (gasoline?.processedData) {
     const isNegative = gasoline.processedData.change > 0;
+    const currentValue = parseFloat(gasoline.processedData.value) || null;
+    const analysis = analyzeTrends(gasoline.timeSeries, 'gas_prices', currentValue);
     metrics.push({
       title: 'Gas Price (Regular)',
       value: gasoline.processedData.displayValue,
@@ -120,7 +133,10 @@ function buildKeyMetrics(stateData, stateName) {
       color: isNegative ? '#FF6B5A' : '#4A5D3F',
       source: 'EIA',
       isRealData: true,
-      isStale: gasoline.isStale
+      isStale: gasoline.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -128,6 +144,8 @@ function buildKeyMetrics(stateData, stateName) {
   const electricity = stateData.electricity_prices;
   if (electricity?.processedData) {
     const isNegative = electricity.processedData.change > 0;
+    const currentValue = parseFloat(electricity.processedData.value) || null;
+    const analysis = analyzeTrends(electricity.timeSeries, 'electricity_prices', currentValue);
     metrics.push({
       title: 'Electricity (cents/kWh)',
       value: electricity.processedData.displayValue,
@@ -135,7 +153,10 @@ function buildKeyMetrics(stateData, stateName) {
       color: isNegative ? '#FF6B5A' : '#4A5D3F',
       source: 'EIA',
       isRealData: true,
-      isStale: electricity.isStale
+      isStale: electricity.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -143,6 +164,8 @@ function buildKeyMetrics(stateData, stateName) {
   const food = stateData.food_prices;
   if (food?.processedData && metrics.length < 6) {
     const isNegative = food.processedData.change > 0;
+    const currentValue = parseFloat(food.processedData.value) || null;
+    const analysis = analyzeTrends(food.timeSeries, 'food_prices', currentValue);
     metrics.push({
       title: 'Food (per person/month)',
       value: food.processedData.displayValue,
@@ -150,7 +173,10 @@ function buildKeyMetrics(stateData, stateName) {
       color: isNegative ? '#FF6B5A' : '#4A5D3F',
       source: 'USDA',
       isRealData: true,
-      isStale: food.isStale
+      isStale: food.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -164,7 +190,10 @@ function buildKeyMetrics(stateData, stateName) {
       color: '#4A5D3F',
       source: 'HUD',
       isRealData: true,
-      isStale: incomeData.isStale
+      isStale: incomeData.isStale,
+      alerts: [],
+      momentum: 'stable',
+      trendSummary: ''
     });
   }
 
@@ -172,6 +201,8 @@ function buildKeyMetrics(stateData, stateName) {
   if (affordability?.processedData && metrics.length < 6) {
     // If rent takes more than 30% of income, it's considered cost-burdened
     const isUnaffordable = affordability.processedData.value > 30;
+    const currentValue = parseFloat(affordability.processedData.value) || null;
+    const analysis = analyzeTrends(affordability.timeSeries, 'affordability', currentValue);
     metrics.push({
       title: 'Rent as % of Income',
       value: affordability.processedData.displayValue,
@@ -179,7 +210,10 @@ function buildKeyMetrics(stateData, stateName) {
       color: isUnaffordable ? '#FF6B5A' : '#4A5D3F',
       source: 'HUD',
       isRealData: true,
-      isStale: affordability.isStale
+      isStale: affordability.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -187,7 +221,7 @@ function buildKeyMetrics(stateData, stateName) {
 }
 
 /**
- * Build trend data from time series
+ * Build trend data from time series with trend analysis
  */
 function buildTrendData(stateData) {
   const trends = [];
@@ -196,6 +230,8 @@ function buildTrendData(stateData) {
   const rent = stateData.rent;
   if (rent?.timeSeries?.length > 0) {
     const firstValue = rent.timeSeries[0]?.value || 0;
+    const currentValue = parseFloat(rent.processedData?.value) || null;
+    const analysis = analyzeTrends(rent.timeSeries, 'rent', currentValue);
     trends.push({
       title: 'Fair Market Rent (Annual)',
       currentValue: rent.processedData?.displayValue || 'N/A',
@@ -206,7 +242,10 @@ function buildTrendData(stateData) {
       })),
       source: 'HUD',
       isRealData: true,
-      isStale: rent.isStale
+      isStale: rent.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -214,6 +253,8 @@ function buildTrendData(stateData) {
   const gasoline = stateData.gas_prices;
   if (gasoline?.timeSeries?.length > 0) {
     const firstValue = gasoline.timeSeries[0]?.value || 0;
+    const currentValue = parseFloat(gasoline.processedData?.value) || null;
+    const analysis = analyzeTrends(gasoline.timeSeries, 'gas_prices', currentValue);
     trends.push({
       title: 'Fuel Prices Over Time',
       currentValue: gasoline.processedData?.displayValue || 'N/A',
@@ -224,7 +265,10 @@ function buildTrendData(stateData) {
       })),
       source: 'EIA',
       isRealData: true,
-      isStale: gasoline.isStale
+      isStale: gasoline.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 
@@ -232,6 +276,8 @@ function buildTrendData(stateData) {
   const electricity = stateData.electricity_prices;
   if (electricity?.timeSeries?.length > 0) {
     const firstValue = electricity.timeSeries[0]?.value || 0;
+    const currentValue = parseFloat(electricity.processedData?.value) || null;
+    const analysis = analyzeTrends(electricity.timeSeries, 'electricity_prices', currentValue);
     trends.push({
       title: 'Electricity Prices Over Time',
       currentValue: electricity.processedData?.displayValue || 'N/A',
@@ -242,7 +288,10 @@ function buildTrendData(stateData) {
       })),
       source: 'EIA',
       isRealData: true,
-      isStale: electricity.isStale
+      isStale: electricity.isStale,
+      alerts: analysis.alerts,
+      momentum: analysis.momentum,
+      trendSummary: analysis.trendSummary
     });
   }
 

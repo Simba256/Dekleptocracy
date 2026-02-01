@@ -737,3 +737,112 @@
     font-size: 20px;
   }
 }
+
+/* Metric Alerts */
+.district-report-metric-alerts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.metric-alert {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.metric-alert--warning {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.metric-alert--critical {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.metric-alert--info {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+/* Trend Alerts */
+.district-report-trend-alerts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+/* Trend Header with Momentum */
+.district-report-trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.district-report-trend-header .district-report-trend-title {
+  margin: 0;
+}
+
+/* Momentum Labels */
+.trend-momentum {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.trend-momentum--steady_up {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.trend-momentum--up {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.trend-momentum--steady_down {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.trend-momentum--down {
+  background-color: #ECFDF5;
+  color: #047857;
+}
+
+.trend-momentum--volatile {
+  background-color: #EDE9FE;
+  color: #5B21B6;
+}
+
+.trend-momentum--stable {
+  background-color: #F3F4F6;
+  color: #4B5563;
+}
+
+/* Responsive adjustments for alerts */
+@media (max-width: 480px) {
+  .metric-alert,
+  .trend-momentum {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .district-report-trend-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

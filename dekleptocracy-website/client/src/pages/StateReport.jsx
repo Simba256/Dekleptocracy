@@ -435,6 +435,18 @@ const StateReport = () => {
               <div className="district-report-metric-change" style={{ color: metric.color }}>
                 {metric.change}
               </div>
+              {metric.alerts?.length > 0 && (
+                <div className="district-report-metric-alerts">
+                  {metric.alerts.slice(0, 2).map((alert, alertIndex) => (
+                    <span
+                      key={alertIndex}
+                      className={`metric-alert metric-alert--${alert.severity}`}
+                    >
+                      {alert.message}
+                    </span>
+                  ))}
+                </div>
+              )}
               {metric.source && (
                 <div className="district-report-metric-source">
                   Source: {metric.source}
@@ -468,8 +480,27 @@ const StateReport = () => {
 
             return (
             <div key={index} className="district-report-trend-card">
-              <h3 className="district-report-trend-title">{trend.title}</h3>
+              <div className="district-report-trend-header">
+                <h3 className="district-report-trend-title">{trend.title}</h3>
+                {trend.trendSummary && (
+                  <span className={`trend-momentum trend-momentum--${trend.momentum || 'stable'}`}>
+                    {trend.trendSummary}
+                  </span>
+                )}
+              </div>
               <div className="district-report-trend-value">{trend.currentValue}</div>
+              {trend.alerts?.length > 0 && (
+                <div className="district-report-trend-alerts">
+                  {trend.alerts.slice(0, 2).map((alert, alertIndex) => (
+                    <span
+                      key={alertIndex}
+                      className={`metric-alert metric-alert--${alert.severity}`}
+                    >
+                      {alert.message}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="district-report-trend-chart">
                 <svg className="district-report-line-chart" viewBox="0 0 300 120">
                   <defs>
