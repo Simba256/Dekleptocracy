@@ -410,6 +410,16 @@ AVAILABLE_TOOLS = {
         ),
         "description": "Get natural gas prices for a state from EIA"
     },
+    "get_national_electricity_price": {
+        "handler": lambda params: eia_client.get_national_electricity_price(
+            sector=params.get("sector", "RES")
+        ),
+        "description": "Get national average electricity price from EIA"
+    },
+    "get_national_gasoline_price": {
+        "handler": lambda params: eia_client.get_national_gasoline_price(),
+        "description": "Get national average gasoline price from EIA"
+    },
     # HUD (Housing and Urban Development) Tools
     "get_hud_fair_market_rent": {
         "handler": lambda params: hud_client.get_state_fmr(

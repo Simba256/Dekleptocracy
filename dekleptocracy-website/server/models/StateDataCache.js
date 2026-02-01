@@ -37,7 +37,7 @@ const stateDataCacheSchema = new mongoose.Schema({
   sourceApi: {
     type: String,
     required: true,
-    enum: ['bls', 'fred', 'eia', 'hud', 'usda', 'gnews']
+    enum: ['bls', 'fred', 'eia', 'hud', 'usda', 'gnews', 'bea']
   },
 
   // Raw API response for debugging/reprocessing

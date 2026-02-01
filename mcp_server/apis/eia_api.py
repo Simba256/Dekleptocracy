@@ -456,7 +456,7 @@ class EIAAPIClient(BaseAPIClient):
             "frequency": "weekly",
             "data[0]": "value",
             "facets[product][]": "EPMR",
-            "facets[duession][]": "NUS",  # National US
+            "facets[duoarea][]": "NUS",  # National US
             "sort[0][column]": "period",
             "sort[0][direction]": "desc",
             "length": 52

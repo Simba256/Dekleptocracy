@@ -250,10 +250,55 @@ function buildTrendData(stateData) {
 }
 
 /**
+ * Fetch national averages for comparison
+ * These are cached at module level since they're the same for all states
+ */
+let nationalAveragesCache = {
+  electricity: null,
+  gasoline: null,
+  lastFetched: null
+};
+
+async function fetchNationalAverages() {
+  const now = Date.now();
+  const cacheAge = nationalAveragesCache.lastFetched
+    ? now - nationalAveragesCache.lastFetched
+    : Infinity;
+
+  // Use cached values if less than 1 hour old
+  if (cacheAge < 3600000 && nationalAveragesCache.electricity && nationalAveragesCache.gasoline) {
+    return nationalAveragesCache;
+  }
+
+  try {
+    // Fetch both national averages in parallel
+    const [electricityResult, gasolineResult] = await Promise.all([
+      executeMCPTool('get_national_electricity_price', {}),
+      executeMCPTool('get_national_gasoline_price', {})
+    ]);
+
+    if (electricityResult?.result?.status === 'success') {
+      nationalAveragesCache.electricity = electricityResult.result;
+    }
+    if (gasolineResult?.result?.status === 'success') {
+      nationalAveragesCache.gasoline = gasolineResult.result;
+    }
+    nationalAveragesCache.lastFetched = now;
+  } catch (error) {
+    logger.warn('Failed to fetch national averages', error);
+  }
+
+  return nationalAveragesCache;
+}
+
+/**
  * Build state vs national comparison data
  */
-function buildComparisonData(stateData, stateName) {
+async function buildComparisonData(stateData, stateName) {
   const comparisons = [];
+
+  // Fetch national averages for comparison
+  const nationalAvgs = await fetchNationalAverages();
 
   // Grocery basket comparison
   const groceryBasket = stateData.grocery_basket;
@@ -269,28 +314,30 @@ function buildComparisonData(stateData, stateName) {
     });
   }
 
-  // Gas prices comparison (we'd need national data in cache)
+  // Gas prices comparison with national average
   const gasoline = stateData.gas_prices;
   if (gasoline?.processedData) {
+    const nationalGasValue = nationalAvgs.gasoline?.displayValue || 'N/A';
     comparisons.push({
       category: 'Fuel Price',
       change: gasoline.processedData.changeDisplay,
       stateValue: gasoline.processedData.displayValue,
-      nationalValue: 'See national avg',
+      nationalValue: nationalGasValue,
       source: 'EIA',
       isRealData: true,
       isStale: gasoline.isStale
     });
   }
 
-  // Electricity comparison
+  // Electricity comparison with national average
   const electricity = stateData.electricity_prices;
   if (electricity?.processedData) {
+    const nationalElecValue = nationalAvgs.electricity?.displayValue || 'N/A';
     comparisons.push({
       category: 'Electricity Bill',
       change: electricity.processedData.changeDisplay,
       stateValue: electricity.processedData.displayValue,
-      nationalValue: 'See national avg',
+      nationalValue: nationalElecValue,
       source: 'EIA',
       isRealData: true,
       isStale: electricity.isStale
@@ -419,7 +466,7 @@ export async function generateStateReportData(stateName = 'California', role = '
     const comparisonCards = buildComparisonCards(stateData, stateName);
     const keyMetrics = buildKeyMetrics(stateData, stateName);
     const trendData = buildTrendData(stateData);
-    const comparisonData = buildComparisonData(stateData, stateName);
+    const comparisonData = await buildComparisonData(stateData, stateName);
 
     // Collect all sources used
     const sourcesUsed = new Set();
