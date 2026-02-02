@@ -435,6 +435,16 @@ const StateReport = () => {
               <div className="district-report-metric-change" style={{ color: metric.color }}>
                 {metric.change}
               </div>
+              {metric.historicalContext?.summaryDescription && (
+                <div className="district-report-metric-context">
+                  {metric.historicalContext.summaryDescription}
+                </div>
+              )}
+              {metric.historicalContext?.yearOverYear?.description && (
+                <div className="district-report-metric-yoy">
+                  {metric.historicalContext.yearOverYear.description}
+                </div>
+              )}
               {metric.alerts?.length > 0 && (
                 <div className="district-report-metric-alerts">
                   {metric.alerts.slice(0, 2).map((alert, alertIndex) => (
@@ -489,6 +499,27 @@ const StateReport = () => {
                 )}
               </div>
               <div className="district-report-trend-value">{trend.currentValue}</div>
+              {trend.historicalContext && (
+                <div className="district-report-trend-context">
+                  {trend.historicalContext.summaryDescription && (
+                    <span className={`historical-badge historical-badge--${trend.historicalContext.historicalRank?.type || 'typical'}`}>
+                      {trend.historicalContext.summaryDescription}
+                    </span>
+                  )}
+                  {trend.historicalContext.yearOverYear?.description && (
+                    <span className="historical-yoy">
+                      {trend.historicalContext.yearOverYear.description}
+                    </span>
+                  )}
+                  {trend.historicalContext.peakTrough && trend.historicalContext.peakTrough.peak.fromPeak !== 0 && (
+                    <span className="historical-peak">
+                      {trend.historicalContext.peakTrough.peak.fromPeak < 0
+                        ? `${Math.abs(trend.historicalContext.peakTrough.peak.fromPeak)}% below peak (${trend.historicalContext.peakTrough.peak.label})`
+                        : `At or near peak`}
+                    </span>
+                  )}
+                </div>
+              )}
               {trend.alerts?.length > 0 && (
                 <div className="district-report-trend-alerts">
                   {trend.alerts.slice(0, 2).map((alert, alertIndex) => (

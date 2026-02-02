@@ -339,8 +339,240 @@ export function getMetricTypeFromTitle(title) {
   return null;
 }
 
+/**
+ * Minimum months of data required for meaningful historical context
+ */
+const MIN_HISTORICAL_MONTHS = 6;
+
+/**
+ * Calculate the percentile rank of current value within historical values
+ * @param {Array} values - Array of historical values
+ * @param {number} currentValue - Current value to rank
+ * @returns {Object|null} Percentile info or null if insufficient data
+ */
+function calculatePercentile(values, currentValue) {
+  if (!values || values.length < MIN_HISTORICAL_MONTHS || currentValue == null) return null;
+
+  const sorted = [...values].sort((a, b) => a - b);
+  const belowCount = sorted.filter(v => v < currentValue).length;
+  const equalCount = sorted.filter(v => v === currentValue).length;
+
+  // Use midpoint method for ties
+  const percentile = Math.round(((belowCount + equalCount / 2) / sorted.length) * 100);
+
+  let description;
+  if (percentile >= 90) {
+    description = 'Near historical high';
+  } else if (percentile >= 75) {
+    description = 'Above typical range';
+  } else if (percentile <= 10) {
+    description = 'Near historical low';
+  } else if (percentile <= 25) {
+    description = 'Below typical range';
+  } else {
+    description = 'Within typical range';
+  }
+
+  return {
+    percentile,
+    description,
+    type: percentile >= 75 ? 'high' : percentile <= 25 ? 'low' : 'typical'
+  };
+}
+
+/**
+ * Find the peak and trough values with their dates
+ * @param {Array} timeSeries - Array of {value, label, date} objects
+ * @param {number} currentValue - Current value
+ * @returns {Object|null} Peak/trough info or null if insufficient data
+ */
+function findPeakTrough(timeSeries, currentValue) {
+  if (!timeSeries || timeSeries.length < MIN_HISTORICAL_MONTHS || currentValue == null) return null;
+
+  let peak = { value: -Infinity, label: null };
+  let trough = { value: Infinity, label: null };
+
+  for (const point of timeSeries) {
+    if (point.value == null) continue;
+
+    if (point.value > peak.value) {
+      peak = { value: point.value, label: point.label };
+    }
+    if (point.value < trough.value) {
+      trough = { value: point.value, label: point.label };
+    }
+  }
+
+  if (peak.value === -Infinity || trough.value === Infinity) return null;
+
+  const fromPeak = peak.value !== 0 ? ((currentValue - peak.value) / peak.value) * 100 : 0;
+  const fromTrough = trough.value !== 0 ? ((currentValue - trough.value) / trough.value) * 100 : 0;
+
+  return {
+    peak: {
+      value: peak.value,
+      label: peak.label,
+      fromPeak: Math.round(fromPeak)
+    },
+    trough: {
+      value: trough.value,
+      label: trough.label,
+      fromTrough: Math.round(fromTrough)
+    }
+  };
+}
+
+/**
+ * Compare current value to the same period last year
+ * @param {Array} timeSeries - Array of {value, label, date} objects
+ * @param {number} currentValue - Current value
+ * @returns {Object|null} Year-over-year comparison or null if insufficient data
+ */
+function compareYearOverYear(timeSeries, currentValue) {
+  if (!timeSeries || timeSeries.length < 12 || currentValue == null) return null;
+
+  // The last item is most recent, so ~12 months back would be the YoY comparison
+  // Find the point closest to 12 months ago
+  const targetIndex = timeSeries.length - 12;
+  if (targetIndex < 0) return null;
+
+  const yearAgoPoint = timeSeries[targetIndex];
+  if (!yearAgoPoint || yearAgoPoint.value == null || yearAgoPoint.value === 0) return null;
+
+  const change = ((currentValue - yearAgoPoint.value) / yearAgoPoint.value) * 100;
+  const roundedChange = Math.round(change);
+
+  return {
+    yearAgoValue: yearAgoPoint.value,
+    yearAgoLabel: yearAgoPoint.label,
+    change: roundedChange,
+    description: `${roundedChange >= 0 ? '+' : ''}${roundedChange}% vs ${yearAgoPoint.label}`
+  };
+}
+
+/**
+ * Find historical rank - "Highest since X" or "Lowest in Y years"
+ * @param {Array} timeSeries - Array of {value, label, date} objects
+ * @param {number} currentValue - Current value
+ * @returns {Object|null} Historical rank info or null if insufficient data
+ */
+function findHistoricalRank(timeSeries, currentValue) {
+  if (!timeSeries || timeSeries.length < MIN_HISTORICAL_MONTHS || currentValue == null) return null;
+
+  // Find when we last had a value this high or higher
+  let lastHigherIndex = -1;
+  let lastLowerIndex = -1;
+
+  for (let i = timeSeries.length - 2; i >= 0; i--) {
+    const val = timeSeries[i]?.value;
+    if (val == null) continue;
+
+    if (val >= currentValue && lastHigherIndex === -1) {
+      lastHigherIndex = i;
+    }
+    if (val <= currentValue && lastLowerIndex === -1) {
+      lastLowerIndex = i;
+    }
+
+    if (lastHigherIndex !== -1 && lastLowerIndex !== -1) break;
+  }
+
+  const totalMonths = timeSeries.length;
+  const monthsSinceHigher = lastHigherIndex === -1 ? totalMonths : (timeSeries.length - 1 - lastHigherIndex);
+  const monthsSinceLower = lastLowerIndex === -1 ? totalMonths : (timeSeries.length - 1 - lastLowerIndex);
+
+  // Determine if current value is notably high or low
+  const yearsOfData = Math.floor(totalMonths / 12);
+  let type = 'typical';
+  let description = null;
+
+  if (lastHigherIndex === -1 && totalMonths >= 12) {
+    // No value higher in the entire series
+    type = 'record_high';
+    description = `Highest in ${yearsOfData > 1 ? yearsOfData + '+ years' : 'over a year'}`;
+  } else if (lastLowerIndex === -1 && totalMonths >= 12) {
+    // No value lower in the entire series
+    type = 'record_low';
+    description = `Lowest in ${yearsOfData > 1 ? yearsOfData + '+ years' : 'over a year'}`;
+  } else if (monthsSinceHigher >= 12) {
+    // Highest in at least a year
+    const yearsSince = Math.floor(monthsSinceHigher / 12);
+    type = 'high';
+    description = `Highest in ${yearsSince > 1 ? yearsSince + ' years' : 'over a year'}`;
+  } else if (monthsSinceLower >= 12) {
+    // Lowest in at least a year
+    const yearsSince = Math.floor(monthsSinceLower / 12);
+    type = 'low';
+    description = `Lowest in ${yearsSince > 1 ? yearsSince + ' years' : 'over a year'}`;
+  } else if (monthsSinceHigher >= 6) {
+    type = 'elevated';
+    description = `Highest in ${monthsSinceHigher} months`;
+  } else if (monthsSinceLower >= 6) {
+    type = 'depressed';
+    description = `Lowest in ${monthsSinceLower} months`;
+  }
+
+  return {
+    type,
+    description,
+    monthsSinceHigher,
+    monthsSinceLower
+  };
+}
+
+/**
+ * Main function: Analyze historical context for a metric
+ * Provides temporal anchoring like "Highest since 2021", percentile ranking, YoY comparisons
+ * @param {Array} timeSeries - Array of {value, label, date} objects
+ * @param {string} metricType - Type of metric (for context-aware formatting)
+ * @param {number} currentValue - Current value of the metric
+ * @returns {Object} Historical context analysis
+ */
+export function analyzeHistoricalContext(timeSeries, metricType, currentValue) {
+  if (!timeSeries || timeSeries.length < MIN_HISTORICAL_MONTHS) {
+    return {
+      available: false,
+      reason: 'Insufficient historical data'
+    };
+  }
+
+  const values = timeSeries.map(p => p?.value).filter(v => v != null);
+
+  if (values.length < MIN_HISTORICAL_MONTHS) {
+    return {
+      available: false,
+      reason: 'Insufficient valid data points'
+    };
+  }
+
+  const percentile = calculatePercentile(values, currentValue);
+  const peakTrough = findPeakTrough(timeSeries, currentValue);
+  const yearOverYear = compareYearOverYear(timeSeries, currentValue);
+  const historicalRank = findHistoricalRank(timeSeries, currentValue);
+
+  // Build a summary description
+  let summaryDescription = null;
+  if (historicalRank?.description) {
+    summaryDescription = historicalRank.description;
+  } else if (percentile?.description && percentile.type !== 'typical') {
+    summaryDescription = percentile.description;
+  }
+
+  return {
+    available: true,
+    metric: metricType,
+    dataPoints: values.length,
+    percentile,
+    peakTrough,
+    yearOverYear,
+    historicalRank,
+    summaryDescription
+  };
+}
+
 export default {
   analyzeTrends,
+  analyzeHistoricalContext,
   getMetricTypeFromTitle,
   detectSignificantChange,
   detectStreak,

@@ -832,10 +832,81 @@
   color: #4B5563;
 }
 
+/* Historical Context Styles */
+.district-report-metric-context {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6366f1;
+  margin-top: 6px;
+  padding: 4px 10px;
+  background-color: #eef2ff;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.district-report-metric-yoy {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Historical Context for Trend Cards */
+.district-report-trend-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.historical-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.historical-badge--record_high,
+.historical-badge--high,
+.historical-badge--elevated {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.historical-badge--record_low,
+.historical-badge--low,
+.historical-badge--depressed {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.historical-badge--typical {
+  background-color: #F3F4F6;
+  color: #4B5563;
+}
+
+.historical-yoy {
+  font-size: 11px;
+  color: #6b7280;
+  padding: 4px 10px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+}
+
+.historical-peak {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+}
+
 /* Responsive adjustments for alerts */
 @media (max-width: 480px) {
   .metric-alert,
-  .trend-momentum {
+  .trend-momentum,
+  .historical-badge,
+  .historical-yoy {
     font-size: 10px;
     padding: 3px 8px;
   }
@@ -844,5 +915,19 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+
+  .district-report-metric-context {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .district-report-metric-yoy {
+    font-size: 10px;
+  }
+
+  .district-report-trend-context {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
