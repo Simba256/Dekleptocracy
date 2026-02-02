@@ -28,11 +28,12 @@ const PRIORITY_STATES = [
   'Illinois', 'Ohio', 'Georgia', 'North Carolina', 'Michigan'
 ];
 
-// Data types with their MCP tool mappings and TTL
+// Data types with their MCP tool mappings, TTL, and optional fallbacks
 const DATA_TYPES = [
   {
     type: 'unemployment',
     tool: 'get_bls_unemployment_by_state',
+    fallbackTool: 'get_fred_state_unemployment', // FRED fallback
     ttlHours: 24,
     processResult: (result) => ({
       sourceApi: 'bls',
@@ -52,6 +53,25 @@ const DATA_TYPES = [
         label: ts.label
       })) || [],
       metadata: { seriesId: result.series_id }
+    }),
+    processFallbackResult: (result) => ({
+      sourceApi: 'fred',
+      rawData: result,
+      processedData: {
+        value: result.value,
+        displayValue: result.displayValue,
+        change: result.change,
+        changeDisplay: result.changeDisplay,
+        changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
+        unit: 'percent',
+        period: result.latest_date
+      },
+      timeSeries: result.time_series?.map(ts => ({
+        date: new Date(ts.date),
+        value: ts.value,
+        label: ts.label
+      })) || [],
+      metadata: { seriesId: result.series_id, source: 'FRED (fallback)' }
     })
   },
   {
@@ -152,6 +172,7 @@ const DATA_TYPES = [
   {
     type: 'gdp',
     tool: 'get_bea_state_gdp',
+    fallbackTool: 'get_fred_state_gdp', // FRED fallback
     ttlHours: 168, // Weekly - GDP is quarterly
     processResult: (result) => ({
       sourceApi: 'bea',
@@ -170,11 +191,30 @@ const DATA_TYPES = [
         label: ts.label
       })) || [],
       metadata: { source: result.source }
+    }),
+    processFallbackResult: (result) => ({
+      sourceApi: 'fred',
+      rawData: result,
+      processedData: {
+        value: result.value,
+        displayValue: result.displayValue,
+        change: result.change,
+        changeDisplay: result.changeDisplay,
+        changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
+        unit: 'billions USD'
+      },
+      timeSeries: result.time_series?.map(ts => ({
+        date: new Date(ts.date),
+        value: ts.value,
+        label: ts.label
+      })) || [],
+      metadata: { source: 'FRED (fallback)' }
     })
   },
   {
     type: 'personal_income',
     tool: 'get_bea_state_personal_income',
+    fallbackTool: 'get_fred_state_personal_income', // FRED fallback
     ttlHours: 168,
     processResult: (result) => ({
       sourceApi: 'bea',
@@ -193,6 +233,24 @@ const DATA_TYPES = [
         label: ts.label
       })) || [],
       metadata: { source: result.source }
+    }),
+    processFallbackResult: (result) => ({
+      sourceApi: 'fred',
+      rawData: result,
+      processedData: {
+        value: result.value,
+        displayValue: result.displayValue,
+        change: result.change,
+        changeDisplay: result.changeDisplay,
+        changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
+        unit: 'USD/year'
+      },
+      timeSeries: result.time_series?.map(ts => ({
+        date: new Date(ts.date),
+        value: ts.value,
+        label: ts.label
+      })) || [],
+      metadata: { source: 'FRED (fallback)' }
     })
   },
   // HUD income_limits removed - API access issues (403 Forbidden)
@@ -200,48 +258,83 @@ const DATA_TYPES = [
 ];
 
 /**
- * Refresh a single data type for a state
+ * Try to fetch data from a specific tool
  */
-async function refreshDataType(stateName, dataConfig) {
+async function tryFetchFromTool(stateName, toolName, args) {
   try {
-    const args = { state_name: stateName, ...(dataConfig.args || {}) };
-    const mcpResponse = await executeMCPTool(dataConfig.tool, args);
+    const mcpResponse = await executeMCPTool(toolName, args);
 
-    // MCP server returns: { success: bool, result: {...}, error: string|null, timestamp: string }
-    // The actual API result is nested inside mcpResponse.result
     if (!mcpResponse.success) {
-      const errorMsg = mcpResponse.error || 'MCP request failed';
-      logger.warn(`MCP call failed for ${dataConfig.type} in ${stateName}: ${errorMsg}`);
-      await StateDataCache.markError(stateName, dataConfig.type, errorMsg);
-      return false;
+      return { success: false, error: mcpResponse.error || 'MCP request failed' };
     }
 
     const result = mcpResponse.result;
-
-    // Check the actual API result status
     if (result?.status === 'success') {
-      const processedResult = dataConfig.processResult(result);
+      return { success: true, result };
+    } else {
+      return { success: false, error: result?.error || 'API returned non-success status' };
+    }
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
 
+/**
+ * Refresh a single data type for a state (with fallback support)
+ */
+async function refreshDataType(stateName, dataConfig) {
+  const args = { state_name: stateName, ...(dataConfig.args || {}) };
+
+  // Try primary API
+  const primaryResult = await tryFetchFromTool(stateName, dataConfig.tool, args);
+
+  if (primaryResult.success) {
+    try {
+      const processedResult = dataConfig.processResult(primaryResult.result);
       await StateDataCache.upsertData(
         stateName,
         dataConfig.type,
         processedResult,
         dataConfig.ttlHours
       );
-
-      logger.info(`Refreshed ${dataConfig.type} data for ${stateName}`);
+      logger.info(`Refreshed ${dataConfig.type} data for ${stateName} (primary: ${dataConfig.tool})`);
       return true;
-    } else {
-      const errorMsg = result?.error || 'API returned non-success status';
-      logger.warn(`Failed to fetch ${dataConfig.type} for ${stateName}: ${errorMsg}`);
-      await StateDataCache.markError(stateName, dataConfig.type, errorMsg);
-      return false;
+    } catch (error) {
+      logger.error(`Error processing ${dataConfig.type} for ${stateName}`, error);
     }
-  } catch (error) {
-    logger.error(`Error refreshing ${dataConfig.type} for ${stateName}`, error);
-    await StateDataCache.markError(stateName, dataConfig.type, error.message);
-    return false;
+  } else {
+    logger.warn(`Primary API failed for ${dataConfig.type} in ${stateName}: ${primaryResult.error}`);
   }
+
+  // Try fallback API if available
+  if (dataConfig.fallbackTool && dataConfig.processFallbackResult) {
+    logger.info(`Trying fallback ${dataConfig.fallbackTool} for ${dataConfig.type} in ${stateName}`);
+
+    const fallbackResult = await tryFetchFromTool(stateName, dataConfig.fallbackTool, args);
+
+    if (fallbackResult.success) {
+      try {
+        const processedResult = dataConfig.processFallbackResult(fallbackResult.result);
+        await StateDataCache.upsertData(
+          stateName,
+          dataConfig.type,
+          processedResult,
+          dataConfig.ttlHours
+        );
+        logger.info(`Refreshed ${dataConfig.type} data for ${stateName} (fallback: ${dataConfig.fallbackTool})`);
+        return true;
+      } catch (error) {
+        logger.error(`Error processing fallback ${dataConfig.type} for ${stateName}`, error);
+      }
+    } else {
+      logger.warn(`Fallback API also failed for ${dataConfig.type} in ${stateName}: ${fallbackResult.error}`);
+    }
+  }
+
+  // Both primary and fallback failed
+  const errorMsg = primaryResult.error || 'All APIs failed';
+  await StateDataCache.markError(stateName, dataConfig.type, errorMsg);
+  return false;
 }
 
 /**
@@ -370,6 +463,7 @@ export function getSchedulerStatus() {
     dataTypes: DATA_TYPES.map(d => ({
       type: d.type,
       tool: d.tool,
+      fallbackTool: d.fallbackTool || null,
       ttlHours: d.ttlHours
     })),
     stateCount: US_STATES.length,
