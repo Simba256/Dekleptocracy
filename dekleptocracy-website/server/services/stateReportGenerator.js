@@ -43,30 +43,30 @@ function buildComparisonCards(stateData, stateName) {
     });
   }
 
-  // Housing costs card
-  const rent = stateData.rent;
-  if (rent?.processedData) {
+  // Fuel costs card
+  const gasoline = stateData.gas_prices;
+  if (gasoline?.processedData) {
     cards.push({
-      value: rent.processedData.changeDisplay || 'N/A',
-      label: 'Housing Cost Change',
-      description: `Average fair market rent in ${stateName}: ${rent.processedData.displayValue}`,
+      value: gasoline.processedData.changeDisplay || 'N/A',
+      label: 'Fuel Price Trend',
+      description: `Gas prices in ${stateName} region: ${gasoline.processedData.displayValue}`,
       isRealData: true,
-      source: 'HUD',
-      isStale: rent.isStale
+      source: 'EIA',
+      isStale: gasoline.isStale
     });
   }
 
-  // If we don't have 2 cards, try to add from other data
+  // If we don't have 2 cards, try food prices
   if (cards.length < 2) {
-    const gasoline = stateData.gas_prices;
-    if (gasoline?.processedData && cards.length < 2) {
+    const food = stateData.food_prices;
+    if (food?.processedData) {
       cards.push({
-        value: gasoline.processedData.changeDisplay || 'N/A',
-        label: 'Fuel Price Trend',
-        description: `Gas prices in ${stateName} region: ${gasoline.processedData.displayValue}`,
+        value: food.processedData.changeDisplay || 'N/A',
+        label: 'Food Cost Trend',
+        description: `Food costs in ${stateName}: ${food.processedData.displayValue}`,
         isRealData: true,
-        source: 'EIA',
-        isStale: gasoline.isStale
+        source: 'USDA',
+        isStale: food.isStale
       });
     }
   }
@@ -102,27 +102,7 @@ function buildKeyMetrics(stateData, stateName) {
     });
   }
 
-  // Rent
-  const rent = stateData.rent;
-  if (rent?.processedData) {
-    const isNegative = rent.processedData.change > 0; // Higher rent is bad for consumers
-    const currentValue = parseFloat(rent.processedData.value) || null;
-    const analysis = analyzeTrends(rent.timeSeries, 'rent', currentValue);
-    const historicalContext = analyzeHistoricalContext(rent.timeSeries, 'rent', currentValue);
-    metrics.push({
-      title: 'Average Monthly Rent',
-      value: rent.processedData.displayValue,
-      change: rent.processedData.changeDisplay,
-      color: isNegative ? '#FF6B5A' : '#4A5D3F',
-      source: 'HUD',
-      isRealData: true,
-      isStale: rent.isStale,
-      alerts: analysis.alerts,
-      momentum: analysis.momentum,
-      trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
-    });
-  }
+  // HUD rent data removed - API access issues
 
   // Gas prices
   const gasoline = stateData.gas_prices;
@@ -190,46 +170,7 @@ function buildKeyMetrics(stateData, stateName) {
     });
   }
 
-  // Income / Affordability metrics
-  const incomeData = stateData.income_limits;
-  if (incomeData?.processedData && metrics.length < 6) {
-    const historicalContext = analyzeHistoricalContext(incomeData.timeSeries, 'income', null);
-    metrics.push({
-      title: 'Median Income',
-      value: incomeData.processedData.displayValue,
-      change: '',
-      color: '#4A5D3F',
-      source: 'HUD',
-      isRealData: true,
-      isStale: incomeData.isStale,
-      alerts: [],
-      momentum: 'stable',
-      trendSummary: '',
-      historicalContext: historicalContext.available ? historicalContext : null
-    });
-  }
-
-  const affordability = stateData.affordability;
-  if (affordability?.processedData && metrics.length < 6) {
-    // If rent takes more than 30% of income, it's considered cost-burdened
-    const isUnaffordable = affordability.processedData.value > 30;
-    const currentValue = parseFloat(affordability.processedData.value) || null;
-    const analysis = analyzeTrends(affordability.timeSeries, 'affordability', currentValue);
-    const historicalContext = analyzeHistoricalContext(affordability.timeSeries, 'affordability', currentValue);
-    metrics.push({
-      title: 'Rent as % of Income',
-      value: affordability.processedData.displayValue,
-      change: isUnaffordable ? 'Cost-burdened' : 'Affordable',
-      color: isUnaffordable ? '#FF6B5A' : '#4A5D3F',
-      source: 'HUD',
-      isRealData: true,
-      isStale: affordability.isStale,
-      alerts: analysis.alerts,
-      momentum: analysis.momentum,
-      trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
-    });
-  }
+  // HUD income_limits and affordability removed - API access issues
 
   return metrics;
 }
@@ -240,30 +181,7 @@ function buildKeyMetrics(stateData, stateName) {
 function buildTrendData(stateData) {
   const trends = [];
 
-  // Rent trend
-  const rent = stateData.rent;
-  if (rent?.timeSeries?.length > 0) {
-    const firstValue = rent.timeSeries[0]?.value || 0;
-    const currentValue = parseFloat(rent.processedData?.value) || null;
-    const analysis = analyzeTrends(rent.timeSeries, 'rent', currentValue);
-    const historicalContext = analyzeHistoricalContext(rent.timeSeries, 'rent', currentValue);
-    trends.push({
-      title: 'Fair Market Rent (Annual)',
-      currentValue: rent.processedData?.displayValue || 'N/A',
-      data: rent.timeSeries.map(point => ({
-        month: point.label,
-        value: point.value,
-        color: point.value > firstValue ? '#FF6B5A' : '#4A5D3F'
-      })),
-      source: 'HUD',
-      isRealData: true,
-      isStale: rent.isStale,
-      alerts: analysis.alerts,
-      momentum: analysis.momentum,
-      trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
-    });
-  }
+  // HUD rent trend removed - API access issues
 
   // Gas prices trend
   const gasoline = stateData.gas_prices;

@@ -103,31 +103,12 @@ const DATA_TYPES = [
       metadata: { region: result.region, padd: result.padd }
     })
   },
-  {
-    type: 'rent',
-    tool: 'get_hud_rent_history',
-    ttlHours: 168, // Weekly - HUD data is annual
-    args: { years: 5 },
-    processResult: (result) => ({
-      sourceApi: 'hud',
-      rawData: result,
-      processedData: {
-        value: result.value,
-        displayValue: result.displayValue,
-        change: result.change,
-        changeDisplay: result.changeDisplay,
-        changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
-        unit: '$/month',
-        period: result.history?.[result.history.length - 1]?.year
-      },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(`${ts.date}-01-01`),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { fiveYearChange: result.five_year_change }
-    })
-  },
+  // HUD rent data removed - API access issues (403 Forbidden)
+  // {
+  //   type: 'rent',
+  //   tool: 'get_hud_rent_history',
+  //   ...
+  // },
   {
     type: 'food_prices',
     tool: 'get_usda_food_prices',
@@ -214,55 +195,8 @@ const DATA_TYPES = [
       metadata: { source: result.source }
     })
   },
-  {
-    type: 'income_limits',
-    tool: 'get_hud_income_limits',
-    ttlHours: 168, // Weekly - HUD data is annual
-    processResult: (result) => ({
-      sourceApi: 'hud',
-      rawData: result,
-      processedData: {
-        value: result.median_income,
-        displayValue: result.displayValue,
-        change: null,
-        changeDisplay: '',
-        changeDirection: 'neutral',
-        unit: 'USD/year'
-      },
-      timeSeries: [],
-      metadata: {
-        lowIncomeLimit: result.avg_low_income_limit,
-        veryLowIncomeLimit: result.avg_very_low_income_limit,
-        extremelyLowIncomeLimit: result.avg_extremely_low_income_limit,
-        areasCount: result.areas_count
-      }
-    })
-  },
-  {
-    type: 'affordability',
-    tool: 'get_hud_affordability_analysis',
-    ttlHours: 168, // Weekly - combines FMR and income limits
-    processResult: (result) => ({
-      sourceApi: 'hud',
-      rawData: result,
-      processedData: {
-        value: result.rent_as_percent_of_median,
-        displayValue: result.displayValue,
-        change: null,
-        changeDisplay: result.affordability_status,
-        changeDirection: result.is_affordable_for_median ? 'down' : 'up',
-        unit: 'percent'
-      },
-      timeSeries: [],
-      metadata: {
-        monthlyRent: result.monthly_rent_2br,
-        medianIncome: result.median_income,
-        incomeNeeded: result.income_needed_for_affordable,
-        hourlyWageNeeded: result.hourly_wage_needed,
-        isAffordable: result.is_affordable_for_median
-      }
-    })
-  }
+  // HUD income_limits removed - API access issues (403 Forbidden)
+  // HUD affordability removed - API access issues (403 Forbidden)
 ];
 
 /**

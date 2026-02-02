@@ -147,10 +147,10 @@ stateDataCacheSchema.statics.getLatestData = async function(state, dataType) {
  */
 stateDataCacheSchema.statics.getAllStateData = async function(state) {
   // These data types match what stateDataScheduler actually fetches
+  // Note: HUD data (rent, income_limits, affordability) removed due to API access issues
   const dataTypes = [
-    'unemployment', 'electricity_prices', 'gas_prices', 'rent',
-    'food_prices', 'grocery_basket', 'gdp', 'personal_income',
-    'income_limits', 'affordability'
+    'unemployment', 'electricity_prices', 'gas_prices',
+    'food_prices', 'grocery_basket', 'gdp', 'personal_income'
   ];
 
   const results = {};
