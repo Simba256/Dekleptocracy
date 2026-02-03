@@ -147,8 +147,8 @@ class FREDAPIClient(BaseAPIClient):
                 "observations": processed,
                 "value": latest_value,
                 "latest_date": latest_date,
-                "change": round(yoy_change, 2) if yoy_change else None,
-                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change else "N/A",
+                "change": round(yoy_change, 2) if yoy_change is not None else None,
+                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change is not None else "N/A",
                 "time_series": [
                     {
                         "date": obs["date"],

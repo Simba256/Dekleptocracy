@@ -162,8 +162,8 @@ class BLSAPIClient(BaseAPIClient):
                 "series_id": series_id,
                 "data": processed_data,
                 "latest_value": processed_data[-1]["value"] if processed_data else None,
-                "yoy_change": round(yoy_change, 2) if yoy_change else None,
-                "yoy_change_display": f"{yoy_change:+.1f}%" if yoy_change else "N/A",
+                "yoy_change": round(yoy_change, 2) if yoy_change is not None else None,
+                "yoy_change_display": f"{yoy_change:+.1f}%" if yoy_change is not None else "N/A",
                 "time_series": [
                     {
                         "date": f"{p['year']}-{p['period'].replace('M', '')}",
@@ -261,9 +261,9 @@ class BLSAPIClient(BaseAPIClient):
                 "data": processed_data,
                 "value": latest_value,
                 "displayValue": f"{latest_value:.1f}%" if latest_value else "N/A",
-                "change": round(yoy_change, 2) if yoy_change else None,
-                "changeDisplay": f"{yoy_change:+.1f} pp" if yoy_change else "N/A",
-                "changeDirection": "up" if yoy_change and yoy_change > 0 else "down" if yoy_change and yoy_change < 0 else "neutral",
+                "change": round(yoy_change, 2) if yoy_change is not None else None,
+                "changeDisplay": f"{yoy_change:+.1f} pp" if yoy_change is not None else "N/A",
+                "changeDirection": "up" if yoy_change is not None and yoy_change > 0 else "down" if yoy_change is not None and yoy_change < 0 else "neutral",
                 "time_series": [
                     {
                         "date": f"{p['year']}-{p['period'].replace('M', '')}",
@@ -360,8 +360,8 @@ class BLSAPIClient(BaseAPIClient):
                 "data": processed_data,
                 "value": latest_value,
                 "displayValue": f"${latest_value:,.0f}/week" if latest_value else "N/A",
-                "change": round(yoy_change, 2) if yoy_change else None,
-                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change else "N/A",
+                "change": round(yoy_change, 2) if yoy_change is not None else None,
+                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change is not None else "N/A",
                 "time_series": [
                     {
                         "date": f"{p['year']}-Q{p['period'].replace('Q', '')}",

@@ -168,9 +168,9 @@ class EIAAPIClient(BaseAPIClient):
                 "data": processed,
                 "value": latest_value,
                 "displayValue": f"{latest_value:.2f} cents/kWh" if latest_value else "N/A",
-                "change": round(yoy_change, 2) if yoy_change else None,
-                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change else "N/A",
-                "changeDirection": "up" if yoy_change and yoy_change > 0 else "down" if yoy_change and yoy_change < 0 else "neutral",
+                "change": round(yoy_change, 2) if yoy_change is not None else None,
+                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change is not None else "N/A",
+                "changeDirection": "up" if yoy_change is not None and yoy_change > 0 else "down" if yoy_change is not None and yoy_change < 0 else "neutral",
                 "time_series": [
                     {
                         "date": p["period"],
@@ -278,9 +278,9 @@ class EIAAPIClient(BaseAPIClient):
                 "data": processed,
                 "value": latest_value,
                 "displayValue": f"${latest_value:.2f}/gal" if latest_value else "N/A",
-                "change": round(yoy_change, 2) if yoy_change else None,
-                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change else "N/A",
-                "changeDirection": "up" if yoy_change and yoy_change > 0 else "down" if yoy_change and yoy_change < 0 else "neutral",
+                "change": round(yoy_change, 2) if yoy_change is not None else None,
+                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change is not None else "N/A",
+                "changeDirection": "up" if yoy_change is not None and yoy_change > 0 else "down" if yoy_change is not None and yoy_change < 0 else "neutral",
                 "time_series": [
                     {
                         "date": p["period"],
@@ -374,9 +374,9 @@ class EIAAPIClient(BaseAPIClient):
                 "data": processed,
                 "value": latest_value,
                 "displayValue": f"${latest_value:.2f}/Mcf" if latest_value else "N/A",
-                "change": round(yoy_change, 2) if yoy_change else None,
-                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change else "N/A",
-                "changeDirection": "up" if yoy_change and yoy_change > 0 else "down" if yoy_change and yoy_change < 0 else "neutral",
+                "change": round(yoy_change, 2) if yoy_change is not None else None,
+                "changeDisplay": f"{yoy_change:+.1f}%" if yoy_change is not None else "N/A",
+                "changeDirection": "up" if yoy_change is not None and yoy_change > 0 else "down" if yoy_change is not None and yoy_change < 0 else "neutral",
                 "time_series": [
                     {
                         "date": p["period"],

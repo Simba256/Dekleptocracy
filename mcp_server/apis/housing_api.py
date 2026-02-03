@@ -361,10 +361,10 @@ class HUDAPIClient(BaseAPIClient):
             "history": history,
             "value": latest_data.get("value"),
             "displayValue": f"${latest_data.get('value', 0):,.0f}/mo",
-            "change": round(yoy_change, 2) if yoy_change else None,
-            "changeDisplay": f"{yoy_change:+.1f}% YoY" if yoy_change else "N/A",
-            "five_year_change": round(five_year_change, 2) if five_year_change else None,
-            "five_year_change_display": f"{five_year_change:+.1f}% (5yr)" if five_year_change else "N/A",
+            "change": round(yoy_change, 2) if yoy_change is not None else None,
+            "changeDisplay": f"{yoy_change:+.1f}% YoY" if yoy_change is not None else "N/A",
+            "five_year_change": round(five_year_change, 2) if five_year_change is not None else None,
+            "five_year_change_display": f"{five_year_change:+.1f}% (5yr)" if five_year_change is not None else "N/A",
             "time_series": [
                 {
                     "date": h["year"],
