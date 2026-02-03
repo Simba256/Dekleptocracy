@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 # Import the MCP server modules
 from config import config
-from utils import sanitize_input, format_currency
+from utils import sanitize_input, format_currency, clear_cache, get_cache_stats
 from apis.bea_api import BEAAPIClient
 from apis.census_api import CensusAPIClient
 from apis.dataweb_api import DataWebAPIClient
@@ -506,7 +506,9 @@ async def root():
             "/execute": "Execute a specific tool",
             "/chat": "Chat endpoint with MCP tool integration",
             "/sse/chat": "SSE streaming chat endpoint",
-            "/health": "Health check endpoint"
+            "/health": "Health check endpoint",
+            "/cache/clear": "Clear API response cache (POST)",
+            "/cache/stats": "Get cache statistics"
         }
     }
 
@@ -530,6 +532,26 @@ async def health_check():
             "hud_api": config.apis["hud"].token is not None,
             "usda_api": True,  # USDA key is optional, uses fallback data
         }
+    }
+
+@app.post("/cache/clear")
+async def clear_api_cache():
+    """Clear the API response cache"""
+    result = clear_cache()
+    return {
+        "status": "success",
+        "message": f"Cleared {result['cleared']} cached items",
+        "timestamp": datetime.now().isoformat()
+    }
+
+@app.get("/cache/stats")
+async def get_api_cache_stats():
+    """Get cache statistics"""
+    stats = get_cache_stats()
+    return {
+        "status": "success",
+        "cache": stats,
+        "timestamp": datetime.now().isoformat()
     }
 
 @app.get("/tools")

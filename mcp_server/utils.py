@@ -22,6 +22,22 @@ logger = logging.getLogger(__name__)
 _cache = {}
 _cache_ttl = {}
 
+def clear_cache() -> dict:
+    """Clear all cached results and return stats"""
+    global _cache, _cache_ttl
+    count = len(_cache)
+    _cache = {}
+    _cache_ttl = {}
+    logger.info(f"Cleared {count} cached items")
+    return {"cleared": count}
+
+def get_cache_stats() -> dict:
+    """Get cache statistics"""
+    return {
+        "items": len(_cache),
+        "keys": list(_cache.keys())[:20]  # Show first 20 keys
+    }
+
 def get_cache_key(*args, **kwargs) -> str:
     """Generate a cache key from function arguments"""
     key_data = str(args) + str(sorted(kwargs.items()))
