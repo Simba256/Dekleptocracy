@@ -96,11 +96,11 @@ class BLSAPIClient(BaseAPIClient):
         start_year: str = None,
         end_year: str = None
     ) -> Dict[str, Any]:
-        # Default to last 2 years of data
+        # Default to last 3 years of data (need 13+ months for YoY calculation)
         if not end_year:
             end_year = str(datetime.now().year)
         if not start_year:
-            start_year = str(int(end_year) - 1)
+            start_year = str(int(end_year) - 2)
         """
         Get Consumer Price Index data from BLS.
 
@@ -186,11 +186,11 @@ class BLSAPIClient(BaseAPIClient):
         start_year: str = None,
         end_year: str = None
     ) -> Dict[str, Any]:
-        # Default to last 2 years of data
+        # Default to last 3 years of data (need 13+ months for YoY calculation)
         if not end_year:
             end_year = str(datetime.now().year)
         if not start_year:
-            start_year = str(int(end_year) - 1)
+            start_year = str(int(end_year) - 2)
         """
         Get unemployment rate for a specific state.
 

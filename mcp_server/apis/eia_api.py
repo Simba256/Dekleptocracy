@@ -222,7 +222,7 @@ class EIAAPIClient(BaseAPIClient):
             "facets[product][]": "EPMR",  # Regular gasoline
             "sort[0][column]": "period",
             "sort[0][direction]": "desc",
-            "length": 52  # Last 52 weeks
+            "length": 60  # Last 60 weeks (need 53+ for YoY calculation)
         }
 
         if padd != "US":
