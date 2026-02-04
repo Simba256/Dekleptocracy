@@ -11,6 +11,389 @@ import { fetchNews, checkMCPHealth, executeMCPTool } from './mcpClient.js';
 import { refreshStateData } from './stateDataScheduler.js';
 import { analyzeTrends, analyzeHistoricalContext, getMetricTypeFromTitle } from './trendAnalyzer.js';
 
+// Average household consumption estimates for impact calculations
+const HOUSEHOLD_CONSUMPTION = {
+  electricityKwhPerMonth: 900,    // Average US household electricity usage
+  gasolineGallonsPerMonth: 50,    // Average US household fuel consumption
+  foodPersonsPerFamily: 3         // Average family size for food calculations
+};
+
+/**
+ * Calculate household dollar impact from price changes
+ * Returns breakdown of monthly cost increases by category
+ */
+function calculateHouseholdImpact(stateData) {
+  const impact = {
+    electricity: null,
+    gasoline: null,
+    food: null,
+    total: 0,
+    breakdown: []
+  };
+
+  // Electricity impact: change in cents/kWh * 900 kWh/month / 100
+  const electricity = stateData.electricity_prices;
+  if (electricity?.processedData?.change) {
+    const changeInCents = electricity.processedData.change; // e.g., +1.2 cents/kWh
+    const monthlyImpact = (changeInCents * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100;
+    if (monthlyImpact !== 0) {
+      impact.electricity = Math.round(monthlyImpact);
+      impact.total += impact.electricity;
+      impact.breakdown.push({
+        category: 'Electricity',
+        amount: impact.electricity,
+        description: `${changeInCents > 0 ? '+' : ''}${changeInCents.toFixed(1)}¢/kWh × ${HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth} kWh`
+      });
+    }
+  }
+
+  // Gasoline impact: change in $/gallon * 50 gallons/month
+  const gasoline = stateData.gas_prices;
+  if (gasoline?.processedData?.change) {
+    const changeInDollars = gasoline.processedData.change; // e.g., +0.25 $/gallon
+    const monthlyImpact = changeInDollars * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth;
+    if (monthlyImpact !== 0) {
+      impact.gasoline = Math.round(monthlyImpact);
+      impact.total += impact.gasoline;
+      impact.breakdown.push({
+        category: 'Fuel',
+        amount: impact.gasoline,
+        description: `${changeInDollars > 0 ? '+' : ''}$${changeInDollars.toFixed(2)}/gal × ${HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth} gal`
+      });
+    }
+  }
+
+  // Food impact: change per person * 3 family members
+  const food = stateData.food_prices;
+  if (food?.processedData?.change) {
+    const changePerPerson = food.processedData.change; // e.g., +15 $/person/month
+    const monthlyImpact = changePerPerson * HOUSEHOLD_CONSUMPTION.foodPersonsPerFamily;
+    if (monthlyImpact !== 0) {
+      impact.food = Math.round(monthlyImpact);
+      impact.total += impact.food;
+      impact.breakdown.push({
+        category: 'Food',
+        amount: impact.food,
+        description: `${changePerPerson > 0 ? '+' : ''}$${changePerPerson.toFixed(0)}/person × ${HOUSEHOLD_CONSUMPTION.foodPersonsPerFamily} people`
+      });
+    }
+  }
+
+  impact.total = Math.round(impact.total);
+  return impact;
+}
+
+/**
+ * Generate section-specific insight for energy costs
+ */
+async function generateEnergyInsight(stateData, stateName) {
+  const electricity = stateData.electricity_prices?.processedData;
+  const gasoline = stateData.gas_prices?.processedData;
+
+  if (!electricity && !gasoline) return null;
+
+  const dataPoints = [];
+  if (electricity) {
+    dataPoints.push(`Electricity: ${electricity.displayValue} (${electricity.changeDisplay} YoY)`);
+  }
+  if (gasoline) {
+    dataPoints.push(`Gas: ${gasoline.displayValue} (${gasoline.changeDisplay} YoY)`);
+  }
+
+  const prompt = `Write ONE concise sentence (max 20 words) about energy costs in ${stateName}.
+Data: ${dataPoints.join(', ')}
+Rules: Use ONLY these numbers. No qualifiers. Focus on household impact.`;
+
+  try {
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    return result?.text || null;
+  } catch (error) {
+    logger.warn('Failed to generate energy insight', error);
+    return null;
+  }
+}
+
+/**
+ * Generate section-specific insight for employment
+ */
+async function generateEmploymentInsight(stateData, stateName) {
+  const unemployment = stateData.unemployment?.processedData;
+  const income = stateData.personal_income?.processedData;
+  const gdp = stateData.gdp?.processedData;
+
+  if (!unemployment) return null;
+
+  const dataPoints = [`Unemployment: ${unemployment.displayValue} (${unemployment.changeDisplay} YoY)`];
+  if (income) {
+    dataPoints.push(`Personal income: ${income.changeDisplay} YoY`);
+  }
+  if (gdp) {
+    dataPoints.push(`State GDP: ${gdp.changeDisplay} YoY`);
+  }
+
+  const prompt = `Write ONE concise sentence (max 20 words) about the job market in ${stateName}.
+Data: ${dataPoints.join(', ')}
+Rules: Use ONLY these numbers. No qualifiers. Focus on what this means for workers.`;
+
+  try {
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    return result?.text || null;
+  } catch (error) {
+    logger.warn('Failed to generate employment insight', error);
+    return null;
+  }
+}
+
+/**
+ * Generate section-specific insight for food costs
+ */
+async function generateFoodInsight(stateData, stateName) {
+  const food = stateData.food_prices?.processedData;
+  const groceryBasket = stateData.grocery_basket?.processedData;
+
+  if (!food && !groceryBasket) return null;
+
+  const dataPoints = [];
+  if (food) {
+    dataPoints.push(`Food cost per person: ${food.displayValue} (${food.changeDisplay} YoY)`);
+  }
+  if (groceryBasket) {
+    dataPoints.push(`Grocery basket: ${groceryBasket.displayValue}`);
+  }
+
+  const prompt = `Write ONE concise sentence (max 20 words) about food costs in ${stateName}.
+Data: ${dataPoints.join(', ')}
+Rules: Use ONLY these numbers. No qualifiers. Focus on grocery budget impact.`;
+
+  try {
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    return result?.text || null;
+  } catch (error) {
+    logger.warn('Failed to generate food insight', error);
+    return null;
+  }
+}
+
+/**
+ * Generate section-specific insight for economic overview
+ */
+async function generateEconomicInsight(stateData, stateName) {
+  const gdp = stateData.gdp?.processedData;
+  const income = stateData.personal_income?.processedData;
+  const unemployment = stateData.unemployment?.processedData;
+
+  if (!gdp && !income) return null;
+
+  const dataPoints = [];
+  if (gdp) {
+    dataPoints.push(`State GDP: ${gdp.displayValue} (${gdp.changeDisplay} YoY)`);
+  }
+  if (income) {
+    dataPoints.push(`Personal income: ${income.displayValue} (${income.changeDisplay} YoY)`);
+  }
+  if (unemployment) {
+    dataPoints.push(`Unemployment: ${unemployment.displayValue}`);
+  }
+
+  const prompt = `Write ONE concise sentence (max 20 words) about ${stateName}'s economic health.
+Data: ${dataPoints.join(', ')}
+Rules: Use ONLY these numbers. No qualifiers. Focus on economic trajectory.`;
+
+  try {
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    return result?.text || null;
+  } catch (error) {
+    logger.warn('Failed to generate economic insight', error);
+    return null;
+  }
+}
+
+/**
+ * Generate cross-metric correlation insight
+ */
+async function generateCrossMetricInsight(stateData, stateName, householdImpact) {
+  const electricity = stateData.electricity_prices?.processedData;
+  const gasoline = stateData.gas_prices?.processedData;
+  const food = stateData.food_prices?.processedData;
+  const unemployment = stateData.unemployment?.processedData;
+  const income = stateData.personal_income?.processedData;
+
+  const trends = [];
+  if (electricity?.change > 0) trends.push(`electricity up ${electricity.changeDisplay}`);
+  if (gasoline?.change > 0) trends.push(`gas up ${gasoline.changeDisplay}`);
+  if (food?.change > 0) trends.push(`food up ${food.changeDisplay}`);
+  if (unemployment?.change > 0) trends.push(`unemployment up to ${unemployment.displayValue}`);
+  if (income?.change < 0) trends.push(`income down ${income.changeDisplay}`);
+
+  if (trends.length < 2) return null;
+
+  const impactNote = householdImpact.total !== 0
+    ? `Total household impact: ~$${Math.abs(householdImpact.total)}/month ${householdImpact.total > 0 ? 'more' : 'less'}.`
+    : '';
+
+  const prompt = `Write ONE sentence (max 25 words) connecting these trends for ${stateName} families:
+Trends: ${trends.join(', ')}
+${impactNote}
+Rules: Show how these factors combine to squeeze or help household budgets. Use ONLY provided data.`;
+
+  try {
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 100, temperature: 0.3 });
+    return result?.text || null;
+  } catch (error) {
+    logger.warn('Failed to generate cross-metric insight', error);
+    return null;
+  }
+}
+
+/**
+ * Generate forward-looking projection insight
+ */
+async function generateForwardLookingInsight(stateData, stateName) {
+  // Look at momentum/trend data to project
+  const electricity = stateData.electricity_prices;
+  const gasoline = stateData.gas_prices;
+  const unemployment = stateData.unemployment;
+
+  const trendInfo = [];
+
+  // Check electricity trend
+  if (electricity?.timeSeries?.length >= 3) {
+    const recent = electricity.timeSeries.slice(-3);
+    const isRising = recent[2]?.value > recent[0]?.value;
+    if (isRising) trendInfo.push('electricity trending up');
+    else trendInfo.push('electricity stabilizing');
+  }
+
+  // Check gas trend
+  if (gasoline?.timeSeries?.length >= 3) {
+    const recent = gasoline.timeSeries.slice(-3);
+    const isRising = recent[2]?.value > recent[0]?.value;
+    if (isRising) trendInfo.push('fuel prices rising');
+    else trendInfo.push('fuel prices easing');
+  }
+
+  // Check unemployment trend
+  if (unemployment?.timeSeries?.length >= 3) {
+    const recent = unemployment.timeSeries.slice(-3);
+    const isRising = recent[2]?.value > recent[0]?.value;
+    if (isRising) trendInfo.push('unemployment climbing');
+    else trendInfo.push('job market steady');
+  }
+
+  if (trendInfo.length === 0) return null;
+
+  const currentValues = [];
+  if (electricity?.processedData) currentValues.push(`electricity at ${electricity.processedData.displayValue}`);
+  if (gasoline?.processedData) currentValues.push(`gas at ${gasoline.processedData.displayValue}`);
+
+  const prompt = `Write ONE forward-looking sentence (max 25 words) for ${stateName} based on trends.
+Current: ${currentValues.join(', ')}
+Recent trends: ${trendInfo.join(', ')}
+Rules: Start with "If trends continue..." Be specific but cautious. Use ONLY provided data.`;
+
+  try {
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 100, temperature: 0.4 });
+    return {
+      text: result?.text || null,
+      basedOnTrends: trendInfo
+    };
+  } catch (error) {
+    logger.warn('Failed to generate forward-looking insight', error);
+    return null;
+  }
+}
+
+/**
+ * Generate state vs national comparison narrative
+ */
+async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
+  const comparisons = [];
+
+  const electricity = stateData.electricity_prices?.processedData;
+  if (electricity && nationalAvgs.electricity) {
+    const stateVal = parseFloat(electricity.value);
+    const natVal = parseFloat(nationalAvgs.electricity.value);
+    if (stateVal && natVal) {
+      const diff = ((stateVal - natVal) / natVal * 100).toFixed(1);
+      comparisons.push(`electricity ${diff > 0 ? diff + '% above' : Math.abs(diff) + '% below'} national average`);
+    }
+  }
+
+  const gasoline = stateData.gas_prices?.processedData;
+  if (gasoline && nationalAvgs.gasoline) {
+    const stateVal = parseFloat(gasoline.value);
+    const natVal = parseFloat(nationalAvgs.gasoline.value);
+    if (stateVal && natVal) {
+      const diff = ((stateVal - natVal) / natVal * 100).toFixed(1);
+      comparisons.push(`gas ${diff > 0 ? diff + '% above' : Math.abs(diff) + '% below'} national average`);
+    }
+  }
+
+  if (comparisons.length === 0) return null;
+
+  const prompt = `Write TWO concise sentences comparing ${stateName} costs to national averages.
+Comparisons: ${comparisons.join(', ')}
+Rules: Explain what this means for ${stateName} residents vs other Americans. Use ONLY provided data.`;
+
+  try {
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 100, temperature: 0.3 });
+    return result?.text || null;
+  } catch (error) {
+    logger.warn('Failed to generate comparison narrative', error);
+    return null;
+  }
+}
+
+/**
+ * Master function to generate all AI insights
+ * Returns structured aiInsights object
+ */
+async function generateAIInsights(stateData, stateName, nationalAvgs) {
+  try {
+    // Calculate household impact first (sync operation)
+    const householdImpact = calculateHouseholdImpact(stateData);
+
+    // Generate all insights in parallel for speed
+    const [
+      energyInsight,
+      employmentInsight,
+      foodInsight,
+      economicInsight,
+      crossMetricInsight,
+      forwardLookingResult,
+      comparisonNarrative
+    ] = await Promise.all([
+      generateEnergyInsight(stateData, stateName),
+      generateEmploymentInsight(stateData, stateName),
+      generateFoodInsight(stateData, stateName),
+      generateEconomicInsight(stateData, stateName),
+      generateCrossMetricInsight(stateData, stateName, householdImpact),
+      generateForwardLookingInsight(stateData, stateName),
+      generateComparisonNarrative(stateData, stateName, nationalAvgs)
+    ]);
+
+    return {
+      sections: {
+        energy: energyInsight,
+        employment: employmentInsight,
+        food: foodInsight,
+        economic: economicInsight
+      },
+      crossMetric: {
+        text: crossMetricInsight,
+        householdImpact
+      },
+      forwardLooking: forwardLookingResult,
+      comparison: {
+        text: comparisonNarrative
+      }
+    };
+  } catch (error) {
+    logger.error('Error generating AI insights', error);
+    return null;
+  }
+}
+
 /**
  * Fetch all cached data for a state
  */
@@ -455,6 +838,12 @@ export async function generateStateReportData(stateName = 'California', role = '
     const trendData = buildTrendData(stateData);
     const comparisonData = await buildComparisonData(stateData, stateName);
 
+    // Fetch national averages for AI comparison narrative
+    const nationalAvgs = await fetchNationalAverages();
+
+    // Generate AI insights (runs in parallel internally)
+    const aiInsights = await generateAIInsights(stateData, stateName, nationalAvgs);
+
     // Collect all sources used
     const sourcesUsed = new Set();
     keyMetrics.forEach(m => m.source && sourcesUsed.add(m.source));
@@ -471,6 +860,7 @@ export async function generateStateReportData(stateName = 'California', role = '
       keyMetrics,
       trendData,
       comparisonData,
+      aiInsights,
       metadata: {
         dataFreshness: cachedData.hasStaleData ? 'stale' : 'fresh',
         staleDataTypes: cachedData.staleDataTypes || [],

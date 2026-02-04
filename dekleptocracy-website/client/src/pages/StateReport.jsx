@@ -5,6 +5,89 @@ import html2canvas from 'html2canvas';
 import { API_URL } from '../utils/apiUrl';
 import './StateReport.css';
 
+// AI Insight Card Component
+const AIInsightCard = ({ insight, variant = 'default', icon, title, children }) => {
+  if (!insight && !children) return null;
+
+  const variantClass = variant !== 'default' ? `ai-insight-card--${variant}` : '';
+
+  return (
+    <div className={`ai-insight-card ${variantClass}`}>
+      <div className="ai-insight-header">
+        {icon && <div className="ai-insight-icon">{icon}</div>}
+        {title && <h4 className="ai-insight-title">{title}</h4>}
+      </div>
+      <p className="ai-insight-text">{insight || children}</p>
+    </div>
+  );
+};
+
+// Household Impact Display Component
+const HouseholdImpactCard = ({ impact, crossMetricText }) => {
+  if (!impact || impact.total === 0) return null;
+
+  const isIncrease = impact.total > 0;
+
+  return (
+    <div className="ai-insight-card ai-insight-card--highlight">
+      <div className="ai-insight-header">
+        <div className="ai-insight-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <h4 className="ai-insight-title">Household Budget Impact</h4>
+      </div>
+      {crossMetricText && <p className="ai-insight-text">{crossMetricText}</p>}
+      <div className="household-impact">
+        <div className="household-impact-total">
+          {isIncrease ? '+' : '-'}${Math.abs(impact.total)}<span>/month</span>
+        </div>
+        {impact.breakdown?.length > 0 && (
+          <div className="household-impact-breakdown">
+            {impact.breakdown.map((item, index) => (
+              <div key={index} className="household-impact-item">
+                <span className="household-impact-item-category">{item.category}: </span>
+                <span className={`household-impact-item-amount ${item.amount < 0 ? 'positive' : ''}`}>
+                  {item.amount > 0 ? '+' : '-'}${Math.abs(item.amount)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Forward Looking Insight Component
+const ForwardLookingCard = ({ insight }) => {
+  if (!insight?.text) return null;
+
+  return (
+    <div className="ai-insight-card ai-insight-card--projection">
+      <div className="ai-insight-header">
+        <div className="ai-insight-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12,6 12,12 16,14"/>
+          </svg>
+        </div>
+        <h4 className="ai-insight-title">Looking Ahead</h4>
+      </div>
+      <p className="ai-insight-text">{insight.text}</p>
+      {insight.basedOnTrends?.length > 0 && (
+        <div className="forward-looking-trends">
+          {insight.basedOnTrends.map((trend, index) => (
+            <span key={index} className="forward-looking-trend">{trend}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const StateReport = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -377,7 +460,15 @@ const StateReport = () => {
           <p className="district-report-overview-statement">
             {data.overviewStatement || 'Lobbyists and corporations profit while working families and schools lose'}
           </p>
-          
+
+          {/* Cross-Metric AI Insight with Household Impact */}
+          {data.aiInsights?.crossMetric && (
+            <HouseholdImpactCard
+              impact={data.aiInsights.crossMetric.householdImpact}
+              crossMetricText={data.aiInsights.crossMetric.text}
+            />
+          )}
+
           <div className="district-report-comparison">
           {data.comparisonCards?.[0] && (
             <div className="district-report-comparison-card">
@@ -419,6 +510,38 @@ const StateReport = () => {
       {/* Key Metrics */}
       <div className="district-report-metrics">
         <h2 className="district-report-section-title">Real-time data showing how federal policies affect {data.stateName} residents.</h2>
+
+        {/* Section Insights Row */}
+        {data.aiInsights?.sections && (
+          <div className="metrics-insights-row">
+            {data.aiInsights.sections.energy && (
+              <AIInsightCard
+                insight={data.aiInsights.sections.energy}
+                variant="compact"
+                title="Energy Insight"
+                icon={
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
+                  </svg>
+                }
+              />
+            )}
+            {data.aiInsights.sections.employment && (
+              <AIInsightCard
+                insight={data.aiInsights.sections.employment}
+                variant="compact"
+                title="Employment Insight"
+                icon={
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                }
+              />
+            )}
+          </div>
+        )}
+
         <div className="district-report-metrics-grid">
           {data.keyMetrics?.map((metric, index) => (
             <div key={index} className="district-report-metric-card">
@@ -471,6 +594,12 @@ const StateReport = () => {
       {/* Trend Over Time */}
       <div className="district-report-trends">
         <h2 className="district-report-section-title">Trend Over Time</h2>
+
+        {/* Forward Looking AI Insight */}
+        {data.aiInsights?.forwardLooking && (
+          <ForwardLookingCard insight={data.aiInsights.forwardLooking} />
+        )}
+
         <div className="district-report-trends-grid">
           {data.trendData?.map((trend, index) => {
             if (!trend.data || trend.data.length === 0) return null;
@@ -600,6 +729,24 @@ const StateReport = () => {
       {/* State Comparison */}
       <div className="district-report-comparison-section">
         <h2 className="district-report-section-title">State Comparison</h2>
+
+        {/* AI Comparison Narrative */}
+        {data.aiInsights?.comparison?.text && (
+          <div className="ai-comparison-narrative">
+            <div className="ai-insight-header">
+              <div className="ai-insight-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 20V10"/>
+                  <path d="M12 20V4"/>
+                  <path d="M6 20v-6"/>
+                </svg>
+              </div>
+              <h4 className="ai-insight-title">How {data.stateName} Compares</h4>
+            </div>
+            <p className="ai-insight-text">{data.aiInsights.comparison.text}</p>
+          </div>
+        )}
+
         <div className="district-report-comparison-content">
           <div className="district-report-comparison-text">
             <p>{generateComparisonText(data?.comparisonData, data?.stateName)}</p>

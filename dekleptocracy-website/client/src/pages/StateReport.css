@@ -931,3 +931,256 @@
     align-items: flex-start;
   }
 }
+
+/* AI Insight Cards */
+.ai-insight-card {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.ai-insight-card--highlight {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #fbbf24;
+}
+
+.ai-insight-card--projection {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #86efac;
+}
+
+.ai-insight-card--compact {
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.ai-insight-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ai-insight-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.ai-insight-card--highlight .ai-insight-icon {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.ai-insight-card--projection .ai-insight-icon {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.ai-insight-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e40af;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.ai-insight-card--highlight .ai-insight-title {
+  color: #92400e;
+}
+
+.ai-insight-card--projection .ai-insight-title {
+  color: #166534;
+}
+
+.ai-insight-text {
+  font-size: 15px;
+  color: #1f2937;
+  line-height: 1.6;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.ai-insight-card--compact .ai-insight-header {
+  margin-bottom: 8px;
+}
+
+.ai-insight-card--compact .ai-insight-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.ai-insight-card--compact .ai-insight-title {
+  font-size: 12px;
+}
+
+.ai-insight-card--compact .ai-insight-text {
+  font-size: 13px;
+}
+
+/* Household Impact Breakdown */
+.household-impact {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.household-impact-total {
+  font-size: 24px;
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.household-impact-total span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #a16207;
+}
+
+.household-impact-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.household-impact-item {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #78350f;
+}
+
+.household-impact-item-category {
+  font-weight: 600;
+}
+
+.household-impact-item-amount {
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.household-impact-item-amount.positive {
+  color: #16a34a;
+}
+
+/* Metrics Insights Row */
+.metrics-insights-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metrics-insights-row .ai-insight-card {
+  margin-bottom: 0;
+}
+
+/* Forward Looking Trends */
+.forward-looking-trends {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.forward-looking-trend {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #166534;
+  font-weight: 500;
+}
+
+/* AI Comparison Section */
+.ai-comparison-narrative {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border: 1px solid #d8b4fe;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.ai-comparison-narrative .ai-insight-icon {
+  background-color: rgba(147, 51, 234, 0.1);
+  color: #9333ea;
+}
+
+.ai-comparison-narrative .ai-insight-title {
+  color: #6b21a8;
+}
+
+/* Responsive AI Insights */
+@media (max-width: 768px) {
+  .ai-insight-card {
+    padding: 16px 20px;
+  }
+
+  .ai-insight-header {
+    gap: 10px;
+  }
+
+  .ai-insight-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .ai-insight-text {
+    font-size: 14px;
+  }
+
+  .household-impact-total {
+    font-size: 20px;
+  }
+
+  .metrics-insights-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-insight-card {
+    padding: 14px 16px;
+  }
+
+  .ai-insight-card--compact {
+    padding: 10px 12px;
+  }
+
+  .ai-insight-header {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .ai-insight-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .ai-insight-title {
+    font-size: 12px;
+  }
+
+  .ai-insight-text {
+    font-size: 13px;
+  }
+
+  .household-impact-total {
+    font-size: 18px;
+  }
+
+  .household-impact-breakdown {
+    flex-direction: column;
+  }
+}
