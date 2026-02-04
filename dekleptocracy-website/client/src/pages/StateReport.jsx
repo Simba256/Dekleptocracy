@@ -286,15 +286,26 @@ const StateReport = () => {
       return `Living costs in ${stateName} vary from the national average.`;
     }
 
-    const items = comparisonData.map(item => {
-      const direction = item.change.includes('+') ? 'higher' : 'lower';
-      return `${item.category} (${item.change} ${direction})`;
-    }).join(', ');
+    const higher = comparisonData.filter(i => i.change.includes('+'));
+    const lower = comparisonData.filter(i => i.change.includes('-'));
 
-    const avgIncrease = comparisonData.filter(i => i.change.includes('+')).length;
-    const impactLevel = avgIncrease >= 3 ? 'significantly' : avgIncrease >= 2 ? 'notably' : 'slightly';
+    let sentences = [];
 
-    return `Living costs in ${stateName} are ${impactLevel} different from the national average. Key differences include: ${items}. These differences directly impact household budgets and purchasing power.`;
+    if (higher.length > 0) {
+      const higherItems = higher.map(i => `${i.category.toLowerCase()} (${i.change})`).join(' and ');
+      sentences.push(`${stateName} residents pay more for ${higherItems} compared to the national average.`);
+    }
+
+    if (lower.length > 0) {
+      const lowerItems = lower.map(i => `${i.category.toLowerCase()} (${i.change})`).join(' and ');
+      sentences.push(`On the plus side, ${lower.length > 1 ? 'costs are' : 'the cost is'} lower for ${lowerItems}.`);
+    }
+
+    if (sentences.length === 0) {
+      return `${stateName}'s costs are roughly in line with national averages.`;
+    }
+
+    return sentences.join(' ');
   };
 
   if (loading) {
