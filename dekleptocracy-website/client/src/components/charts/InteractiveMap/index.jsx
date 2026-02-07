@@ -16,6 +16,7 @@ const InteractiveMap = ({
   const [hoveredState, setHoveredState] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [clickIndicator, setClickIndicator] = useState(null);
   const mapRef = useRef(null);
 
   const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
@@ -38,19 +39,73 @@ const InteractiveMap = ({
   };
 
   const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - center.x, y: e.clientY - center.y });
+    if (e.target.closest('.heat-blob')) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - center.x, y: e.clientY - center.y });
+    }
   };
 
   const handleMouseMove = (e) => {
     if (isDragging) {
       setCenter({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    } else if (!e.target.closest('.heat-blob') && !e.target.closest('.map-controls')) {
+      const closestState = findClosestState(e.clientX, e.clientY);
+      setHoveredState(closestState);
     }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+    setHoveredState(null);
+  };
+
+  const findClosestState = useCallback((clickX, clickY) => {
+    const mapRect = mapRef.current?.getBoundingClientRect();
+    if (!mapRect) return null;
+
+    const svg = mapRef.current?.querySelector('.heat-overlay');
+    if (!svg) return null;
+
+    const svgRect = svg.getBoundingClientRect();
+    const viewBoxWidth = 960;
+    const viewBoxHeight = 600;
+
+    const relativeX = clickX - svgRect.left;
+    const relativeY = clickY - svgRect.top;
+
+    const centerX = svgRect.width / 2;
+    const centerY = svgRect.height / 2;
+
+    const svgX = (relativeX - centerX) / zoom + centerX;
+    const svgY = (relativeY - centerY) / zoom + centerY;
+
+    const viewBoxX = (svgX / svgRect.width) * viewBoxWidth;
+    const viewBoxY = (svgY / svgRect.height) * viewBoxHeight;
+
+    let closestState = null;
+    let minDistance = Infinity;
+
+    Object.entries(stateColors).forEach(([stateName, coords]) => {
+      const rx = coords.rx * (1 + 0.3 * (zoom - 1));
+      const ry = coords.ry * (1 + 0.3 * (zoom - 1));
+
+      const distance = Math.sqrt(
+        Math.pow((viewBoxX - coords.cx) / rx, 2) +
+        Math.pow((viewBoxY - coords.cy) / ry, 2)
+      );
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestState = stateName;
+      }
+    });
+
+    return minDistance < 1.3 ? closestState : null;
+  }, [stateColors, zoom]);
 
   const colorScale = useMemo(() => {
     const values = data?.map(d => d.intensity || 0) || [];
@@ -79,6 +134,7 @@ const InteractiveMap = ({
     setZoom(1);
     setCenter({ x: 0, y: 0 });
     onStateSelect?.(null);
+    setClickIndicator(null);
   };
 
   const stateColors = {
@@ -154,7 +210,32 @@ const InteractiveMap = ({
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onClick={(e) => {
+          if (!e.target.closest('.heat-blob') && !e.target.closest('.map-controls')) {
+            const clickX = e.clientX;
+            const clickY = e.clientY;
+            const closestState = findClosestState(clickX, clickY);
+            
+            const mapRect = mapRef.current?.getBoundingClientRect();
+            if (mapRect) {
+              const svg = mapRef.current?.querySelector('.heat-overlay');
+              if (svg) {
+                const svgRect = svg.getBoundingClientRect();
+                setClickIndicator({
+                  x: ((clickX - svgRect.left) / svgRect.width) * 960,
+                  y: ((clickY - svgRect.top) / svgRect.height) * 600
+                });
+                
+                setTimeout(() => setClickIndicator(null), 1500);
+              }
+            }
+            
+            if (closestState) {
+              handleStateClick(closestState);
+            }
+          }
+        }}
       >
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Blank_US_Map_%28states_only%29.svg/1280px-Blank_US_Map_%28states_only%29.svg.png"
@@ -168,11 +249,12 @@ const InteractiveMap = ({
         />
 
         <svg viewBox="0 0 960 600" className="heat-overlay" preserveAspectRatio="xMidYMid meet" style={style}>
-          {Object.entries(stateColors).map(([stateName, coords]) => {
-            const stateData = getStateData(stateName);
-            const intensity = stateData?.intensity || Math.random() * 100;
-            const isSelected = selectedState === stateName;
-            const isHovered = hoveredState === stateName;
+           {Object.entries(stateColors).map(([stateName, coords]) => {
+             const stateData = getStateData(stateName);
+             const intensity = stateData?.intensity || Math.random() * 100;
+             const isSelected = selectedState === stateName;
+             const isHovered = hoveredState === stateName;
+             const isClosest = hoveredState === stateName && !isHovered;
 
             return (
               <ellipse
@@ -196,8 +278,23 @@ const InteractiveMap = ({
                   strokeWidth: isSelected ? 3 : (isHovered ? 2 : 0.5)
                 }}
               />
-            );
-          })}
+             );
+           })}
+           
+           {clickIndicator && (
+             <circle
+               cx={clickIndicator.x}
+               cy={clickIndicator.y}
+               r="8"
+               fill="none"
+               stroke="#4A5D3F"
+               strokeWidth="3"
+               opacity="0.9"
+               style={{
+                 animation: 'ping 0.6s cubic-bezier(0, 0, 0.2, 1) infinite'
+               }}
+             />
+           )}
         </svg>
       </div>
 

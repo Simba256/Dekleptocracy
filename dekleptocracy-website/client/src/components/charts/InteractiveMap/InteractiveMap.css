@@ -68,6 +68,25 @@
 
 .heat-blob.selected {
   filter: brightness(1.2);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    stroke-width: 3;
+    opacity: 0.9;
+  }
+  50% {
+    stroke-width: 5;
+    opacity: 1;
+  }
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(3);
+    opacity: 0;
+  }
 }
 
 .map-state-tooltip {
