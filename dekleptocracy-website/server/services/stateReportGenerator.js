@@ -389,9 +389,10 @@ function calculateSqueezeIndex(stateData) {
   const income = stateData.personal_income?.processedData;
 
   // Check each metric for pressure or relief
+  // Note: changeDisplay already includes the sign (e.g., "+8.6%" or "-13.4%")
   if (electricity?.change > 3) {
     pressures++;
-    details.pressures.push(`electricity +${electricity.changeDisplay}`);
+    details.pressures.push(`electricity ${electricity.changeDisplay}`);
   } else if (electricity?.change < -3) {
     reliefs++;
     details.reliefs.push(`electricity ${electricity.changeDisplay}`);
@@ -399,7 +400,7 @@ function calculateSqueezeIndex(stateData) {
 
   if (gasoline?.change > 0.10) {
     pressures++;
-    details.pressures.push(`gas +${gasoline.changeDisplay}`);
+    details.pressures.push(`gas ${gasoline.changeDisplay}`);
   } else if (gasoline?.change < -0.10) {
     reliefs++;
     details.reliefs.push(`gas ${gasoline.changeDisplay}`);
@@ -407,7 +408,7 @@ function calculateSqueezeIndex(stateData) {
 
   if (food?.change > 5) {
     pressures++;
-    details.pressures.push(`food +${food.changeDisplay}`);
+    details.pressures.push(`food ${food.changeDisplay}`);
   } else if (food?.change < -5) {
     reliefs++;
     details.reliefs.push(`food ${food.changeDisplay}`);
@@ -415,7 +416,7 @@ function calculateSqueezeIndex(stateData) {
 
   if (unemployment?.change > 0.3) {
     pressures++;
-    details.pressures.push(`unemployment +${unemployment.changeDisplay}`);
+    details.pressures.push(`unemployment ${unemployment.changeDisplay}`);
   } else if (unemployment?.change < -0.3) {
     reliefs++;
     details.reliefs.push(`unemployment ${unemployment.changeDisplay}`);
@@ -426,7 +427,7 @@ function calculateSqueezeIndex(stateData) {
     details.pressures.push(`income ${income.changeDisplay}`);
   } else if (income?.change > 2) {
     reliefs++;
-    details.reliefs.push(`income +${income.changeDisplay}`);
+    details.reliefs.push(`income ${income.changeDisplay}`);
   }
 
   // Determine overall status
@@ -667,7 +668,8 @@ async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
       const centsDiff = stateVal - natVal;
       const monthlyDiff = Math.round((centsDiff * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100);
       if (Math.abs(monthlyDiff) >= 5) {
-        dollarImpacts.push(`Electricity: ${monthlyDiff > 0 ? '+' : ''}$${monthlyDiff}/month vs national average`);
+        const sign = monthlyDiff > 0 ? '+' : '-';
+        dollarImpacts.push(`Electricity: ${sign}$${Math.abs(monthlyDiff)}/month vs national average`);
       }
     }
   }
@@ -691,7 +693,8 @@ async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
       const dollarDiff = stateVal - natVal;
       const monthlyDiff = Math.round(dollarDiff * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth);
       if (Math.abs(monthlyDiff) >= 5) {
-        dollarImpacts.push(`Fuel: ${monthlyDiff > 0 ? '+' : ''}$${monthlyDiff}/month vs national average`);
+        const sign = monthlyDiff > 0 ? '+' : '-';
+        dollarImpacts.push(`Fuel: ${sign}$${Math.abs(monthlyDiff)}/month vs national average`);
       }
     }
   }
