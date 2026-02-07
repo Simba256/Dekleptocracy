@@ -1,9 +1,9 @@
+/* Load accessibility color contrast fixes - must be before @tailwind */
+@import './accessibility-color-fixes.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Load accessibility color contrast fixes */
-@import './accessibility-color-fixes.css';
 
 * {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
