@@ -1,30 +1,29 @@
 import { useHomepage } from '../../../context/HomepageContext';
+import TimelineSlider from '../../../components/inputs/TimelineSlider';
+import ProductSearch from '../../../components/inputs/ProductSearch';
+import { useState, useMemo } from 'react';
 
 export function BudgetImpactSection() {
   const { state, actions } = useHomepage();
-  const { timelineDate, productQuery, timelineConfig } = state;
+  const { timelineDate, timelineConfig, trendingProducts } = state;
+  const [selectedDate, setSelectedDate] = useState('2025-01-20');
 
   // Use timeline config from API or fallback
   const milestones = timelineConfig?.milestones || [
-    { position: 0, dateDisplay: 'Jul 1, 2024', label: 'Before Policy' },
-    { position: 20, dateDisplay: 'Oct 1, 2024', label: 'Pre-Election' },
-    { position: 50, dateDisplay: 'Jan 20, 2025', label: 'Inauguration Day', highlighted: true },
-    { position: 70, dateDisplay: 'Apr 1, 2025', label: 'Early Months' },
-    { position: 85, dateDisplay: 'Jul 1, 2025', label: 'Mid-Year' },
-    { position: 100, dateDisplay: 'Oct 1, 2025', label: 'Current Snapshot' }
+    { date: '2024-07-01', label: 'Before Policy' },
+    { date: '2024-10-01', label: 'Pre-Election' },
+    { date: '2025-01-20', label: 'Inauguration Day', highlighted: true },
+    { date: '2025-04-01', label: 'Early Months' },
+    { date: '2025-07-01', label: 'Mid-Year' },
+    { date: '2025-10-01', label: 'Current Snapshot' }
   ];
 
-  // Find the active milestone based on timeline position
-  const getActiveMilestoneIndex = () => {
-    for (let i = milestones.length - 1; i >= 0; i--) {
-      if (timelineDate >= milestones[i].position) {
-        return i;
-      }
-    }
-    return 0;
-  };
-
-  const activeMilestoneIndex = getActiveMilestoneIndex();
+  const timelineConfigData = useMemo(() => ({
+    minDate: '2024-01-01',
+    maxDate: '2025-12-31',
+    milestones,
+    defaultDate: '2025-01-20'
+  }), [milestones]);
 
   return (
     <section className="budget-impact-section">
@@ -39,58 +38,28 @@ export function BudgetImpactSection() {
             <h3 id="timeline-slider-label" className="timeline-title">Slide to Select Your Starting Point:</h3>
           </div>
 
-          <div className="timeline-slider-container">
-            <div className="timeline-labels">
-              {milestones.map((milestone, index) => (
-                <div key={index} className="timeline-point">
-                  <div className={`timeline-date ${index === activeMilestoneIndex ? 'active' : ''}`}>
-                    {milestone.dateDisplay}
-                  </div>
-                  <div className={`timeline-label ${index === activeMilestoneIndex ? 'active' : ''}`}>
-                    {milestone.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <input
-              type="range"
-              id="timeline-slider"
-              min="0"
-              max="100"
-              value={timelineDate}
-              onChange={(e) => actions.setTimelineDate(Number(e.target.value))}
-              className="timeline-slider"
-              aria-labelledby="timeline-slider-label"
-              aria-label="Select timeline starting point"
-              title="Select timeline starting point"
-              style={{
-                background: `linear-gradient(to right, #FF6B5A 0%, #FF6B5A ${timelineDate}%, #e5e7eb ${timelineDate}%, #e5e7eb 100%)`
-              }}
-            />
-          </div>
+          <TimelineSlider
+            config={timelineConfigData}
+            value={selectedDate}
+            onChange={setSelectedDate}
+            onMilestoneClick={(milestone) => {
+              console.log('Milestone clicked:', milestone);
+            }}
+          />
         </div>
 
         <div className="product-search-section">
           <h3 className="product-search-title">What&apos;s affecting your budget?</h3>
-          <div className="product-search-container">
-            <input
-              type="text"
-              placeholder="housing"
-              value={productQuery}
-              onChange={(e) => actions.setProductQuery(e.target.value)}
-              className="product-search-input"
-            />
-            <button
-              className="show-impact-btn"
-              onClick={() => actions.showImpactModal(productQuery || 'Housing')}
-            >
-              Show Impact
-            </button>
-          </div>
-          <p className="product-suggestions">
-            <span className="suggestions-label">Try these:</span> eggs, housing, gasoline
-          </p>
+          <ProductSearch
+            onSearch={(product) => actions.showImpactModal(product)}
+            onSelect={(product) => actions.showImpactModal(product.name || product)}
+            placeholder="housing"
+            trendingProducts={trendingProducts || [
+              { name: 'Housing', changePercent: 80.9, trending: true },
+              { name: 'Groceries', changePercent: 15.2, trending: true },
+              { name: 'Gasoline', changePercent: 12.5, trending: true }
+            ]}
+          />
         </div>
       </div>
     </section>

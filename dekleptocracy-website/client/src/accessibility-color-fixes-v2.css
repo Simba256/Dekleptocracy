@@ -381,8 +381,8 @@ select,
 }
 
 /* ============================================
-   SUMMARY
-   ============================================
+    SUMMARY
+    ============================================
 
 This file provides comprehensive color contrast fixes by:
 1. Adding explicit backgrounds to all text elements
@@ -395,3 +395,4 @@ This file provides comprehensive color contrast fixes by:
 
 Expected Result: 34 color contrast issues → 0 (all fixed)
 Accessibility Score: 93 → 95-97/100 (+2-4 points)
+*/

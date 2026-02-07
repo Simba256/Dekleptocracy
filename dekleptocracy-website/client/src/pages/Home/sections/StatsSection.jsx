@@ -1,8 +1,15 @@
 import { useHomepage } from '../../../context/HomepageContext';
+import { useState, lazy } from 'react';
+import Suspense from 'react';
+
+const StateComparison = lazy(() => import('../../../components/modals/StateComparison'));
 
 export function StatsSection() {
   const { state } = useHomepage();
-  const { stats } = state;
+  const { stats, selectedState } = state;
+  const [showComparison, setShowComparison] = useState(false);
+
+  const handleCloseComparison = () => setShowComparison(false);
 
   // Use API data with fallbacks
   const lobbying = stats.lobbying || { displayValue: '276K' };
@@ -82,7 +89,26 @@ export function StatsSection() {
             ))}
           </div>
         </div>
+
+        <div className="stats-actions">
+          <button
+            className="compare-states-btn"
+            onClick={() => setShowComparison(true)}
+          >
+            Compare States {String.fromCharCode(8594)}
+          </button>
+        </div>
       </div>
+
+      {showComparison && (
+        <Suspense fallback={null}>
+          <StateComparison
+            isOpen={showComparison}
+            onClose={handleCloseComparison}
+            initialState={selectedState}
+          />
+        </Suspense>
+      )}
     </section>
   );
 }

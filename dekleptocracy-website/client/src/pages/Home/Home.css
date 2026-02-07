@@ -2637,3 +2637,37 @@
   max-width: 1200px;
 }
 
+
+
+/* Compare States Button */
+.stats-actions {
+  display: flex;
+  justify-content: center;
+  padding: 0 20px 60px;
+}
+
+.compare-states-btn {
+  padding: 14px 28px;
+  background: #4A5D3F;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-states-btn:hover {
+  background: #2d3748;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 93, 63, 0.3);
+}
+
+.compare-states-btn:active {
+  transform: translateY(0);
+}
+
