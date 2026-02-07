@@ -16,7 +16,6 @@ const TimelineSlider = ({
   } = config || {};
 
   const [isDragging, setIsDragging] = useState(false);
-  const [hoverPosition, setHoverPosition] = useState(null);
   const [localPosition, setLocalPosition] = useState(null);
 
   const dateToPosition = useCallback((date) => {
@@ -56,30 +55,6 @@ const TimelineSlider = ({
     setLocalPosition(null);
   };
 
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percentage = (x / rect.width) * 100;
-    setHoverPosition(Math.max(0, Math.min(100, percentage)));
-  };
-
-  const nearestMilestone = useMemo(() => {
-    if (!hoverPosition) return null;
-
-    const milestonesWithPositions = milestones.map(m => ({
-      ...m,
-      position: dateToPosition(m.date)
-    }));
-
-    return milestonesWithPositions.reduce((nearest, milestone) => {
-      const distance = Math.abs(milestone.position - hoverPosition);
-      if (!nearest || distance < nearest.distance) {
-        return { ...milestone, distance };
-      }
-      return nearest;
-    }, null);
-  }, [hoverPosition, milestones, dateToPosition]);
-
   return (
     <div className="timeline-slider-container">
       {milestones.length > 0 && (
@@ -108,11 +83,7 @@ const TimelineSlider = ({
         </div>
       )}
 
-      <div
-        className="slider-track-wrapper"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setHoverPosition(null)}
-      >
+      <div className="slider-track-wrapper">
         {/* Track background */}
         <div className="slider-track" />
 
@@ -138,17 +109,6 @@ const TimelineSlider = ({
             />
           );
         })}
-
-        {hoverPosition !== null && (
-          <div
-            className="hover-preview"
-            style={{ left: `${hoverPosition}%` }}
-          >
-            <span className="preview-date">
-              {format(parseISO(positionToDate(hoverPosition)), 'MMM d, yyyy')}
-            </span>
-          </div>
-        )}
 
         <input
           type="range"
