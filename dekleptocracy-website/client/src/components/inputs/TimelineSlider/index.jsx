@@ -113,9 +113,19 @@ const TimelineSlider = ({
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setHoverPosition(null)}
       >
+        {/* Track background */}
+        <div className="slider-track" />
+
+        {/* Progress fill */}
         <div
           className="slider-progress"
           style={{ width: `${localPosition !== null ? localPosition : position}%` }}
+        />
+
+        {/* Custom thumb */}
+        <div
+          className="slider-thumb"
+          style={{ left: `${localPosition !== null ? localPosition : position}%` }}
         />
 
         {milestones.map((milestone, index) => {
