@@ -487,9 +487,9 @@ AVAILABLE_TOOLS = {
             prompt=params.get("prompt", ""),
             max_tokens=params.get("max_tokens", 150),
             temperature=params.get("temperature", 0.3),
-            model=params.get("model", "gpt-5-mini")  # GPT-5 mini for high quality insights
+            model=params.get("model", "gpt-4o-mini")  # Fast, reliable model
         ),
-        "description": "Generate text using OpenAI GPT-5 for insights and analysis"
+        "description": "Generate text using OpenAI GPT for insights and analysis"
     },
 }
 
