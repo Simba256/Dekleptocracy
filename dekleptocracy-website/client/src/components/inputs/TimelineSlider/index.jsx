@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { format, parseISO, differenceInDays, addDays } from 'date-fns';
 import './TimelineSlider.css';
 
@@ -17,6 +17,13 @@ const TimelineSlider = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [localPosition, setLocalPosition] = useState(null);
+
+  // Reset local position when value changes externally (e.g., milestone click)
+  useEffect(() => {
+    if (!isDragging) {
+      setLocalPosition(null);
+    }
+  }, [value, isDragging]);
 
   const dateToPosition = useCallback((date) => {
     const min = parseISO(minDate);
