@@ -99,18 +99,29 @@ const TimelineSlider = ({
           style={{ left: `${localPosition !== null ? localPosition : position}%` }}
         />
 
-        {milestones.map((milestone, index) => {
-          const milestonePos = dateToPosition(milestone.date);
+        {(() => {
           const currentPos = localPosition !== null ? localPosition : position;
-          const isPassed = milestonePos <= currentPos;
-          return (
-            <div
-              key={index}
-              className={`milestone-marker ${milestone.highlighted ? 'highlighted' : ''} ${isPassed ? 'passed' : ''}`}
-              style={{ left: `${milestonePos}%` }}
-            />
-          );
-        })}
+          // Find the last passed milestone (closest to head)
+          const passedMilestones = milestones
+            .map((m, i) => ({ ...m, index: i, pos: dateToPosition(m.date) }))
+            .filter(m => m.pos <= currentPos);
+          const activeMilestoneIndex = passedMilestones.length > 0
+            ? passedMilestones[passedMilestones.length - 1].index
+            : -1;
+
+          return milestones.map((milestone, index) => {
+            const milestonePos = dateToPosition(milestone.date);
+            const isPassed = milestonePos <= currentPos;
+            const isActive = index === activeMilestoneIndex;
+            return (
+              <div
+                key={index}
+                className={`milestone-marker ${isPassed ? 'passed' : ''} ${isActive ? 'active' : ''}`}
+                style={{ left: `${milestonePos}%` }}
+              />
+            );
+          });
+        })()}
 
         <input
           type="range"
