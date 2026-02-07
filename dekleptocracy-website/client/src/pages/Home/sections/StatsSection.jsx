@@ -11,7 +11,8 @@ export function StatsSection() {
   const tariffRevenue = stats.tariffRevenue || { displayValue: '$6.7B' };
 
   return (
-    <section className="stats-section">
+    <section className="stats-section" aria-labelledby="stats-heading">
+      <h2 id="stats-heading" className="sr-only">Key Statistics</h2>
       <div className="stats-container">
         {/* Lobbying Cases Tracked */}
         <div className="stat-card stat-card-large">
