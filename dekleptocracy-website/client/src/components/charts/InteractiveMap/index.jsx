@@ -58,19 +58,17 @@ const InteractiveMap = ({
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    const rect = wrapperRef.current.getBoundingClientRect();
     setDragStart({
-      x: e.clientX - rect.left - center.x,
-      y: e.clientY - rect.top - center.y
+      x: e.clientX - center.x,
+      y: e.clientY - center.y
     });
   };
 
   const handleMouseMove = (e) => {
     if (isDragging) {
-      const rect = wrapperRef.current.getBoundingClientRect();
       setCenter({
-        x: e.clientX - rect.left - dragStart.x,
-        y: e.clientY - rect.top - dragStart.y
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
       });
     }
   };
