@@ -171,7 +171,7 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
-    if (result?.text) return result.text;
+    if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate energy insight', error);
   }
@@ -242,7 +242,7 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
-    if (result?.text) return result.text;
+    if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate employment insight', error);
   }
@@ -315,7 +315,7 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 120, temperature: 0.3 });
-    if (result?.text) return result.text;
+    if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate food insight', error);
   }
@@ -367,7 +367,7 @@ Rules: Use ONLY these numbers. No qualifiers. Focus on economic trajectory.`;
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
-    return result?.text || null;
+    return result?.result?.text || null;
   } catch (error) {
     logger.warn('Failed to generate economic insight', error);
     return null;
@@ -504,7 +504,7 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 200, temperature: 0.3 });
-    if (result?.text) return result.text;
+    if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate cross-metric insight', error);
   }
@@ -632,7 +632,7 @@ Guidelines:
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.4 });
     return {
-      text: result?.text || null,
+      text: result?.result?.text || null,
       basedOnTrends: [...rising.map(r => `${r} rising`), ...falling.map(f => `${f} falling`), ...stable.map(s => `${s} stable`)],
       projections
     };
@@ -747,8 +747,8 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
-    if (result?.text) {
-      return result.text;
+    if (result?.result?.text) {
+      return result.result.text;
     }
   } catch (error) {
     logger.warn('Failed to generate comparison narrative', error);
@@ -1254,8 +1254,8 @@ Guidelines:
 
     try {
       const result = await executeMCPTool('generate_text', { prompt, max_tokens: 200, temperature: 0.3 });
-      if (result?.text) {
-        return result.text;
+      if (result?.result?.text) {
+        return result.result.text;
       }
     } catch (error) {
       logger.warn('Failed to generate narrative overview', error);
