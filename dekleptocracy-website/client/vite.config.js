@@ -21,6 +21,10 @@ export default defineConfig({
           // Router - loaded with first navigation
           'router': ['react-router-dom'],
         }
+      },
+      // Optimize dependencies
+      optimizeDeps: {
+        include: ['react', 'react-dom', 'react-router-dom']
       }
     },
     // Warn if chunks exceed 500KB
