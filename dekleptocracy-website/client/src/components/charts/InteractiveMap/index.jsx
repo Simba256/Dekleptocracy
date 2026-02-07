@@ -1,62 +1,11 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef, Suspense, lazy } from 'react';
 import { scaleLinear } from 'd3-scale';
 import { Tooltip } from 'react-tooltip';
-import StateDetailPanel from './StateDetailPanel';
+import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
+import { geoAlbersUsa } from 'd3-geo';
 import './InteractiveMap.css';
 
-// State coordinates - defined outside component to avoid re-creation and initialization issues
-const STATE_COORDINATES = {
-  'California': { cx: 85, cy: 285, rx: 75, ry: 90 },
-  'Texas': { cx: 420, cy: 445, rx: 120, ry: 95 },
-  'Arizona': { cx: 175, cy: 360, rx: 55, ry: 65 },
-  'New Mexico': { cx: 245, cy: 375, rx: 50, ry: 70 },
-  'Oklahoma': { cx: 340, cy: 375, rx: 55, ry: 50 },
-  'Louisiana': { cx: 465, cy: 480, rx: 50, ry: 45 },
-  'Washington': { cx: 75, cy: 135, rx: 55, ry: 45 },
-  'Oregon': { cx: 75, cy: 190, rx: 60, ry: 50 },
-  'Nevada': { cx: 135, cy: 260, rx: 50, ry: 70 },
-  'Utah': { cx: 185, cy: 265, rx: 45, ry: 60 },
-  'Colorado': { cx: 250, cy: 280, rx: 55, ry: 55 },
-  'Kansas': { cx: 350, cy: 300, rx: 60, ry: 45 },
-  'Illinois': { cx: 500, cy: 280, rx: 40, ry: 70 },
-  'Indiana': { cx: 540, cy: 285, rx: 40, ry: 55 },
-  'Ohio': { cx: 590, cy: 275, rx: 50, ry: 55 },
-  'Wisconsin': { cx: 480, cy: 205, rx: 50, ry: 60 },
-  'Michigan': { cx: 540, cy: 215, rx: 55, ry: 70 },
-  'New York': { cx: 755, cy: 195, rx: 65, ry: 55 },
-  'Pennsylvania': { cx: 705, cy: 255, rx: 60, ry: 45 },
-  'Georgia': { cx: 630, cy: 380, rx: 50, ry: 60 },
-  'Alabama': { cx: 570, cy: 395, rx: 45, ry: 60 },
-  'Arkansas': { cx: 445, cy: 375, rx: 45, ry: 55 },
-  'Missouri': { cx: 450, cy: 310, rx: 55, ry: 50 },
-  'Iowa': { cx: 440, cy: 245, rx: 55, ry: 45 },
-  'Tennessee': { cx: 570, cy: 350, rx: 70, ry: 40 },
-  'Kentucky': { cx: 600, cy: 310, rx: 65, ry: 40 },
-  'North Carolina': { cx: 700, cy: 345, rx: 70, ry: 45 },
-  'South Carolina': { cx: 680, cy: 385, rx: 45, ry: 45 },
-  'Virginia': { cx: 710, cy: 305, rx: 65, ry: 45 },
-  'Florida': { cx: 700, cy: 485, rx: 60, ry: 100 },
-  'Mississippi': { cx: 510, cy: 420, rx: 40, ry: 65 },
-  'Wyoming': { cx: 240, cy: 220, rx: 50, ry: 55 },
-  'Montana': { cx: 200, cy: 155, rx: 80, ry: 50 },
-  'Idaho': { cx: 155, cy: 195, rx: 45, ry: 75 },
-  'Minnesota': { cx: 450, cy: 165, rx: 55, ry: 65 },
-  'North Dakota': { cx: 370, cy: 140, rx: 55, ry: 45 },
-  'South Dakota': { cx: 360, cy: 205, rx: 60, ry: 45 },
-  'Nebraska': { cx: 340, cy: 255, rx: 65, ry: 40 },
-  'West Virginia': { cx: 655, cy: 295, rx: 40, ry: 50 },
-  'Maryland': { cx: 735, cy: 285, rx: 35, ry: 35 },
-  'Vermont': { cx: 770, cy: 170, rx: 30, ry: 50 },
-  'New Hampshire': { cx: 770, cy: 170, rx: 30, ry: 50 },
-  'Maine': { cx: 800, cy: 145, rx: 35, ry: 70 },
-  'Alaska': { cx: 120, cy: 535, rx: 80, ry: 50 },
-  'Hawaii': { cx: 300, cy: 555, rx: 50, ry: 20 },
-  'Connecticut': { cx: 765, cy: 220, rx: 30, ry: 30 },
-  'Delaware': { cx: 735, cy: 285, rx: 35, ry: 35 },
-  'Massachusetts': { cx: 770, cy: 170, rx: 30, ry: 50 },
-  'New Jersey': { cx: 740, cy: 240, rx: 40, ry: 40 },
-  'Rhode Island': { cx: 770, cy: 170, rx: 30, ry: 50 }
-};
+const StateDetailPanel = lazy(() => import('./StateDetailPanel').then(m => ({ default: m.StateDetailPanel })));
 
 const InteractiveMap = ({
   data,
@@ -65,6 +14,7 @@ const InteractiveMap = ({
   metric = 'priceImpact',
   onDrillDown
 }) => {
+  const [usData, setUsData] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState({ x: 0, y: 0 });
   const [hoveredState, setHoveredState] = useState(null);
@@ -72,6 +22,7 @@ const InteractiveMap = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [clickIndicator, setClickIndicator] = useState(null);
   const mapRef = useRef(null);
+  const wrapperRef = useRef(null);
 
   const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
@@ -93,18 +44,21 @@ const InteractiveMap = ({
   };
 
   const handleMouseDown = (e) => {
-    if (e.target.closest('.heat-blob')) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - center.x, y: e.clientY - center.y });
-    }
+    setIsDragging(true);
+    const rect = wrapperRef.current.getBoundingClientRect();
+    setDragStart({
+      x: e.clientX - rect.left - center.x,
+      y: e.clientY - rect.top - center.y
+    });
   };
 
   const handleMouseMove = (e) => {
     if (isDragging) {
-      setCenter({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-    } else if (!e.target.closest('.heat-blob') && !e.target.closest('.map-controls')) {
-      const closestState = findClosestState(e.clientX, e.clientY);
-      setHoveredState(closestState);
+      const rect = wrapperRef.current.getBoundingClientRect();
+      setCenter({
+        x: e.clientX - rect.left - dragStart.x,
+        y: e.clientY - rect.top - dragStart.y
+      });
     }
   };
 
@@ -117,49 +71,14 @@ const InteractiveMap = ({
     setHoveredState(null);
   };
 
-  const findClosestState = useCallback((clickX, clickY) => {
-    const mapRect = mapRef.current?.getBoundingClientRect();
-    if (!mapRect) return null;
-
-    const svg = mapRef.current?.querySelector('.heat-overlay');
-    if (!svg) return null;
-
-    const svgRect = svg.getBoundingClientRect();
-    const viewBoxWidth = 960;
-    const viewBoxHeight = 600;
-
-    const relativeX = clickX - svgRect.left;
-    const relativeY = clickY - svgRect.top;
-
-    const centerX = svgRect.width / 2;
-    const centerY = svgRect.height / 2;
-
-    const svgX = (relativeX - centerX) / zoom + centerX;
-    const svgY = (relativeY - centerY) / zoom + centerY;
-
-    const viewBoxX = (svgX / svgRect.width) * viewBoxWidth;
-    const viewBoxY = (svgY / svgRect.height) * viewBoxHeight;
-
-    let closestState = null;
-    let minDistance = Infinity;
-
-    Object.entries(STATE_COORDINATES).forEach(([stateName, coords]) => {
-      const rx = coords.rx * (1 + 0.3 * (zoom - 1));
-      const ry = coords.ry * (1 + 0.3 * (zoom - 1));
-
-      const distance = Math.sqrt(
-        Math.pow((viewBoxX - coords.cx) / rx, 2) +
-        Math.pow((viewBoxY - coords.cy) / ry, 2)
-      );
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestState = stateName;
-      }
-    });
-
-    return minDistance < 1.3 ? closestState : null;
-  }, [zoom]);
+  const handleZoomIn = () => setZoom(prev => Math.min(8, prev * 1.5));
+  const handleZoomOut = () => setZoom(prev => Math.max(1, prev / 1.5));
+  const handleReset = () => {
+    setZoom(1);
+    setCenter({ x: 0, y: 0 });
+    onStateSelect?.(null);
+    setClickIndicator(null);
+  };
 
   const colorScale = useMemo(() => {
     const values = data?.map(d => d.intensity || 0) || [];
@@ -170,30 +89,91 @@ const InteractiveMap = ({
       .range(['#fef3c7', '#f97316', '#dc2626', '#b91c1c']);
   }, [data]);
 
-  const getStateData = useCallback((stateName) => {
-    return data?.find(d => d.name === stateName);
+  const getStateData = useCallback((stateId) => {
+    if (!stateId || !data) return null;
+
+    const stateMap = {
+      '01': 'Alabama',
+      '02': 'Alaska',
+      '04': 'Arizona',
+      '05': 'Arkansas',
+      '06': 'California',
+      '08': 'Colorado',
+      '09': 'Connecticut',
+      '10': 'Delaware',
+      '11': 'Florida',
+      '12': 'Georgia',
+      '13': 'Hawaii',
+      '15': 'Hawaii',
+      '16': 'Idaho',
+      '17': 'Illinois',
+      '18': 'Indiana',
+      '19': 'Iowa',
+      '20': 'Kansas',
+      '21': 'Kentucky',
+      '22': 'Louisiana',
+      '23': 'Maine',
+      '24': 'Maryland',
+      '25': 'Massachusetts',
+      '26': 'Michigan',
+      '27': 'Minnesota',
+      '28': 'Mississippi',
+      '29': 'Missouri',
+      '30': 'Montana',
+      '31': 'Nebraska',
+      '32': 'Nevada',
+      '33': 'New Hampshire',
+      '34': 'New Jersey',
+      '35': 'New Mexico',
+      '36': 'New York',
+      '37': 'North Carolina',
+      '38': 'North Dakota',
+      '39': 'Ohio',
+      '40': 'Oklahoma',
+      '41': 'Oregon',
+      '42': 'Pennsylvania',
+      '44': 'Rhode Island',
+      '45': 'South Carolina',
+      '46': 'South Dakota',
+      '47': 'Tennessee',
+      '48': 'Texas',
+      '49': 'Utah',
+      '50': 'Vermont',
+      '51': 'Virginia',
+      '53': 'Washington',
+      '54': 'West Virginia',
+      '55': 'Wisconsin',
+      '56': 'Wyoming'
+    };
+
+    const stateName = stateMap[stateId];
+    if (!stateName) return null;
+
+    return data.find(d => d.name === stateName);
   }, [data]);
 
-  const handleStateClick = (stateName) => {
-    const stateData = getStateData(stateName);
+  const handleStateClick = (stateName, stateId) => {
+    const stateData = data?.find(d => d.name === stateName);
     if (stateData) {
       onStateSelect?.(stateName);
       onDrillDown?.(stateName);
     }
   };
 
-  const handleZoomIn = () => setZoom(prev => Math.min(8, prev * 1.5));
-  const handleZoomOut = () => setZoom(prev => Math.max(1, prev / 1.5));
-  const handleReset = () => {
-    setZoom(1);
-    setCenter({ x: 0, y: 0 });
-    onStateSelect?.(null);
-    setClickIndicator(null);
+  const handleMapClick = (e) => {
+    if (e.target.closest('.map-controls')) return;
+
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    setClickIndicator({ x: clickX, y: clickY });
+    setTimeout(() => setClickIndicator(null), 1500);
   };
 
-  const style = {
-    transform: `scale(${zoom}) translate(${center.x}px, ${center.y}px)`,
-    transformOrigin: 'center',
+  const mapStyle = {
+    width: '100%',
+    height: '100%',
     cursor: isDragging ? 'grabbing' : 'grab'
   };
 
@@ -206,103 +186,93 @@ const InteractiveMap = ({
       </div>
 
       <div
+        ref={wrapperRef}
         className="map-wrapper"
-        ref={mapRef}
+        style={{
+          transform: `translate(${center.x}px, ${center.y}px) scale(${zoom})`,
+          transformOrigin: 'center'
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
-        onClick={(e) => {
-          if (!e.target.closest('.heat-blob') && !e.target.closest('.map-controls')) {
-            const clickX = e.clientX;
-            const clickY = e.clientY;
-            const closestState = findClosestState(clickX, clickY);
-            
-            const mapRect = mapRef.current?.getBoundingClientRect();
-            if (mapRect) {
-              const svg = mapRef.current?.querySelector('.heat-overlay');
-              if (svg) {
-                const svgRect = svg.getBoundingClientRect();
-                setClickIndicator({
-                  x: ((clickX - svgRect.left) / svgRect.width) * 960,
-                  y: ((clickY - svgRect.top) / svgRect.height) * 600
-                });
-                
-                setTimeout(() => setClickIndicator(null), 1500);
-              }
-            }
-            
-            if (closestState) {
-              handleStateClick(closestState);
-            }
-          }
-        }}
+        onClick={handleMapClick}
       >
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Blank_US_Map_%28states_only%29.svg/1280px-Blank_US_Map_%28states_only%29.svg.png"
-          alt="US Map"
-          className="us-map-base"
-          loading="lazy"
-          decoding="async"
-          width="1280"
-          height="800"
-          style={style}
-        />
+        <div ref={mapRef} style={mapStyle}>
+          <ComposableMap
+            projection={geoAlbersUsa}
+            width={960}
+            height={600}
+          >
+            <Geographies geography={usData}>
+              {(geographies, projection) =>
+                geographies.map((geo) => {
+                  const stateName = getStateData(geo.id)?.name;
+                  const stateData = data?.find(d => d.name === stateName);
+                  const intensity = stateData?.intensity || 0;
+                  const isSelected = selectedState === stateName;
+                  const isHovered = hoveredState === stateName;
 
-        <svg viewBox="0 0 960 600" className="heat-overlay" preserveAspectRatio="xMidYMid meet" style={style}>
-           {Object.entries(STATE_COORDINATES).map(([stateName, coords]) => {
-             const stateData = getStateData(stateName);
-             const intensity = stateData?.intensity || Math.random() * 100;
-             const isSelected = selectedState === stateName;
-             const isHovered = hoveredState === stateName;
-             const isClosest = hoveredState === stateName && !isHovered;
+                  return (
+                    <g key={geo.rsmKey}>
+                      <Geography
+                        geography={geo}
+                        projection={projection}
+                        fill={colorScale(intensity)}
+                        stroke={isSelected ? '#2d3748' : (isHovered ? '#4A5D3F' : '#ffffff')}
+                        strokeWidth={isSelected ? 3 : (isHovered ? 2 : 1)}
+                        className={`state-geo ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
+                        onMouseEnter={() => setHoveredState(stateName)}
+                        onMouseLeave={() => setHoveredState(null)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStateClick(stateName, geo.id);
+                        }}
+                        style={{
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          filter: isSelected ? 'brightness(1.1)' : 'none'
+                        }}
+                        data-tooltip-id="map-tooltip"
+                        data-tooltip-content={stateName}
+                      />
+                    </g>
+                  );
+                })
+              }
+            </Geographies>
+          </ComposableMap>
 
-            return (
-              <ellipse
-                key={stateName}
-                cx={coords.cx}
-                cy={coords.cy}
-                rx={coords.rx}
-                ry={coords.ry}
-                fill={colorScale(intensity)}
-                opacity="0.85"
-                className={`heat-blob ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
-                data-tooltip-id="map-tooltip"
-                data-tooltip-content={stateName}
-                onClick={() => handleStateClick(stateName)}
-                onMouseEnter={() => setHoveredState(stateName)}
-                onMouseLeave={() => setHoveredState(null)}
-                style={{
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  stroke: isSelected ? '#2d3748' : (isHovered ? '#4A5D3F' : '#fff'),
-                  strokeWidth: isSelected ? 3 : (isHovered ? 2 : 0.5)
-                }}
+          {clickIndicator && (
+            <svg
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                pointerEvents: 'none'
+              }}
+              width={960}
+              height={600}
+            >
+              <circle
+                cx={clickIndicator.x}
+                cy={clickIndicator.y}
+                r={8}
+                fill="none"
+                stroke="#4A5D3F"
+                strokeWidth={3}
+                opacity={0.9}
+                className="ping-indicator"
               />
-             );
-           })}
-           
-           {clickIndicator && (
-             <circle
-               cx={clickIndicator.x}
-               cy={clickIndicator.y}
-               r="8"
-               fill="none"
-               stroke="#4A5D3F"
-               strokeWidth="3"
-               opacity="0.9"
-               style={{
-                 animation: 'ping 0.6s cubic-bezier(0, 0, 0.2, 1) infinite'
-               }}
-             />
-           )}
-        </svg>
+            </svg>
+          )}
+        </div>
       </div>
 
       <Tooltip
         id="map-tooltip"
         render={({ content }) => {
-          const stateData = getStateData(content);
+          const stateData = data?.find(d => d.name === content);
           if (!stateData) return null;
 
           return (
@@ -335,14 +305,16 @@ const InteractiveMap = ({
         </div>
       </div>
 
-      {selectedState && (
-        <StateDetailPanel
-          stateCode={selectedState}
-          stateData={getStateData(selectedState)}
-          onClose={() => onStateSelect?.(null)}
-          onDrillDown={onDrillDown}
-        />
-      )}
+      <Suspense fallback={null}>
+        {selectedState && (
+          <StateDetailPanel
+            stateCode={selectedState}
+            stateData={data?.find(d => d.name === selectedState)}
+            onClose={() => onStateSelect?.(null)}
+            onDrillDown={onDrillDown}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };
