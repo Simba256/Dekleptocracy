@@ -1,0 +1,71 @@
+/* Loading Spinner Component Styles */
+
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.loading-spinner-fullpage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #F8F9FA;
+}
+
+.loading-spinner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Spinner */
+.loading-spinner {
+  border-radius: 50%;
+  border-style: solid;
+  border-color: #f3f4f6;
+  border-top-color: #4A5D3F;
+  animation: spin 1s linear infinite;
+}
+
+/* Sizes */
+.loading-spinner--small {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+}
+
+.loading-spinner--medium {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+.loading-spinner--large {
+  width: 50px;
+  height: 50px;
+  border-width: 4px;
+}
+
+/* Message */
+.loading-spinner-message {
+  color: #6b7280;
+  font-size: 16px;
+  margin: 0;
+  text-align: center;
+}
+
+/* Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

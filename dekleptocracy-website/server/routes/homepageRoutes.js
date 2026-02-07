@@ -4,6 +4,12 @@ import rateLimit from 'express-rate-limit';
 import WalletShock from '../models/WalletShock.js';
 import CostDriver from '../models/CostDriver.js';
 import StatsSummary from '../models/StatsSummary.js';
+import StateComparison from '../models/StateComparison.js';
+import SocialPost from '../models/SocialPost.js';
+import ProductImpact from '../models/ProductImpact.js';
+import MapRegion from '../models/MapRegion.js';
+import QuickQuestion from '../models/QuickQuestion.js';
+import TimelineConfig from '../models/TimelineConfig.js';
 import User from '../models/User.js';
 import logger from '../utils/logger.js';
 import { generateStateReport, generateCSVExport } from '../services/reportGenerator.js';
@@ -21,6 +27,113 @@ const limiter = rateLimit({
 
 // Apply rate limiter to all routes
 router.use(limiter);
+
+/**
+ * GET /api/homepage/all
+ * Aggregated endpoint - returns all homepage data in a single request
+ * Reduces round trips from 7+ to 1 for better performance
+ * Query params: state (optional), period (optional)
+ */
+router.get('/all', async (req, res) => {
+  try {
+    // Extract auth token if provided
+    let userPreferences = {};
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId);
+        if (user) {
+          userPreferences = user.preferences || {};
+        }
+      }
+    } catch (authError) {
+      // Invalid token - proceed with defaults
+    }
+
+    // Determine state and period from query, user preferences, or defaults
+    const state = req.query.state || userPreferences.selectedState || 'nationwide';
+    const period = req.query.period || userPreferences.defaultTimePeriod || 'YoY';
+
+    logger.info(`Fetching aggregated homepage data for state: ${state}, period: ${period}`);
+
+    // Parallel database queries - all at once
+    const [
+      shocks,
+      drivers,
+      stats,
+      comparisons,
+      socialPosts,
+      quickQuestions,
+      timelineConfig
+    ] = await Promise.all([
+      WalletShock.find({ state, status: 'published' })
+        .sort('-dataDate')
+        .limit(4)
+        .lean(),
+      CostDriver.find({ state, timePeriod: period, status: 'published' })
+        .sort('displayOrder')
+        .lean(),
+      StatsSummary.find({ state, status: 'published' })
+        .sort('-dataDate')
+        .lean(),
+      StateComparison.find({ state, status: 'published' })
+        .sort('displayOrder')
+        .lean(),
+      SocialPost.find({ status: 'published', 'moderation.status': 'approved' })
+        .sort({ featured: -1, postedAt: -1 })
+        .limit(3)
+        .lean(),
+      QuickQuestion.find({ status: 'published', featured: true })
+        .sort({ displayOrder: 1, clickCount: -1 })
+        .limit(3)
+        .lean(),
+      TimelineConfig.findOne({ status: 'published' }).lean()
+    ]);
+
+    // Group stats by type
+    const statsGrouped = {
+      lobbying: stats.find(s => s.statType === 'lobbying'),
+      consumerCost: stats.find(s => s.statType === 'consumer-cost'),
+      contributions: stats.find(s => s.statType === 'contributions'),
+      tariffRevenue: stats.find(s => s.statType === 'tariff-revenue')
+    };
+
+    // Personalize quick questions if state is provided
+    const personalizedQuestions = quickQuestions.map(q => ({
+      _id: q._id,
+      text: q.textTemplate ? q.textTemplate.replace('{state}', state !== 'nationwide' ? state : 'your state') : q.text,
+      category: q.category,
+      icon: q.icon,
+      iconType: q.iconType,
+      iconPath: q.iconPath,
+      topics: q.topics
+    }));
+
+    res.json({
+      success: true,
+      state,
+      period,
+      data: {
+        walletShocks: shocks,
+        costDrivers: drivers,
+        stats: statsGrouped,
+        stateComparisons: comparisons,
+        socialPosts: socialPosts,
+        quickQuestions: personalizedQuestions,
+        timelineConfig: timelineConfig
+      }
+    });
+
+  } catch (error) {
+    logger.error('Error fetching aggregated homepage data', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching homepage data',
+      error: error.message
+    });
+  }
+});
 
 // Optional authentication middleware - extracts user if token provided
 const optionalAuth = async (req, res, next) => {
@@ -446,6 +559,431 @@ router.get('/download/csv', optionalAuth, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error generating CSV export',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/state-comparison
+ * Get state vs national comparison data
+ * Query params: state (optional)
+ */
+router.get('/state-comparison', optionalAuth, async (req, res) => {
+  try {
+    // Determine state
+    let state = req.query.state;
+    if (!state && req.userPreferences?.selectedState) {
+      state = req.userPreferences.selectedState;
+    }
+    if (!state) {
+      state = 'nationwide';
+    }
+
+    logger.info(`Fetching state comparison for: ${state}`);
+
+    const comparisons = await StateComparison.find({
+      state: state,
+      status: 'published'
+    })
+      .sort('displayOrder')
+      .exec();
+
+    res.json({
+      success: true,
+      state: state,
+      comparisons: comparisons
+    });
+
+  } catch (error) {
+    logger.error('Error fetching state comparison', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching state comparison',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/product-impact
+ * Get product price impact data
+ * Query params: product (required), state (optional), startDate (optional)
+ */
+router.get('/product-impact', optionalAuth, async (req, res) => {
+  try {
+    const { product, startDate } = req.query;
+    let state = req.query.state;
+
+    if (!state && req.userPreferences?.selectedState) {
+      state = req.userPreferences.selectedState;
+    }
+    if (!state) {
+      state = 'nationwide';
+    }
+
+    logger.info(`Fetching product impact for: ${product} in ${state}`);
+
+    // Build query
+    let query = { status: 'published' };
+
+    if (product) {
+      // Search by name or keywords
+      query.$or = [
+        { name: { $regex: product, $options: 'i' } },
+        { keywords: { $regex: product, $options: 'i' } }
+      ];
+    }
+
+    if (state !== 'nationwide') {
+      query.$or = query.$or || [];
+      query.$or.push({ state: state }, { state: 'nationwide' });
+    }
+
+    const impacts = await ProductImpact.find(query)
+      .sort({ searchCount: -1, 'priceChange.percent': -1 })
+      .limit(10)
+      .exec();
+
+    // Increment search count for the first result
+    if (impacts.length > 0 && product) {
+      impacts[0].incrementSearchCount().catch(err =>
+        logger.error('Error incrementing search count', err)
+      );
+    }
+
+    res.json({
+      success: true,
+      product: product,
+      state: state,
+      impacts: impacts
+    });
+
+  } catch (error) {
+    logger.error('Error fetching product impact', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching product impact',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/social-posts
+ * Get social media posts for the conversation section
+ * Query params: limit (optional, default: 6), state (optional)
+ */
+router.get('/social-posts', optionalAuth, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 6;
+    let state = req.query.state;
+
+    if (!state && req.userPreferences?.selectedState) {
+      state = req.userPreferences.selectedState;
+    }
+
+    logger.info(`Fetching social posts, limit: ${limit}`);
+
+    // Build query for approved, published posts
+    let query = {
+      status: 'published',
+      'moderation.status': 'approved'
+    };
+
+    // Optionally filter by state
+    if (state && state !== 'nationwide') {
+      query.$or = [{ state: state }, { state: 'nationwide' }];
+    }
+
+    const posts = await SocialPost.find(query)
+      .sort({ featured: -1, postedAt: -1, displayOrder: 1 })
+      .limit(limit)
+      .exec();
+
+    res.json({
+      success: true,
+      posts: posts
+    });
+
+  } catch (error) {
+    logger.error('Error fetching social posts', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching social posts',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/map-data
+ * Get heat map data for all regions
+ */
+router.get('/map-data', async (req, res) => {
+  try {
+    logger.info('Fetching map data');
+
+    const regions = await MapRegion.find({ status: 'published' })
+      .sort({ intensity: -1 })
+      .exec();
+
+    res.json({
+      success: true,
+      regions: regions
+    });
+
+  } catch (error) {
+    logger.error('Error fetching map data', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching map data',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/nearby-shocks
+ * Get top shocks near a specific state/location
+ * Query params: state (optional), limit (optional, default: 5)
+ */
+router.get('/nearby-shocks', optionalAuth, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    let state = req.query.state;
+
+    if (!state && req.userPreferences?.selectedState) {
+      state = req.userPreferences.selectedState;
+    }
+    if (!state) {
+      state = 'nationwide';
+    }
+
+    logger.info(`Fetching nearby shocks for: ${state}`);
+
+    // Get region data with top shocks
+    let query = { status: 'published' };
+    if (state !== 'nationwide') {
+      query.name = state;
+    }
+
+    const regions = await MapRegion.find(query)
+      .sort({ intensity: -1 })
+      .limit(state === 'nationwide' ? 10 : 1)
+      .exec();
+
+    // Collect all top shocks from regions
+    let nearbyShocks = [];
+    for (const region of regions) {
+      if (region.topShocks && region.topShocks.length > 0) {
+        nearbyShocks.push(...region.topShocks.map(shock => ({
+          ...shock.toObject(),
+          state: region.name
+        })));
+      }
+    }
+
+    // Sort by change percent and limit
+    nearbyShocks.sort((a, b) => Math.abs(b.changePercent || 0) - Math.abs(a.changePercent || 0));
+    nearbyShocks = nearbyShocks.slice(0, limit);
+
+    res.json({
+      success: true,
+      state: state,
+      shocks: nearbyShocks
+    });
+
+  } catch (error) {
+    logger.error('Error fetching nearby shocks', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching nearby shocks',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/quick-questions
+ * Get quick questions for the search box
+ * Query params: limit (optional, default: 3), state (optional)
+ */
+router.get('/quick-questions', optionalAuth, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 3;
+    let state = req.query.state;
+
+    if (!state && req.userPreferences?.selectedState) {
+      state = req.userPreferences.selectedState;
+    }
+
+    logger.info(`Fetching quick questions, limit: ${limit}`);
+
+    // Build query for featured, published questions
+    let query = {
+      status: 'published',
+      featured: true
+    };
+
+    const questions = await QuickQuestion.find(query)
+      .sort({ displayOrder: 1, clickCount: -1 })
+      .limit(limit)
+      .exec();
+
+    // Personalize questions if state is provided
+    const personalizedQuestions = questions.map(q => ({
+      _id: q._id,
+      text: q.personalize({ state }),
+      category: q.category,
+      icon: q.icon,
+      iconType: q.iconType,
+      iconPath: q.iconPath,
+      topics: q.topics
+    }));
+
+    res.json({
+      success: true,
+      questions: personalizedQuestions
+    });
+
+  } catch (error) {
+    logger.error('Error fetching quick questions', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching quick questions',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/homepage/quick-questions/:id/click
+ * Track click on a quick question
+ */
+router.post('/quick-questions/:id/click', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const question = await QuickQuestion.findById(id);
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        message: 'Question not found'
+      });
+    }
+
+    await question.incrementClickCount();
+
+    res.json({
+      success: true,
+      clickCount: question.clickCount
+    });
+
+  } catch (error) {
+    logger.error('Error tracking question click', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error tracking question click',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/featured-states
+ * Get list of featured states with data
+ */
+router.get('/featured-states', async (req, res) => {
+  try {
+    logger.info('Fetching featured states');
+
+    // Get states that have the most data
+    const statesWithData = await WalletShock.aggregate([
+      { $match: { status: 'published' } },
+      { $group: { _id: '$state', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+    const featuredStates = statesWithData.map(s => s._id).filter(s => s !== 'nationwide');
+
+    res.json({
+      success: true,
+      states: featuredStates
+    });
+
+  } catch (error) {
+    logger.error('Error fetching featured states', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching featured states',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/timeline-config
+ * Get timeline configuration
+ */
+router.get('/timeline-config', async (req, res) => {
+  try {
+    logger.info('Fetching timeline config');
+
+    // Get active configuration
+    let config = await TimelineConfig.getActive();
+
+    // If no active config, get the first published one
+    if (!config) {
+      config = await TimelineConfig.findOne({ status: 'published' }).exec();
+    }
+
+    res.json({
+      success: true,
+      config: config
+    });
+
+  } catch (error) {
+    logger.error('Error fetching timeline config', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching timeline config',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/homepage/trending-products
+ * Get trending product searches
+ * Query params: limit (optional, default: 5)
+ */
+router.get('/trending-products', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+
+    logger.info(`Fetching trending products, limit: ${limit}`);
+
+    const products = await ProductImpact.find({
+      status: 'published',
+      trending: true
+    })
+      .sort({ trendingScore: -1, searchCount: -1 })
+      .limit(limit)
+      .select('name category priceChange.percentDisplay')
+      .exec();
+
+    res.json({
+      success: true,
+      products: products
+    });
+
+  } catch (error) {
+    logger.error('Error fetching trending products', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching trending products',
       error: error.message
     });
   }

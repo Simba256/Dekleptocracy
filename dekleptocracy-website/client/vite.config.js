@@ -12,4 +12,28 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core React libraries - always needed
+          'react-vendor': ['react', 'react-dom'],
+          // Router - loaded with first navigation
+          'router': ['react-router-dom'],
+        }
+      }
+    },
+    // Warn if chunks exceed 500KB
+    chunkSizeWarningLimit: 500,
+    // Enable minification with esbuild (faster than terser)
+    minify: 'esbuild',
+    // Generate source maps for debugging (production)
+    sourcemap: true,
+    // Target modern browsers for smaller bundles
+    target: 'es2020',
+  },
+  // Optimize dependency pre-bundling
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom']
+  }
 })

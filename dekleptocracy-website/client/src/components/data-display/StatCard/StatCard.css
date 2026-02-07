@@ -1,0 +1,153 @@
+/* Stat Card Component Styles */
+
+.stat-card {
+  background-color: #f8f9fb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  position: relative;
+  min-height: 140px;
+  border: 1px solid #e8eaed;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.08);
+}
+
+/* Variants */
+.stat-card--large {
+  grid-column: span 1;
+  min-height: 140px;
+  background-color: #E8EDE5;
+}
+
+.stat-card--pink {
+  background: #FFE8E8;
+  border: 1px solid #FFDBDB;
+}
+
+.stat-card--red {
+  background: #EFEDE9;
+  border: 1px solid #E5E3DF;
+}
+
+/* Header */
+.stat-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.stat-card__title {
+  font-size: 13px;
+  color: #4A5D3F;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.stat-card__icon {
+  font-size: 18px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  opacity: 0.9;
+}
+
+/* Value */
+.stat-card__value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FF6B5A;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.stat-card--large .stat-card__value,
+.stat-card--pink .stat-card__value {
+  font-size: 20px;
+}
+
+/* Subtitle */
+.stat-card__subtitle {
+  font-size: 10px;
+  color: #6b7280;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+/* Change */
+.stat-card__change {
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  letter-spacing: -0.01em;
+}
+
+.stat-card__change--up {
+  color: #FF6B5A;
+}
+
+.stat-card__change--down {
+  color: #22c55e;
+}
+
+/* Chart Container */
+.stat-card__chart {
+  margin-top: 10px;
+}
+
+.stat-card__line-chart {
+  width: 100%;
+  height: 50px;
+}
+
+.stat-card__line-chart path {
+  stroke: #4A5D3F;
+  fill: rgba(74, 93, 63, 0.2);
+}
+
+/* Bar Chart */
+.stat-card__bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 80px;
+  gap: 4px;
+  padding-top: 10px;
+}
+
+.stat-card__bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  height: 100%;
+}
+
+.stat-card__bar {
+  width: 100%;
+  background: #FF6B5A;
+  border-radius: 3px 3px 0 0;
+  transition: all 0.3s;
+  min-height: 10px;
+  flex-shrink: 0;
+}
+
+.stat-card__bar--active {
+  background: #4A5D3F;
+}
+
+.stat-card__bar-label {
+  font-size: 9px;
+  color: #9ca3af;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}

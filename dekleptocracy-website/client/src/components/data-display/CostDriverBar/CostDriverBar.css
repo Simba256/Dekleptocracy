@@ -1,0 +1,43 @@
+/* Cost Driver Bar Component Styles */
+
+.cost-driver-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cost-driver-bar {
+  display: grid;
+  grid-template-columns: 110px 1fr 45px;
+  align-items: center;
+  gap: 14px;
+}
+
+.cost-driver-bar__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4A5D3F;
+  letter-spacing: -0.01em;
+}
+
+.cost-driver-bar__container {
+  height: 20px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cost-driver-bar__fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.cost-driver-bar__percentage {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4A5D3F;
+  text-align: right;
+  letter-spacing: -0.01em;
+}

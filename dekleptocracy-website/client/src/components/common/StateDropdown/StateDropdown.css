@@ -1,0 +1,234 @@
+/* State Dropdown Component Styles */
+
+.state-dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.state-dropdown-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4A5D3F;
+  white-space: nowrap;
+}
+
+.state-dropdown {
+  position: relative;
+}
+
+/* Base Button Styles */
+.state-dropdown-btn {
+  padding: 10px 40px 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Default Variant */
+.state-dropdown-btn--default {
+  background-color: white;
+  color: #4A5D3F;
+  border: 1px solid #e5e7eb;
+}
+
+.state-dropdown-btn--default:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+/* Hero Variant */
+.state-dropdown-btn--hero {
+  background-color: #ffffff;
+  color: #2E3A2E;
+  border: 1px solid #cbd5e1;
+}
+
+.state-dropdown-btn--hero:hover {
+  border-color: #FF6B5A;
+  box-shadow: 0 0 0 3px rgba(255, 107, 90, 0.1);
+}
+
+/* Coral Variant */
+.state-dropdown-btn--coral {
+  background-color: #FF6B5A;
+  color: white;
+  border: 1px solid #FF6B5A;
+}
+
+.state-dropdown-btn--coral:hover {
+  background-color: #FF5647;
+}
+
+.state-dropdown-btn--coral .state-dropdown-sublabel {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-bottom: 2px;
+}
+
+.state-dropdown-btn--coral .state-dropdown-arrow {
+  stroke: white;
+}
+
+/* Map Variant */
+.state-dropdown-btn--map {
+  background-color: white;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+}
+
+.state-dropdown-btn--map:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+.state-dropdown-btn--map:focus {
+  outline: none;
+  border-color: #2d3748;
+  box-shadow: 0 0 0 3px rgba(45, 55, 72, 0.1);
+}
+
+/* Sublabel */
+.state-dropdown-sublabel {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-bottom: 2px;
+}
+
+/* Value */
+.state-dropdown-value {
+  display: block;
+}
+
+/* Arrow */
+.state-dropdown-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.2s;
+}
+
+.state-dropdown-arrow.open {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Overlay */
+.state-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+/* Menu */
+.state-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 320px;
+  overflow: hidden;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Search */
+.state-dropdown-search {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.state-dropdown-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  outline: none;
+  transition: all 0.2s;
+  background-color: #f9fafb;
+}
+
+.state-dropdown-search-input:focus {
+  border-color: #FF6B5A;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(255, 107, 90, 0.1);
+}
+
+.state-dropdown-search-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Items */
+.state-dropdown-items {
+  overflow-y: auto;
+  max-height: 240px;
+  padding: 4px 0;
+}
+
+.state-dropdown-item {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #4A5D3F;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+}
+
+.state-dropdown-item:hover {
+  background-color: #f9fafb;
+}
+
+.state-dropdown-item.selected {
+  background-color: #2563eb;
+  color: white;
+}
+
+.state-dropdown-no-results {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Scrollbar */
+.state-dropdown-items::-webkit-scrollbar {
+  width: 8px;
+}
+
+.state-dropdown-items::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.state-dropdown-items::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.state-dropdown-items::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
