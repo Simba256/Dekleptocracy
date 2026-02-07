@@ -10,11 +10,11 @@ export function PriceMapSection() {
 
   // Fallback data for nearby shocks
   const shocksNearYou = nearbyShocks.length > 0 ? nearbyShocks : [
-    { item: 'Milk +10%', location: 'Chicago, IL', icon: 'milk emoji', bgColor: '#fef3c7' },
-    { item: 'iPhone tax $45', location: 'San Jose, CA', icon: 'phone emoji', bgColor: '#dbeafe' },
-    { item: 'Coffee +12%', location: 'Seattle, WA', icon: 'coffee emoji', bgColor: '#fed7d7' },
-    { item: 'School funding -8.7%', location: 'Seattle, WA', icon: 'books emoji', bgColor: '#d1f4dd' },
-    { item: 'Energy costs +68%', location: 'Seattle, WA', icon: 'lightbulb emoji', bgColor: '#fed7d7' }
+    { item: 'Milk +10%', location: 'Chicago, IL', icon: '🥛', bgColor: '#fef3c7' },
+    { item: 'iPhone tax $45', location: 'San Jose, CA', icon: '📱', bgColor: '#dbeafe' },
+    { item: 'Coffee +12%', location: 'Seattle, WA', icon: '☕', bgColor: '#fed7d7' },
+    { item: 'School funding -8.7%', location: 'Seattle, WA', icon: '📚', bgColor: '#d1f4dd' },
+    { item: 'Energy costs +68%', location: 'Seattle, WA', icon: '💡', bgColor: '#fed7d7' }
   ];
 
   return (

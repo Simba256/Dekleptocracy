@@ -94,19 +94,19 @@ export function WalletShocksSection() {
                     onClick={() => actions.addReaction(shock._id, 'shock')}
                     style={{ cursor: 'pointer' }}
                   >
-                    shocked emoji {shock.reactions?.shock || 0}
+                    😱 {shock.reactions?.shock || 0}
                   </span>
                   <span
                     onClick={() => actions.addReaction(shock._id, 'angry')}
                     style={{ cursor: 'pointer' }}
                   >
-                    angry emoji {shock.reactions?.angry || 0}
+                    😠 {shock.reactions?.angry || 0}
                   </span>
                   <span
                     onClick={() => actions.addReaction(shock._id, 'sad')}
                     style={{ cursor: 'pointer' }}
                   >
-                    sad emoji {shock.reactions?.sad || 0}
+                    😢 {shock.reactions?.sad || 0}
                   </span>
                 </div>
               </div>

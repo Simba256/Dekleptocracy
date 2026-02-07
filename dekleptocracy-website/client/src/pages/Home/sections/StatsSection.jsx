@@ -52,7 +52,7 @@ export function StatsSection() {
 
         {/* Consumer Cost Impact */}
         <div className="stat-card stat-card-pink">
-          <div className="stat-icon">credit card emoji</div>
+          <div className="stat-icon">💳</div>
           <h3 className="stat-title-small">Consumer Cost Impact</h3>
           <div className="stat-value-medium">{consumerCost.displayValue}</div>
           <div className="stat-change stat-change-up">
@@ -62,7 +62,7 @@ export function StatsSection() {
 
         {/* Lobbyist Contributions */}
         <div className="stat-card stat-card-red">
-          <div className="stat-icon">money bag emoji</div>
+          <div className="stat-icon">💰</div>
           <h3 className="stat-title-small">Lobbyist Contributions</h3>
           <div className="stat-value-medium">{contributions.displayValue}</div>
           <div className="stat-change stat-change-down">
