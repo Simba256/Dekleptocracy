@@ -12,7 +12,7 @@ websockets==15.0.1
 
 # Data & APIs
 python-dotenv==1.1.1
-openai==2.6.0
+openai>=2.20.0  # Need 2.20+ for Responses API
 yfinance==0.2.66
 pandas>=2.0.0
 

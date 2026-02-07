@@ -88,36 +88,51 @@ class OpenAIAPIClient:
         try:
             # GPT-5 uses Responses API, others use Chat Completions API
             if model.startswith("gpt-5") or model.startswith("o1"):
-                # Use Responses API for GPT-5/o1 models
-                response = self.client.responses.create(
-                    model=model,
-                    input=prompt,
-                    max_output_tokens=max_tokens
-                )
+                # Try Responses API for GPT-5/o1 models
+                try:
+                    if not hasattr(self.client, 'responses'):
+                        raise AttributeError("Responses API not available in this SDK version")
 
-                # Extract text from Responses API format
-                content = ""
-                if hasattr(response, 'output') and response.output:
-                    for item in response.output:
-                        if item.type == "message" and hasattr(item, 'content'):
-                            for content_item in item.content:
-                                if hasattr(content_item, 'text'):
-                                    content = content_item.text
+                    response = self.client.responses.create(
+                        model=model,
+                        input=prompt,
+                        max_output_tokens=max_tokens
+                    )
+
+                    # Extract text from Responses API format
+                    content = ""
+                    if hasattr(response, 'output') and response.output:
+                        for item in response.output:
+                            if item.type == "message" and hasattr(item, 'content'):
+                                for content_item in item.content:
+                                    if hasattr(content_item, 'text'):
+                                        content = content_item.text
+                                        break
+                                if content:
                                     break
-                            if content:
-                                break
 
-                tokens_used = response.usage.total_tokens if hasattr(response, 'usage') and response.usage else 0
-            else:
-                # Use Chat Completions API for GPT-4 and earlier
-                response = self.client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=max_tokens,
-                    temperature=temperature
-                )
-                content = response.choices[0].message.content
-                tokens_used = response.usage.total_tokens if response.usage else 0
+                    tokens_used = response.usage.total_tokens if hasattr(response, 'usage') and response.usage else 0
+
+                    return {
+                        "status": "success",
+                        "text": content or "",
+                        "model": model,
+                        "tokens_used": tokens_used
+                    }
+                except Exception as e:
+                    # Fallback to gpt-4o-mini if GPT-5/Responses API fails
+                    logger.warning(f"GPT-5 Responses API failed ({e}), falling back to gpt-4o-mini")
+                    model = "gpt-4o-mini"
+
+            # Use Chat Completions API for GPT-4 and earlier (and fallback)
+            response = self.client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=max_tokens,
+                temperature=temperature
+            )
+            content = response.choices[0].message.content
+            tokens_used = response.usage.total_tokens if response.usage else 0
 
             return {
                 "status": "success",
@@ -165,46 +180,61 @@ class OpenAIAPIClient:
         try:
             # GPT-5 uses Responses API, others use Chat Completions API
             if model.startswith("gpt-5") or model.startswith("o1"):
-                # Use Responses API for GPT-5/o1 models
-                # Combine system prompt and user prompt for Responses API
-                full_input = prompt
-                if system_prompt:
-                    full_input = f"{system_prompt}\n\n{prompt}"
+                # Try Responses API for GPT-5/o1 models
+                try:
+                    if not hasattr(self.client, 'responses'):
+                        raise AttributeError("Responses API not available in this SDK version")
 
-                response = self.client.responses.create(
-                    model=model,
-                    input=full_input,
-                    max_output_tokens=max_tokens
-                )
+                    # Combine system prompt and user prompt for Responses API
+                    full_input = prompt
+                    if system_prompt:
+                        full_input = f"{system_prompt}\n\n{prompt}"
 
-                # Extract text from Responses API format
-                content = ""
-                if hasattr(response, 'output') and response.output:
-                    for item in response.output:
-                        if item.type == "message" and hasattr(item, 'content'):
-                            for content_item in item.content:
-                                if hasattr(content_item, 'text'):
-                                    content = content_item.text
+                    response = self.client.responses.create(
+                        model=model,
+                        input=full_input,
+                        max_output_tokens=max_tokens
+                    )
+
+                    # Extract text from Responses API format
+                    content = ""
+                    if hasattr(response, 'output') and response.output:
+                        for item in response.output:
+                            if item.type == "message" and hasattr(item, 'content'):
+                                for content_item in item.content:
+                                    if hasattr(content_item, 'text'):
+                                        content = content_item.text
+                                        break
+                                if content:
                                     break
-                            if content:
-                                break
 
-                tokens_used = response.usage.total_tokens if hasattr(response, 'usage') and response.usage else 0
-            else:
-                # Use Chat Completions API for GPT-4 and earlier
-                messages = []
-                if system_prompt:
-                    messages.append({"role": "system", "content": system_prompt})
-                messages.append({"role": "user", "content": prompt})
+                    tokens_used = response.usage.total_tokens if hasattr(response, 'usage') and response.usage else 0
 
-                response = self.client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    max_tokens=max_tokens,
-                    temperature=temperature
-                )
-                content = response.choices[0].message.content
-                tokens_used = response.usage.total_tokens if response.usage else 0
+                    return {
+                        "status": "success",
+                        "text": content or "",
+                        "model": model,
+                        "tokens_used": tokens_used
+                    }
+                except Exception as e:
+                    # Fallback to gpt-4o-mini if GPT-5/Responses API fails
+                    logger.warning(f"GPT-5 Responses API failed ({e}), falling back to gpt-4o-mini")
+                    model = "gpt-4o-mini"
+
+            # Use Chat Completions API for GPT-4 and earlier (and fallback)
+            messages = []
+            if system_prompt:
+                messages.append({"role": "system", "content": system_prompt})
+            messages.append({"role": "user", "content": prompt})
+
+            response = self.client.chat.completions.create(
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temperature
+            )
+            content = response.choices[0].message.content
+            tokens_used = response.usage.total_tokens if response.usage else 0
 
             return {
                 "status": "success",
