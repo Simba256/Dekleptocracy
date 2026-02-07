@@ -124,7 +124,6 @@
 }
 
 .milestone-marker.highlighted {
-  background: #4A5D3F;
   transform: translateY(-50%) scale(1.3);
 }
 
