@@ -5,6 +5,16 @@ import { StatsSection } from './sections/StatsSection';
 import ProductImpactModal from '../../components/modals/ProductImpactModal';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import {
+  HeroSkeleton,
+  StatsSkeleton,
+  WalletShocksSkeleton,
+  CostDriversSkeleton,
+  BudgetImpactSkeleton,
+  PriceMapSkeleton,
+  SocialPostsSkeleton,
+  CTASkeleton
+} from '../../components/skeletons/HomepageSkeleton';
 import './Home.css';
 
 // Lazy load below-fold sections for better initial load performance
@@ -14,21 +24,6 @@ const BudgetImpactSection = lazy(() => import('./sections/BudgetImpactSection').
 const PriceMapSection = lazy(() => import('./sections/PriceMapSection').then(m => ({ default: m.PriceMapSection })));
 const SocialPostsSection = lazy(() => import('./sections/SocialPostsSection').then(m => ({ default: m.SocialPostsSection })));
 const CTASection = lazy(() => import('./sections/CTASection').then(m => ({ default: m.CTASection })));
-
-// Skeleton placeholder for lazy-loaded sections
-const SectionSkeleton = ({ height = '400px' }) => (
-  <div
-    className="section-skeleton"
-    style={{
-      height,
-      background: 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)',
-      backgroundSize: '200% 100%',
-      animation: 'shimmer 1.5s ease-in-out infinite',
-      borderRadius: '8px',
-      margin: '20px 0'
-    }}
-  />
-);
 
 function HomeContent() {
   const { state, actions } = useHomepage();
@@ -55,27 +50,27 @@ function HomeContent() {
       <StatsSection />
 
       {/* Below-fold sections - lazy loaded for better performance */}
-      <Suspense fallback={<SectionSkeleton height="600px" />}>
+      <Suspense fallback={<WalletShocksSkeleton />}>
         <WalletShocksSection />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton height="500px" />}>
+      <Suspense fallback={<CostDriversSkeleton />}>
         <CostDriversSection />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton height="400px" />}>
+      <Suspense fallback={<BudgetImpactSkeleton />}>
         <BudgetImpactSection />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton height="700px" />}>
+      <Suspense fallback={<PriceMapSkeleton />}>
         <PriceMapSection />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton height="500px" />}>
+      <Suspense fallback={<SocialPostsSkeleton />}>
         <SocialPostsSection />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton height="300px" />}>
+      <Suspense fallback={<CTASkeleton />}>
         <CTASection />
       </Suspense>
 
