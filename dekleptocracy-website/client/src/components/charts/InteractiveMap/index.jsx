@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { scaleLinear } from 'd3-scale';
 import { Tooltip } from 'react-tooltip';
 import StateDetailPanel from './StateDetailPanel';
@@ -16,7 +16,7 @@ const InteractiveMap = ({
   const [hoveredState, setHoveredState] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const mapRef = useState(null)[0];
+  const mapRef = useRef(null);
 
   const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
