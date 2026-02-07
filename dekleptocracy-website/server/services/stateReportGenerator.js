@@ -84,28 +84,93 @@ function calculateHouseholdImpact(stateData) {
 }
 
 /**
+ * Build context string from trend analysis for richer insights
+ */
+function buildTrendContext(timeSeries, metricType, currentValue) {
+  if (!timeSeries || timeSeries.length < 3) return null;
+
+  const analysis = analyzeTrends(timeSeries, metricType, currentValue);
+  const history = analyzeHistoricalContext(timeSeries, metricType, currentValue);
+
+  const context = [];
+
+  // Add momentum info
+  if (analysis.trendSummary && analysis.trendSummary !== 'Insufficient data') {
+    context.push(`Trend: ${analysis.trendSummary}`);
+  }
+
+  // Add streak info
+  const streakAlert = analysis.alerts?.find(a => a.type === 'streak');
+  if (streakAlert) {
+    context.push(streakAlert.message);
+  }
+
+  // Add historical context
+  if (history?.available) {
+    if (history.historicalRank?.description) {
+      context.push(history.historicalRank.description);
+    }
+    if (history.percentile && history.percentile.type !== 'typical') {
+      context.push(`${history.percentile.percentile}th percentile historically`);
+    }
+  }
+
+  return context.length > 0 ? context.join('. ') : null;
+}
+
+/**
  * Generate section-specific insight for energy costs
  */
 async function generateEnergyInsight(stateData, stateName) {
   const electricity = stateData.electricity_prices?.processedData;
   const gasoline = stateData.gas_prices?.processedData;
+  const elecTimeSeries = stateData.electricity_prices?.timeSeries;
+  const gasTimeSeries = stateData.gas_prices?.timeSeries;
 
   if (!electricity && !gasoline) return null;
 
   const dataPoints = [];
+  const trendContext = [];
+
   if (electricity) {
     dataPoints.push(`Electricity: ${electricity.displayValue} (${electricity.changeDisplay} YoY)`);
+    const elecContext = buildTrendContext(elecTimeSeries, 'electricity_prices', parseFloat(electricity.value));
+    if (elecContext) trendContext.push(`Electricity: ${elecContext}`);
   }
   if (gasoline) {
     dataPoints.push(`Gas: ${gasoline.displayValue} (${gasoline.changeDisplay} YoY)`);
+    const gasContext = buildTrendContext(gasTimeSeries, 'gas_prices', parseFloat(gasoline.value));
+    if (gasContext) trendContext.push(`Gas: ${gasContext}`);
   }
 
-  const prompt = `Write ONE concise sentence (max 20 words) about energy costs in ${stateName}.
-Data: ${dataPoints.join(', ')}
-Rules: Use ONLY these numbers. No qualifiers. Focus on household impact.`;
+  // Calculate monthly impact
+  let monthlyImpact = 0;
+  if (electricity?.change) {
+    monthlyImpact += (electricity.change * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100;
+  }
+  if (gasoline?.change) {
+    monthlyImpact += gasoline.change * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth;
+  }
+  const impactStr = monthlyImpact !== 0 ? `Monthly impact: ~$${Math.abs(Math.round(monthlyImpact))} ${monthlyImpact > 0 ? 'more' : 'savings'}` : '';
+
+  const prompt = `Write 2-3 sentences about energy costs in ${stateName}. Be specific and insightful.
+
+Current Data:
+${dataPoints.join('\n')}
+
+Trend Analysis:
+${trendContext.join('\n') || 'No significant trends'}
+
+${impactStr}
+
+Guidelines:
+- First sentence: Current state with specific numbers
+- Second sentence: What the trend means (rising streak, historical high/low, etc.)
+- Third sentence (if notable): Impact on household budgets
+- Use ONLY the data provided. No speculation.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
     return result?.text || null;
   } catch (error) {
     logger.warn('Failed to generate energy insight', error);
@@ -120,23 +185,51 @@ async function generateEmploymentInsight(stateData, stateName) {
   const unemployment = stateData.unemployment?.processedData;
   const income = stateData.personal_income?.processedData;
   const gdp = stateData.gdp?.processedData;
+  const unempTimeSeries = stateData.unemployment?.timeSeries;
 
   if (!unemployment) return null;
 
   const dataPoints = [`Unemployment: ${unemployment.displayValue} (${unemployment.changeDisplay} YoY)`];
   if (income) {
-    dataPoints.push(`Personal income: ${income.changeDisplay} YoY`);
+    dataPoints.push(`Personal income: ${income.displayValue} (${income.changeDisplay} YoY)`);
   }
   if (gdp) {
-    dataPoints.push(`State GDP: ${gdp.changeDisplay} YoY`);
+    dataPoints.push(`State GDP: ${gdp.displayValue} (${gdp.changeDisplay} YoY)`);
   }
 
-  const prompt = `Write ONE concise sentence (max 20 words) about the job market in ${stateName}.
-Data: ${dataPoints.join(', ')}
-Rules: Use ONLY these numbers. No qualifiers. Focus on what this means for workers.`;
+  // Get trend context for unemployment
+  const unempContext = buildTrendContext(unempTimeSeries, 'unemployment', parseFloat(unemployment.value));
+
+  // Check for concerning combinations
+  const concerns = [];
+  if (unemployment.change > 0 && income?.change < 0) {
+    concerns.push('Rising unemployment with falling income');
+  }
+  if (unemployment.change > 0.5) {
+    concerns.push('Significant unemployment increase');
+  }
+  if (parseFloat(unemployment.value) >= 5) {
+    concerns.push('Above 5% unemployment threshold');
+  }
+
+  const prompt = `Write 2-3 sentences about the job market and economic health in ${stateName}.
+
+Current Data:
+${dataPoints.join('\n')}
+
+Trend Analysis:
+${unempContext || 'No significant unemployment trends'}
+
+${concerns.length > 0 ? 'Notable concerns: ' + concerns.join(', ') : ''}
+
+Guidelines:
+- First sentence: Current unemployment situation with context
+- Second sentence: What the trends suggest for workers
+- If income/GDP data available, connect to overall economic picture
+- Use ONLY the data provided. Be factual, not alarmist.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
     return result?.text || null;
   } catch (error) {
     logger.warn('Failed to generate employment insight', error);
@@ -150,6 +243,7 @@ Rules: Use ONLY these numbers. No qualifiers. Focus on what this means for worke
 async function generateFoodInsight(stateData, stateName) {
   const food = stateData.food_prices?.processedData;
   const groceryBasket = stateData.grocery_basket?.processedData;
+  const foodTimeSeries = stateData.food_prices?.timeSeries;
 
   if (!food && !groceryBasket) return null;
 
@@ -159,14 +253,36 @@ async function generateFoodInsight(stateData, stateName) {
   }
   if (groceryBasket) {
     dataPoints.push(`Grocery basket: ${groceryBasket.displayValue}`);
+    // Include national comparison if available
+    if (stateData.grocery_basket?.nationalDisplayValue) {
+      dataPoints.push(`National average: ${stateData.grocery_basket.nationalDisplayValue}`);
+    }
   }
 
-  const prompt = `Write ONE concise sentence (max 20 words) about food costs in ${stateName}.
-Data: ${dataPoints.join(', ')}
-Rules: Use ONLY these numbers. No qualifiers. Focus on grocery budget impact.`;
+  // Get trend context
+  const foodContext = buildTrendContext(foodTimeSeries, 'food_prices', parseFloat(food?.value));
+
+  // Calculate family impact (3-person household)
+  let familyImpact = null;
+  if (food?.change) {
+    familyImpact = Math.round(food.change * HOUSEHOLD_CONSUMPTION.foodPersonsPerFamily);
+  }
+
+  const prompt = `Write 2 sentences about food and grocery costs in ${stateName}.
+
+Current Data:
+${dataPoints.join('\n')}
+
+${foodContext ? 'Trend: ' + foodContext : ''}
+${familyImpact ? `Family impact: ~$${Math.abs(familyImpact)}/month ${familyImpact > 0 ? 'more' : 'savings'} for a family of 3` : ''}
+
+Guidelines:
+- First sentence: Current food costs with state vs national context if available
+- Second sentence: What this means for family grocery budgets
+- Use ONLY the data provided. Be specific with dollar amounts.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 120, temperature: 0.3 });
     return result?.text || null;
   } catch (error) {
     logger.warn('Failed to generate food insight', error);
@@ -209,7 +325,73 @@ Rules: Use ONLY these numbers. No qualifiers. Focus on economic trajectory.`;
 }
 
 /**
- * Generate cross-metric correlation insight
+ * Calculate a "squeeze index" - how many cost pressures are combining
+ */
+function calculateSqueezeIndex(stateData) {
+  let pressures = 0;
+  let reliefs = 0;
+  const details = { pressures: [], reliefs: [] };
+
+  const electricity = stateData.electricity_prices?.processedData;
+  const gasoline = stateData.gas_prices?.processedData;
+  const food = stateData.food_prices?.processedData;
+  const unemployment = stateData.unemployment?.processedData;
+  const income = stateData.personal_income?.processedData;
+
+  // Check each metric for pressure or relief
+  if (electricity?.change > 3) {
+    pressures++;
+    details.pressures.push(`electricity +${electricity.changeDisplay}`);
+  } else if (electricity?.change < -3) {
+    reliefs++;
+    details.reliefs.push(`electricity ${electricity.changeDisplay}`);
+  }
+
+  if (gasoline?.change > 0.10) {
+    pressures++;
+    details.pressures.push(`gas +${gasoline.changeDisplay}`);
+  } else if (gasoline?.change < -0.10) {
+    reliefs++;
+    details.reliefs.push(`gas ${gasoline.changeDisplay}`);
+  }
+
+  if (food?.change > 5) {
+    pressures++;
+    details.pressures.push(`food +${food.changeDisplay}`);
+  } else if (food?.change < -5) {
+    reliefs++;
+    details.reliefs.push(`food ${food.changeDisplay}`);
+  }
+
+  if (unemployment?.change > 0.3) {
+    pressures++;
+    details.pressures.push(`unemployment +${unemployment.changeDisplay}`);
+  } else if (unemployment?.change < -0.3) {
+    reliefs++;
+    details.reliefs.push(`unemployment ${unemployment.changeDisplay}`);
+  }
+
+  if (income?.change < 0) {
+    pressures++;
+    details.pressures.push(`income ${income.changeDisplay}`);
+  } else if (income?.change > 2) {
+    reliefs++;
+    details.reliefs.push(`income +${income.changeDisplay}`);
+  }
+
+  // Determine overall status
+  let status = 'stable';
+  if (pressures >= 3) status = 'high_squeeze';
+  else if (pressures >= 2 && reliefs === 0) status = 'moderate_squeeze';
+  else if (pressures > reliefs) status = 'mild_squeeze';
+  else if (reliefs > pressures) status = 'relief';
+  else if (reliefs >= 2) status = 'significant_relief';
+
+  return { pressures, reliefs, status, details };
+}
+
+/**
+ * Generate cross-metric correlation insight with squeeze analysis
  */
 async function generateCrossMetricInsight(stateData, stateName, householdImpact) {
   const electricity = stateData.electricity_prices?.processedData;
@@ -218,26 +400,59 @@ async function generateCrossMetricInsight(stateData, stateName, householdImpact)
   const unemployment = stateData.unemployment?.processedData;
   const income = stateData.personal_income?.processedData;
 
-  const trends = [];
-  if (electricity?.change > 0) trends.push(`electricity up ${electricity.changeDisplay}`);
-  if (gasoline?.change > 0) trends.push(`gas up ${gasoline.changeDisplay}`);
-  if (food?.change > 0) trends.push(`food up ${food.changeDisplay}`);
-  if (unemployment?.change > 0) trends.push(`unemployment up to ${unemployment.displayValue}`);
-  if (income?.change < 0) trends.push(`income down ${income.changeDisplay}`);
+  // Calculate squeeze index
+  const squeeze = calculateSqueezeIndex(stateData);
 
-  if (trends.length < 2) return null;
+  // Build comprehensive data picture
+  const allMetrics = [];
+  if (electricity) allMetrics.push(`Electricity: ${electricity.displayValue} (${electricity.changeDisplay} YoY)`);
+  if (gasoline) allMetrics.push(`Gas: ${gasoline.displayValue} (${gasoline.changeDisplay} YoY)`);
+  if (food) allMetrics.push(`Food: ${food.displayValue} (${food.changeDisplay} YoY)`);
+  if (unemployment) allMetrics.push(`Unemployment: ${unemployment.displayValue} (${unemployment.changeDisplay} YoY)`);
+  if (income) allMetrics.push(`Personal Income: ${income.displayValue} (${income.changeDisplay} YoY)`);
+
+  if (allMetrics.length < 2) return null;
+
+  // Build squeeze description
+  let squeezeDesc = '';
+  if (squeeze.status === 'high_squeeze') {
+    squeezeDesc = `HIGH PRESSURE: ${squeeze.pressures} cost categories rising simultaneously`;
+  } else if (squeeze.status === 'moderate_squeeze') {
+    squeezeDesc = `MODERATE PRESSURE: ${squeeze.pressures} costs rising with no offsets`;
+  } else if (squeeze.status === 'mild_squeeze') {
+    squeezeDesc = `MILD PRESSURE: Some costs rising (${squeeze.pressures}) vs falling (${squeeze.reliefs})`;
+  } else if (squeeze.status === 'relief' || squeeze.status === 'significant_relief') {
+    squeezeDesc = `RELIEF: More costs falling (${squeeze.reliefs}) than rising (${squeeze.pressures})`;
+  } else {
+    squeezeDesc = 'STABLE: Costs relatively balanced';
+  }
 
   const impactNote = householdImpact.total !== 0
-    ? `Total household impact: ~$${Math.abs(householdImpact.total)}/month ${householdImpact.total > 0 ? 'more' : 'less'}.`
+    ? `Net monthly impact: ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total}/month for typical household`
     : '';
 
-  const prompt = `Write ONE sentence (max 25 words) connecting these trends for ${stateName} families:
-Trends: ${trends.join(', ')}
+  const prompt = `Write 3-4 sentences analyzing how multiple economic factors combine to affect ${stateName} households.
+
+Current Metrics:
+${allMetrics.join('\n')}
+
+Squeeze Analysis: ${squeezeDesc}
+${squeeze.details.pressures.length > 0 ? 'Rising costs: ' + squeeze.details.pressures.join(', ') : ''}
+${squeeze.details.reliefs.length > 0 ? 'Falling costs: ' + squeeze.details.reliefs.join(', ') : ''}
+
 ${impactNote}
-Rules: Show how these factors combine to squeeze or help household budgets. Use ONLY provided data.`;
+
+${householdImpact.breakdown?.length > 0 ? 'Breakdown: ' + householdImpact.breakdown.map(b => `${b.category}: ${b.amount > 0 ? '+' : ''}$${b.amount}`).join(', ') : ''}
+
+Guidelines:
+- First sentence: Summarize the overall situation (squeeze or relief)
+- Second sentence: Explain how specific factors combine (e.g., "Rising energy + stagnant wages = household squeeze")
+- Third sentence: Quantify the total monthly impact on a typical household
+- If there are offsetting factors, mention what's providing relief
+- Be specific with numbers. Use phrases like "the combined effect" or "when taken together".`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 100, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 200, temperature: 0.3 });
     return result?.text || null;
   } catch (error) {
     logger.warn('Failed to generate cross-metric insight', error);
@@ -246,56 +461,103 @@ Rules: Show how these factors combine to squeeze or help household budgets. Use 
 }
 
 /**
- * Generate forward-looking projection insight
+ * Generate forward-looking projection insight with richer trend analysis
  */
 async function generateForwardLookingInsight(stateData, stateName) {
-  // Look at momentum/trend data to project
   const electricity = stateData.electricity_prices;
   const gasoline = stateData.gas_prices;
   const unemployment = stateData.unemployment;
+  const food = stateData.food_prices;
 
-  const trendInfo = [];
+  const trendAnalysis = [];
+  const projections = [];
 
-  // Check electricity trend
-  if (electricity?.timeSeries?.length >= 3) {
+  // Analyze electricity trend with momentum
+  if (electricity?.timeSeries?.length >= 6) {
+    const analysis = analyzeTrends(electricity.timeSeries, 'electricity_prices', parseFloat(electricity.processedData?.value));
     const recent = electricity.timeSeries.slice(-3);
-    const isRising = recent[2]?.value > recent[0]?.value;
-    if (isRising) trendInfo.push('electricity trending up');
-    else trendInfo.push('electricity stabilizing');
+    const recentChange = recent[2]?.value - recent[0]?.value;
+
+    if (analysis.momentum === 'steady_up' || analysis.momentum === 'up') {
+      trendAnalysis.push({ metric: 'electricity', direction: 'rising', momentum: analysis.momentum });
+      if (recentChange > 0) {
+        const monthlyProjection = Math.round((recentChange / 3) * 6 * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth / 100);
+        if (monthlyProjection > 5) projections.push(`electricity could add ~$${monthlyProjection} more over 6 months`);
+      }
+    } else if (analysis.momentum === 'steady_down' || analysis.momentum === 'down') {
+      trendAnalysis.push({ metric: 'electricity', direction: 'falling', momentum: analysis.momentum });
+    } else {
+      trendAnalysis.push({ metric: 'electricity', direction: 'stable', momentum: analysis.momentum });
+    }
   }
 
-  // Check gas trend
-  if (gasoline?.timeSeries?.length >= 3) {
+  // Analyze gas trend
+  if (gasoline?.timeSeries?.length >= 6) {
+    const analysis = analyzeTrends(gasoline.timeSeries, 'gas_prices', parseFloat(gasoline.processedData?.value));
     const recent = gasoline.timeSeries.slice(-3);
-    const isRising = recent[2]?.value > recent[0]?.value;
-    if (isRising) trendInfo.push('fuel prices rising');
-    else trendInfo.push('fuel prices easing');
+    const recentChange = recent[2]?.value - recent[0]?.value;
+
+    if (analysis.momentum === 'steady_up' || analysis.momentum === 'up') {
+      trendAnalysis.push({ metric: 'fuel', direction: 'rising', momentum: analysis.momentum });
+      if (recentChange > 0) {
+        const monthlyProjection = Math.round((recentChange / 3) * 6 * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth);
+        if (monthlyProjection > 10) projections.push(`fuel could add ~$${monthlyProjection} more over 6 months`);
+      }
+    } else if (analysis.momentum === 'steady_down' || analysis.momentum === 'down') {
+      trendAnalysis.push({ metric: 'fuel', direction: 'falling', momentum: analysis.momentum });
+    } else {
+      trendAnalysis.push({ metric: 'fuel', direction: 'stable', momentum: analysis.momentum });
+    }
   }
 
-  // Check unemployment trend
-  if (unemployment?.timeSeries?.length >= 3) {
-    const recent = unemployment.timeSeries.slice(-3);
-    const isRising = recent[2]?.value > recent[0]?.value;
-    if (isRising) trendInfo.push('unemployment climbing');
-    else trendInfo.push('job market steady');
+  // Analyze unemployment trend
+  if (unemployment?.timeSeries?.length >= 6) {
+    const analysis = analyzeTrends(unemployment.timeSeries, 'unemployment', parseFloat(unemployment.processedData?.value));
+    if (analysis.momentum === 'steady_up' || analysis.momentum === 'up') {
+      trendAnalysis.push({ metric: 'unemployment', direction: 'rising', momentum: analysis.momentum });
+    } else if (analysis.momentum === 'steady_down' || analysis.momentum === 'down') {
+      trendAnalysis.push({ metric: 'unemployment', direction: 'falling', momentum: analysis.momentum });
+    }
   }
 
-  if (trendInfo.length === 0) return null;
+  if (trendAnalysis.length === 0) return null;
+
+  // Build summary
+  const rising = trendAnalysis.filter(t => t.direction === 'rising').map(t => t.metric);
+  const falling = trendAnalysis.filter(t => t.direction === 'falling').map(t => t.metric);
+  const stable = trendAnalysis.filter(t => t.direction === 'stable').map(t => t.metric);
 
   const currentValues = [];
-  if (electricity?.processedData) currentValues.push(`electricity at ${electricity.processedData.displayValue}`);
-  if (gasoline?.processedData) currentValues.push(`gas at ${gasoline.processedData.displayValue}`);
+  if (electricity?.processedData) currentValues.push(`Electricity: ${electricity.processedData.displayValue}`);
+  if (gasoline?.processedData) currentValues.push(`Gas: ${gasoline.processedData.displayValue}`);
+  if (unemployment?.processedData) currentValues.push(`Unemployment: ${unemployment.processedData.displayValue}`);
 
-  const prompt = `Write ONE forward-looking sentence (max 25 words) for ${stateName} based on trends.
-Current: ${currentValues.join(', ')}
-Recent trends: ${trendInfo.join(', ')}
-Rules: Start with "If trends continue..." Be specific but cautious. Use ONLY provided data.`;
+  const prompt = `Write 2-3 forward-looking sentences for ${stateName} based on current trends.
+
+Current Values:
+${currentValues.join('\n')}
+
+Trend Direction:
+${rising.length > 0 ? '- Rising: ' + rising.join(', ') : ''}
+${falling.length > 0 ? '- Falling: ' + falling.join(', ') : ''}
+${stable.length > 0 ? '- Stable: ' + stable.join(', ') : ''}
+
+${projections.length > 0 ? 'Projected impact if trends continue:\n' + projections.join('\n') : ''}
+
+Guidelines:
+- Start with "If current trends continue..." or "Based on recent momentum..."
+- Be specific about which metrics are driving the outlook
+- Include projected dollar impact if available
+- Use hedging language ("could", "may", "likely to")
+- Do NOT make predictions beyond 6 months
+- Use ONLY the data provided.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 100, temperature: 0.4 });
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.4 });
     return {
       text: result?.text || null,
-      basedOnTrends: trendInfo
+      basedOnTrends: [...rising.map(r => `${r} rising`), ...falling.map(f => `${f} falling`), ...stable.map(s => `${s} stable`)],
+      projections
     };
   } catch (error) {
     logger.warn('Failed to generate forward-looking insight', error);
@@ -304,18 +566,33 @@ Rules: Start with "If trends continue..." Be specific but cautious. Use ONLY pro
 }
 
 /**
- * Generate state vs national comparison narrative
+ * Generate state vs national comparison narrative with dollar impact
  */
 async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
   const comparisons = [];
+  const dollarImpacts = [];
 
   const electricity = stateData.electricity_prices?.processedData;
   if (electricity && nationalAvgs.electricity) {
     const stateVal = parseFloat(electricity.value);
     const natVal = parseFloat(nationalAvgs.electricity.value);
     if (stateVal && natVal) {
-      const diff = ((stateVal - natVal) / natVal * 100).toFixed(1);
-      comparisons.push(`electricity ${diff > 0 ? diff + '% above' : Math.abs(diff) + '% below'} national average`);
+      const diff = ((stateVal - natVal) / natVal * 100);
+      const direction = diff > 0 ? 'above' : 'below';
+      comparisons.push({
+        metric: 'electricity',
+        stateValue: electricity.displayValue,
+        nationalValue: nationalAvgs.electricity.displayValue,
+        diff: Math.abs(diff).toFixed(1),
+        direction
+      });
+
+      // Calculate monthly dollar difference
+      const centsDiff = stateVal - natVal;
+      const monthlyDiff = Math.round((centsDiff * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100);
+      if (Math.abs(monthlyDiff) >= 5) {
+        dollarImpacts.push(`Electricity: ${monthlyDiff > 0 ? '+' : ''}$${monthlyDiff}/month vs national average`);
+      }
     }
   }
 
@@ -324,19 +601,73 @@ async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
     const stateVal = parseFloat(gasoline.value);
     const natVal = parseFloat(nationalAvgs.gasoline.value);
     if (stateVal && natVal) {
-      const diff = ((stateVal - natVal) / natVal * 100).toFixed(1);
-      comparisons.push(`gas ${diff > 0 ? diff + '% above' : Math.abs(diff) + '% below'} national average`);
+      const diff = ((stateVal - natVal) / natVal * 100);
+      const direction = diff > 0 ? 'above' : 'below';
+      comparisons.push({
+        metric: 'gas',
+        stateValue: gasoline.displayValue,
+        nationalValue: nationalAvgs.gasoline.displayValue,
+        diff: Math.abs(diff).toFixed(1),
+        direction
+      });
+
+      // Calculate monthly dollar difference
+      const dollarDiff = stateVal - natVal;
+      const monthlyDiff = Math.round(dollarDiff * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth);
+      if (Math.abs(monthlyDiff) >= 5) {
+        dollarImpacts.push(`Fuel: ${monthlyDiff > 0 ? '+' : ''}$${monthlyDiff}/month vs national average`);
+      }
+    }
+  }
+
+  // Add grocery basket comparison if available
+  const groceryBasket = stateData.grocery_basket;
+  if (groceryBasket?.processedData && groceryBasket?.nationalDisplayValue) {
+    const stateVal = parseFloat(groceryBasket.processedData.value);
+    const natVal = parseFloat(groceryBasket.nationalDisplayValue.replace(/[^0-9.]/g, ''));
+    if (stateVal && natVal) {
+      const diff = ((stateVal - natVal) / natVal * 100);
+      comparisons.push({
+        metric: 'groceries',
+        stateValue: groceryBasket.processedData.displayValue,
+        nationalValue: groceryBasket.nationalDisplayValue,
+        diff: Math.abs(diff).toFixed(1),
+        direction: diff > 0 ? 'above' : 'below'
+      });
     }
   }
 
   if (comparisons.length === 0) return null;
 
-  const prompt = `Write TWO concise sentences comparing ${stateName} costs to national averages.
-Comparisons: ${comparisons.join(', ')}
-Rules: Explain what this means for ${stateName} residents vs other Americans. Use ONLY provided data.`;
+  // Determine overall standing
+  const aboveCount = comparisons.filter(c => c.direction === 'above').length;
+  const belowCount = comparisons.filter(c => c.direction === 'below').length;
+  let overallStanding = 'mixed';
+  if (aboveCount > belowCount) overallStanding = 'more expensive';
+  else if (belowCount > aboveCount) overallStanding = 'more affordable';
+
+  const comparisonText = comparisons.map(c =>
+    `${c.metric}: ${c.stateValue} (${c.diff}% ${c.direction} national ${c.nationalValue})`
+  ).join('\n');
+
+  const prompt = `Write 2-3 sentences comparing ${stateName}'s cost of living to national averages.
+
+Comparisons:
+${comparisonText}
+
+${dollarImpacts.length > 0 ? 'Monthly dollar impact vs national:\n' + dollarImpacts.join('\n') : ''}
+
+Overall: ${stateName} is ${overallStanding} than national average
+
+Guidelines:
+- First sentence: Overall positioning (more/less expensive than average)
+- Second sentence: Specific comparisons with percentages and dollar amounts
+- If there's a mix, highlight both advantages and disadvantages
+- Help residents understand if they're getting a good deal or paying a premium
+- Use ONLY the data provided.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 100, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
     return result?.text || null;
   } catch (error) {
     logger.warn('Failed to generate comparison narrative', error);
@@ -352,6 +683,9 @@ async function generateAIInsights(stateData, stateName, nationalAvgs) {
   try {
     // Calculate household impact first (sync operation)
     const householdImpact = calculateHouseholdImpact(stateData);
+
+    // Calculate squeeze index for overall pressure assessment
+    const squeezeIndex = calculateSqueezeIndex(stateData);
 
     // Generate all insights in parallel for speed
     const [
@@ -381,7 +715,13 @@ async function generateAIInsights(stateData, stateName, nationalAvgs) {
       },
       crossMetric: {
         text: crossMetricInsight,
-        householdImpact
+        householdImpact,
+        squeezeIndex: {
+          status: squeezeIndex.status,
+          pressures: squeezeIndex.pressures,
+          reliefs: squeezeIndex.reliefs,
+          details: squeezeIndex.details
+        }
       },
       forwardLooking: forwardLookingResult,
       comparison: {
@@ -722,36 +1062,75 @@ async function buildComparisonData(stateData, stateName) {
  * The LLM only generates text - all data values come from real sources
  */
 async function generateNarrativeOverview(stateData, stateName, newsHeadlines) {
-  // Build a summary of available real data
+  // Build a comprehensive summary of available real data with trends
   const dataSummary = [];
+  const trendSummary = [];
 
   if (stateData.unemployment?.processedData) {
-    dataSummary.push(`Unemployment: ${stateData.unemployment.processedData.displayValue}`);
+    const unemp = stateData.unemployment.processedData;
+    dataSummary.push(`Unemployment: ${unemp.displayValue} (${unemp.changeDisplay} YoY)`);
+    if (stateData.unemployment.timeSeries?.length >= 3) {
+      const analysis = analyzeTrends(stateData.unemployment.timeSeries, 'unemployment', parseFloat(unemp.value));
+      if (analysis.trendSummary !== 'Insufficient data') {
+        trendSummary.push(`Unemployment: ${analysis.trendSummary}`);
+      }
+    }
   }
   if (stateData.electricity_prices?.processedData) {
-    dataSummary.push(`Electricity: ${stateData.electricity_prices.processedData.displayValue}`);
+    const elec = stateData.electricity_prices.processedData;
+    dataSummary.push(`Electricity: ${elec.displayValue} (${elec.changeDisplay} YoY)`);
   }
   if (stateData.gas_prices?.processedData) {
-    dataSummary.push(`Gas: ${stateData.gas_prices.processedData.displayValue}`);
+    const gas = stateData.gas_prices.processedData;
+    dataSummary.push(`Gas: ${gas.displayValue} (${gas.changeDisplay} YoY)`);
   }
-  if (stateData.rent?.processedData) {
-    dataSummary.push(`Rent: ${stateData.rent.processedData.displayValue}`);
+  if (stateData.food_prices?.processedData) {
+    const food = stateData.food_prices.processedData;
+    dataSummary.push(`Food: ${food.displayValue} (${food.changeDisplay} YoY)`);
   }
+
+  // Calculate squeeze index for overview
+  const squeeze = calculateSqueezeIndex(stateData);
+  const householdImpact = calculateHouseholdImpact(stateData);
 
   // If we have data, try to generate a narrative
   if (dataSummary.length > 0) {
-    const prompt = `Generate a brief, factual 1-2 sentence overview for ${stateName}'s economic situation.
+    let squeezeContext = '';
+    if (squeeze.status === 'high_squeeze') {
+      squeezeContext = `Overall pressure: HIGH - ${squeeze.pressures} cost categories rising`;
+    } else if (squeeze.status === 'moderate_squeeze') {
+      squeezeContext = `Overall pressure: MODERATE - costs rising with no relief`;
+    } else if (squeeze.status === 'relief' || squeeze.status === 'significant_relief') {
+      squeezeContext = `Overall pressure: LOW - more costs falling than rising`;
+    }
 
-Real data available:
+    const impactContext = householdImpact.total !== 0
+      ? `Net household impact: ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total}/month`
+      : '';
+
+    const prompt = `Write a 2-3 sentence executive summary of ${stateName}'s economic situation for residents.
+
+Current Data:
 ${dataSummary.join('\n')}
+
+${trendSummary.length > 0 ? 'Trends:\n' + trendSummary.join('\n') : ''}
+
+${squeezeContext}
+${impactContext}
 
 Recent headlines: ${newsHeadlines.slice(0, 3).join('; ') || 'None available'}
 
-Write a factual summary focusing on how these factors impact residents. Use hedging language like "approximately", "around", "based on latest data". Do NOT invent any numbers - only reference the data provided above.`;
+Guidelines:
+- First sentence: Characterize the overall economic situation (mixed signals, strong, challenging, etc.)
+- Second sentence: Highlight the most significant metric or trend
+- Third sentence: Summarize what this means for household budgets
+- Use specific numbers from the data provided
+- Be balanced - mention both pressures and reliefs if present
+- Do NOT invent any numbers - only reference the data provided above.`;
 
     try {
-      const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150 });
-      if (result.text) {
+      const result = await executeMCPTool('generate_text', { prompt, max_tokens: 200, temperature: 0.3 });
+      if (result?.text) {
         return result.text;
       }
     } catch (error) {
@@ -759,9 +1138,12 @@ Write a factual summary focusing on how these factors impact residents. Use hedg
     }
   }
 
-  // Fallback to a generic factual statement
+  // Fallback to a richer factual statement
   if (dataSummary.length > 0) {
-    return `Current economic data for ${stateName} shows: ${dataSummary.slice(0, 3).join(', ')}. These indicators directly affect household budgets.`;
+    const impactStr = householdImpact.total !== 0
+      ? ` Combined, these factors add ${householdImpact.total > 0 ? '' : 'savings of '}~$${Math.abs(householdImpact.total)}/month to typical household budgets.`
+      : '';
+    return `Current economic data for ${stateName} shows: ${dataSummary.slice(0, 4).join(', ')}.${impactStr}`;
   }
 
   return `Economic indicators for ${stateName} are being collected from government sources.`;

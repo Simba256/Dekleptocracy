@@ -1190,3 +1190,342 @@
     flex-direction: column;
   }
 }
+
+/* Squeeze Index Badge */
+.squeeze-index-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.squeeze-index-icon {
+  font-size: 14px;
+}
+
+.squeeze-index-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.squeeze-index-details {
+  display: flex;
+  gap: 8px;
+  font-weight: 500;
+  color: #666;
+}
+
+.squeeze-index-details .pressure-count {
+  color: #dc2626;
+}
+
+.squeeze-index-details .relief-count {
+  color: #16a34a;
+}
+
+@media (max-width: 768px) {
+  .squeeze-index-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .ai-insight-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .squeeze-index-badge {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
+
+/* ============================================
+   ENHANCED AI ANALYSIS STYLES
+   ============================================ */
+
+/* Overview Header with Squeeze Badge */
+.district-report-overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Executive Summary */
+.overview-executive-summary {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-left: 4px solid #4A5D3F;
+  padding: 20px 24px;
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 24px;
+}
+
+.overview-executive-summary .district-report-overview-statement {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #334155;
+}
+
+/* Overview Insights Grid */
+.overview-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.overview-insight-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.overview-insight-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.overview-insight-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.overview-insight-content {
+  flex: 1;
+}
+
+.overview-insight-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.overview-insight-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #334155;
+  margin: 0;
+}
+
+/* Insight Item Variants */
+.overview-insight-energy {
+  border-left: 3px solid #f59e0b;
+}
+
+.overview-insight-employment {
+  border-left: 3px solid #3b82f6;
+}
+
+.overview-insight-food {
+  border-left: 3px solid #10b981;
+}
+
+/* Enhanced Comparison Section */
+.ai-comparison-narrative--enhanced {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #bbf7d0;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.ai-insight-text--large {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.district-report-comparison-box--enhanced {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.district-report-comparison-box--enhanced .district-report-comparison-box-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 20px;
+}
+
+.comparison-box-icon {
+  font-size: 20px;
+}
+
+.district-report-comparison-grid--enhanced {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Comparison Cards */
+.comparison-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.comparison-card--higher {
+  border-color: #fecaca;
+  background: linear-gradient(135deg, #fef2f2 0%, #fff5f5 100%);
+}
+
+.comparison-card--lower {
+  border-color: #bbf7d0;
+  background: linear-gradient(135deg, #f0fdf4 0%, #f5fff7 100%);
+}
+
+.comparison-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.comparison-card-category {
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.comparison-card-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.badge--higher {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.badge--lower {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.comparison-card-values {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.comparison-card-state,
+.comparison-card-national {
+  text-align: center;
+  flex: 1;
+}
+
+.comparison-card-label {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.comparison-card-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.comparison-card-vs {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.comparison-card-change {
+  text-align: center;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.comparison-card-yoy {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Forward Looking in Comparison Section */
+.comparison-forward-looking {
+  background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.forward-projections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.projection-tag {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .overview-insights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .district-report-comparison-grid--enhanced {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-insight-item {
+    padding: 14px 16px;
+  }
+
+  .comparison-card-values {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .comparison-card-vs {
+    display: none;
+  }
+
+  .district-report-overview-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

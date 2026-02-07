@@ -481,6 +481,15 @@ AVAILABLE_TOOLS = {
         "handler": lambda params: get_comprehensive_state_data(params.get("state_name")),
         "description": "Get comprehensive economic data for a state from all available sources"
     },
+    # ===== TEXT GENERATION TOOLS =====
+    "generate_text": {
+        "handler": lambda params: gemini_client.generate_content(
+            prompt=params.get("prompt", ""),
+            max_tokens=params.get("max_tokens", 150),
+            temperature=params.get("temperature", 0.3)
+        ),
+        "description": "Generate text using Gemini AI for insights and analysis"
+    },
 }
 
 # Initialize intelligent chat handlers

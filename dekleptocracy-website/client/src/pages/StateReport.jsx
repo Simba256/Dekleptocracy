@@ -22,8 +22,35 @@ const AIInsightCard = ({ insight, variant = 'default', icon, title, children }) 
   );
 };
 
+// Squeeze Index Badge Component
+const SqueezeIndexBadge = ({ squeezeIndex }) => {
+  if (!squeezeIndex) return null;
+
+  const statusConfig = {
+    high_squeeze: { label: 'High Pressure', color: '#dc2626', icon: '⚠️' },
+    moderate_squeeze: { label: 'Moderate Pressure', color: '#ea580c', icon: '📊' },
+    mild_squeeze: { label: 'Mild Pressure', color: '#ca8a04', icon: '📈' },
+    stable: { label: 'Stable', color: '#059669', icon: '✓' },
+    relief: { label: 'Some Relief', color: '#0891b2', icon: '📉' },
+    significant_relief: { label: 'Significant Relief', color: '#16a34a', icon: '💰' }
+  };
+
+  const config = statusConfig[squeezeIndex.status] || statusConfig.stable;
+
+  return (
+    <div className="squeeze-index-badge" style={{ borderColor: config.color }}>
+      <span className="squeeze-index-icon">{config.icon}</span>
+      <span className="squeeze-index-label" style={{ color: config.color }}>{config.label}</span>
+      <span className="squeeze-index-details">
+        {squeezeIndex.pressures > 0 && <span className="pressure-count">{squeezeIndex.pressures} rising</span>}
+        {squeezeIndex.reliefs > 0 && <span className="relief-count">{squeezeIndex.reliefs} falling</span>}
+      </span>
+    </div>
+  );
+};
+
 // Household Impact Display Component
-const HouseholdImpactCard = ({ impact, crossMetricText }) => {
+const HouseholdImpactCard = ({ impact, crossMetricText, squeezeIndex }) => {
   if (!impact || impact.total === 0) return null;
 
   const isIncrease = impact.total > 0;
@@ -38,6 +65,7 @@ const HouseholdImpactCard = ({ impact, crossMetricText }) => {
           </svg>
         </div>
         <h4 className="ai-insight-title">Household Budget Impact</h4>
+        <SqueezeIndexBadge squeezeIndex={squeezeIndex} />
       </div>
       {crossMetricText && <p className="ai-insight-text">{crossMetricText}</p>}
       <div className="household-impact">
@@ -467,17 +495,58 @@ const StateReport = () => {
         <div className="district-report-overview-container">
           <div className="district-report-overview-header">
             <h2 className="district-report-overview-title">{data.overviewTitle || 'State Impact Overview'}</h2>
+            {data.aiInsights?.crossMetric?.squeezeIndex && (
+              <SqueezeIndexBadge squeezeIndex={data.aiInsights.crossMetric.squeezeIndex} />
+            )}
           </div>
-          <p className="district-report-overview-statement">
-            {data.overviewStatement || 'Lobbyists and corporations profit while working families and schools lose'}
-          </p>
+
+          {/* AI-Generated Executive Summary */}
+          <div className="overview-executive-summary">
+            <p className="district-report-overview-statement">
+              {data.overviewStatement || 'Lobbyists and corporations profit while working families and schools lose'}
+            </p>
+          </div>
 
           {/* Cross-Metric AI Insight with Household Impact */}
           {data.aiInsights?.crossMetric && (
             <HouseholdImpactCard
               impact={data.aiInsights.crossMetric.householdImpact}
               crossMetricText={data.aiInsights.crossMetric.text}
+              squeezeIndex={data.aiInsights.crossMetric.squeezeIndex}
             />
+          )}
+
+          {/* Quick AI Insights Grid */}
+          {data.aiInsights?.sections && (
+            <div className="overview-insights-grid">
+              {data.aiInsights.sections.energy && (
+                <div className="overview-insight-item overview-insight-energy">
+                  <div className="overview-insight-icon">⚡</div>
+                  <div className="overview-insight-content">
+                    <span className="overview-insight-label">Energy</span>
+                    <p className="overview-insight-text">{data.aiInsights.sections.energy}</p>
+                  </div>
+                </div>
+              )}
+              {data.aiInsights.sections.employment && (
+                <div className="overview-insight-item overview-insight-employment">
+                  <div className="overview-insight-icon">💼</div>
+                  <div className="overview-insight-content">
+                    <span className="overview-insight-label">Jobs & Economy</span>
+                    <p className="overview-insight-text">{data.aiInsights.sections.employment}</p>
+                  </div>
+                </div>
+              )}
+              {data.aiInsights.sections.food && (
+                <div className="overview-insight-item overview-insight-food">
+                  <div className="overview-insight-icon">🛒</div>
+                  <div className="overview-insight-content">
+                    <span className="overview-insight-label">Food & Groceries</span>
+                    <p className="overview-insight-text">{data.aiInsights.sections.food}</p>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           <div className="district-report-comparison">
@@ -741,9 +810,9 @@ const StateReport = () => {
       <div className="district-report-comparison-section">
         <h2 className="district-report-section-title">State Comparison</h2>
 
-        {/* AI Comparison Narrative */}
+        {/* AI Comparison Narrative - Enhanced */}
         {data.aiInsights?.comparison?.text && (
-          <div className="ai-comparison-narrative">
+          <div className="ai-comparison-narrative ai-comparison-narrative--enhanced">
             <div className="ai-insight-header">
               <div className="ai-insight-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -752,31 +821,71 @@ const StateReport = () => {
                   <path d="M6 20v-6"/>
                 </svg>
               </div>
-              <h4 className="ai-insight-title">How {data.stateName} Compares</h4>
+              <h4 className="ai-insight-title">How {data.stateName} Compares to National Averages</h4>
             </div>
-            <p className="ai-insight-text">{data.aiInsights.comparison.text}</p>
+            <p className="ai-insight-text ai-insight-text--large">{data.aiInsights.comparison.text}</p>
           </div>
         )}
 
         <div className="district-report-comparison-content">
-          <div className="district-report-comparison-text">
-            <p>{generateComparisonText(data?.comparisonData, data?.stateName)}</p>
-          </div>
-          <div className="district-report-comparison-box">
-            <h3 className="district-report-comparison-box-title">Your state vs. national average</h3>
-            <div className="district-report-comparison-grid">
-              {data.comparisonData?.map((item, index) => (
-                <div key={index} className="district-report-comparison-item">
-                  <div className="district-report-comparison-item-title">{item.category}</div>
-                  <div className="district-report-comparison-item-change">{item.change}</div>
-                  <div className="district-report-comparison-item-details">
-                    (Your state: {item.stateValue} vs Nat'l: {item.nationalValue})
+          <div className="district-report-comparison-box district-report-comparison-box--enhanced">
+            <h3 className="district-report-comparison-box-title">
+              <span className="comparison-box-icon">📊</span>
+              {data.stateName} vs. National Average
+            </h3>
+            <div className="district-report-comparison-grid district-report-comparison-grid--enhanced">
+              {data.comparisonData?.map((item, index) => {
+                const stateVal = parseFloat(item.stateValue?.replace(/[^0-9.-]/g, '')) || 0;
+                const natVal = parseFloat(item.nationalValue?.replace(/[^0-9.-]/g, '')) || 0;
+                const isHigher = stateVal > natVal;
+                const diffPercent = natVal > 0 ? ((stateVal - natVal) / natVal * 100).toFixed(1) : 0;
+
+                return (
+                  <div key={index} className={`comparison-card ${isHigher ? 'comparison-card--higher' : 'comparison-card--lower'}`}>
+                    <div className="comparison-card-header">
+                      <span className="comparison-card-category">{item.category}</span>
+                      <span className={`comparison-card-badge ${isHigher ? 'badge--higher' : 'badge--lower'}`}>
+                        {isHigher ? '↑' : '↓'} {Math.abs(diffPercent)}% {isHigher ? 'above' : 'below'}
+                      </span>
+                    </div>
+                    <div className="comparison-card-values">
+                      <div className="comparison-card-state">
+                        <span className="comparison-card-label">{data.stateName}</span>
+                        <span className="comparison-card-value">{item.stateValue}</span>
+                      </div>
+                      <div className="comparison-card-vs">vs</div>
+                      <div className="comparison-card-national">
+                        <span className="comparison-card-label">National</span>
+                        <span className="comparison-card-value">{item.nationalValue}</span>
+                      </div>
+                    </div>
+                    <div className="comparison-card-change">
+                      <span className="comparison-card-yoy">YoY: {item.change}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
+
+        {/* Forward Looking tied to comparison context */}
+        {data.aiInsights?.forwardLooking?.text && (
+          <div className="comparison-forward-looking">
+            <div className="ai-insight-header">
+              <div className="ai-insight-icon">🔮</div>
+              <h4 className="ai-insight-title">What This Means Going Forward</h4>
+            </div>
+            <p className="ai-insight-text">{data.aiInsights.forwardLooking.text}</p>
+            {data.aiInsights.forwardLooking.projections?.length > 0 && (
+              <div className="forward-projections">
+                {data.aiInsights.forwardLooking.projections.map((proj, idx) => (
+                  <span key={idx} className="projection-tag">{proj}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
