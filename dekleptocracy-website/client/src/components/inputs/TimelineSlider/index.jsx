@@ -139,6 +139,7 @@ const TimelineSlider = ({
           max="100"
           step="0.1"
           value={position}
+          onInput={handleChange}
           onChange={handleChange}
           onMouseDown={() => setIsDragging(true)}
           onMouseUp={() => setIsDragging(false)}
