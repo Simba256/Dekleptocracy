@@ -17,6 +17,7 @@ const TimelineSlider = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [hoverPosition, setHoverPosition] = useState(null);
+  const [localPosition, setLocalPosition] = useState(null);
 
   const dateToPosition = useCallback((date) => {
     const min = parseISO(minDate);
@@ -45,8 +46,14 @@ const TimelineSlider = ({
 
   const handleChange = (e) => {
     const newPosition = parseFloat(e.target.value);
+    setLocalPosition(newPosition);
     const newDate = positionToDate(newPosition);
     onChange(newDate);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setLocalPosition(null);
   };
 
   const handleMouseMove = (e) => {
@@ -108,7 +115,7 @@ const TimelineSlider = ({
       >
         <div
           className="slider-progress"
-          style={{ width: `${position}%` }}
+          style={{ width: `${localPosition !== null ? localPosition : position}%` }}
         />
 
         {milestones.map((milestone, index) => {
@@ -138,11 +145,13 @@ const TimelineSlider = ({
           min="0"
           max="100"
           step="0.1"
-          value={position}
+          value={localPosition !== null ? localPosition : position}
           onInput={handleChange}
           onChange={handleChange}
           onMouseDown={() => setIsDragging(true)}
-          onMouseUp={() => setIsDragging(false)}
+          onMouseUp={handleDragEnd}
+          onMouseLeave={isDragging ? handleDragEnd : undefined}
+          onTouchEnd={handleDragEnd}
           className={`timeline-slider ${isDragging ? 'dragging' : ''}`}
           aria-label="Select timeline date"
           aria-valuetext={value ? format(parseISO(value), 'MMMM d, yyyy') : ''}
