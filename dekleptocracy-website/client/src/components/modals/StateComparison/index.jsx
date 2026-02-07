@@ -14,6 +14,8 @@ const StateComparison = ({
   const [comparisonData, setComparisonData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const MAX_STATES = 4;
 
@@ -90,9 +92,21 @@ const StateComparison = ({
             {selectedStates.length < MAX_STATES && (
               <StateDropdown
                 value=""
-                onChange={addState}
-                placeholder="Add state..."
+                onChange={(state) => {
+                  addState(state);
+                  setDropdownOpen(false);
+                  setSearchValue('');
+                }}
+                isOpen={dropdownOpen}
+                onToggle={() => setDropdownOpen(!dropdownOpen)}
+                onClose={() => {
+                  setDropdownOpen(false);
+                  setSearchValue('');
+                }}
+                searchValue={searchValue}
+                onSearchChange={setSearchValue}
                 variant="map"
+                label="Add state"
               />
             )}
           </div>
