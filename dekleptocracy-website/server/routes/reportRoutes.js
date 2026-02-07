@@ -189,4 +189,61 @@ router.get('/available-states', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/reports/mcp-diagnostic
+ * Test MCP server connectivity and generate_text tool
+ */
+router.get('/mcp-diagnostic', async (req, res) => {
+  const { checkMCPHealth, executeMCPTool, getMCPTools } = await import('../services/mcpClient.js');
+
+  const results = {
+    mcpServerUrl: process.env.MCP_SERVER_URL || 'http://localhost:8000 (default)',
+    timestamp: new Date().toISOString(),
+    tests: {}
+  };
+
+  // Test 1: Health check
+  try {
+    const healthy = await checkMCPHealth();
+    results.tests.healthCheck = { success: healthy, error: null };
+  } catch (error) {
+    results.tests.healthCheck = { success: false, error: error.message };
+  }
+
+  // Test 2: List tools
+  try {
+    const tools = await getMCPTools();
+    results.tests.listTools = {
+      success: true,
+      toolCount: tools.length,
+      hasGenerateText: tools.some(t => t.name === 'generate_text'),
+      tools: tools.map(t => t.name)
+    };
+  } catch (error) {
+    results.tests.listTools = { success: false, error: error.message };
+  }
+
+  // Test 3: Test generate_text
+  try {
+    const testResult = await executeMCPTool('generate_text', {
+      prompt: 'Say "MCP test successful" in exactly those words.',
+      max_tokens: 20,
+      temperature: 0.1
+    });
+    results.tests.generateText = {
+      success: true,
+      rawResponse: testResult,
+      extractedText: testResult?.result?.text || testResult?.text || null
+    };
+  } catch (error) {
+    results.tests.generateText = { success: false, error: error.message };
+  }
+
+  const allPassed = Object.values(results.tests).every(t => t.success);
+  res.status(allPassed ? 200 : 500).json({
+    success: allPassed,
+    ...results
+  });
+});
+
 export default router;
