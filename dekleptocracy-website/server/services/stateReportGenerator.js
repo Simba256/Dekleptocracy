@@ -171,11 +171,23 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
-    return result?.text || null;
+    if (result?.text) return result.text;
   } catch (error) {
     logger.warn('Failed to generate energy insight', error);
-    return null;
   }
+
+  // Fallback
+  const parts = [];
+  if (electricity) {
+    parts.push(`Electricity in ${stateName} is ${electricity.displayValue}, ${electricity.change > 0 ? 'up' : 'down'} ${electricity.changeDisplay} from last year.`);
+  }
+  if (gasoline) {
+    parts.push(`Gas prices are at ${gasoline.displayValue}, ${gasoline.change > 0 ? 'an increase' : 'a decrease'} of ${gasoline.changeDisplay}.`);
+  }
+  if (monthlyImpact !== 0) {
+    parts.push(`This means about $${Math.abs(Math.round(monthlyImpact))} ${monthlyImpact > 0 ? 'more' : 'less'} per month for typical households.`);
+  }
+  return parts.join(' ') || null;
 }
 
 /**
@@ -230,11 +242,31 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
-    return result?.text || null;
+    if (result?.text) return result.text;
   } catch (error) {
     logger.warn('Failed to generate employment insight', error);
-    return null;
   }
+
+  // Fallback
+  const parts = [];
+  const rate = parseFloat(unemployment.value);
+  if (rate < 4) {
+    parts.push(`${stateName}'s unemployment rate of ${unemployment.displayValue} indicates a strong job market.`);
+  } else if (rate < 5.5) {
+    parts.push(`${stateName}'s unemployment rate stands at ${unemployment.displayValue}, near healthy levels.`);
+  } else {
+    parts.push(`${stateName}'s unemployment rate of ${unemployment.displayValue} suggests job market challenges.`);
+  }
+
+  if (unemployment.change !== 0) {
+    parts.push(`The rate has ${unemployment.change > 0 ? 'increased' : 'decreased'} ${unemployment.changeDisplay} over the past year.`);
+  }
+
+  if (income) {
+    parts.push(`Personal income is ${income.change > 0 ? 'up' : 'down'} ${income.changeDisplay}.`);
+  }
+
+  return parts.join(' ') || null;
 }
 
 /**
@@ -283,11 +315,29 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 120, temperature: 0.3 });
-    return result?.text || null;
+    if (result?.text) return result.text;
   } catch (error) {
     logger.warn('Failed to generate food insight', error);
-    return null;
   }
+
+  // Fallback
+  const parts = [];
+  if (food) {
+    parts.push(`Food costs in ${stateName} average ${food.displayValue} per person monthly, ${food.change > 0 ? 'up' : 'down'} ${food.changeDisplay} from last year.`);
+  }
+  if (groceryBasket && stateData.grocery_basket?.nationalDisplayValue) {
+    const stateVal = parseFloat(groceryBasket.value);
+    const natVal = parseFloat(stateData.grocery_basket.nationalDisplayValue.replace(/[^0-9.]/g, ''));
+    if (stateVal > natVal) {
+      parts.push(`Groceries cost about ${((stateVal - natVal) / natVal * 100).toFixed(0)}% more than the national average.`);
+    } else if (stateVal < natVal) {
+      parts.push(`Groceries are about ${((natVal - stateVal) / natVal * 100).toFixed(0)}% cheaper than the national average.`);
+    }
+  }
+  if (familyImpact && Math.abs(familyImpact) >= 5) {
+    parts.push(`A family of three is spending about $${Math.abs(familyImpact)} ${familyImpact > 0 ? 'more' : 'less'} per month on food.`);
+  }
+  return parts.join(' ') || null;
 }
 
 /**
@@ -453,11 +503,37 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 200, temperature: 0.3 });
-    return result?.text || null;
+    if (result?.text) return result.text;
   } catch (error) {
     logger.warn('Failed to generate cross-metric insight', error);
-    return null;
   }
+
+  // Fallback cross-metric narrative
+  const parts = [];
+
+  if (squeeze.status === 'high_squeeze') {
+    parts.push(`${stateName} households face pressure from multiple directions with ${squeeze.pressures} cost categories rising.`);
+  } else if (squeeze.status === 'moderate_squeeze') {
+    parts.push(`${stateName} residents are seeing some cost increases without offsetting relief.`);
+  } else if (squeeze.status === 'relief' || squeeze.status === 'significant_relief') {
+    parts.push(`${stateName} households are catching a break with ${squeeze.reliefs} cost categories declining.`);
+  } else {
+    parts.push(`${stateName}'s cost picture is mixed with some prices rising and others falling.`);
+  }
+
+  if (squeeze.details.pressures.length > 0 && squeeze.details.reliefs.length > 0) {
+    parts.push(`Rising costs in ${squeeze.details.pressures.join(' and ')} are partially offset by savings in ${squeeze.details.reliefs.join(' and ')}.`);
+  } else if (squeeze.details.pressures.length > 0) {
+    parts.push(`The main pressures come from ${squeeze.details.pressures.join(' and ')}.`);
+  } else if (squeeze.details.reliefs.length > 0) {
+    parts.push(`Relief is coming from ${squeeze.details.reliefs.join(' and ')}.`);
+  }
+
+  if (householdImpact.total !== 0) {
+    parts.push(`The combined effect is approximately ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total} per month for a typical household.`);
+  }
+
+  return parts.join(' ') || null;
 }
 
 /**
@@ -668,11 +744,56 @@ Guidelines:
 
   try {
     const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
-    return result?.text || null;
+    if (result?.text) {
+      return result.text;
+    }
   } catch (error) {
     logger.warn('Failed to generate comparison narrative', error);
-    return null;
   }
+
+  // Fallback: Generate a readable comparison text without LLM
+  return generateFallbackComparisonNarrative(comparisons, dollarImpacts, stateName, overallStanding);
+}
+
+/**
+ * Generate fallback comparison narrative when LLM is unavailable
+ */
+function generateFallbackComparisonNarrative(comparisons, dollarImpacts, stateName, overallStanding) {
+  if (comparisons.length === 0) {
+    return `${stateName}'s costs are generally in line with national averages across tracked categories.`;
+  }
+
+  const parts = [];
+
+  // Opening based on overall standing
+  if (overallStanding === 'more expensive') {
+    parts.push(`${stateName} tends to be more expensive than the national average.`);
+  } else if (overallStanding === 'more affordable') {
+    parts.push(`${stateName} offers more affordable costs compared to the national average.`);
+  } else {
+    parts.push(`${stateName} shows a mix of costs compared to national averages.`);
+  }
+
+  // Add specific comparisons
+  const above = comparisons.filter(c => c.direction === 'above');
+  const below = comparisons.filter(c => c.direction === 'below');
+
+  if (above.length > 0) {
+    const aboveList = above.map(c => `${c.metric} (${c.diff}% higher)`).join(', ');
+    parts.push(`Higher costs: ${aboveList}.`);
+  }
+
+  if (below.length > 0) {
+    const belowList = below.map(c => `${c.metric} (${c.diff}% lower)`).join(', ');
+    parts.push(`Lower costs: ${belowList}.`);
+  }
+
+  // Add dollar impact if available
+  if (dollarImpacts.length > 0) {
+    parts.push(`This translates to ${dollarImpacts.join(' and ').toLowerCase()}.`);
+  }
+
+  return parts.join(' ');
 }
 
 /**
@@ -1138,15 +1259,138 @@ Guidelines:
     }
   }
 
-  // Fallback to a richer factual statement
+  // Fallback to a narrative-style statement based on squeeze analysis
   if (dataSummary.length > 0) {
-    const impactStr = householdImpact.total !== 0
-      ? ` Combined, these factors add ${householdImpact.total > 0 ? '' : 'savings of '}~$${Math.abs(householdImpact.total)}/month to typical household budgets.`
-      : '';
-    return `Current economic data for ${stateName} shows: ${dataSummary.slice(0, 4).join(', ')}.${impactStr}`;
+    return generateFallbackOverview(stateData, stateName, squeeze, householdImpact);
   }
 
   return `Economic indicators for ${stateName} are being collected from government sources.`;
+}
+
+/**
+ * Generate a readable fallback overview when LLM is unavailable
+ */
+function generateFallbackOverview(stateData, stateName, squeeze, householdImpact) {
+  const parts = [];
+
+  // Opening sentence based on squeeze status
+  if (squeeze.status === 'high_squeeze') {
+    parts.push(`${stateName} residents are facing significant cost pressures across multiple categories.`);
+  } else if (squeeze.status === 'moderate_squeeze') {
+    parts.push(`${stateName}'s economy shows some cost pressures for households.`);
+  } else if (squeeze.status === 'relief' || squeeze.status === 'significant_relief') {
+    parts.push(`${stateName} residents are seeing some relief in household costs.`);
+  } else {
+    parts.push(`${stateName}'s economy shows mixed signals for household budgets.`);
+  }
+
+  // Highlight key metrics
+  const highlights = [];
+  const electricity = stateData.electricity_prices?.processedData;
+  const gasoline = stateData.gas_prices?.processedData;
+  const unemployment = stateData.unemployment?.processedData;
+  const food = stateData.food_prices?.processedData;
+
+  if (electricity?.change) {
+    const direction = electricity.change > 0 ? 'risen' : 'fallen';
+    highlights.push(`electricity has ${direction} ${electricity.changeDisplay}`);
+  }
+  if (gasoline?.change) {
+    const direction = gasoline.change > 0 ? 'up' : 'down';
+    highlights.push(`gas prices are ${direction} ${gasoline.changeDisplay}`);
+  }
+  if (unemployment) {
+    highlights.push(`unemployment stands at ${unemployment.displayValue}`);
+  }
+
+  if (highlights.length > 0) {
+    parts.push(`Key indicators show ${highlights.slice(0, 3).join(', ')}.`);
+  }
+
+  // Impact statement
+  if (householdImpact.total !== 0) {
+    if (householdImpact.total > 0) {
+      parts.push(`Combined, these changes add approximately $${householdImpact.total} per month to typical household expenses.`);
+    } else {
+      parts.push(`On balance, households are seeing savings of approximately $${Math.abs(householdImpact.total)} per month.`);
+    }
+  }
+
+  return parts.join(' ');
+}
+
+/**
+ * Generate fallback comparison text when LLM is unavailable
+ */
+function generateFallbackComparisonText(stateData, stateName, nationalAvgs) {
+  const comparisons = [];
+
+  const electricity = stateData.electricity_prices?.processedData;
+  if (electricity && nationalAvgs.electricity) {
+    const stateVal = parseFloat(electricity.value);
+    const natVal = parseFloat(nationalAvgs.electricity.value);
+    if (stateVal && natVal) {
+      const diff = ((stateVal - natVal) / natVal * 100);
+      if (Math.abs(diff) >= 5) {
+        const direction = diff > 0 ? 'higher' : 'lower';
+        const monthlyDiff = Math.round(Math.abs((stateVal - natVal) * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth / 100));
+        comparisons.push({
+          metric: 'electricity',
+          direction,
+          percent: Math.abs(diff).toFixed(0),
+          monthly: monthlyDiff
+        });
+      }
+    }
+  }
+
+  const gasoline = stateData.gas_prices?.processedData;
+  if (gasoline && nationalAvgs.gasoline) {
+    const stateVal = parseFloat(gasoline.value);
+    const natVal = parseFloat(nationalAvgs.gasoline.value);
+    if (stateVal && natVal) {
+      const diff = ((stateVal - natVal) / natVal * 100);
+      if (Math.abs(diff) >= 5) {
+        const direction = diff > 0 ? 'higher' : 'lower';
+        const monthlyDiff = Math.round(Math.abs((stateVal - natVal) * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth));
+        comparisons.push({
+          metric: 'fuel',
+          direction,
+          percent: Math.abs(diff).toFixed(0),
+          monthly: monthlyDiff
+        });
+      }
+    }
+  }
+
+  if (comparisons.length === 0) {
+    return `${stateName}'s costs are generally in line with national averages.`;
+  }
+
+  const parts = [];
+
+  // Count higher vs lower
+  const higher = comparisons.filter(c => c.direction === 'higher');
+  const lower = comparisons.filter(c => c.direction === 'lower');
+
+  if (higher.length > lower.length) {
+    parts.push(`${stateName} residents pay more than the national average for most tracked expenses.`);
+  } else if (lower.length > higher.length) {
+    parts.push(`${stateName} offers lower costs than the national average in key categories.`);
+  } else {
+    parts.push(`${stateName} shows a mix of costs compared to national averages.`);
+  }
+
+  // Add specifics
+  const specifics = comparisons.map(c => {
+    return `${c.metric} is ${c.percent}% ${c.direction} (about $${c.monthly}/month difference)`;
+  });
+
+  if (specifics.length > 0) {
+    parts.push(`Specifically, ${specifics.join(' and ')}.`);
+  }
+
+  return parts.join(' ');
 }
 
 /**
