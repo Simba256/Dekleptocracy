@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -55,6 +57,22 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Security and performance headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+      fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+      scriptSrc: ["'self'", "https://accounts.google.com"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://i.pravatar.cc"],
+      connectSrc: ["'self'", "https://accounts.google.com", process.env.FRONTEND_URL],
+    },
+  },
+}));
+
+app.use(compression());
 app.use(express.json());
 
 // Serve uploaded files
