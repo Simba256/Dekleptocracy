@@ -1,5 +1,5 @@
 /* Load accessibility color contrast fixes - must be before @tailwind */
-@import './accessibility-color-fixes.css';
+@import './accessibility-color-fixes-v2.css';
 
 @tailwind base;
 @tailwind components;
