@@ -2,10 +2,12 @@ import { useState, useCallback, useMemo, useEffect, useRef, Suspense, lazy } fro
 import { scaleLinear } from 'd3-scale';
 import { Tooltip } from 'react-tooltip';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
-import { geoAlbersUsa } from 'd3-geo';
+import { feature } from 'topojson-client';
 import './InteractiveMap.css';
 
 const StateDetailPanel = lazy(() => import('./StateDetailPanel').then(m => ({ default: m.StateDetailPanel })));
+
+const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
 const InteractiveMap = ({
   data,
@@ -14,17 +16,33 @@ const InteractiveMap = ({
   metric = 'priceImpact',
   onDrillDown
 }) => {
-  const [usData, setUsData] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState({ x: 0, y: 0 });
   const [hoveredState, setHoveredState] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [clickIndicator, setClickIndicator] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [geoData, setGeoData] = useState(null);
   const mapRef = useRef(null);
   const wrapperRef = useRef(null);
 
-  const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
+  // Fetch and parse the TopoJSON data
+  useEffect(() => {
+    fetch(US_TOPO_JSON)
+      .then(response => response.json())
+      .then(topology => {
+        console.log('TopoJSON loaded:', topology);
+        const geojson = feature(topology, topology.objects.states);
+        console.log('GeoJSON features:', geojson.features?.length, 'states');
+        setGeoData(geojson);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to load US map data:', err);
+        setIsLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -179,6 +197,13 @@ const InteractiveMap = ({
 
   return (
     <div className="interactive-map-container">
+      {isLoading && (
+        <div className="map-loading">
+          <div className="loading-spinner" />
+          <span>Loading map...</span>
+        </div>
+      )}
+
       <div className="map-controls">
         <button onClick={handleZoomIn} aria-label="Zoom in">+</button>
         <button onClick={handleZoomOut} aria-label="Zoom out">−</button>
@@ -199,25 +224,28 @@ const InteractiveMap = ({
         onClick={handleMapClick}
       >
         <div ref={mapRef} style={mapStyle}>
-          <ComposableMap
-            projection={geoAlbersUsa}
-            width={960}
-            height={600}
-          >
-            <Geographies geography={usData}>
-              {(geographies, projection) =>
-                geographies.map((geo) => {
-                  const stateName = getStateData(geo.id)?.name;
-                  const stateData = data?.find(d => d.name === stateName);
-                  const intensity = stateData?.intensity || 0;
-                  const isSelected = selectedState === stateName;
-                  const isHovered = hoveredState === stateName;
+          {geoData && (
+            <ComposableMap
+              projection="geoAlbersUsa"
+              width={960}
+              height={600}
+              style={{ width: '100%', height: 'auto' }}
+            >
+              <Geographies geography={geoData}>
+                {({ geographies }) => {
+                  console.log('Rendering geographies:', geographies?.length);
+                  return (geographies || []).map((geo) => {
+                    // Get state name from properties or look up by ID
+                    const stateName = geo.properties?.name || getStateData(geo.id)?.name;
+                    const stateData = data?.find(d => d.name === stateName);
+                    const intensity = stateData?.intensity || 0;
+                    const isSelected = selectedState === stateName;
+                    const isHovered = hoveredState === stateName;
 
-                  return (
-                    <g key={geo.rsmKey}>
+                    return (
                       <Geography
+                        key={geo.rsmKey || geo.id}
                         geography={geo}
-                        projection={projection}
                         fill={colorScale(intensity)}
                         stroke={isSelected ? '#2d3748' : (isHovered ? '#4A5D3F' : '#ffffff')}
                         strokeWidth={isSelected ? 3 : (isHovered ? 2 : 1)}
@@ -236,12 +264,12 @@ const InteractiveMap = ({
                         data-tooltip-id="map-tooltip"
                         data-tooltip-content={stateName}
                       />
-                    </g>
-                  );
-                })
-              }
-            </Geographies>
-          </ComposableMap>
+                    );
+                  });
+                }}
+              </Geographies>
+            </ComposableMap>
+          )}
 
           {clickIndicator && (
             <svg
