@@ -23,6 +23,14 @@ const InteractiveMap = ({
   const [geoData, setGeoData] = useState(null);
   const mapRef = useRef(null);
   const wrapperRef = useRef(null);
+  const zoomRef = useRef(zoom);
+  const centerRef = useRef(center);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    zoomRef.current = zoom;
+    centerRef.current = center;
+  }, [zoom, center]);
 
   // Fetch and parse the TopoJSON data
   useEffect(() => {
@@ -52,8 +60,22 @@ const InteractiveMap = ({
 
   const handleWheel = (e) => {
     e.preventDefault();
+
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const cursorX = e.clientX - rect.left - rect.width / 2;
+    const cursorY = e.clientY - rect.top - rect.height / 2;
+
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(prev => Math.max(1, Math.min(8, prev * delta)));
+    const oldZoom = zoomRef.current;
+    const newZoom = Math.max(1, Math.min(8, oldZoom * delta));
+    const zoomRatio = newZoom / oldZoom;
+
+    const oldCenter = centerRef.current;
+    const newCenterX = cursorX - (cursorX - oldCenter.x) * zoomRatio;
+    const newCenterY = cursorY - (cursorY - oldCenter.y) * zoomRatio;
+
+    setZoom(newZoom);
+    setCenter({ x: newCenterX, y: newCenterY });
   };
 
   const handleMouseDown = (e) => {
