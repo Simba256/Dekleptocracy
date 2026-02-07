@@ -4,6 +4,60 @@ import { Tooltip } from 'react-tooltip';
 import StateDetailPanel from './StateDetailPanel';
 import './InteractiveMap.css';
 
+// State coordinates - defined outside component to avoid re-creation and initialization issues
+const STATE_COORDINATES = {
+  'California': { cx: 85, cy: 285, rx: 75, ry: 90 },
+  'Texas': { cx: 420, cy: 445, rx: 120, ry: 95 },
+  'Arizona': { cx: 175, cy: 360, rx: 55, ry: 65 },
+  'New Mexico': { cx: 245, cy: 375, rx: 50, ry: 70 },
+  'Oklahoma': { cx: 340, cy: 375, rx: 55, ry: 50 },
+  'Louisiana': { cx: 465, cy: 480, rx: 50, ry: 45 },
+  'Washington': { cx: 75, cy: 135, rx: 55, ry: 45 },
+  'Oregon': { cx: 75, cy: 190, rx: 60, ry: 50 },
+  'Nevada': { cx: 135, cy: 260, rx: 50, ry: 70 },
+  'Utah': { cx: 185, cy: 265, rx: 45, ry: 60 },
+  'Colorado': { cx: 250, cy: 280, rx: 55, ry: 55 },
+  'Kansas': { cx: 350, cy: 300, rx: 60, ry: 45 },
+  'Illinois': { cx: 500, cy: 280, rx: 40, ry: 70 },
+  'Indiana': { cx: 540, cy: 285, rx: 40, ry: 55 },
+  'Ohio': { cx: 590, cy: 275, rx: 50, ry: 55 },
+  'Wisconsin': { cx: 480, cy: 205, rx: 50, ry: 60 },
+  'Michigan': { cx: 540, cy: 215, rx: 55, ry: 70 },
+  'New York': { cx: 755, cy: 195, rx: 65, ry: 55 },
+  'Pennsylvania': { cx: 705, cy: 255, rx: 60, ry: 45 },
+  'Georgia': { cx: 630, cy: 380, rx: 50, ry: 60 },
+  'Alabama': { cx: 570, cy: 395, rx: 45, ry: 60 },
+  'Arkansas': { cx: 445, cy: 375, rx: 45, ry: 55 },
+  'Missouri': { cx: 450, cy: 310, rx: 55, ry: 50 },
+  'Iowa': { cx: 440, cy: 245, rx: 55, ry: 45 },
+  'Tennessee': { cx: 570, cy: 350, rx: 70, ry: 40 },
+  'Kentucky': { cx: 600, cy: 310, rx: 65, ry: 40 },
+  'North Carolina': { cx: 700, cy: 345, rx: 70, ry: 45 },
+  'South Carolina': { cx: 680, cy: 385, rx: 45, ry: 45 },
+  'Virginia': { cx: 710, cy: 305, rx: 65, ry: 45 },
+  'Florida': { cx: 700, cy: 485, rx: 60, ry: 100 },
+  'Mississippi': { cx: 510, cy: 420, rx: 40, ry: 65 },
+  'Wyoming': { cx: 240, cy: 220, rx: 50, ry: 55 },
+  'Montana': { cx: 200, cy: 155, rx: 80, ry: 50 },
+  'Idaho': { cx: 155, cy: 195, rx: 45, ry: 75 },
+  'Minnesota': { cx: 450, cy: 165, rx: 55, ry: 65 },
+  'North Dakota': { cx: 370, cy: 140, rx: 55, ry: 45 },
+  'South Dakota': { cx: 360, cy: 205, rx: 60, ry: 45 },
+  'Nebraska': { cx: 340, cy: 255, rx: 65, ry: 40 },
+  'West Virginia': { cx: 655, cy: 295, rx: 40, ry: 50 },
+  'Maryland': { cx: 735, cy: 285, rx: 35, ry: 35 },
+  'Vermont': { cx: 770, cy: 170, rx: 30, ry: 50 },
+  'New Hampshire': { cx: 770, cy: 170, rx: 30, ry: 50 },
+  'Maine': { cx: 800, cy: 145, rx: 35, ry: 70 },
+  'Alaska': { cx: 120, cy: 535, rx: 80, ry: 50 },
+  'Hawaii': { cx: 300, cy: 555, rx: 50, ry: 20 },
+  'Connecticut': { cx: 765, cy: 220, rx: 30, ry: 30 },
+  'Delaware': { cx: 735, cy: 285, rx: 35, ry: 35 },
+  'Massachusetts': { cx: 770, cy: 170, rx: 30, ry: 50 },
+  'New Jersey': { cx: 740, cy: 240, rx: 40, ry: 40 },
+  'Rhode Island': { cx: 770, cy: 170, rx: 30, ry: 50 }
+};
+
 const InteractiveMap = ({
   data,
   selectedState,
@@ -89,7 +143,7 @@ const InteractiveMap = ({
     let closestState = null;
     let minDistance = Infinity;
 
-    Object.entries(stateColors).forEach(([stateName, coords]) => {
+    Object.entries(STATE_COORDINATES).forEach(([stateName, coords]) => {
       const rx = coords.rx * (1 + 0.3 * (zoom - 1));
       const ry = coords.ry * (1 + 0.3 * (zoom - 1));
 
@@ -105,7 +159,7 @@ const InteractiveMap = ({
     });
 
     return minDistance < 1.3 ? closestState : null;
-  }, [stateColors, zoom]);
+  }, [zoom]);
 
   const colorScale = useMemo(() => {
     const values = data?.map(d => d.intensity || 0) || [];
@@ -135,59 +189,6 @@ const InteractiveMap = ({
     setCenter({ x: 0, y: 0 });
     onStateSelect?.(null);
     setClickIndicator(null);
-  };
-
-  const stateColors = {
-    'California': { cx: 85, cy: 285, rx: 75, ry: 90 },
-    'Texas': { cx: 420, cy: 445, rx: 120, ry: 95 },
-    'Arizona': { cx: 175, cy: 360, rx: 55, ry: 65 },
-    'New Mexico': { cx: 245, cy: 375, rx: 50, ry: 70 },
-    'Oklahoma': { cx: 340, cy: 375, rx: 55, ry: 50 },
-    'Louisiana': { cx: 465, cy: 480, rx: 50, ry: 45 },
-    'Washington': { cx: 75, cy: 135, rx: 55, ry: 45 },
-    'Oregon': { cx: 75, cy: 190, rx: 60, ry: 50 },
-    'Nevada': { cx: 135, cy: 260, rx: 50, ry: 70 },
-    'Utah': { cx: 185, cy: 265, rx: 45, ry: 60 },
-    'Colorado': { cx: 250, cy: 280, rx: 55, ry: 55 },
-    'Kansas': { cx: 350, cy: 300, rx: 60, ry: 45 },
-    'Illinois': { cx: 500, cy: 280, rx: 40, ry: 70 },
-    'Indiana': { cx: 540, cy: 285, rx: 40, ry: 55 },
-    'Ohio': { cx: 590, cy: 275, rx: 50, ry: 55 },
-    'Wisconsin': { cx: 480, cy: 205, rx: 50, ry: 60 },
-    'Michigan': { cx: 540, cy: 215, rx: 55, ry: 70 },
-    'New York': { cx: 755, cy: 195, rx: 65, ry: 55 },
-    'Pennsylvania': { cx: 705, cy: 255, rx: 60, ry: 45 },
-    'Georgia': { cx: 630, cy: 380, rx: 50, ry: 60 },
-    'Alabama': { cx: 570, cy: 395, rx: 45, ry: 60 },
-    'Arkansas': { cx: 445, cy: 375, rx: 45, ry: 55 },
-    'Missouri': { cx: 450, cy: 310, rx: 55, ry: 50 },
-    'Iowa': { cx: 440, cy: 245, rx: 55, ry: 45 },
-    'Tennessee': { cx: 570, cy: 350, rx: 70, ry: 40 },
-    'Kentucky': { cx: 600, cy: 310, rx: 65, ry: 40 },
-    'North Carolina': { cx: 700, cy: 345, rx: 70, ry: 45 },
-    'South Carolina': { cx: 680, cy: 385, rx: 45, ry: 45 },
-    'Virginia': { cx: 710, cy: 305, rx: 65, ry: 45 },
-    'Florida': { cx: 700, cy: 485, rx: 60, ry: 100 },
-    'Mississippi': { cx: 510, cy: 420, rx: 40, ry: 65 },
-    'Wyoming': { cx: 240, cy: 220, rx: 50, ry: 55 },
-    'Montana': { cx: 200, cy: 155, rx: 80, ry: 50 },
-    'Idaho': { cx: 155, cy: 195, rx: 45, ry: 75 },
-    'Minnesota': { cx: 450, cy: 165, rx: 55, ry: 65 },
-    'North Dakota': { cx: 370, cy: 140, rx: 55, ry: 45 },
-    'South Dakota': { cx: 360, cy: 205, rx: 60, ry: 45 },
-    'Nebraska': { cx: 340, cy: 255, rx: 65, ry: 40 },
-    'West Virginia': { cx: 655, cy: 295, rx: 40, ry: 50 },
-    'Maryland': { cx: 735, cy: 285, rx: 35, ry: 35 },
-    'Vermont': { cx: 770, cy: 170, rx: 30, ry: 50 },
-    'New Hampshire': { cx: 770, cy: 170, rx: 30, ry: 50 },
-    'Maine': { cx: 800, cy: 145, rx: 35, ry: 70 },
-    'Alaska': { cx: 120, cy: 535, rx: 80, ry: 50 },
-    'Hawaii': { cx: 300, cy: 555, rx: 50, ry: 20 },
-    'Connecticut': { cx: 765, cy: 220, rx: 30, ry: 30 },
-    'Delaware': { cx: 735, cy: 285, rx: 35, ry: 35 },
-    'Massachusetts': { cx: 770, cy: 170, rx: 30, ry: 50 },
-    'New Jersey': { cx: 740, cy: 240, rx: 40, ry: 40 },
-    'Rhode Island': { cx: 770, cy: 170, rx: 30, ry: 50 }
   };
 
   const style = {
@@ -249,7 +250,7 @@ const InteractiveMap = ({
         />
 
         <svg viewBox="0 0 960 600" className="heat-overlay" preserveAspectRatio="xMidYMid meet" style={style}>
-           {Object.entries(stateColors).map(([stateName, coords]) => {
+           {Object.entries(STATE_COORDINATES).map(([stateName, coords]) => {
              const stateData = getStateData(stateName);
              const intensity = stateData?.intensity || Math.random() * 100;
              const isSelected = selectedState === stateName;
