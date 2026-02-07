@@ -86,28 +86,44 @@ class OpenAIAPIClient:
             }
 
         try:
-            # GPT-5 uses max_completion_tokens and doesn't support temperature
-            params = {
-                "model": model,
-                "messages": [{"role": "user", "content": prompt}]
-            }
-
+            # GPT-5 uses Responses API, others use Chat Completions API
             if model.startswith("gpt-5") or model.startswith("o1"):
-                params["max_completion_tokens"] = max_tokens
-                # GPT-5/o1 don't support temperature parameter
+                # Use Responses API for GPT-5/o1 models
+                response = self.client.responses.create(
+                    model=model,
+                    input=prompt,
+                    max_output_tokens=max_tokens
+                )
+
+                # Extract text from Responses API format
+                content = ""
+                if hasattr(response, 'output') and response.output:
+                    for item in response.output:
+                        if item.type == "message" and hasattr(item, 'content'):
+                            for content_item in item.content:
+                                if hasattr(content_item, 'text'):
+                                    content = content_item.text
+                                    break
+                            if content:
+                                break
+
+                tokens_used = response.usage.total_tokens if hasattr(response, 'usage') and response.usage else 0
             else:
-                params["max_tokens"] = max_tokens
-                params["temperature"] = temperature
-
-            response = self.client.chat.completions.create(**params)
-
-            content = response.choices[0].message.content
+                # Use Chat Completions API for GPT-4 and earlier
+                response = self.client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=max_tokens,
+                    temperature=temperature
+                )
+                content = response.choices[0].message.content
+                tokens_used = response.usage.total_tokens if response.usage else 0
 
             return {
                 "status": "success",
                 "text": content or "",
                 "model": model,
-                "tokens_used": response.usage.total_tokens if response.usage else 0
+                "tokens_used": tokens_used
             }
 
         except Exception as e:
@@ -147,33 +163,54 @@ class OpenAIAPIClient:
             }
 
         try:
-            messages = []
-            if system_prompt:
-                messages.append({"role": "system", "content": system_prompt})
-            messages.append({"role": "user", "content": prompt})
-
-            # GPT-5 uses max_completion_tokens and doesn't support temperature
-            params = {
-                "model": model,
-                "messages": messages
-            }
-
+            # GPT-5 uses Responses API, others use Chat Completions API
             if model.startswith("gpt-5") or model.startswith("o1"):
-                params["max_completion_tokens"] = max_tokens
-                # GPT-5/o1 don't support temperature parameter
+                # Use Responses API for GPT-5/o1 models
+                # Combine system prompt and user prompt for Responses API
+                full_input = prompt
+                if system_prompt:
+                    full_input = f"{system_prompt}\n\n{prompt}"
+
+                response = self.client.responses.create(
+                    model=model,
+                    input=full_input,
+                    max_output_tokens=max_tokens
+                )
+
+                # Extract text from Responses API format
+                content = ""
+                if hasattr(response, 'output') and response.output:
+                    for item in response.output:
+                        if item.type == "message" and hasattr(item, 'content'):
+                            for content_item in item.content:
+                                if hasattr(content_item, 'text'):
+                                    content = content_item.text
+                                    break
+                            if content:
+                                break
+
+                tokens_used = response.usage.total_tokens if hasattr(response, 'usage') and response.usage else 0
             else:
-                params["max_tokens"] = max_tokens
-                params["temperature"] = temperature
+                # Use Chat Completions API for GPT-4 and earlier
+                messages = []
+                if system_prompt:
+                    messages.append({"role": "system", "content": system_prompt})
+                messages.append({"role": "user", "content": prompt})
 
-            response = self.client.chat.completions.create(**params)
-
-            content = response.choices[0].message.content
+                response = self.client.chat.completions.create(
+                    model=model,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    temperature=temperature
+                )
+                content = response.choices[0].message.content
+                tokens_used = response.usage.total_tokens if response.usage else 0
 
             return {
                 "status": "success",
                 "text": content or "",
                 "model": model,
-                "tokens_used": response.usage.total_tokens if response.usage else 0
+                "tokens_used": tokens_used
             }
 
         except Exception as e:
