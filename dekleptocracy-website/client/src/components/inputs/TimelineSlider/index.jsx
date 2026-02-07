@@ -101,10 +101,12 @@ const TimelineSlider = ({
 
         {milestones.map((milestone, index) => {
           const milestonePos = dateToPosition(milestone.date);
+          const currentPos = localPosition !== null ? localPosition : position;
+          const isPassed = milestonePos <= currentPos;
           return (
             <div
               key={index}
-              className={`milestone-marker ${milestone.highlighted ? 'highlighted' : ''}`}
+              className={`milestone-marker ${milestone.highlighted ? 'highlighted' : ''} ${isPassed ? 'passed' : ''}`}
               style={{ left: `${milestonePos}%` }}
             />
           );

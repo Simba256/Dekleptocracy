@@ -119,6 +119,10 @@
   transition: all 0.2s;
 }
 
+.milestone-marker.passed {
+  background: #4A5D3F;
+}
+
 .milestone-marker.highlighted {
   background: #4A5D3F;
   transform: translateY(-50%) scale(1.3);
