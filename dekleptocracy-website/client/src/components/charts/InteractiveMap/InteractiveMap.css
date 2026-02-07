@@ -78,6 +78,11 @@
 .state-geo {
   transition: all 0.2s ease;
   vector-effect: non-scaling-stroke;
+  outline: none;
+}
+
+.state-geo:focus {
+  outline: none;
 }
 
 .state-geo:hover {
@@ -86,7 +91,8 @@
 
 .state-geo.selected {
   filter: brightness(1.15);
-  animation: pulse 1s ease-in-out infinite;
+  stroke: #2d3748 !important;
+  stroke-width: 3px !important;
 }
 
 .state-geo.hovered {

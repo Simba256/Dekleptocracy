@@ -1,11 +1,9 @@
-import { useState, useCallback, useMemo, useEffect, useRef, Suspense, lazy } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { scaleLinear } from 'd3-scale';
 import { Tooltip } from 'react-tooltip';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { feature } from 'topojson-client';
 import './InteractiveMap.css';
-
-const StateDetailPanel = lazy(() => import('./StateDetailPanel').then(m => ({ default: m.StateDetailPanel })));
 
 const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
@@ -292,16 +290,6 @@ const InteractiveMap = ({
         </div>
       </div>
 
-      <Suspense fallback={null}>
-        {selectedState && (
-          <StateDetailPanel
-            stateCode={selectedState}
-            stateData={data?.find(d => d.name === selectedState)}
-            onClose={() => onStateSelect?.(null)}
-            onDrillDown={onDrillDown}
-          />
-        )}
-      </Suspense>
     </div>
   );
 };
