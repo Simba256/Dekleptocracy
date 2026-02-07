@@ -21,8 +21,7 @@ const InteractiveMap = ({
   const [hoveredState, setHoveredState] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [clickIndicator, setClickIndicator] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
   const [geoData, setGeoData] = useState(null);
   const mapRef = useRef(null);
   const wrapperRef = useRef(null);
@@ -32,9 +31,7 @@ const InteractiveMap = ({
     fetch(US_TOPO_JSON)
       .then(response => response.json())
       .then(topology => {
-        console.log('TopoJSON loaded:', topology);
         const geojson = feature(topology, topology.objects.states);
-        console.log('GeoJSON features:', geojson.features?.length, 'states');
         setGeoData(geojson);
         setIsLoading(false);
       })
@@ -95,7 +92,6 @@ const InteractiveMap = ({
     setZoom(1);
     setCenter({ x: 0, y: 0 });
     onStateSelect?.(null);
-    setClickIndicator(null);
   };
 
   const colorScale = useMemo(() => {
@@ -178,17 +174,6 @@ const InteractiveMap = ({
     }
   };
 
-  const handleMapClick = (e) => {
-    if (e.target.closest('.map-controls')) return;
-
-    const rect = wrapperRef.current.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-
-    setClickIndicator({ x: clickX, y: clickY });
-    setTimeout(() => setClickIndicator(null), 1500);
-  };
-
   const mapStyle = {
     width: '100%',
     height: '100%',
@@ -221,7 +206,6 @@ const InteractiveMap = ({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
-        onClick={handleMapClick}
       >
         <div ref={mapRef} style={mapStyle}>
           {geoData && (
@@ -233,7 +217,6 @@ const InteractiveMap = ({
             >
               <Geographies geography={geoData}>
                 {({ geographies }) => {
-                  console.log('Rendering geographies:', geographies?.length);
                   return (geographies || []).map((geo) => {
                     // Get state name from properties or look up by ID
                     const stateName = geo.properties?.name || getStateData(geo.id)?.name;
@@ -269,30 +252,6 @@ const InteractiveMap = ({
                 }}
               </Geographies>
             </ComposableMap>
-          )}
-
-          {clickIndicator && (
-            <svg
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                pointerEvents: 'none'
-              }}
-              width={960}
-              height={600}
-            >
-              <circle
-                cx={clickIndicator.x}
-                cy={clickIndicator.y}
-                r={8}
-                fill="none"
-                stroke="#4A5D3F"
-                strokeWidth={3}
-                opacity={0.9}
-                className="ping-indicator"
-              />
-            </svg>
           )}
         </div>
       </div>
