@@ -483,12 +483,13 @@ AVAILABLE_TOOLS = {
     },
     # ===== TEXT GENERATION TOOLS =====
     "generate_text": {
-        "handler": lambda params: gemini_client.generate_content(
+        "handler": lambda params: openai_client.generate_content(
             prompt=params.get("prompt", ""),
             max_tokens=params.get("max_tokens", 150),
-            temperature=params.get("temperature", 0.3)
+            temperature=params.get("temperature", 0.3),
+            model=params.get("model", "gpt-4o-mini")  # Fast and cheap for short insights
         ),
-        "description": "Generate text using Gemini AI for insights and analysis"
+        "description": "Generate text using OpenAI GPT for insights and analysis"
     },
 }
 
