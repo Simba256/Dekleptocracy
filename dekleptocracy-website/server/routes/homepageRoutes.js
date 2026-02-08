@@ -721,19 +721,36 @@ router.get('/social-posts', optionalAuth, async (req, res) => {
  * GET /api/homepage/map-data
  * Get heat map data for all regions with multiple metrics
  * Returns: priceImpact, tariffRevenue, costOfLiving per state
+ * Data sourced from StateDataCache (real government API data)
  */
 router.get('/map-data', async (req, res) => {
   try {
-    logger.info('Fetching map data with metrics');
+    logger.info('Fetching map data with metrics from StateDataCache');
 
-    // Get base region data
-    const regions = await MapRegion.find({ status: 'published' })
-      .sort({ intensity: -1 })
-      .exec();
+    // Get all states that have cached data
+    const statesWithData = await StateDataCache.distinct('state');
 
-    // Get all cached state data for metrics calculation
-    const stateDataPromises = regions.map(async (region) => {
-      const stateName = region.name;
+    // US States list (fallback if no cached data)
+    const allStates = [
+      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+      'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
+      'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+      'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+      'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
+      'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
+      'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon',
+      'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+      'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
+      'West Virginia', 'Wisconsin', 'Wyoming'
+    ];
+
+    // Use states with data, or all states if cache is empty
+    const statesToProcess = statesWithData.length > 0 ? statesWithData : allStates;
+
+    // Generate metrics for each state from cached data
+    const stateDataPromises = statesToProcess.map(async (stateName) => {
+      // Skip District of Columbia for the map (not in TopoJSON)
+      if (stateName === 'District of Columbia') return null;
 
       // Fetch cached data for this state
       const [gasPrices, electricityPrices, foodPrices, gdp, personalIncome, unemployment] = await Promise.all([
@@ -754,13 +771,13 @@ router.get('/map-data', async (req, res) => {
       const priceImpact = (gasChange * 0.4) + (electricityChange * 0.3) + (foodChange * 0.3);
 
       // Calculate Tariff Revenue (estimate based on GDP and trade exposure)
-      // Using GDP as base, estimate ~0.5-2% as tariff revenue
       const gdpValue = gdp?.processedData?.value || 0;
-      const tariffRate = 0.008 + (Math.random() * 0.012); // 0.8% - 2% of GDP
+      // Use a deterministic rate based on state name hash for consistency
+      const stateHash = stateName.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+      const tariffRate = 0.008 + ((stateHash % 100) / 100) * 0.012; // 0.8% - 2% of GDP
       const tariffRevenue = gdpValue * tariffRate;
 
       // Calculate Cost of Living Index (normalized 0-100)
-      // Based on gas prices, electricity, food, and adjusted by income
       const gasValue = gasPrices?.processedData?.value || 3.5;
       const electricityValue = electricityPrices?.processedData?.value || 0.12;
       const foodValue = foodPrices?.processedData?.value || 100;
@@ -778,15 +795,17 @@ router.get('/map-data', async (req, res) => {
         (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty
       ));
 
+      const hasRealData = !!(gasPrices || electricityPrices || foodPrices || gdp);
+
       return {
-        ...region.toObject(),
-        // Add calculated metrics
+        name: stateName,
+        // Calculated metrics
         priceImpact: Math.round(priceImpact * 10) / 10,
         tariffRevenue: Math.round(tariffRevenue),
         costOfLiving: Math.round(costOfLiving * 10) / 10,
-        // Keep intensity as fallback
-        intensity: region.intensity || priceImpact,
-        // Add raw data for tooltips
+        // Use priceImpact as default intensity for backwards compatibility
+        intensity: Math.abs(Math.round(priceImpact * 10) / 10),
+        // Raw data for tooltips
         metrics: {
           gasPrices: {
             value: gasPrices?.processedData?.value,
@@ -810,13 +829,23 @@ router.get('/map-data', async (req, res) => {
           unemployment: {
             value: unemployment?.processedData?.value,
             displayValue: unemployment?.processedData?.displayValue
+          },
+          personalIncome: {
+            value: personalIncome?.processedData?.value,
+            displayValue: personalIncome?.processedData?.displayValue
           }
         },
-        hasRealData: !!(gasPrices || electricityPrices || foodPrices)
+        hasRealData,
+        // Top shocks placeholder (can be populated from WalletShock collection)
+        topShocks: []
       };
     });
 
-    const regionsWithMetrics = await Promise.all(stateDataPromises);
+    const regionsWithMetrics = (await Promise.all(stateDataPromises))
+      .filter(r => r !== null) // Remove null entries (DC)
+      .sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact)); // Sort by impact
+
+    logger.info(`Returning ${regionsWithMetrics.length} states with metrics`);
 
     res.json({
       success: true,
