@@ -168,7 +168,7 @@ async function transformDataType(stateName, dataType) {
 
   const cacheData = await StateDataCache.getLatestData(stateName, dataType);
   if (!cacheData || !cacheData.processedData) {
-    logger.debug(`No cache data for ${dataType} in ${stateName}`);
+    logger.info(`No cache data for ${dataType} in ${stateName}`);
     return null;
   }
 
@@ -256,11 +256,11 @@ export async function transformStateData(stateName) {
 
         await WalletShock.findByIdAndUpdate(existing._id, walletShock);
         results.updated.push(walletShock.category);
-        logger.debug(`Updated ${walletShock.category} wallet shock for ${stateName}`);
+        logger.info(`Updated ${walletShock.category} wallet shock for ${stateName}`);
       } else {
         await WalletShock.create(walletShock);
         results.created.push(walletShock.category);
-        logger.debug(`Created ${walletShock.category} wallet shock for ${stateName}`);
+        logger.info(`Created ${walletShock.category} wallet shock for ${stateName}`);
       }
 
     } catch (error) {
