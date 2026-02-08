@@ -20,7 +20,15 @@ const METRICS = {
     label: 'Tariff Revenue',
     unit: '$',
     colors: ['#dbeafe', '#60a5fa', '#2563eb', '#1e40af'],
-    format: (val) => `$${(val / 1000000)?.toFixed(1) || 0}M`,
+    format: (val) => {
+      if (!val) return '$0';
+      const absVal = Math.abs(val);
+      if (absVal >= 1e12) return `$${(val / 1e12).toFixed(1)}T`;
+      if (absVal >= 1e9) return `$${(val / 1e9).toFixed(1)}B`;
+      if (absVal >= 1e6) return `$${(val / 1e6).toFixed(1)}M`;
+      if (absVal >= 1e3) return `$${(val / 1e3).toFixed(0)}K`;
+      return `$${val.toFixed(0)}`;
+    },
     field: 'tariffRevenue'
   },
   costOfLiving: {
