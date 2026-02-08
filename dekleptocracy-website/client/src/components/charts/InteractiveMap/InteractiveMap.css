@@ -157,18 +157,20 @@
 }
 
 .map-state-tooltip {
-  background: #2d3748;
-  color: white;
+  background: #ffffff !important;
+  color: #1a202c !important;
   padding: 12px;
   border-radius: 8px;
   max-width: 250px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
 }
 
 .map-state-tooltip h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: 600;
+  color: #1a202c;
 }
 
 .tooltip-metric {
@@ -177,18 +179,18 @@
   align-items: center;
   padding: 6px 0;
   margin-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .tooltip-metric .metric-label {
   font-size: 12px;
-  color: #a0aec0;
+  color: #718096;
 }
 
 .tooltip-metric .metric-value {
   font-size: 16px;
   font-weight: 700;
-  color: #fef3c7;
+  color: #4A5D3F;
 }
 
 .tooltip-item {
@@ -197,6 +199,7 @@
   gap: 8px;
   font-size: 12px;
   margin-bottom: 4px;
+  color: #2d3748;
 }
 
 .tooltip-icon {
@@ -206,14 +209,15 @@
 .tooltip-change {
   margin-left: auto;
   font-weight: 600;
-  color: #f97316;
+  color: #e53e3e;
 }
 
 .tooltip-cta {
   margin: 8px 0 0 0;
   font-size: 11px;
-  color: #fef3c7;
+  color: #718096;
   text-align: center;
+  font-style: italic;
 }
 
 .map-legend {
