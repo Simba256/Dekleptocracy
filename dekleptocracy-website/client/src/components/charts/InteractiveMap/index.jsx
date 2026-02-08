@@ -23,6 +23,7 @@ const InteractiveMap = ({
   const [geoData, setGeoData] = useState(null);
   const mapRef = useRef(null);
   const wrapperRef = useRef(null);
+  const containerRef = useRef(null);
   const zoomRef = useRef(zoom);
   const centerRef = useRef(center);
 
@@ -48,12 +49,13 @@ const InteractiveMap = ({
   }, []);
 
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.addEventListener('wheel', handleWheel, { passive: false });
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
     }
     return () => {
-      if (mapRef.current) {
-        mapRef.current.removeEventListener('wheel', handleWheel);
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
       }
     };
   }, []);
@@ -61,18 +63,26 @@ const InteractiveMap = ({
   const handleWheel = (e) => {
     e.preventDefault();
 
-    const rect = wrapperRef.current.getBoundingClientRect();
+    // Use container rect (not transformed wrapper) for accurate cursor position
+    const rect = containerRef.current.getBoundingClientRect();
+    // Cursor position relative to container center
     const cursorX = e.clientX - rect.left - rect.width / 2;
     const cursorY = e.clientY - rect.top - rect.height / 2;
 
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     const oldZoom = zoomRef.current;
     const newZoom = Math.max(1, Math.min(8, oldZoom * delta));
-    const zoomRatio = newZoom / oldZoom;
+
+    // Don't adjust center if we're already at zoom limits
+    if (newZoom === oldZoom) return;
 
     const oldCenter = centerRef.current;
-    const newCenterX = cursorX - (cursorX - oldCenter.x) * zoomRatio;
-    const newCenterY = cursorY - (cursorY - oldCenter.y) * zoomRatio;
+
+    // Calculate new center to keep cursor point fixed
+    // The point under cursor in map coordinates: (cursorX - oldCenter.x) / oldZoom
+    // After zoom, this point should still be at cursorX
+    const newCenterX = cursorX - (cursorX - oldCenter.x) * (newZoom / oldZoom);
+    const newCenterY = cursorY - (cursorY - oldCenter.y) * (newZoom / oldZoom);
 
     setZoom(newZoom);
     setCenter({ x: newCenterX, y: newCenterY });
@@ -198,7 +208,7 @@ const InteractiveMap = ({
   };
 
   return (
-    <div className="interactive-map-container">
+    <div ref={containerRef} className="interactive-map-container">
       {isLoading && (
         <div className="map-loading">
           <div className="loading-spinner" />
