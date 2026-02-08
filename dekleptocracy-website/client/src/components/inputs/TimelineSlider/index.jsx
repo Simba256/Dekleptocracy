@@ -62,19 +62,29 @@ const TimelineSlider = ({
     setLocalPosition(null);
   };
 
+  // Calculate active milestone index for both labels and markers
+  const currentPos = localPosition !== null ? localPosition : position;
+  const passedMilestones = milestones
+    .map((m, i) => ({ ...m, index: i, pos: dateToPosition(m.date) }))
+    .filter(m => m.pos <= currentPos);
+  const activeMilestoneIndex = passedMilestones.length > 0
+    ? passedMilestones[passedMilestones.length - 1].index
+    : -1;
+
   return (
     <div className="timeline-slider-container">
       {milestones.length > 0 && (
         <div className="milestone-labels">
           {milestones.map((milestone, index) => {
-            const position = dateToPosition(milestone.date);
+            const milestonePos = dateToPosition(milestone.date);
+            const isActive = index === activeMilestoneIndex;
             return (
               <button
                 key={index}
                 className={`milestone-label ${milestone.highlighted ? 'highlighted' : ''} ${
-                  position >= (value ? dateToPosition(value) : 0) ? 'passed' : ''
-                }`}
-                style={{ left: `${position}%` }}
+                  milestonePos <= currentPos ? 'passed' : ''
+                } ${isActive ? 'active' : ''}`}
+                style={{ left: `${milestonePos}%` }}
                 onClick={() => {
                   onMilestoneClick?.(milestone);
                   onChange(format(parseISO(milestone.date), 'yyyy-MM-dd'));
@@ -106,29 +116,19 @@ const TimelineSlider = ({
           style={{ left: `${localPosition !== null ? localPosition : position}%` }}
         />
 
-        {(() => {
-          const currentPos = localPosition !== null ? localPosition : position;
-          // Find the last passed milestone (closest to head)
-          const passedMilestones = milestones
-            .map((m, i) => ({ ...m, index: i, pos: dateToPosition(m.date) }))
-            .filter(m => m.pos <= currentPos);
-          const activeMilestoneIndex = passedMilestones.length > 0
-            ? passedMilestones[passedMilestones.length - 1].index
-            : -1;
-
-          return milestones.map((milestone, index) => {
-            const milestonePos = dateToPosition(milestone.date);
-            const isPassed = milestonePos <= currentPos;
-            const isActive = index === activeMilestoneIndex;
-            return (
-              <div
-                key={index}
-                className={`milestone-marker ${isPassed ? 'passed' : ''} ${isActive ? 'active' : ''}`}
-                style={{ left: `${milestonePos}%` }}
-              />
-            );
-          });
-        })()}
+        {/* Milestone markers on track */}
+        {milestones.map((milestone, index) => {
+          const milestonePos = dateToPosition(milestone.date);
+          const isPassed = milestonePos <= currentPos;
+          const isActive = index === activeMilestoneIndex;
+          return (
+            <div
+              key={index}
+              className={`milestone-marker ${isPassed ? 'passed' : ''} ${isActive ? 'active' : ''}`}
+              style={{ left: `${milestonePos}%` }}
+            />
+          );
+        })}
 
         <input
           type="range"

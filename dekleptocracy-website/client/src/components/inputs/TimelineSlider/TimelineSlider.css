@@ -40,6 +40,21 @@
   color: #4A5D3F;
 }
 
+.milestone-label.active {
+  transform: translateX(-50%) scale(1.15);
+  background: #fef3c7;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.milestone-label.active .milestone-date {
+  color: #92400e;
+  font-weight: 600;
+}
+
+.milestone-label.active .milestone-name {
+  color: #92400e;
+}
+
 .milestone-date {
   font-size: 11px;
   color: #718096;
