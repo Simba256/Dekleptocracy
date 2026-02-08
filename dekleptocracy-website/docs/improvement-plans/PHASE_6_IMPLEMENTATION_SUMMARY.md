@@ -1,7 +1,7 @@
 # Phase 6: Content & Data Quality - Implementation Summary
 
 **Date**: February 8, 2026
-**Status**: 🟡 IN PROGRESS (90% complete)
+**Status**: 🟡 IN PROGRESS (70% complete - Stats & Cost Drivers still seeded)
 
 ---
 
@@ -53,8 +53,9 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 ┌─────────────────────────────────────────────────────────────────┐
 │                 MongoDB (Atlas)                                  │
 │  - StateDataCache collection (real API data)                     │
-│  - WalletShock collection (homepage cards - seeded)              │
-│  - Other homepage collections                                    │
+│  - WalletShock collection (now real data from transformer)       │
+│  - StatsSummary collection (still seeded - needs OpenSecrets)    │
+│  - CostDriver collection (still seeded)                          │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -198,7 +199,53 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 
 ## Pending Implementations
 
-### 1. OpenSecrets Integration
+### 1. Stats Section (Still Seeded)
+
+**Status**: ⚠️ Using Fake/Seeded Data
+
+**Current Seeded Values:**
+| Stat | Seeded Value | Claimed Source | Actual Source |
+|------|--------------|----------------|---------------|
+| Lobbying | $45,000 | "Federal Trade Commission" | ❌ Fake - FTC doesn't provide this |
+| Consumer Cost | $5,890 | Not specified | ❌ Hardcoded seed data |
+| Contributions | $1.9M | Not specified | ❌ Hardcoded seed data |
+| Tariff Revenue | $1.2B | Not specified | ❌ Hardcoded seed data |
+
+**What's Needed to Fix:**
+- **OpenSecrets API** for lobbying and campaign contributions data
+- Register for OpenSecrets API key at opensecrets.org
+- Add MCP tools: `get_lobbying_by_industry`, `get_campaign_contributions`
+- Create `statsTransformer.js` (similar to walletShockTransformer)
+- Replace StatsSummary seeded data with real API data
+
+**API Endpoint Affected:** `GET /api/homepage/stats`
+
+---
+
+### 2. Cost Drivers (Still Seeded)
+
+**Status**: ⚠️ Using Fake/Seeded Data
+
+**Current Seeded Values:**
+| Driver | Seeded % | Source |
+|--------|----------|--------|
+| Tariffs | 35% | ❌ Hardcoded |
+| Labor | 21% | ❌ Hardcoded |
+| Fuels | 20% | ❌ Hardcoded |
+| Supply Chain | 17% | ❌ Hardcoded |
+| Other | 7% | ❌ Hardcoded |
+
+**What's Needed to Fix:**
+- Research authoritative sources for cost driver breakdown
+- Potential sources: BLS Producer Price Index, Federal Reserve reports
+- Create cost driver data collection in MCP server
+- Create `costDriverTransformer.js`
+
+**API Endpoint Affected:** `GET /api/homepage/cost-drivers`
+
+---
+
+### 3. OpenSecrets Integration (Recommended for Stats)
 
 **Status**: Not Implemented
 
@@ -209,13 +256,13 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 - Add to scheduler data types
 - Update stats display with real lobbying data
 
-**Note**: Current lobbying stats on homepage are seeded, not from real API.
+**Note**: This is the primary solution for fixing the Stats section's fake data.
 
 ---
 
-### 3. DataSource Model
+### 5. DataSource Model
 
-**Status**: Not Implemented
+**Status**: Not Implemented (Optional)
 
 **What's Needed:**
 - Create `DataSource` model for attribution tracking
@@ -225,7 +272,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 
 ---
 
-### 4. Data Quality Checker
+### 6. Data Quality Checker
 
 **Status**: Not Implemented
 
@@ -286,28 +333,37 @@ USDA_API_KEY=xxx (optional)
 
 | Endpoint | Purpose | Uses Real Data? |
 |----------|---------|-----------------|
-| `GET /api/homepage/map-data` | Map visualization | ✅ Yes |
-| `GET /api/reports/state` | State economic report | ✅ Yes |
+| `GET /api/homepage/map-data` | Map visualization | ✅ Yes (EIA, USDA, BLS) |
+| `GET /api/reports/state` | State economic report | ✅ Yes (EIA, USDA, BLS) |
 | `GET /api/reports/cache/health` | Cache status | ✅ Yes |
-| `GET /api/homepage/all` | Homepage data | 🔲 Partial (stats seeded) |
-| `GET /api/homepage/wallet-shocks` | Wallet shock cards | 🔲 No (seeded) |
+| `GET /api/homepage/wallet-shocks` | Wallet shock cards | ✅ Yes (EIA, USDA) |
+| `GET /api/homepage/all` | Homepage data | 🟡 Partial |
+| `GET /api/homepage/stats` | Stats section | 🔲 No (seeded) |
+| `GET /api/homepage/cost-drivers` | Cost drivers | 🔲 No (seeded) |
 
 ---
 
 ## Remaining Tasks
 
-### High Priority:
-- [x] ~~Create `walletShockTransformer.js` to connect real data to homepage~~ DONE
-- [x] ~~Update scheduler to run transformer after data refresh~~ DONE
-- [x] ~~Replace seeded wallet shocks with real API data~~ DONE
-- [x] ~~Run initial transformation to populate all states~~ DONE (Feb 8, 2026)
+### ✅ Completed:
+- [x] Create `walletShockTransformer.js` to connect real data to homepage
+- [x] Update scheduler to run transformer after data refresh
+- [x] Replace seeded wallet shocks with real API data
+- [x] Run initial transformation to populate all states (Feb 8, 2026)
 
-### Medium Priority:
-- [ ] Add OpenSecrets API to MCP server
-- [ ] Implement lobbying data collection
-- [ ] Create `DataSource` model for attribution
+### ⚠️ Known Issues (Seeded Data Still In Use):
+- [ ] **Stats Section** - Shows fake data with incorrect source attribution ("Federal Trade Commission")
+- [ ] **Cost Drivers** - Shows hardcoded percentages with no real data source
 
-### Low Priority:
+### Medium Priority (To Fix Seeded Data):
+- [ ] Register for OpenSecrets API key
+- [ ] Add OpenSecrets API client to MCP server
+- [ ] Create `statsTransformer.js` for Stats section
+- [ ] Research authoritative sources for cost driver data
+- [ ] Create `costDriverTransformer.js`
+
+### Low Priority (Optional Enhancements):
+- [ ] Create `DataSource` model for attribution tracking
 - [ ] Implement `dataQualityChecker.js`
 - [ ] Add anomaly detection
 - [ ] Build quality monitoring dashboard
@@ -321,8 +377,10 @@ USDA_API_KEY=xxx (optional)
 | Data sources integrated | 5+ | 6 (BLS, FRED, EIA, BEA, USDA, HUD) | ✅ |
 | Data freshness | < 24 hours | 100% fresh | ✅ |
 | States with data | 50 | 52 (50 states + DC + nationwide) | ✅ |
-| Homepage uses real data | 100% | ~90% (map + wallet shocks) | ✅ |
-| Source attribution | 100% | Yes (EIA, USDA in wallet shocks) | ✅ |
+| Homepage uses real data | 100% | ~70% (map + wallet shocks only) | 🟡 |
+| Stats section real data | 100% | 0% (all seeded) | 🔲 |
+| Cost drivers real data | 100% | 0% (all seeded) | 🔲 |
+| Source attribution | 100% | Partial (wallet shocks only) | 🟡 |
 | Anomaly detection | Active | None | 🔲 |
 
 ### Wallet Shock Coverage (Feb 8, 2026)
@@ -338,12 +396,26 @@ USDA_API_KEY=xxx (optional)
 ## Next Steps
 
 1. ~~**Immediate**: Trigger initial transformation to populate wallet shocks for all states~~ DONE
-2. **Short-term**: Add OpenSecrets for lobbying data (optional)
+2. **Decision Point**: Fix Stats/Cost Drivers seeded data OR proceed to Phase 7?
+   - If fixing: Register OpenSecrets API, create transformers
+   - If proceeding: Accept that Stats/Cost Drivers show demo data for now
 3. **Medium-term**: Implement DataSource model and quality checker (optional)
 4. **Ready for**: Phase 7 (SEO & Discoverability)
 
 ---
 
-**Phase 6 Progress**: 90% Complete
-**Key Achievement**: Real government data (EIA, USDA) now powers homepage for all 52 states
-**Remaining (Optional)**: OpenSecrets lobbying data, DataSource model, data quality checker
+**Phase 6 Progress**: 70% Complete (revised from 90%)
+
+**Key Achievements:**
+- ✅ Real government data (EIA, USDA) powers wallet shocks for all 52 states
+- ✅ Map data uses real cached government API data
+- ✅ State reports use real data with proper source attribution
+
+**Still Using Seeded/Fake Data:**
+- 🔲 Stats Section (lobbying, consumer cost, contributions, tariff revenue) - claims "Federal Trade Commission" source (fake)
+- 🔲 Cost Drivers (tariffs 35%, labor 21%, etc.) - hardcoded demo values
+
+**To Achieve 100%:**
+- Add OpenSecrets API for lobbying/contributions data
+- Research and integrate cost driver data sources
+- Create transformers for Stats and Cost Drivers

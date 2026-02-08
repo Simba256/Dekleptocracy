@@ -15,7 +15,7 @@ This document outlines a comprehensive improvement plan for the Dekleptocracy la
 | Phase 3: Performance Optimization | ✅ Complete | 100% |
 | Phase 4: User Experience | ✅ Complete | 100% |
 | Phase 5: Interactive Features | 🟡 In Progress | 60% |
-| Phase 6: Content/Data Quality | 🟡 In Progress | 90% |
+| Phase 6: Content/Data Quality | 🟡 In Progress | 70% |
 | Phase 7: SEO | 🔲 Not Started | 0% |
 | Phase 8: Analytics | 🔲 Not Started | 0% |
 | Phase 9: Admin CMS | 🔲 Not Started | 0% |
@@ -62,7 +62,7 @@ This document outlines a comprehensive improvement plan for the Dekleptocracy la
 - 🔲 State comparison modal (UI exists, not functional)
 - See: [PHASE_5_IMPLEMENTATION_SUMMARY.md](./PHASE_5_IMPLEMENTATION_SUMMARY.md)
 
-**Phase 6 Progress (Feb 8, 2026 - 90% complete):**
+**Phase 6 Progress (Feb 8, 2026 - 70% complete):**
 - ✅ MCP server with 9 government APIs (BLS, FRED, EIA, BEA, USDA, HUD)
 - ✅ StateDataCache model with TTL-based caching
 - ✅ stateDataScheduler.js with cron jobs (daily 2AM, gas every 6hrs)
@@ -72,9 +72,10 @@ This document outlines a comprehensive improvement plan for the Dekleptocracy la
 - ✅ walletShockTransformer.js connects real API data to homepage cards
 - ✅ Scheduler runs transformer after data refresh
 - ✅ Initial transformation complete: 52 states with real wallet shocks (EIA, USDA)
-- 🔲 OpenSecrets lobbying integration (optional, not implemented)
+- ⚠️ **Stats section still seeded** (lobbying $45K, consumer cost $5,890, contributions $1.9M - fake "FTC" source)
+- ⚠️ **Cost drivers still seeded** (tariffs 35%, labor 21%, etc. - hardcoded values)
+- 🔲 OpenSecrets API needed to fix Stats section
 - 🔲 DataSource model for attribution tracking (optional)
-- 🔲 Data quality checker service (optional)
 - See: [PHASE_6_IMPLEMENTATION_SUMMARY.md](./PHASE_6_IMPLEMENTATION_SUMMARY.md)
 
 ---
@@ -117,7 +118,7 @@ Phase 2: Component Refactor    [Week 2-3] ████████████�
 Phase 3: Performance           [Week 3-4] ████████████████████ COMPLETE
 Phase 4: User Experience       [Week 4-5] ████████████████████ COMPLETE
 Phase 5: Interactive Features  [Week 5-7] ████████████░░░░░░░░ 60% (components done, WebSocket pending)
-Phase 6: Data Quality          [Week 6-8] ██████████████████░░ 90% (52 states live, OpenSecrets optional)
+Phase 6: Data Quality          [Week 6-8] ██████████████░░░░░░ 70% (wallet shocks live, Stats/CostDrivers seeded)
 Phase 7: SEO                   [Week 8-9] ░░░░░░░░░░░░░░░░░░░░ NEXT
 Phase 8: Analytics             [Week 9-10] After SEO
 Phase 9: Admin CMS             [Week 10-12] Final phase
