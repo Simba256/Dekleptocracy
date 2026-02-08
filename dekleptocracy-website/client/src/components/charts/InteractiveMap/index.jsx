@@ -35,7 +35,7 @@ const METRICS = {
     label: 'Cost of Living',
     unit: 'index',
     colors: ['#d1fae5', '#34d399', '#059669', '#065f46'],
-    format: (val) => val?.toFixed(1) || '0',
+    format: (val) => val ? `${val.toFixed(0)} (${val >= 100 ? '+' : ''}${(val - 100).toFixed(0)}%)` : '100',
     field: 'costOfLiving'
   }
 };

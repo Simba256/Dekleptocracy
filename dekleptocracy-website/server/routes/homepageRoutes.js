@@ -777,7 +777,7 @@ router.get('/map-data', async (req, res) => {
       const tariffRate = 0.008 + ((stateHash % 100) / 100) * 0.012; // 0.8% - 2% of GDP
       const tariffRevenue = gdpValue * tariffRate;
 
-      // Calculate Cost of Living Index (normalized around 75, range ~50-100)
+      // Calculate Cost of Living Index (100 = US national average)
       // Based on actual data units from government APIs:
       // - Gas: $/gallon (e.g., 2.50-3.80, US avg ~3.20)
       // - Electricity: cents/kWh (e.g., 12-31, US avg ~16)
@@ -788,21 +788,21 @@ router.get('/map-data', async (req, res) => {
       const incomeValue = personalIncome?.processedData?.value || 65000;
       const unemploymentValue = unemployment?.processedData?.value || 4;
 
-      // Normalize each component relative to US average (each contributes ~25 points at average)
-      const gasIndex = (gasValue / 3.2) * 25;           // Gas at $3.20 = 25 points
-      const electricityIndex = (electricityValue / 16) * 25;  // Electricity at 16 cents = 25 points
-      const foodIndex = (foodValue / 150) * 25;         // Food at $150/mo = 25 points
+      // Normalize each component relative to US average (each contributes 33.3 points at average = 100 total)
+      const gasIndex = (gasValue / 3.2) * 33.33;           // Gas at $3.20 = 33.3 points
+      const electricityIndex = (electricityValue / 16) * 33.33;  // Electricity at 16 cents = 33.3 points
+      const foodIndex = (foodValue / 150) * 33.34;         // Food at $150/mo = 33.3 points
 
-      // Income adjustment: higher income = lower effective cost of living
-      const incomeAdjustment = Math.max(0.7, Math.min(1.3, 65000 / (incomeValue || 65000)));
+      // Income adjustment: higher income = lower effective cost of living burden
+      const incomeAdjustment = Math.max(0.85, Math.min(1.15, 65000 / (incomeValue || 65000)));
 
-      // Unemployment adds to cost burden
-      const unemploymentPenalty = Math.max(0, (unemploymentValue - 4) * 1.5);
+      // Unemployment adds to economic burden (max +5 points)
+      const unemploymentPenalty = Math.max(0, Math.min(5, (unemploymentValue - 4) * 1));
 
-      // Base index around 75 (gas + electricity + food = 75 at average)
-      const costOfLiving = Math.min(120, Math.max(30,
+      // Index where 100 = national average
+      const costOfLiving = Math.max(50,
         (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty
-      ));
+      );
 
       const hasRealData = !!(gasPrices || electricityPrices || foodPrices || gdp);
 
