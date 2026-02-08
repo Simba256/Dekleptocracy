@@ -17,11 +17,12 @@ const METRICS = {
     field: 'priceImpact'
   },
   costOfLiving: {
-    label: 'Cost of Living (100 = avg)',
+    label: 'Cost of Living',
     unit: 'index',
     colors: ['#d1fae5', '#34d399', '#059669', '#065f46'],
     format: (val) => val ? val.toFixed(0) : '100',
-    field: 'costOfLiving'
+    field: 'costOfLiving',
+    showAvgInLegend: true
   }
 };
 
@@ -381,7 +382,7 @@ const InteractiveMap = ({
           />
           <div className="legend-labels">
             <span>{metricConfig.format(minValue)}</span>
-            <span>{metricConfig.format((minValue + maxValue) / 2)}</span>
+            <span>{metricConfig.showAvgInLegend ? 'avg' : metricConfig.format((minValue + maxValue) / 2)}</span>
             <span>{metricConfig.format(maxValue)}</span>
           </div>
         </div>
