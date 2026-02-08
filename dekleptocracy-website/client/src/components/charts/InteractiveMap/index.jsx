@@ -13,7 +13,7 @@ const METRICS = {
     label: 'Price Impact',
     unit: '%',
     colors: ['#fef3c7', '#f97316', '#dc2626', '#b91c1c'],
-    format: (val) => `+${val?.toFixed(1) || 0}%`,
+    format: (val) => `${val >= 0 ? '+' : ''}${val?.toFixed(1) || 0}%`,
     field: 'priceImpact'
   },
   costOfLiving: {
