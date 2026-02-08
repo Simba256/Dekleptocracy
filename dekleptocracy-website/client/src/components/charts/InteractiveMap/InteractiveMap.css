@@ -156,6 +156,11 @@
   }
 }
 
+/* Ensure tooltip appears above all map elements */
+#map-tooltip {
+  z-index: 1000 !important;
+}
+
 .map-state-tooltip {
   background: #ffffff !important;
   color: #1a202c !important;
