@@ -38,6 +38,9 @@ from apis.fred_api import FREDAPIClient
 from apis.eia_api import EIAAPIClient
 from apis.housing_api import HUDAPIClient
 from apis.usda_api import USDAAPIClient
+# Lobbying and campaign finance API clients
+from apis.lda_api import LDAAPIClient
+from apis.fec_api import FECAPIClient
 from intelligent_chat import IntelligentChatHandler
 from intelligent_chat_v2 import IntelligentChatHandlerV2
 
@@ -102,6 +105,10 @@ fred_client = FREDAPIClient(config.apis["fred"])
 eia_client = EIAAPIClient(config.apis["eia"])
 hud_client = HUDAPIClient(config.apis["hud"])
 usda_client = USDAAPIClient(config.apis["usda"])
+
+# Initialize lobbying and campaign finance API clients
+lda_client = LDAAPIClient(config.apis["lda"])
+fec_client = FECAPIClient(config.apis["fec"])
 
 # Initialize intelligent chat handler (will be set up after AVAILABLE_TOOLS is defined)
 intelligent_chat_handler = None
@@ -475,6 +482,92 @@ AVAILABLE_TOOLS = {
             state_name=params.get("state_name")
         ),
         "description": "Get grocery basket cost comparison for a state vs national average"
+    },
+    # ===== LOBBYING DISCLOSURE (LDA) TOOLS =====
+    "get_lobbying_filings": {
+        "handler": lambda params: lda_client.get_lobbying_filings(
+            filing_year=params.get("filing_year"),
+            filing_type=params.get("filing_type", "Q"),
+            client_name=params.get("client_name"),
+            registrant_name=params.get("registrant_name"),
+            issue_code=params.get("issue_code"),
+            page_size=params.get("page_size", 25),
+            page=params.get("page", 1)
+        ),
+        "description": "Get lobbying filings from Senate LDA database"
+    },
+    "get_lobbying_totals": {
+        "handler": lambda params: lda_client.get_lobbying_totals_by_year(
+            year=params.get("year", 2024)
+        ),
+        "description": "Get total lobbying spending for a given year"
+    },
+    "get_top_lobbying_clients": {
+        "handler": lambda params: lda_client.get_top_lobbying_clients(
+            year=params.get("year", 2024),
+            limit=params.get("limit", 10)
+        ),
+        "description": "Get top lobbying clients by spending"
+    },
+    "get_lobbying_by_issue": {
+        "handler": lambda params: lda_client.get_lobbying_by_issue(
+            year=params.get("year", 2024),
+            issue_code=params.get("issue_code", "TAX")
+        ),
+        "description": "Get lobbying spending for a specific issue area (e.g., TAX, TRD, HCR)"
+    },
+    "get_lda_contributions": {
+        "handler": lambda params: lda_client.get_contributions(
+            filing_year=params.get("filing_year"),
+            contributor_name=params.get("contributor_name"),
+            page_size=params.get("page_size", 25),
+            page=params.get("page", 1)
+        ),
+        "description": "Get LD-203 contribution reports from lobbyists"
+    },
+    # ===== CAMPAIGN FINANCE (FEC) TOOLS =====
+    "get_contributions_by_employer": {
+        "handler": lambda params: fec_client.get_contributions_by_employer(
+            employer=params.get("employer", ""),
+            cycle=params.get("cycle", 2024),
+            per_page=params.get("per_page", 20)
+        ),
+        "description": "Get campaign contributions aggregated by employer"
+    },
+    "get_top_employers_contributions": {
+        "handler": lambda params: fec_client.get_top_employers(
+            cycle=params.get("cycle", 2024),
+            per_page=params.get("per_page", 50)
+        ),
+        "description": "Get top employers by total campaign contributions"
+    },
+    "get_total_contributions": {
+        "handler": lambda params: fec_client.get_total_contributions(
+            cycle=params.get("cycle", 2024)
+        ),
+        "description": "Get total individual contributions for an election cycle"
+    },
+    "get_pac_contributions": {
+        "handler": lambda params: fec_client.get_pac_contributions(
+            cycle=params.get("cycle", 2024)
+        ),
+        "description": "Get total PAC contributions for an election cycle"
+    },
+    "get_committee_totals": {
+        "handler": lambda params: fec_client.get_committee_totals(
+            committee_type=params.get("committee_type", "Q"),
+            cycle=params.get("cycle", 2024),
+            per_page=params.get("per_page", 20)
+        ),
+        "description": "Get committee totals by type (Q=PAC, O=Super PAC)"
+    },
+    "search_committees": {
+        "handler": lambda params: fec_client.search_committees(
+            query=params.get("query", ""),
+            cycle=params.get("cycle", 2024),
+            per_page=params.get("per_page", 20)
+        ),
+        "description": "Search for FEC committees by name"
     },
     # Comprehensive State Economic Data
     "get_state_economic_data": {

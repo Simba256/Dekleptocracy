@@ -12,6 +12,8 @@ from .fred_api import FREDAPIClient
 from .eia_api import EIAAPIClient
 from .housing_api import HUDAPIClient
 from .usda_api import USDAAPIClient
+from .lda_api import LDAAPIClient
+from .fec_api import FECAPIClient
 
 __all__ = [
     'BEAAPIClient',
@@ -24,5 +26,7 @@ __all__ = [
     'FREDAPIClient',
     'EIAAPIClient',
     'HUDAPIClient',
-    'USDAAPIClient'
+    'USDAAPIClient',
+    'LDAAPIClient',
+    'FECAPIClient'
 ]

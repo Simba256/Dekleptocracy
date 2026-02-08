@@ -105,6 +105,17 @@ class Config:
                 base_url="https://api.ers.usda.gov/data",
                 api_key=os.getenv("USDA_API_KEY"),
                 rate_limit={"requests_per_day": 500}
+            ),
+            # Lobbying and Campaign Finance APIs
+            "lda": APIConfig(
+                base_url="https://lda.senate.gov/api/v1",
+                api_key=os.getenv("LDA_API_KEY"),  # Token-based auth
+                rate_limit={"requests_per_minute": 60}
+            ),
+            "fec": APIConfig(
+                base_url="https://api.open.fec.gov/v1",
+                api_key=os.getenv("FEC_API_KEY"),
+                rate_limit={"requests_per_hour": 1000}
             )
         }
     

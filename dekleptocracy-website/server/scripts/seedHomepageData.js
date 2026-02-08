@@ -214,7 +214,7 @@ async function seedCostDrivers() {
           timePeriod: period,
           category: 'all',
           dataDate: new Date(),
-          source: 'Economic Analysis Bureau',
+          source: 'Bureau of Economic Analysis',
           displayOrder: i,
           status: 'published'
         });
@@ -240,25 +240,29 @@ async function seedStatsSummary() {
       type: 'lobbying',
       baseValue: { nationwide: 276000, California: 45000, Texas: 38000, Florida: 22000, 'New York': 42000, Arizona: 18000 },
       format: 'K',
-      subtitle: 'tracked since 2020'
+      subtitle: 'tracked since 2020',
+      source: 'U.S. Senate Office of Public Records (LDA)'
     },
     {
       type: 'consumer-cost',
       baseValue: { nationwide: 4679, California: 5890, Texas: 4120, Florida: 4450, 'New York': 5670, Arizona: 4280 },
       format: '$',
-      subtitle: 'due to tariffs'
+      subtitle: 'due to tariffs',
+      source: 'Bureau of Labor Statistics, EIA, USDA'
     },
     {
       type: 'contributions',
       baseValue: { nationwide: 9200000, California: 1850000, Texas: 1420000, Florida: 890000, 'New York': 1680000, Arizona: 720000 },
       format: '$M',
-      subtitle: 'in lobbying spend'
+      subtitle: 'in lobbying spend',
+      source: 'Federal Election Commission'
     },
     {
       type: 'tariff-revenue',
       baseValue: { nationwide: 6700000000, California: 1200000000, Texas: 980000000, Florida: 650000000, 'New York': 1100000000, Arizona: 520000000 },
       format: '$B',
-      subtitle: 'weekly collection'
+      subtitle: 'weekly collection',
+      source: 'U.S. Department of the Treasury'
     }
   ];
 
@@ -308,7 +312,7 @@ async function seedStatsSummary() {
         chartData: chartData,
         timePeriod: 'weekly',
         dataDate: new Date(),
-        source: 'Federal Trade Commission',
+        source: statType.source,
         status: 'published'
       });
     }

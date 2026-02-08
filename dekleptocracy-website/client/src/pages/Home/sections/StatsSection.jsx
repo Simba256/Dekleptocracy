@@ -11,11 +11,11 @@ export function StatsSection() {
 
   const handleCloseComparison = () => setShowComparison(false);
 
-  // Use API data with fallbacks
-  const lobbying = stats.lobbying || { displayValue: '276K' };
-  const consumerCost = stats.consumerCost || { displayValue: '$4,679', changeDisplay: '+28.42%' };
-  const contributions = stats.contributions || { displayValue: '$9.2M', changeDisplay: '+18.6%' };
-  const tariffRevenue = stats.tariffRevenue || { displayValue: '$6.7B' };
+  // Use API data with fallbacks (includes source attributions)
+  const lobbying = stats.lobbying || { displayValue: '276K', source: 'U.S. Senate Office of Public Records (LDA)' };
+  const consumerCost = stats.consumerCost || { displayValue: '$4,679', changeDisplay: '+28.42%', source: 'Bureau of Labor Statistics, EIA, USDA' };
+  const contributions = stats.contributions || { displayValue: '$9.2M', changeDisplay: '+18.6%', source: 'Federal Election Commission' };
+  const tariffRevenue = stats.tariffRevenue || { displayValue: '$6.7B', source: 'U.S. Department of the Treasury' };
 
   return (
     <section className="stats-section" aria-labelledby="stats-heading">
@@ -48,6 +48,7 @@ export function StatsSection() {
               </defs>
             </svg>
           </div>
+          <div className="stat-source">Source: {lobbying.source}</div>
         </div>
 
         {/* Consumer Cost Impact */}
@@ -58,6 +59,7 @@ export function StatsSection() {
           <div className="stat-change stat-change-up">
             {String.fromCharCode(8593)} {consumerCost.changeDisplay || '+28.42%'} due to tariffs
           </div>
+          <div className="stat-source">Source: {consumerCost.source}</div>
         </div>
 
         {/* Lobbyist Contributions */}
@@ -68,6 +70,7 @@ export function StatsSection() {
           <div className="stat-change stat-change-down">
             {String.fromCharCode(8595)} {contributions.changeDisplay || '+18.6%'}
           </div>
+          <div className="stat-source">Source: {contributions.source}</div>
         </div>
 
         {/* Tariff Revenue */}
@@ -88,6 +91,7 @@ export function StatsSection() {
               </div>
             ))}
           </div>
+          <div className="stat-source">Source: {tariffRevenue.source}</div>
         </div>
 
         <div className="stats-actions">

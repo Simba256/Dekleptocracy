@@ -2,6 +2,7 @@ import express from 'express';
 import { generateStateReportData, getStateDataStatus } from '../services/stateReportGenerator.js';
 import { triggerStateRefresh, getSchedulerStatus } from '../services/stateDataScheduler.js';
 import { transformAllStates, transformStateData, getTransformationStatus } from '../services/walletShockTransformer.js';
+import { transformStats, getStatsStatus } from '../services/statsTransformer.js';
 import StateDataCache from '../models/StateDataCache.js';
 
 const router = express.Router();
@@ -241,6 +242,49 @@ router.post('/wallet-shocks/transform', async (req, res) => {
         status: 'in_progress'
       });
     }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/reports/stats/transform
+ * Manually trigger stats transformation from LDA/FEC APIs
+ */
+router.post('/stats/transform', async (req, res) => {
+  try {
+    // Run transformation in background
+    transformStats()
+      .then(result => console.log('Stats transformation complete:', result))
+      .catch(err => console.error('Stats transformation failed:', err));
+
+    res.json({
+      success: true,
+      message: 'Stats transformation started. Check /api/reports/stats/status for progress.',
+      status: 'in_progress'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/reports/stats/status
+ * Get current stats transformation status
+ */
+router.get('/stats/status', async (req, res) => {
+  try {
+    const status = await getStatsStatus();
+    res.json({
+      success: true,
+      ...status
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

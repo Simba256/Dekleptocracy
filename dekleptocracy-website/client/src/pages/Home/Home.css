@@ -362,6 +362,14 @@
   color: #FF6B5A;
 }
 
+.stat-source {
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 8px;
+  font-style: italic;
+  line-height: 1.3;
+}
+
 /* Charts */
 .stat-chart {
   margin-top: 10px;
