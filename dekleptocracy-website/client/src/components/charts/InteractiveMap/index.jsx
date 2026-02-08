@@ -149,14 +149,38 @@ const InteractiveMap = ({
 
   const metricConfig = METRICS[activeMetric];
 
-  const colorScale = useMemo(() => {
+  const { colorScale, minValue, maxValue } = useMemo(() => {
     const field = metricConfig.field;
-    const values = data?.map(d => d[field] || d.intensity || 0) || [];
-    const maxValue = Math.max(...values, 100);
+    const values = data?.map(d => d[field] || d.intensity || 0).filter(v => v !== 0) || [];
 
-    return scaleLinear()
-      .domain([0, maxValue * 0.33, maxValue * 0.66, maxValue])
+    if (values.length === 0) {
+      return {
+        colorScale: scaleLinear().domain([0, 100]).range([metricConfig.colors[0], metricConfig.colors[3]]),
+        minValue: 0,
+        maxValue: 100
+      };
+    }
+
+    // Get actual min and max from data
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+
+    // Add small padding to avoid edge cases where min === max
+    const range = max - min || 1;
+    const paddedMin = min - range * 0.05;
+    const paddedMax = max + range * 0.05;
+
+    // Create scale using actual data range
+    const scale = scaleLinear()
+      .domain([
+        paddedMin,
+        paddedMin + (paddedMax - paddedMin) * 0.33,
+        paddedMin + (paddedMax - paddedMin) * 0.66,
+        paddedMax
+      ])
       .range(metricConfig.colors);
+
+    return { colorScale: scale, minValue: min, maxValue: max };
   }, [data, activeMetric, metricConfig]);
 
   const getStateData = useCallback((stateId) => {
@@ -363,9 +387,9 @@ const InteractiveMap = ({
             }}
           />
           <div className="legend-labels">
-            <span>Low</span>
-            <span>Medium</span>
-            <span>High</span>
+            <span>{metricConfig.format(minValue)}</span>
+            <span>{metricConfig.format((minValue + maxValue) / 2)}</span>
+            <span>{metricConfig.format(maxValue)}</span>
           </div>
         </div>
       </div>
