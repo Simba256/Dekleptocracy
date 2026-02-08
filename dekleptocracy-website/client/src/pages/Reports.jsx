@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/common/SEO';
 import './Reports.css';
 
 const Reports = () => {
@@ -115,6 +116,12 @@ const Reports = () => {
 
   return (
     <div className="reports-page">
+      <SEO
+        title="State Reports"
+        description="Generate personalized reports showing how federal policies, tariffs, and economic changes impact your state. Get data-driven insights for voters, candidates, and advocates."
+        url="/reports"
+        keywords="state reports, policy impact, federal policy, state economics, tariff impact by state"
+      />
       <div className="reports-container">
         {/* Top Banner */}
         <div className="reports-banner">

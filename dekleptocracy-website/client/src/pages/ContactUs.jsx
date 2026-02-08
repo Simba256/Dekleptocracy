@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/common/SEO';
 import './ContactUs.css';
 
 const ContactUs = () => {
@@ -29,6 +30,11 @@ const ContactUs = () => {
 
   return (
     <div className="contact-page">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with the Dekleptocracy team. Share feedback, report issues, or collaborate with us on policy transparency initiatives."
+        url="/contact"
+      />
       {/* Main Contact Section */}
       <section className="contact-main-section">
         <div className="contact-container">

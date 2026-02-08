@@ -11,6 +11,7 @@ import userRoutes from './routes/userRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import homepageRoutes from './routes/homepageRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
+import seoRoutes from './routes/seoRoutes.js';
 import { scheduleArticleGeneration, triggerArticleGeneration, getSchedulerStatus } from './services/articleScheduler.js';
 import { scheduleResearchGeneration, triggerResearchGeneration, getResearchSchedulerStatus } from './services/researchScheduler.js';
 import { removeDuplicateArticles } from './services/articleGenerator.js';
@@ -94,6 +95,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/homepage', homepageRoutes);
 app.use('/api/reports', reportRoutes);
+app.use(seoRoutes); // SEO routes (sitemap.xml, robots.txt) mounted at root level
 
 // Article generation endpoints
 app.post('/api/articles/generate', async (req, res) => {

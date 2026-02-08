@@ -1,8 +1,14 @@
+import SEO from '../components/common/SEO';
 import './TermsOfService.css';
 
 const TermsOfService = () => {
   return (
     <div className="terms-page">
+      <SEO
+        title="Terms of Service"
+        description="Read the terms and conditions for using Dekleptocracy. Understand your rights and responsibilities when using our policy tracking platform."
+        url="/terms-of-service"
+      />
       <div className="terms-container">
         <h1 className="terms-title">Terms of Service</h1>
         <p className="terms-date">Last Updated: December 8, 2025</p>

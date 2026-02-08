@@ -5,6 +5,7 @@ import { StatsSection } from './sections/StatsSection';
 import ProductImpactModal from '../../components/modals/ProductImpactModal';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import SEO, { generateWebAppSchema, generateWebsiteSchema } from '../../components/common/SEO';
 import {
   HeroSkeleton,
   StatsSkeleton,
@@ -43,8 +44,20 @@ function HomeContent() {
     );
   }
 
+  const structuredData = [
+    generateWebsiteSchema(),
+    generateWebAppSchema()
+  ];
+
   return (
     <div className="home-page">
+      <SEO
+        title={null}
+        description="Discover how government decisions, tariffs, and lobbying affect your everyday prices. Compare costs across all 50 US states and track policy impacts on your household budget."
+        url="/"
+        keywords="tariff impact, consumer prices, lobbying, government policy, cost of living, state comparison, grocery prices, fuel prices"
+        structuredData={structuredData}
+      />
       {/* Critical above-fold sections - load immediately */}
       <HeroSection />
       <StatsSection />

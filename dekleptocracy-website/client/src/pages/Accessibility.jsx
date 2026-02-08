@@ -1,8 +1,14 @@
+import SEO from '../components/common/SEO';
 import './Accessibility.css';
 
 const Accessibility = () => {
   return (
     <div className="accessibility-page">
+      <SEO
+        title="Accessibility Statement"
+        description="Learn about Dekleptocracy's commitment to digital accessibility. We strive to ensure our platform is usable by everyone, including people with disabilities."
+        url="/accessibility"
+      />
       <div className="accessibility-container">
         <h1 className="accessibility-title">Accessibility Statement</h1>
         <p className="accessibility-date">Last Updated: December 8, 2025</p>

@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { API_URL } from '../utils/apiUrl';
+import SEO, { generateStateReportSchema } from '../components/common/SEO';
 import './StateReport.css';
 
 // AI Insight Card Component
@@ -413,6 +414,12 @@ const StateReport = () => {
 
   return (
     <div className="district-report-page" ref={reportRef}>
+      <SEO
+        title={`${stateName} Economic Impact Report`}
+        description={`Comprehensive economic impact report for ${stateName}. See how federal policies, tariffs, and economic changes affect gas prices, electricity, food costs, and more.`}
+        url={`/reports/state-report?state=${encodeURIComponent(stateName)}`}
+        structuredData={generateStateReportSchema(stateName, data)}
+      />
       {/* Header Section */}
       <div className="district-report-header">
         <div className="district-report-header-content">

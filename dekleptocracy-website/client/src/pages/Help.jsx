@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SEO, { generateFAQSchema } from '../components/common/SEO';
 import './Help.css';
 
 const Help = () => {
@@ -87,6 +88,12 @@ const Help = () => {
 
   return (
     <div className="help-page">
+      <SEO
+        title="Help & FAQ"
+        description="Find answers to common questions about Dekleptocracy. Learn how to track policy impacts, use our tools, and get the most from our platform."
+        url="/help"
+        structuredData={generateFAQSchema(faqs)}
+      />
       <div className="help-hero">
         <div className="help-hero-content">
           <h1 className="help-title">How Can We Help You?</h1>

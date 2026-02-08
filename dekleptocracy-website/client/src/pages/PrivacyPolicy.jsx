@@ -1,8 +1,15 @@
+import SEO from '../components/common/SEO';
 import './PrivacyPolicy.css';
 
 const PrivacyPolicy = () => {
   return (
     <div className="privacy-policy-page">
+      <SEO
+        title="Privacy Policy"
+        description="Learn how Dekleptocracy collects, uses, and protects your personal information. Our commitment to your privacy and data security."
+        url="/privacy-policy"
+        noindex={false}
+      />
       <div className="privacy-policy-container">
         <h1 className="privacy-policy-title">Privacy Policy</h1>
         <p className="privacy-policy-date">Last Updated: December 8, 2025</p>

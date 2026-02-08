@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../utils/apiUrl';
+import SEO, { generateArticleSchema } from '../components/common/SEO';
 import './Insights.css';
 
 const Insights = () => {
@@ -166,6 +167,20 @@ const Insights = () => {
 
   return (
     <div className="insights-page">
+      <SEO
+        title={insightData.title}
+        description={insightData.description || `Policy impact analysis for ${insightData.location}`}
+        url={`/insights?slug=${slug}`}
+        image={insightData.heroImage}
+        type="article"
+        structuredData={generateArticleSchema({
+          title: insightData.title,
+          description: insightData.description,
+          image: insightData.heroImage,
+          publishedAt: insightData.publishedAt || new Date().toISOString(),
+          url: `/insights?slug=${slug}`
+        })}
+      />
       <div className="insights-container">
         {/* Location Badge */}
         <div className="insights-badge-wrapper">
@@ -396,12 +411,18 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
   const uniqueLocations = ['All Locations', ...new Set(articles.map(a => a.location).filter(Boolean))];
   
   // Filter articles by location
-  const filteredArticles = selectedLocation === 'all' 
-    ? articles 
+  const filteredArticles = selectedLocation === 'all'
+    ? articles
     : articles.filter(article => article.location === selectedLocation);
-  
+
   return (
     <div className="insights-page">
+      <SEO
+        title="Insights"
+        description="Explore data-driven insights on how government policies, tariffs, and economic decisions impact consumer prices across the United States."
+        url="/insights"
+        keywords="policy insights, economic analysis, tariff impact, consumer prices, government policy analysis"
+      />
       <div className="insights-container">
         {/* Location Filter Badge */}
         <div className="insights-badge-wrapper">

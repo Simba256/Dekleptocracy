@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/common/SEO';
 import './Services.css';
 
 const Services = () => {
@@ -57,6 +58,12 @@ const Services = () => {
 
   return (
     <div className="services-page">
+      <SEO
+        title="Our Services"
+        description="Explore Dekleptocracy's suite of tools: AI-powered policy intelligence, real-time price tracking, interactive impact maps, and budget analysis for your household."
+        url="/services"
+        keywords="policy analysis tools, price tracking, budget impact, AI chatbot, government policy impact"
+      />
       {/* Hero Section */}
       <section className="services-hero">
         <div className="services-hero-content">

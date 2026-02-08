@@ -1,11 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import SEO, { generateOrganizationSchema } from '../components/common/SEO';
 import './AboutUs.css';
 
 const AboutUs = () => {
   const navigate = useNavigate();
   return (
     <div className="about-us-page">
+      <SEO
+        title="About Us"
+        description="Learn about Dekleptocracy's mission to help Americans understand how government policies, tariffs, and lobbying affect everyday consumer prices."
+        url="/about"
+        structuredData={generateOrganizationSchema()}
+      />
       <div className="about-us-container">
         <div className="about-us-content">
           {/* Left Column - Text Content */}

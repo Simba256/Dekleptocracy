@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { isAuthenticated, verifyToken } from '../utils/auth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import SEO from '../components/common/SEO';
 import './Chatbot.css';
 
 // localStorage utilities for chat history
@@ -763,6 +764,12 @@ IMPORTANT GUIDELINES:
 
   return (
     <div className="chatbot-page">
+      <SEO
+        title="AI Policy Assistant"
+        description="Ask our AI chatbot about policy impacts, price changes, and budget effects. Get instant, data-driven answers tailored to your location."
+        url="/chatbot"
+        noindex={true}
+      />
       {/* Sidebar Toggle Button - Mobile only */}
       <button
         className={`sidebar-toggle-mobile ${showHistory ? 'hidden' : ''}`}

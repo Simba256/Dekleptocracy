@@ -1,0 +1,16 @@
+{
+  "name": "Dekleptocracy",
+  "short_name": "Dekleptocracy",
+  "description": "Track how government policies and tariffs impact consumer prices",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
