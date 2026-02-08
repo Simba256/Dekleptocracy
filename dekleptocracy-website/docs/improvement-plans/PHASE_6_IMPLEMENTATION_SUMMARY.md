@@ -232,6 +232,20 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 - `POST /api/reports/stats/transform` - Trigger stats transformation
 - `GET /api/reports/stats/status` - Check transformation status
 
+**Verified Live Data (Feb 8, 2026):**
+| Stat | Live Value | Source |
+|------|------------|--------|
+| Lobbying | $167,250 | U.S. Senate Office of Public Records (LDA) |
+| Contributions | $568.3M | Federal Election Commission |
+| Consumer Cost | $1K | Bureau of Labor Statistics, EIA, USDA |
+| Tariff Revenue | $95.0B | U.S. Department of the Treasury |
+
+**Bug Fixes During Implementation:**
+1. `base_api.py`: Authorization header was being overwritten (Token vs Bearer auth)
+2. `lda_api.py`/`fec_api.py`: Response structure mismatch (`_make_request` returns `{success, data}` wrapper)
+3. `lda_api.py`: Filing type was `"Q"` but API uses `"Q1"`, `"Q2"`, `"Q3"`, `"Q4"`
+4. `lda_api.py`: Income/expenses stored as strings, needed parsing
+
 ---
 
 ## Pending Implementations
