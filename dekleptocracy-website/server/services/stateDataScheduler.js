@@ -7,6 +7,7 @@
 import cron from 'node-cron';
 import StateDataCache from '../models/StateDataCache.js';
 import { executeMCPTool, checkMCPHealth } from './mcpClient.js';
+import { transformAllStates, transformStateData } from './walletShockTransformer.js';
 import logger from '../utils/logger.js';
 
 // All US states for data refresh
@@ -392,6 +393,15 @@ async function refreshAllStates() {
   }
 
   logger.info('Full state data refresh complete');
+
+  // Transform cached data into wallet shocks for homepage
+  logger.info('Starting wallet shock transformation...');
+  try {
+    const transformResult = await transformAllStates({ priorityStates: PRIORITY_STATES });
+    logger.info(`Wallet shock transformation complete: ${transformResult.successfulStates} states updated`);
+  } catch (error) {
+    logger.error('Wallet shock transformation failed', error);
+  }
 }
 
 /**
@@ -415,6 +425,17 @@ async function refreshGasPrices() {
   }
 
   logger.info('Gas price refresh complete');
+
+  // Update fuel wallet shocks for priority states
+  logger.info('Updating fuel wallet shocks for priority states...');
+  try {
+    for (const state of PRIORITY_STATES) {
+      await transformStateData(state);
+    }
+    logger.info('Fuel wallet shocks updated');
+  } catch (error) {
+    logger.error('Fuel wallet shock update failed', error);
+  }
 }
 
 /**
@@ -473,13 +494,28 @@ export function getSchedulerStatus() {
 
 /**
  * Trigger manual refresh for a specific state
+ * @param {string} stateName - State name
+ * @param {boolean} includeTransform - Whether to also transform wallet shocks (default: true)
  */
-export async function triggerStateRefresh(stateName) {
+export async function triggerStateRefresh(stateName, includeTransform = true) {
   if (!US_STATES.includes(stateName)) {
     throw new Error(`Unknown state: ${stateName}`);
   }
 
-  return await refreshStateData(stateName);
+  const refreshResult = await refreshStateData(stateName);
+
+  // Also transform to wallet shocks if requested
+  if (includeTransform) {
+    try {
+      const transformResult = await transformStateData(stateName);
+      refreshResult.walletShocks = transformResult;
+    } catch (error) {
+      logger.error(`Failed to transform wallet shocks for ${stateName}`, error);
+      refreshResult.walletShocksError = error.message;
+    }
+  }
+
+  return refreshResult;
 }
 
 /**
@@ -508,10 +544,14 @@ export async function triggerDataTypeRefresh(dataType) {
   return results;
 }
 
+export { PRIORITY_STATES, US_STATES };
+
 export default {
   initializeScheduler,
   refreshStateData,
   triggerStateRefresh,
   triggerDataTypeRefresh,
-  getSchedulerStatus
+  getSchedulerStatus,
+  PRIORITY_STATES,
+  US_STATES
 };

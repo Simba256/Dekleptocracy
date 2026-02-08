@@ -1,6 +1,7 @@
 import express from 'express';
 import { generateStateReportData, getStateDataStatus } from '../services/stateReportGenerator.js';
 import { triggerStateRefresh, getSchedulerStatus } from '../services/stateDataScheduler.js';
+import { transformAllStates, transformStateData, getTransformationStatus } from '../services/walletShockTransformer.js';
 import StateDataCache from '../models/StateDataCache.js';
 
 const router = express.Router();
@@ -181,6 +182,65 @@ router.get('/available-states', async (req, res) => {
       states: health.statesList,
       count: health.statesWithData
     });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/reports/wallet-shocks/status
+ * Get wallet shock transformation status
+ */
+router.get('/wallet-shocks/status', async (req, res) => {
+  try {
+    const status = await getTransformationStatus();
+
+    res.json({
+      success: true,
+      ...status
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/reports/wallet-shocks/transform
+ * Manually trigger wallet shock transformation
+ * Body: { state?: string } - Optional specific state, otherwise transforms all
+ */
+router.post('/wallet-shocks/transform', async (req, res) => {
+  const { state } = req.body;
+
+  try {
+    let result;
+
+    if (state) {
+      // Transform specific state
+      result = await transformStateData(state);
+      res.json({
+        success: true,
+        message: `Wallet shocks transformed for ${state}`,
+        result
+      });
+    } else {
+      // Transform all states in background
+      transformAllStates({ priorityStates: ['California', 'Texas', 'Florida', 'New York'] })
+        .then(result => console.log('Background wallet shock transformation complete:', result))
+        .catch(err => console.error('Background wallet shock transformation failed:', err));
+
+      res.json({
+        success: true,
+        message: 'Wallet shock transformation started for all states. Check /api/reports/wallet-shocks/status for progress.',
+        status: 'in_progress'
+      });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
