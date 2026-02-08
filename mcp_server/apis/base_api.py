@@ -31,12 +31,13 @@ class BaseAPIClient(ABC):
         """Make a request to the API"""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         
-        # Add authentication headers
+        # Add authentication headers (only if not already provided)
         request_headers = headers or {}
-        if self.api_key:
-            request_headers["Authorization"] = f"Bearer {self.api_key}"
-        elif self.token:
-            request_headers["Authorization"] = f"Bearer {self.token}"
+        if "Authorization" not in request_headers:
+            if self.api_key:
+                request_headers["Authorization"] = f"Bearer {self.api_key}"
+            elif self.token:
+                request_headers["Authorization"] = f"Bearer {self.token}"
         
         # Add default headers
         request_headers.setdefault("Content-Type", "application/json")

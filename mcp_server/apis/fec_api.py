@@ -63,7 +63,11 @@ class FECAPIClient(BaseAPIClient):
         if params is None:
             params = {}
         params["api_key"] = self.api_key
-        return self._make_request(endpoint, params=params)
+        result = self._make_request(endpoint, params=params)
+        # _make_request returns {"success": True, "data": {...}} - extract the data
+        if result.get("success") and result.get("data"):
+            return result["data"]
+        return None
 
     @cache_result(ttl=3600)  # Cache for 1 hour
     def get_contributions_by_employer(

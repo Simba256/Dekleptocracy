@@ -58,7 +58,11 @@ class LDAAPIClient(BaseAPIClient):
             "Authorization": f"Token {self.api_key}",
             "Accept": "application/json"
         }
-        return self._make_request(endpoint, params=params, headers=headers)
+        result = self._make_request(endpoint, params=params, headers=headers)
+        # _make_request returns {"success": True, "data": {...}} - extract the data
+        if result.get("success") and result.get("data"):
+            return result["data"]
+        return None
 
     @cache_result(ttl=86400)  # Cache for 24 hours
     def get_filing_types(self) -> Dict[str, Any]:

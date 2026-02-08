@@ -634,6 +634,9 @@ async def health_check():
             "eia_api": config.apis["eia"].api_key is not None,
             "hud_api": config.apis["hud"].token is not None,
             "usda_api": True,  # USDA key is optional, uses fallback data
+            # Lobbying and campaign finance APIs
+            "lda_api": config.apis["lda"].api_key is not None,
+            "fec_api": config.apis["fec"].api_key is not None,
         }
     }
 
