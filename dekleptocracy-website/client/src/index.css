@@ -11,6 +11,34 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  cursor: default;
+}
+
+/* Text cursor only for actual text inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+input[type="number"],
+textarea,
+[contenteditable="true"] {
+  cursor: text;
+}
+
+/* Pointer cursor for interactive elements */
+a,
+button,
+[role="button"],
+[type="button"],
+[type="submit"],
+[type="reset"],
+select,
+label[for],
+.clickable,
+[onclick] {
+  cursor: pointer;
 }
 
 body {
