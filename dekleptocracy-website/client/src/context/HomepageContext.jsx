@@ -331,10 +331,23 @@ export function HomepageProvider({ children }) {
     loadUserPreferences();
   }, []);
 
+  // Fetch map data for heat map visualization
+  const fetchMapData = useCallback(async () => {
+    try {
+      const data = await homepageApi.fetchMapData();
+      if (data.success && data.regions) {
+        dispatch({ type: ActionTypes.SET_MAP_REGIONS, payload: data.regions });
+      }
+    } catch (err) {
+      console.error('Error fetching map data:', err);
+    }
+  }, []);
+
   // Fetch data when state or time period changes
   useEffect(() => {
     fetchData(state.loading === false);
-  }, [state.selectedState, state.timePeriod]);
+    fetchMapData(); // Also fetch map data
+  }, [state.selectedState, state.timePeriod, fetchMapData]);
 
   // Save user preferences
   const savePreferences = useCallback(async (updates) => {

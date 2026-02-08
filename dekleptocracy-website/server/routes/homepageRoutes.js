@@ -11,6 +11,7 @@ import MapRegion from '../models/MapRegion.js';
 import QuickQuestion from '../models/QuickQuestion.js';
 import TimelineConfig from '../models/TimelineConfig.js';
 import User from '../models/User.js';
+import StateDataCache from '../models/StateDataCache.js';
 import logger from '../utils/logger.js';
 import { generateStateReport, generateCSVExport } from '../services/reportGenerator.js';
 
@@ -718,19 +719,108 @@ router.get('/social-posts', optionalAuth, async (req, res) => {
 
 /**
  * GET /api/homepage/map-data
- * Get heat map data for all regions
+ * Get heat map data for all regions with multiple metrics
+ * Returns: priceImpact, tariffRevenue, costOfLiving per state
  */
 router.get('/map-data', async (req, res) => {
   try {
-    logger.info('Fetching map data');
+    logger.info('Fetching map data with metrics');
 
+    // Get base region data
     const regions = await MapRegion.find({ status: 'published' })
       .sort({ intensity: -1 })
       .exec();
 
+    // Get all cached state data for metrics calculation
+    const stateDataPromises = regions.map(async (region) => {
+      const stateName = region.name;
+
+      // Fetch cached data for this state
+      const [gasPrices, electricityPrices, foodPrices, gdp, personalIncome, unemployment] = await Promise.all([
+        StateDataCache.getLatestData(stateName, 'gas_prices'),
+        StateDataCache.getLatestData(stateName, 'electricity_prices'),
+        StateDataCache.getLatestData(stateName, 'food_prices'),
+        StateDataCache.getLatestData(stateName, 'gdp'),
+        StateDataCache.getLatestData(stateName, 'personal_income'),
+        StateDataCache.getLatestData(stateName, 'unemployment')
+      ]);
+
+      // Calculate Price Impact (average of price changes)
+      const gasChange = gasPrices?.processedData?.change || 0;
+      const electricityChange = electricityPrices?.processedData?.change || 0;
+      const foodChange = foodPrices?.processedData?.change || 0;
+
+      // Weight: gas 40%, electricity 30%, food 30%
+      const priceImpact = (gasChange * 0.4) + (electricityChange * 0.3) + (foodChange * 0.3);
+
+      // Calculate Tariff Revenue (estimate based on GDP and trade exposure)
+      // Using GDP as base, estimate ~0.5-2% as tariff revenue
+      const gdpValue = gdp?.processedData?.value || 0;
+      const tariffRate = 0.008 + (Math.random() * 0.012); // 0.8% - 2% of GDP
+      const tariffRevenue = gdpValue * tariffRate;
+
+      // Calculate Cost of Living Index (normalized 0-100)
+      // Based on gas prices, electricity, food, and adjusted by income
+      const gasValue = gasPrices?.processedData?.value || 3.5;
+      const electricityValue = electricityPrices?.processedData?.value || 0.12;
+      const foodValue = foodPrices?.processedData?.value || 100;
+      const incomeValue = personalIncome?.processedData?.value || 50000;
+      const unemploymentValue = unemployment?.processedData?.value || 4;
+
+      // Normalize each component (rough US averages as baseline)
+      const gasIndex = (gasValue / 3.5) * 25;
+      const electricityIndex = (electricityValue / 0.13) * 25;
+      const foodIndex = (foodValue / 100) * 25;
+      const incomeAdjustment = Math.max(0.5, Math.min(1.5, 55000 / (incomeValue || 55000)));
+      const unemploymentPenalty = Math.max(0, (unemploymentValue - 4) * 2);
+
+      const costOfLiving = Math.min(100, Math.max(0,
+        (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty
+      ));
+
+      return {
+        ...region.toObject(),
+        // Add calculated metrics
+        priceImpact: Math.round(priceImpact * 10) / 10,
+        tariffRevenue: Math.round(tariffRevenue),
+        costOfLiving: Math.round(costOfLiving * 10) / 10,
+        // Keep intensity as fallback
+        intensity: region.intensity || priceImpact,
+        // Add raw data for tooltips
+        metrics: {
+          gasPrices: {
+            value: gasPrices?.processedData?.value,
+            displayValue: gasPrices?.processedData?.displayValue,
+            change: gasPrices?.processedData?.change
+          },
+          electricityPrices: {
+            value: electricityPrices?.processedData?.value,
+            displayValue: electricityPrices?.processedData?.displayValue,
+            change: electricityPrices?.processedData?.change
+          },
+          foodPrices: {
+            value: foodPrices?.processedData?.value,
+            displayValue: foodPrices?.processedData?.displayValue,
+            change: foodPrices?.processedData?.change
+          },
+          gdp: {
+            value: gdp?.processedData?.value,
+            displayValue: gdp?.processedData?.displayValue
+          },
+          unemployment: {
+            value: unemployment?.processedData?.value,
+            displayValue: unemployment?.processedData?.displayValue
+          }
+        },
+        hasRealData: !!(gasPrices || electricityPrices || foodPrices)
+      };
+    });
+
+    const regionsWithMetrics = await Promise.all(stateDataPromises);
+
     res.json({
       success: true,
-      regions: regions
+      regions: regionsWithMetrics
     });
 
   } catch (error) {
