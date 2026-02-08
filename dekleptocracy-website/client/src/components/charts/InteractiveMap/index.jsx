@@ -7,11 +7,35 @@ import './InteractiveMap.css';
 
 const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
+// Metric configurations
+const METRICS = {
+  priceImpact: {
+    label: 'Price Impact',
+    unit: '%',
+    colors: ['#fef3c7', '#f97316', '#dc2626', '#b91c1c'],
+    format: (val) => `+${val?.toFixed(1) || 0}%`,
+    field: 'priceImpact'
+  },
+  tariffRevenue: {
+    label: 'Tariff Revenue',
+    unit: '$',
+    colors: ['#dbeafe', '#60a5fa', '#2563eb', '#1e40af'],
+    format: (val) => `$${(val / 1000000)?.toFixed(1) || 0}M`,
+    field: 'tariffRevenue'
+  },
+  costOfLiving: {
+    label: 'Cost of Living',
+    unit: 'index',
+    colors: ['#d1fae5', '#34d399', '#059669', '#065f46'],
+    format: (val) => val?.toFixed(1) || '0',
+    field: 'costOfLiving'
+  }
+};
+
 const InteractiveMap = ({
   data,
   selectedState,
   onStateSelect,
-  metric = 'priceImpact',
   onDrillDown
 }) => {
   const [zoom, setZoom] = useState(1);
@@ -19,8 +43,9 @@ const InteractiveMap = ({
   const [hoveredState, setHoveredState] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [geoData, setGeoData] = useState(null);
+  const [activeMetric, setActiveMetric] = useState('priceImpact');
   const mapRef = useRef(null);
   const wrapperRef = useRef(null);
   const containerRef = useRef(null);
@@ -122,14 +147,17 @@ const InteractiveMap = ({
     onStateSelect?.(null);
   };
 
+  const metricConfig = METRICS[activeMetric];
+
   const colorScale = useMemo(() => {
-    const values = data?.map(d => d.intensity || 0) || [];
+    const field = metricConfig.field;
+    const values = data?.map(d => d[field] || d.intensity || 0) || [];
     const maxValue = Math.max(...values, 100);
 
     return scaleLinear()
       .domain([0, maxValue * 0.33, maxValue * 0.66, maxValue])
-      .range(['#fef3c7', '#f97316', '#dc2626', '#b91c1c']);
-  }, [data]);
+      .range(metricConfig.colors);
+  }, [data, activeMetric, metricConfig]);
 
   const getStateData = useCallback((stateId) => {
     if (!stateId || !data) return null;
@@ -216,6 +244,18 @@ const InteractiveMap = ({
         </div>
       )}
 
+      <div className="metric-selector">
+        {Object.entries(METRICS).map(([key, config]) => (
+          <button
+            key={key}
+            className={`metric-btn ${activeMetric === key ? 'active' : ''}`}
+            onClick={() => setActiveMetric(key)}
+          >
+            {config.label}
+          </button>
+        ))}
+      </div>
+
       <div className="map-controls">
         <button onClick={handleZoomIn} aria-label="Zoom in">+</button>
         <button onClick={handleZoomOut} aria-label="Zoom out">−</button>
@@ -248,7 +288,7 @@ const InteractiveMap = ({
                     // Get state name from properties or look up by ID
                     const stateName = geo.properties?.name || getStateData(geo.id)?.name;
                     const stateData = data?.find(d => d.name === stateName);
-                    const intensity = stateData?.intensity || 0;
+                    const metricValue = stateData?.[metricConfig.field] || stateData?.intensity || 0;
                     const isSelected = selectedState === stateName;
                     const isHovered = hoveredState === stateName;
 
@@ -256,7 +296,7 @@ const InteractiveMap = ({
                       <Geography
                         key={geo.rsmKey || geo.id}
                         geography={geo}
-                        fill={colorScale(intensity)}
+                        fill={colorScale(metricValue)}
                         stroke={isSelected ? '#2d3748' : (isHovered ? '#4A5D3F' : '#ffffff')}
                         strokeWidth={isSelected ? 3 : (isHovered ? 2 : 1)}
                         className={`state-geo ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
@@ -289,9 +329,15 @@ const InteractiveMap = ({
           const stateData = data?.find(d => d.name === content);
           if (!stateData) return null;
 
+          const metricValue = stateData[metricConfig.field] || stateData.intensity || 0;
+
           return (
             <div className="map-state-tooltip">
               <h4>{content}</h4>
+              <div className="tooltip-metric">
+                <span className="metric-label">{metricConfig.label}:</span>
+                <span className="metric-value">{metricConfig.format(metricValue)}</span>
+              </div>
               {stateData.topShocks?.slice(0, 2).map((shock, i) => (
                 <div key={i} className="tooltip-item">
                   <span className="tooltip-icon">{shock.icon}</span>
@@ -308,9 +354,14 @@ const InteractiveMap = ({
       />
 
       <div className="map-legend">
-        <div className="legend-title">Price Impact</div>
+        <div className="legend-title">{metricConfig.label}</div>
         <div className="legend-scale">
-          <div className="legend-bar" />
+          <div
+            className="legend-bar"
+            style={{
+              background: `linear-gradient(to right, ${metricConfig.colors.join(', ')})`
+            }}
+          />
           <div className="legend-labels">
             <span>Low</span>
             <span>Medium</span>

@@ -32,9 +32,46 @@
   to { transform: rotate(360deg); }
 }
 
-.map-controls {
+.metric-selector {
   position: absolute;
   top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.metric-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #4a5568;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.metric-btn:hover {
+  background: #f7fafc;
+  color: #2d3748;
+}
+
+.metric-btn.active {
+  background: #4A5D3F;
+  color: white;
+}
+
+.map-controls {
+  position: absolute;
+  top: 60px;
   right: 10px;
   display: flex;
   flex-direction: column;
@@ -134,6 +171,26 @@
   font-weight: 600;
 }
 
+.tooltip-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tooltip-metric .metric-label {
+  font-size: 12px;
+  color: #a0aec0;
+}
+
+.tooltip-metric .metric-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fef3c7;
+}
+
 .tooltip-item {
   display: flex;
   align-items: center;
@@ -198,8 +255,19 @@
 }
 
 @media (max-width: 768px) {
-  .map-controls {
+  .metric-selector {
     top: 5px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .metric-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .map-controls {
+    top: 50px;
     right: 5px;
   }
 
