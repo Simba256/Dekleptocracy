@@ -15,7 +15,7 @@ This document outlines a comprehensive improvement plan for the Dekleptocracy la
 | Phase 3: Performance Optimization | ✅ Complete | 100% |
 | Phase 4: User Experience | ✅ Complete | 100% |
 | Phase 5: Interactive Features | 🟡 In Progress | 60% |
-| Phase 6: Content/Data Quality | 🟡 In Progress | 70% |
+| Phase 6: Content/Data Quality | ✅ Complete | 95% |
 | Phase 7: SEO | ✅ Complete | 100% |
 | Phase 8: Analytics | 🔲 Not Started | 0% |
 | Phase 9: Admin CMS | 🔲 Not Started | 0% |
@@ -62,20 +62,21 @@ This document outlines a comprehensive improvement plan for the Dekleptocracy la
 - 🔲 State comparison modal (UI exists, not functional)
 - See: [PHASE_5_IMPLEMENTATION_SUMMARY.md](./PHASE_5_IMPLEMENTATION_SUMMARY.md)
 
-**Phase 6 Progress (Feb 8, 2026 - 70% complete):**
-- ✅ MCP server with 9 government APIs (BLS, FRED, EIA, BEA, USDA, HUD)
+**Phase 6 Progress (Feb 8, 2026 - 95% complete):**
+- ✅ MCP server with 11 government APIs (BLS, FRED, EIA, BEA, USDA, HUD, LDA, FEC)
 - ✅ StateDataCache model with TTL-based caching
 - ✅ stateDataScheduler.js with cron jobs (daily 2AM, gas every 6hrs)
 - ✅ 51 states with 100% fresh data (357 cached entries)
 - ✅ Map endpoint uses real cached government data
 - ✅ State reports endpoint with real data
 - ✅ walletShockTransformer.js connects real API data to homepage cards
-- ✅ Scheduler runs transformer after data refresh
-- ✅ Initial transformation complete: 52 states with real wallet shocks (EIA, USDA)
-- ⚠️ **Stats section still seeded** (lobbying $45K, consumer cost $5,890, contributions $1.9M - fake "FTC" source)
-- ⚠️ **Cost drivers still seeded** (tariffs 35%, labor 21%, etc. - hardcoded values)
-- 🔲 OpenSecrets API needed to fix Stats section
-- 🔲 DataSource model for attribution tracking (optional)
+- ✅ statsTransformer.js connects LDA/FEC data to Stats section
+- ✅ **Stats section now live with real data:**
+  - Lobbying: $167,250 (U.S. Senate LDA)
+  - Contributions: $568.3M (Federal Election Commission)
+  - Consumer Cost: $1K (BLS, EIA, USDA)
+  - Tariff Revenue: $95.0B (U.S. Treasury)
+- ⚠️ **Cost drivers still seeded** (tariffs 35%, labor 21% - needs research for real source)
 - See: [PHASE_6_IMPLEMENTATION_SUMMARY.md](./PHASE_6_IMPLEMENTATION_SUMMARY.md)
 
 **Phase 7 Progress (Feb 8, 2026 - 100% complete):**
@@ -116,7 +117,7 @@ The landing page has been refactored from a 1500+ line monolith to a modular arc
 | 3 | [03-performance-optimization.md](./03-performance-optimization.md) | Speed & Bundle Optimization | P1 | ✅ Done |
 | 4 | [04-user-experience.md](./04-user-experience.md) | UX/UI Improvements | P1 | ✅ Done |
 | 5 | [05-interactive-features.md](./05-interactive-features.md) | Map, Search, Timeline | P2 | 🟡 60% |
-| 6 | [06-content-data-quality.md](./06-content-data-quality.md) | Real Data Sources | P2 | 🟡 70% |
+| 6 | [06-content-data-quality.md](./06-content-data-quality.md) | Real Data Sources | P2 | ✅ 95% |
 | 7 | [07-seo-discoverability.md](./07-seo-discoverability.md) | SEO & Meta Tags | P3 | ✅ Done |
 | 8 | [08-analytics-insights.md](./08-analytics-insights.md) | Tracking & A/B Testing | P3 | 🔲 Next |
 | 9 | [09-admin-cms.md](./09-admin-cms.md) | Content Management | P3 | 🔲 |
@@ -129,7 +130,7 @@ Phase 2: Component Refactor    [Week 2-3] ████████████�
 Phase 3: Performance           [Week 3-4] ████████████████████ COMPLETE
 Phase 4: User Experience       [Week 4-5] ████████████████████ COMPLETE
 Phase 5: Interactive Features  [Week 5-7] ████████████░░░░░░░░ 60% (components done, WebSocket pending)
-Phase 6: Data Quality          [Week 6-8] ██████████████░░░░░░ 70% (wallet shocks live, Stats/CostDrivers seeded)
+Phase 6: Data Quality          [Week 6-8] ███████████████████░ 95% (Stats live with LDA/FEC, CostDrivers seeded)
 Phase 7: SEO                   [Week 8-9] ████████████████████ COMPLETE
 Phase 8: Analytics             [Week 9-10] NEXT
 Phase 9: Admin CMS             [Week 10-12] Final phase
