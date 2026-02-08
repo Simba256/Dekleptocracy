@@ -76,11 +76,24 @@ class LDAAPIClient(BaseAPIClient):
             logger.error(f"Error fetching filing types: {e}")
             return {"status": "error", "error": str(e)}
 
+    def _parse_amount(self, value) -> float:
+        """Parse income/expenses which can be string, float, or None"""
+        if value is None:
+            return 0.0
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            try:
+                return float(value.replace(',', ''))
+            except ValueError:
+                return 0.0
+        return 0.0
+
     @cache_result(ttl=3600)  # Cache for 1 hour
     def get_lobbying_filings(
         self,
         filing_year: Optional[int] = None,
-        filing_type: str = "Q",  # Q = Quarterly (LD-2), R = Registration (LD-1)
+        filing_type: str = "Q1",  # Q1, Q2, Q3, Q4 for quarterly reports with spending
         client_name: Optional[str] = None,
         registrant_name: Optional[str] = None,
         issue_code: Optional[str] = None,
@@ -92,7 +105,7 @@ class LDAAPIClient(BaseAPIClient):
 
         Args:
             filing_year: Year of filing (e.g., 2024)
-            filing_type: Q for quarterly LD-2, R for registration LD-1
+            filing_type: Q1, Q2, Q3, Q4 for quarterly LD-2 reports (contain spending)
             client_name: Filter by client name
             registrant_name: Filter by lobbying firm name
             issue_code: Filter by issue area code (e.g., 'TAX', 'TRD')
@@ -121,11 +134,11 @@ class LDAAPIClient(BaseAPIClient):
                 filings = result.get("results", [])
                 total_count = result.get("count", 0)
 
-                # Calculate total spending from filings
+                # Calculate total spending from filings (income is stored as string)
                 total_spending = 0
                 for filing in filings:
-                    income = filing.get("income", 0) or 0
-                    expenses = filing.get("expenses", 0) or 0
+                    income = self._parse_amount(filing.get("income"))
+                    expenses = self._parse_amount(filing.get("expenses"))
                     total_spending += max(income, expenses)
 
                 return {
@@ -148,42 +161,47 @@ class LDAAPIClient(BaseAPIClient):
     def get_lobbying_totals_by_year(self, year: int) -> Dict[str, Any]:
         """
         Get aggregate lobbying spending totals for a given year
-        Fetches multiple pages to calculate totals
+        Fetches from all quarters (Q1-Q4) and calculates totals
         """
         try:
             total_spending = 0
             total_filings = 0
-            page = 1
-            max_pages = 100  # Limit to prevent excessive API calls
+            pages_fetched = 0
+            quarters = ["Q1", "Q2", "Q3", "Q4"]
+            max_pages_per_quarter = 20  # Limit API calls
 
-            while page <= max_pages:
-                params = {
-                    "filing_year": year,
-                    "filing_type": "Q",  # Quarterly reports have spending
-                    "page_size": 25,
-                    "page": page
-                }
+            for quarter in quarters:
+                page = 1
+                while page <= max_pages_per_quarter:
+                    params = {
+                        "filing_year": year,
+                        "filing_type": quarter,
+                        "page_size": 25,
+                        "page": page
+                    }
 
-                result = self._make_lda_request("/filings/", params=params)
+                    result = self._make_lda_request("/filings/", params=params)
 
-                if not result or "results" not in result:
-                    break
+                    if not result or "results" not in result:
+                        break
 
-                filings = result.get("results", [])
-                if not filings:
-                    break
+                    filings = result.get("results", [])
+                    if not filings:
+                        break
 
-                for filing in filings:
-                    income = filing.get("income", 0) or 0
-                    expenses = filing.get("expenses", 0) or 0
-                    total_spending += max(income, expenses)
-                    total_filings += 1
+                    for filing in filings:
+                        income = self._parse_amount(filing.get("income"))
+                        expenses = self._parse_amount(filing.get("expenses"))
+                        total_spending += max(income, expenses)
+                        total_filings += 1
 
-                # Check if more pages exist
-                if not result.get("next"):
-                    break
+                    pages_fetched += 1
 
-                page += 1
+                    # Check if more pages exist
+                    if not result.get("next"):
+                        break
+
+                    page += 1
 
             return {
                 "status": "success",
@@ -191,7 +209,7 @@ class LDAAPIClient(BaseAPIClient):
                     "year": year,
                     "total_spending": total_spending,
                     "total_filings": total_filings,
-                    "pages_fetched": page,
+                    "pages_fetched": pages_fetched,
                     "displayValue": f"${total_spending:,.0f}"
                 },
                 "source": "U.S. Senate Office of Public Records (LDA Filings)"
@@ -210,42 +228,44 @@ class LDAAPIClient(BaseAPIClient):
         Get top lobbying clients by spending for a given year
         """
         try:
-            # Fetch filings and aggregate by client
+            # Fetch filings from all quarters and aggregate by client
             client_spending = {}
-            page = 1
-            max_pages = 50
+            quarters = ["Q1", "Q2", "Q3", "Q4"]
+            max_pages_per_quarter = 10
 
-            while page <= max_pages:
-                params = {
-                    "filing_year": year,
-                    "filing_type": "Q",
-                    "page_size": 25,
-                    "page": page
-                }
+            for quarter in quarters:
+                page = 1
+                while page <= max_pages_per_quarter:
+                    params = {
+                        "filing_year": year,
+                        "filing_type": quarter,
+                        "page_size": 25,
+                        "page": page
+                    }
 
-                result = self._make_lda_request("/filings/", params=params)
+                    result = self._make_lda_request("/filings/", params=params)
 
-                if not result or "results" not in result:
-                    break
+                    if not result or "results" not in result:
+                        break
 
-                filings = result.get("results", [])
-                if not filings:
-                    break
+                    filings = result.get("results", [])
+                    if not filings:
+                        break
 
-                for filing in filings:
-                    client_name = filing.get("client", {}).get("name", "Unknown")
-                    income = filing.get("income", 0) or 0
-                    expenses = filing.get("expenses", 0) or 0
-                    spending = max(income, expenses)
+                    for filing in filings:
+                        client_name = filing.get("client", {}).get("name", "Unknown")
+                        income = self._parse_amount(filing.get("income"))
+                        expenses = self._parse_amount(filing.get("expenses"))
+                        spending = max(income, expenses)
 
-                    if client_name not in client_spending:
-                        client_spending[client_name] = 0
-                    client_spending[client_name] += spending
+                        if client_name not in client_spending:
+                            client_spending[client_name] = 0
+                        client_spending[client_name] += spending
 
-                if not result.get("next"):
-                    break
+                    if not result.get("next"):
+                        break
 
-                page += 1
+                    page += 1
 
             # Sort by spending and get top clients
             sorted_clients = sorted(
@@ -287,37 +307,39 @@ class LDAAPIClient(BaseAPIClient):
         try:
             total_spending = 0
             total_filings = 0
-            page = 1
-            max_pages = 50
+            quarters = ["Q1", "Q2", "Q3", "Q4"]
+            max_pages_per_quarter = 10
 
-            while page <= max_pages:
-                params = {
-                    "filing_year": year,
-                    "filing_type": "Q",
-                    "general_issue_code": issue_code,
-                    "page_size": 25,
-                    "page": page
-                }
+            for quarter in quarters:
+                page = 1
+                while page <= max_pages_per_quarter:
+                    params = {
+                        "filing_year": year,
+                        "filing_type": quarter,
+                        "general_issue_code": issue_code,
+                        "page_size": 25,
+                        "page": page
+                    }
 
-                result = self._make_lda_request("/filings/", params=params)
+                    result = self._make_lda_request("/filings/", params=params)
 
-                if not result or "results" not in result:
-                    break
+                    if not result or "results" not in result:
+                        break
 
-                filings = result.get("results", [])
-                if not filings:
-                    break
+                    filings = result.get("results", [])
+                    if not filings:
+                        break
 
-                for filing in filings:
-                    income = filing.get("income", 0) or 0
-                    expenses = filing.get("expenses", 0) or 0
-                    total_spending += max(income, expenses)
-                    total_filings += 1
+                    for filing in filings:
+                        income = self._parse_amount(filing.get("income"))
+                        expenses = self._parse_amount(filing.get("expenses"))
+                        total_spending += max(income, expenses)
+                        total_filings += 1
 
-                if not result.get("next"):
-                    break
+                    if not result.get("next"):
+                        break
 
-                page += 1
+                    page += 1
 
             issue_name = LOBBYING_ISSUES.get(issue_code, issue_code)
 
