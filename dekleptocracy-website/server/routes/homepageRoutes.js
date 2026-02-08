@@ -777,21 +777,30 @@ router.get('/map-data', async (req, res) => {
       const tariffRate = 0.008 + ((stateHash % 100) / 100) * 0.012; // 0.8% - 2% of GDP
       const tariffRevenue = gdpValue * tariffRate;
 
-      // Calculate Cost of Living Index (normalized 0-100)
-      const gasValue = gasPrices?.processedData?.value || 3.5;
-      const electricityValue = electricityPrices?.processedData?.value || 0.12;
-      const foodValue = foodPrices?.processedData?.value || 100;
-      const incomeValue = personalIncome?.processedData?.value || 50000;
+      // Calculate Cost of Living Index (normalized around 75, range ~50-100)
+      // Based on actual data units from government APIs:
+      // - Gas: $/gallon (e.g., 2.50-3.80, US avg ~3.20)
+      // - Electricity: cents/kWh (e.g., 12-31, US avg ~16)
+      // - Food: $/person/month (e.g., 140-165, US avg ~150)
+      const gasValue = gasPrices?.processedData?.value || 3.2;
+      const electricityValue = electricityPrices?.processedData?.value || 16; // cents/kWh
+      const foodValue = foodPrices?.processedData?.value || 150;
+      const incomeValue = personalIncome?.processedData?.value || 65000;
       const unemploymentValue = unemployment?.processedData?.value || 4;
 
-      // Normalize each component (rough US averages as baseline)
-      const gasIndex = (gasValue / 3.5) * 25;
-      const electricityIndex = (electricityValue / 0.13) * 25;
-      const foodIndex = (foodValue / 100) * 25;
-      const incomeAdjustment = Math.max(0.5, Math.min(1.5, 55000 / (incomeValue || 55000)));
-      const unemploymentPenalty = Math.max(0, (unemploymentValue - 4) * 2);
+      // Normalize each component relative to US average (each contributes ~25 points at average)
+      const gasIndex = (gasValue / 3.2) * 25;           // Gas at $3.20 = 25 points
+      const electricityIndex = (electricityValue / 16) * 25;  // Electricity at 16 cents = 25 points
+      const foodIndex = (foodValue / 150) * 25;         // Food at $150/mo = 25 points
 
-      const costOfLiving = Math.min(100, Math.max(0,
+      // Income adjustment: higher income = lower effective cost of living
+      const incomeAdjustment = Math.max(0.7, Math.min(1.3, 65000 / (incomeValue || 65000)));
+
+      // Unemployment adds to cost burden
+      const unemploymentPenalty = Math.max(0, (unemploymentValue - 4) * 1.5);
+
+      // Base index around 75 (gas + electricity + food = 75 at average)
+      const costOfLiving = Math.min(120, Math.max(30,
         (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty
       ));
 
