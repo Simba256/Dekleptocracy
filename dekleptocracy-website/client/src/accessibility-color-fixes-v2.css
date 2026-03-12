@@ -27,13 +27,13 @@ NEW APPROACH:
    ============================================ */
 
 .state-dropdown-sublabel {
-  background-color: rgba(0, 0, 0, 0.03) !important;
+  background-color: transparent !important;
   opacity: 1.0 !important;
   color: #1f2937 !important;
 }
 
 .state-dropdown-value {
-  background-color: rgba(0, 0, 0, 0.03) !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
@@ -76,7 +76,7 @@ NEW APPROACH:
 }
 
 .stat-change {
-  background-color: #f3f4f6 !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
@@ -128,7 +128,7 @@ NEW APPROACH:
 }
 
 .wallet-card .wallet-price-section .wallet-change {
-  background-color: white !important;
+  background-color: transparent !important;
 }
 
 /* ============================================
@@ -169,7 +169,7 @@ section.stats-section > div.stats-container > div.stat-card > div.stat-value-med
 }
 
 section.stats-section > div.stats-container > div.stat-card > div.stat-change {
-  background-color: #f3f4f6 !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
@@ -179,12 +179,12 @@ section.wallet-shocks-section > div.wallet-shocks-container > div.state-filters 
 }
 
 div.state-dropdown-wrapper > div.state-dropdown > button > span.state-dropdown-sublabel {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
 div.state-dropdown-wrapper > div.state-dropdown > button > span.state-dropdown-value {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
@@ -194,7 +194,7 @@ div.wallet-cards > div.wallet-card > div.wallet-card-header > span.category-badg
 }
 
 div.wallet-cards > div.wallet-card > div.wallet-price-section > span.wallet-change {
-  background-color: #f3f4f6 !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 

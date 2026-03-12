@@ -347,7 +347,7 @@
 }
 
 .action-btn {
-  background-color: var(--chatbot-accent-light);
+  background-color: transparent;
   border: 1px solid rgba(44, 95, 62, 0.12);
   border-radius: var(--chatbot-radius-sm);
   padding: 5px 10px;
