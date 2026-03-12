@@ -71,7 +71,7 @@ NEW APPROACH:
 
 .stat-value,
 .stat-value-medium {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
@@ -89,7 +89,7 @@ NEW APPROACH:
 }
 
 .stat-description {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
@@ -159,12 +159,12 @@ NEW APPROACH:
 
 /* Target specific selectors from Lighthouse audit */
 section.stats-section > div.stats-container > div.stat-card > div.stat-value {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
 section.stats-section > div.stats-container > div.stat-card > div.stat-value-medium {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
   color: #1f2937 !important;
 }
 
