@@ -17,7 +17,15 @@ export default function ChatInterface() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n" Trade statistics and import/export data\n" Tariff rates and customs information\n" Economic analysis (GDP, BEA data)\n" Federal regulations and announcements\n" Trade news and sentiment analysis\n\nI also handle general questions using GPT-5. How can I help you today?',
+      content: `Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:
+
+- **Trade statistics** and import/export data
+- **Tariff rates** and customs information
+- **Economic analysis** (GDP, BEA data)
+- **Federal regulations** and announcements
+- **Trade news** and sentiment analysis
+
+I also handle general questions using GPT-5. How can I help you today?`,
       timestamp: new Date(),
     },
   ]);
@@ -141,84 +149,83 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Trade & Tariff Analysis Chatbot
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Powered by GPT-5 and MCP Trade Analysis Tools
-          </p>
+      <header className="bg-background-secondary border-b border-border px-4 sm:px-6 py-4 shadow-sm">
+        <div className="max-w-4xl mx-auto flex items-center gap-3">
+          {/* Icon */}
+          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
+              Trade & Tariff Analysis
+            </h1>
+            <p className="text-sm text-foreground-muted">
+              Powered by GPT-5 and MCP Tools
+            </p>
+          </div>
         </div>
       </header>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-6 py-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           <MessageList messages={messages} />
           <div ref={messagesEndRef} />
         </div>
       </div>
 
       {/* Input Area */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4">
+      <div className="bg-background-secondary border-t border-border px-4 sm:px-6 py-4">
         <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSubmit} className="flex gap-4">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about trade, tariffs, or any general topic..."
-              className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white min-h-[60px] max-h-[200px]"
-              rows={2}
-              disabled={isLoading}
-            />
-            <div className="flex flex-col gap-2">
-              <button
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Sending...
-                  </span>
-                ) : (
-                  'Send'
-                )}
-              </button>
-              {isLoading && (
+          <form onSubmit={handleSubmit} className="flex gap-3">
+            <div className="flex-1 relative">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask about trade, tariffs, or any general topic..."
+                className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow min-h-[52px] max-h-[200px]"
+                rows={1}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="flex items-end gap-2">
+              {isLoading ? (
                 <button
                   type="button"
                   onClick={stopStreaming}
-                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                  className="flex-shrink-0 px-4 py-3 bg-accent-error text-white rounded-xl hover:bg-red-700 transition-colors font-medium"
                 >
-                  Stop
+                  <span className="flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span className="hidden sm:inline">Stop</span>
+                  </span>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!input.trim()}
+                  className="flex-shrink-0 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                >
+                  <span className="flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                    <span className="hidden sm:inline">Send</span>
+                  </span>
                 </button>
               )}
             </div>
           </form>
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-xs text-foreground-muted">
             Press Enter to send, Shift+Enter for new line
-          </div>
+          </p>
         </div>
       </div>
     </div>
