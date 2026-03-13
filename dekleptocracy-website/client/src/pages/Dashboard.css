@@ -1,6 +1,6 @@
 .dashboard-page {
   min-height: 100vh;
-  background: radial-gradient(circle at 20% 20%, #f4f7ff 0, #f7f8fb 30%, #f7f8fb 100%);
+  background: radial-gradient(circle at 20% 20%, var(--color-blue-bg) 0, var(--color-gray-50) 30%, var(--color-gray-50) 100%);
   padding: 32px 24px 48px;
   color: var(--color-gray-900);
 }

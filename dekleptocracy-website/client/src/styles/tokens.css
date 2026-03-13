@@ -67,6 +67,10 @@
   --color-link: #2563eb;
   --color-link-hover: #1d4ed8;
 
+  /* Blue Accent (for badges, highlights) */
+  --color-blue-500: #3b82f6;
+  --color-blue-bg: #f4f7ff;
+
   /* Spacing Scale */
   --space-xs: 4px;
   --space-1: 6px;      /* Between xs and sm */
