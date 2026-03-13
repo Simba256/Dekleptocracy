@@ -114,7 +114,7 @@
   background: rgba(233, 69, 96, 0.15);
   padding: 1rem 1.25rem;
   border-radius: 12px;
-  color: #e8e8e8 !important;
+  color: #e8e8e8;
   font-size: 1rem;
   line-height: 1.6;
   border-left: 3px solid #e94560;
@@ -122,13 +122,13 @@
   word-wrap: break-word;
 }
 
-.debug-message-text *,
-.debug-message-text p,
-.debug-message-text span,
-.debug-message-text div,
-.debug-message-text li,
-.debug-message-text strong {
-  color: #e8e8e8 !important;
+.chatbot-debug-page .debug-message-text *,
+.chatbot-debug-page .debug-message-text p,
+.chatbot-debug-page .debug-message-text span,
+.chatbot-debug-page .debug-message-text div,
+.chatbot-debug-page .debug-message-text li,
+.chatbot-debug-page .debug-message-text strong {
+  color: #e8e8e8;
 }
 
 .debug-message-user .debug-message-text {
@@ -532,99 +532,99 @@
 .chatbot-debug-page .markdown-content p,
 .chatbot-debug-page .markdown-content span,
 .chatbot-debug-page .markdown-content div {
-  color: #e8e8e8 !important;
+  color: #e8e8e8;
 }
 
-.markdown-content {
+.chatbot-debug-page .markdown-content {
   line-height: 1.6;
-  color: #e8e8e8 !important;
+  color: #e8e8e8;
 }
 
-.markdown-content * {
-  color: inherit !important;
+.chatbot-debug-page .markdown-content * {
+  color: inherit;
 }
 
-.markdown-content h1,
-.markdown-content h2,
-.markdown-content h3,
-.markdown-content h4,
-.markdown-content h5,
-.markdown-content h6 {
+.chatbot-debug-page .markdown-content h1,
+.chatbot-debug-page .markdown-content h2,
+.chatbot-debug-page .markdown-content h3,
+.chatbot-debug-page .markdown-content h4,
+.chatbot-debug-page .markdown-content h5,
+.chatbot-debug-page .markdown-content h6 {
   margin: 12px 0 6px 0;
   font-weight: 700;
   line-height: 1.3;
-  color: #e8e8e8 !important;
+  color: #e8e8e8;
 }
 
-.markdown-content h1:first-child,
-.markdown-content h2:first-child,
-.markdown-content h3:first-child,
-.markdown-content h4:first-child {
+.chatbot-debug-page .markdown-content h1:first-child,
+.chatbot-debug-page .markdown-content h2:first-child,
+.chatbot-debug-page .markdown-content h3:first-child,
+.chatbot-debug-page .markdown-content h4:first-child {
   margin-top: 0;
 }
 
-.markdown-content h1 {
+.chatbot-debug-page .markdown-content h1 {
   font-size: 1.8em;
   border-bottom: 2px solid #a8dadc;
   padding-bottom: 8px;
 }
 
-.markdown-content h2 {
+.chatbot-debug-page .markdown-content h2 {
   font-size: 1.5em;
   border-bottom: 1px solid #0f3460;
   padding-bottom: 6px;
-  color: #a8dadc !important;
+  color: #a8dadc;
 }
 
-.markdown-content h3 {
+.chatbot-debug-page .markdown-content h3 {
   font-size: 1.3em;
-  color: #a8dadc !important;
+  color: #a8dadc;
 }
 
-.markdown-content h4 {
+.chatbot-debug-page .markdown-content h4 {
   font-size: 1.1em;
 }
 
-.markdown-content p {
+.chatbot-debug-page .markdown-content p {
   margin: 0;
-  color: #e8e8e8 !important;
+  color: #e8e8e8;
 }
 
-.markdown-content p + p {
+.chatbot-debug-page .markdown-content p + p {
   margin-top: 8px;
 }
 
-.markdown-content strong {
+.chatbot-debug-page .markdown-content strong {
   font-weight: 700;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
-.markdown-content em {
+.chatbot-debug-page .markdown-content em {
   font-style: italic;
-  color: #a8dadc !important;
+  color: #a8dadc;
 }
 
-.markdown-content ul,
-.markdown-content ol {
+.chatbot-debug-page .markdown-content ul,
+.chatbot-debug-page .markdown-content ol {
   margin: 8px 0 4px 0;
   padding-left: 24px;
-  color: #e8e8e8 !important;
+  color: #e8e8e8;
 }
 
-.markdown-content li {
+.chatbot-debug-page .markdown-content li {
   margin: 2px 0;
-  color: #e8e8e8 !important;
+  color: #e8e8e8;
   line-height: 1.5;
 }
 
-.markdown-content ul ul,
-.markdown-content ol ol,
-.markdown-content ul ol,
-.markdown-content ol ul {
+.chatbot-debug-page .markdown-content ul ul,
+.chatbot-debug-page .markdown-content ol ol,
+.chatbot-debug-page .markdown-content ul ol,
+.chatbot-debug-page .markdown-content ol ul {
   margin: 4px 0;
 }
 
-.markdown-content code {
+.chatbot-debug-page .markdown-content code {
   background-color: #0f0f1e;
   border: 1px solid #0f3460;
   border-radius: 4px;
@@ -634,7 +634,7 @@
   color: #a8dadc;
 }
 
-.markdown-content pre {
+.chatbot-debug-page .markdown-content pre {
   background-color: #0f0f1e;
   border: 1px solid #0f3460;
   border-radius: 8px;
@@ -643,14 +643,14 @@
   margin: 12px 0;
 }
 
-.markdown-content pre code {
+.chatbot-debug-page .markdown-content pre code {
   background-color: transparent;
   border: none;
   padding: 0;
   color: #a8dadc;
 }
 
-.markdown-content blockquote {
+.chatbot-debug-page .markdown-content blockquote {
   border-left: 4px solid #e94560;
   padding-left: 16px;
   margin: 12px 0;
@@ -658,60 +658,60 @@
   font-style: italic;
 }
 
-.markdown-content table {
+.chatbot-debug-page .markdown-content table {
   border-collapse: collapse;
   width: 100%;
   margin: 12px 0;
   font-size: 0.95em;
 }
 
-.markdown-content th,
-.markdown-content td {
+.chatbot-debug-page .markdown-content th,
+.chatbot-debug-page .markdown-content td {
   border: 1px solid #0f3460;
   padding: 8px 12px;
   text-align: left;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
-.markdown-content th {
+.chatbot-debug-page .markdown-content th {
   background-color: #e94560;
-  color: #ffffff !important;
+  color: #ffffff;
   font-weight: 600;
 }
 
-.markdown-content td {
-  color: #e8e8e8 !important;
+.chatbot-debug-page .markdown-content td {
+  color: #e8e8e8;
 }
 
-.markdown-content td *,
-.markdown-content th * {
-  color: inherit !important;
+.chatbot-debug-page .markdown-content td *,
+.chatbot-debug-page .markdown-content th * {
+  color: inherit;
 }
 
-.markdown-content tr:nth-child(even) {
+.chatbot-debug-page .markdown-content tr:nth-child(even) {
   background-color: rgba(15, 52, 96, 0.2);
 }
 
-.markdown-content tr:nth-child(odd) {
+.chatbot-debug-page .markdown-content tr:nth-child(odd) {
   background-color: rgba(15, 52, 96, 0.1);
 }
 
-.markdown-content hr {
+.chatbot-debug-page .markdown-content hr {
   border: none;
   border-top: 2px solid #0f3460;
   margin: 16px 0;
 }
 
-.markdown-content a {
+.chatbot-debug-page .markdown-content a {
   color: #53a8ff;
   text-decoration: underline;
 }
 
-.markdown-content a:hover {
+.chatbot-debug-page .markdown-content a:hover {
   color: #e94560;
 }
 
-.markdown-content img {
+.chatbot-debug-page .markdown-content img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;

@@ -36,7 +36,7 @@
 /* Default Variant */
 .state-dropdown-btn--default {
   background-color: white;
-  color: #4A5D3F;
+  color: #1f2937;
   border: 1px solid #e5e7eb;
 }
 
@@ -47,8 +47,8 @@
 
 /* Hero Variant */
 .state-dropdown-btn--hero {
-  background-color: #ffffff;
-  color: #2E3A2E;
+  background-color: white;
+  color: #1f2937;
   border: 1px solid #cbd5e1;
 }
 
@@ -97,16 +97,25 @@
   box-shadow: 0 0 0 3px rgba(45, 55, 72, 0.1);
 }
 
+/* Focus visible styling for all dropdown buttons */
+.state-dropdown-btn:focus-visible {
+  border-color: #FF6B5A;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+}
+
 /* Sublabel */
 .state-dropdown-sublabel {
   font-size: 11px;
-  opacity: 0.9;
+  color: inherit;
+  background-color: transparent;
   margin-bottom: 2px;
 }
 
 /* Value */
 .state-dropdown-value {
   display: block;
+  color: inherit;
+  background-color: transparent;
 }
 
 /* Arrow */
@@ -164,11 +173,11 @@
   padding: 8px 12px;
   font-size: 14px;
   color: #1f2937;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   outline: none;
   transition: all 0.2s;
-  background-color: #f9fafb;
+  background-color: white;
 }
 
 .state-dropdown-search-input:focus {
@@ -191,7 +200,8 @@
 .state-dropdown-item {
   padding: 10px 16px;
   font-size: 14px;
-  color: #4A5D3F;
+  color: #1f2937;
+  background-color: white;
   cursor: pointer;
   transition: background-color 0.2s;
   text-align: left;

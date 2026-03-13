@@ -60,7 +60,8 @@
 .stat-card__value {
   font-size: 22px;
   font-weight: 700;
-  color: #FF6B5A;
+  color: #1f2937;
+  background-color: transparent;
   margin-bottom: 6px;
   letter-spacing: -0.02em;
 }
@@ -68,6 +69,8 @@
 .stat-card--large .stat-card__value,
 .stat-card--pink .stat-card__value {
   font-size: 20px;
+  color: #1f2937;
+  background-color: transparent;
 }
 
 /* Subtitle */
@@ -87,14 +90,16 @@
   align-items: center;
   gap: 2px;
   letter-spacing: -0.01em;
+  color: #1f2937;
+  background-color: transparent;
 }
 
 .stat-card__change--up {
-  color: #FF6B5A;
+  color: #059669;
 }
 
 .stat-card__change--down {
-  color: #22c55e;
+  color: #d97706;
 }
 
 /* Chart Container */
