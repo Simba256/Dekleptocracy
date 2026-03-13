@@ -23,7 +23,7 @@
   height: 100px;
   background: 
     radial-gradient(ellipse 50% 100% at center top, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0.6) 70%, rgba(255,255,255,1) 100%),
-    linear-gradient(135deg, #ffd6e5 0%, #e5d4ff 40%, #c9e9ff 100%);
+    var(--gradient-hero-subtle);
   z-index: 0;
 }
 
