@@ -91,24 +91,30 @@ export const WalletShocksSection = memo(function WalletShocksSection() {
                   See details {String.fromCharCode(8594)}
                 </button>
                 <div className="reactions">
-                  <span
+                  <button
+                    type="button"
+                    className="reaction-btn"
                     onClick={() => actions.addReaction(shock._id, 'shock')}
-                    style={{ cursor: 'pointer' }}
+                    aria-label={`React with shock emoji, ${shock.reactions?.shock || 0} reactions`}
                   >
                     😱 {shock.reactions?.shock || 0}
-                  </span>
-                  <span
+                  </button>
+                  <button
+                    type="button"
+                    className="reaction-btn"
                     onClick={() => actions.addReaction(shock._id, 'angry')}
-                    style={{ cursor: 'pointer' }}
+                    aria-label={`React with angry emoji, ${shock.reactions?.angry || 0} reactions`}
                   >
                     😠 {shock.reactions?.angry || 0}
-                  </span>
-                  <span
+                  </button>
+                  <button
+                    type="button"
+                    className="reaction-btn"
                     onClick={() => actions.addReaction(shock._id, 'sad')}
-                    style={{ cursor: 'pointer' }}
+                    aria-label={`React with sad emoji, ${shock.reactions?.sad || 0} reactions`}
                   >
                     😢 {shock.reactions?.sad || 0}
-                  </span>
+                  </button>
                 </div>
               </div>
             </div>

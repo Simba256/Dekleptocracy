@@ -43,7 +43,7 @@ export const SocialPostCard = memo(function SocialPostCard({ post, avatarIndex =
         <div className="social-post-card__image-container">
           <img
             src={post.image}
-            alt="Post"
+            alt={post.imageAlt || `Image shared by ${post.username}`}
             className="social-post-card__image"
             loading="lazy"
             decoding="async"
@@ -98,6 +98,7 @@ SocialPostCard.propTypes = {
     timeAgo: PropTypes.string,
     text: PropTypes.string.isRequired,
     image: PropTypes.string,
+    imageAlt: PropTypes.string,
     engagement: PropTypes.shape({
       comments: PropTypes.number,
       retweets: PropTypes.number,

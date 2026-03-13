@@ -776,8 +776,17 @@ IMPORTANT GUIDELINES:
                         key={chat.id}
                         className={`history-item ${chat.id === currentChatId ? 'active' : ''}`}
                         onClick={() => loadChat(chat.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            loadChat(chat.id);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Load chat: ${chat.title}`}
                       >
-                        <div className="history-item-icon">
+                        <div className="history-item-icon" aria-hidden="true">
                           {getChatIcon(chat)}
                         </div>
                         <div className="history-item-content">
@@ -794,6 +803,7 @@ IMPORTANT GUIDELINES:
                           className="history-delete-btn"
                           onClick={(e) => deleteChat(chat.id, e)}
                           title="Delete chat"
+                          aria-label={`Delete chat: ${chat.title}`}
                         >
                           🗑️
                         </button>
@@ -893,9 +903,10 @@ IMPORTANT GUIDELINES:
                       </ReactMarkdown>
                       <div className="welcome-cards">
                         {welcomeCards.map((card, index) => (
-                          <div
+                          <button
                             key={index}
                             className="welcome-card"
+                            type="button"
                             onClick={() => {
                               setInput(card.query);
                               setTimeout(() => handleSubmit(new Event('submit')), 100);
@@ -904,7 +915,7 @@ IMPORTANT GUIDELINES:
                             <div className="welcome-card-icon">{card.icon}</div>
                             <div className="welcome-card-title">{card.title}</div>
                             <div className="welcome-card-description">{card.description}</div>
-                          </div>
+                          </button>
                         ))}
                       </div>
                     </div>

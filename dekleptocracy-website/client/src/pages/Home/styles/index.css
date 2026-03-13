@@ -1,0 +1,13 @@
+/* Home Page Section Styles - Index File */
+/* This file imports all section-specific styles for the Home page */
+
+@import './HomeLayout.css';
+@import './HeroSection.css';
+@import './StatsSection.css';
+@import './WalletShocksSection.css';
+@import './CostDriversSection.css';
+@import './BudgetImpactSection.css';
+@import './PriceMapSection.css';
+@import './SocialPostsSection.css';
+@import './CTASection.css';
+@import './ImpactModal.css';

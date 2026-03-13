@@ -1,0 +1,26 @@
+/* Home Layout - Base page styles */
+.home-page {
+  min-height: 100vh;
+  background-color: var(--color-gray-150);
+  margin: 0;
+  padding: 0;
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.section-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+  margin: var(--space-lg) auto;
+  max-width: 1200px;
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import homepageApi from '../../../api/homepage';
 import StateDropdown from '../../common/StateDropdown';
 import './StateComparison.css';
@@ -16,6 +16,30 @@ const StateComparison = ({
   const [activeCategory, setActiveCategory] = useState('all');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+
+  const modalRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const previouslyFocusedElement = useRef(null);
+
+  // Focus management: store previous focus and set initial focus when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      previouslyFocusedElement.current = document.activeElement;
+      setTimeout(() => closeButtonRef.current?.focus(), 0);
+    }
+    return () => {
+      if (!isOpen && previouslyFocusedElement.current) {
+        previouslyFocusedElement.current.focus();
+      }
+    };
+  }, [isOpen]);
+
+  // Keyboard handler for Escape key
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  }, [onClose]);
 
   const MAX_STATES = 4;
 
@@ -72,10 +96,25 @@ const StateComparison = ({
 
   return (
     <div className="comparison-modal-overlay" onClick={onClose}>
-      <div className="comparison-modal" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>×</button>
+      <div
+        ref={modalRef}
+        className="comparison-modal"
+        onClick={e => e.stopPropagation()}
+        onKeyDown={handleKeyDown}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="state-comparison-title"
+      >
+        <button
+          ref={closeButtonRef}
+          className="modal-close"
+          onClick={onClose}
+          aria-label="Close state comparison"
+        >
+          ×
+        </button>
 
-        <h2>Compare States</h2>
+        <h2 id="state-comparison-title">Compare States</h2>
         <p className="modal-subtitle">
           Select up to {MAX_STATES} states to compare costs and impacts
         </p>
