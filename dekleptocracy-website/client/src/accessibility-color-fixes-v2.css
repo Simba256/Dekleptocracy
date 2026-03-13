@@ -260,18 +260,6 @@ a:hover {
   text-decoration: underline;
 }
 
-button:not(.input-tool-btn):not(.action-btn):not(.quick-action-btn) {
-  color: white !important;
-}
-
-button:not(.state-dropdown-btn):not(.state-tab):not(.input-tool-btn):not(.action-btn):not(.quick-action-btn) {
-  background-color: #FF6B5A !important;
-}
-
-button:hover:not(.state-dropdown-btn):not(.state-tab):not(.input-tool-btn):not(.action-btn):not(.quick-action-btn) {
-  background-color: #e85d4a !important;
-}
-
 /* ============================================
    9. Force All Text to be Readable
    ============================================ */
