@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom';
 import './Footer.css';
 
+/**
+ * Footer - Site-wide footer component with navigation links
+ * Contains logo, legal links (privacy, terms, accessibility), and main navigation.
+ * @returns {JSX.Element}
+ */
 const Footer = () => {
   return (
     <footer className="site-footer">

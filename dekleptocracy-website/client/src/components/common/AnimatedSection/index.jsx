@@ -1,6 +1,14 @@
 import { useRef, useEffect, useState } from 'react';
 import './AnimatedSection.css';
 
+/**
+ * useInView - Hook to detect when element enters viewport
+ * Uses IntersectionObserver for performant scroll detection.
+ * @param {Object} [options] - IntersectionObserver options
+ * @param {number} [options.threshold=0.1] - Visibility threshold (0-1)
+ * @param {string} [options.rootMargin='0px'] - Root margin for observer
+ * @returns {[React.RefObject, boolean]} Ref to attach and inView boolean
+ */
 export const useInView = (options = {}) => {
   const [inView, setInView] = useState(false);
   const ref = useRef(null);
@@ -29,6 +37,18 @@ export const useInView = (options = {}) => {
   return [ref, inView];
 };
 
+/**
+ * AnimatedSection - Wrapper that animates children when scrolled into view
+ * Supports multiple animation types with configurable timing.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Content to animate
+ * @param {'fade-up'|'fade-in'|'slide-left'|'slide-right'} [props.animation='fade-up'] - Animation type
+ * @param {number} [props.delay=0] - Animation delay in milliseconds
+ * @param {number} [props.duration=600] - Animation duration in milliseconds
+ * @param {number} [props.threshold=0.1] - Visibility threshold to trigger (0-1)
+ * @param {string} [props.className=''] - Additional CSS classes
+ * @returns {JSX.Element}
+ */
 export const AnimatedSection = ({
   children,
   animation = 'fade-up',

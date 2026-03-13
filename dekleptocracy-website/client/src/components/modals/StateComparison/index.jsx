@@ -3,6 +3,16 @@ import homepageApi from '../../../api/homepage';
 import StateDropdown from '../../common/StateDropdown';
 import './StateComparison.css';
 
+/**
+ * StateComparison - Modal for comparing up to 4 states side-by-side
+ * Displays cost breakdowns by category with filtering and export options.
+ * Features focus trap, keyboard navigation, and ARIA attributes.
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Whether the modal is visible
+ * @param {Function} props.onClose - Callback to close the modal
+ * @param {string} [props.initialState] - Pre-selected state to compare
+ * @returns {JSX.Element|null}
+ */
 const StateComparison = ({
   isOpen,
   onClose,

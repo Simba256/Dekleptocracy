@@ -3,6 +3,17 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import homepageApi from '../../../api/homepage';
 import './ProductSearch.css';
 
+/**
+ * ProductSearch - Autocomplete search input for finding product price impacts
+ * Shows suggestions as user types with trending products as defaults.
+ * Supports keyboard navigation (Arrow keys, Enter, Escape).
+ * @param {Object} props
+ * @param {Function} props.onSearch - Callback when search is submitted (query: string) => void
+ * @param {Function} props.onSelect - Callback when product is selected (product: Object) => void
+ * @param {string} [props.placeholder='Search for a product...'] - Input placeholder text
+ * @param {Array<Object>} [props.trendingProducts=[]] - Trending products to show when empty
+ * @returns {JSX.Element}
+ */
 const ProductSearch = ({
   onSearch,
   onSelect,

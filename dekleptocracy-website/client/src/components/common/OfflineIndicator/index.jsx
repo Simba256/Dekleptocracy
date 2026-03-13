@@ -1,6 +1,11 @@
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import './OfflineIndicator.css';
 
+/**
+ * OfflineIndicator - Banner shown when user loses internet connection
+ * Uses the online status hook to detect connectivity changes.
+ * @returns {JSX.Element|null}
+ */
 export const OfflineIndicator = () => {
   const isOnline = useOnlineStatus();
 
@@ -16,6 +21,15 @@ export const OfflineIndicator = () => {
   );
 };
 
+/**
+ * OfflineFallback - Wrapper component for graceful offline degradation
+ * Shows cached data notice or full offline screen based on data availability.
+ * @param {Object} props
+ * @param {Object} [props.cachedData] - Cached data object with timestamp property
+ * @param {React.ReactNode} props.children - Content to render when online or cached data exists
+ * @param {Function} [props.onRetry] - Custom retry callback (defaults to page reload)
+ * @returns {JSX.Element}
+ */
 export const OfflineFallback = ({ cachedData, children, onRetry }) => {
   const isOnline = useOnlineStatus();
 

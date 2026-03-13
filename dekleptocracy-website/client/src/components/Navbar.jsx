@@ -4,6 +4,12 @@ import { isAuthenticated, logout } from '../utils/auth';
 import { API_URL } from '../utils/apiUrl';
 import './Navbar.css';
 
+/**
+ * Navbar - Main navigation component with responsive mobile menu
+ * Handles user authentication state, profile dropdown, and insights submenu.
+ * Features keyboard accessibility (Escape to close dropdowns) and focus management.
+ * @returns {JSX.Element}
+ */
 const Navbar = () => {
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

@@ -1,5 +1,11 @@
 import './LoadingStates.css';
 
+/**
+ * PageLoader - Full-page loading spinner with message
+ * @param {Object} props
+ * @param {string} [props.message='Loading...'] - Loading message to display
+ * @returns {JSX.Element}
+ */
 export const PageLoader = ({ message = 'Loading...' }) => (
   <div className="page-loader" role="status" aria-label="Loading page">
     <div className="page-loader-content">
@@ -18,6 +24,12 @@ export const PageLoader = ({ message = 'Loading...' }) => (
   </div>
 );
 
+/**
+ * RefreshingOverlay - Subtle overlay indicator for background updates
+ * @param {Object} props
+ * @param {string} [props.message='Updating...'] - Screen reader message
+ * @returns {JSX.Element}
+ */
 export const RefreshingOverlay = ({ message = 'Updating...' }) => (
   <div className="refreshing-overlay" aria-live="polite" aria-busy="true">
     <div className="refreshing-indicator">
@@ -29,6 +41,13 @@ export const RefreshingOverlay = ({ message = 'Updating...' }) => (
   </div>
 );
 
+/**
+ * ButtonLoader - Button with integrated loading state
+ * @param {Object} props
+ * @param {boolean} props.loading - Whether button is in loading state
+ * @param {React.ReactNode} props.children - Button content
+ * @returns {JSX.Element}
+ */
 export const ButtonLoader = ({ loading, children, ...props }) => (
   <button
     {...props}
@@ -47,6 +66,13 @@ export const ButtonLoader = ({ loading, children, ...props }) => (
   </button>
 );
 
+/**
+ * InlineLoader - Small spinner for inline loading states
+ * @param {Object} props
+ * @param {'small'|'medium'|'large'} [props.size='small'] - Spinner size
+ * @param {string} [props.message] - Screen reader message
+ * @returns {JSX.Element}
+ */
 export const InlineLoader = ({ size = 'small', message }) => {
   const sizeClass = `inline-loader--${size}`;
 
@@ -58,6 +84,14 @@ export const InlineLoader = ({ size = 'small', message }) => {
   );
 };
 
+/**
+ * ProgressBar - Horizontal progress indicator
+ * @param {Object} props
+ * @param {number} props.progress - Progress percentage (0-100)
+ * @param {string} props.label - Accessible label for the progress bar
+ * @param {boolean} [props.showPercentage=true] - Whether to show percentage text
+ * @returns {JSX.Element}
+ */
 export const ProgressBar = ({ progress, label, showPercentage = true }) => (
   <div className="progress-bar" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" aria-label={label}>
     <div

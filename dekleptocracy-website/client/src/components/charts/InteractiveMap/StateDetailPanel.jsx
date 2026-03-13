@@ -1,5 +1,15 @@
 import { useState } from 'react';
 
+/**
+ * StateDetailPanel - Side panel showing detailed state information
+ * Displays top price shocks, average impact, and drill-down options.
+ * @param {Object} props
+ * @param {string} props.stateCode - State name or 'nationwide'
+ * @param {Object} props.stateData - State data with intensity, topShocks array
+ * @param {Function} props.onClose - Callback to close the panel
+ * @param {Function} [props.onDrillDown] - Callback for drill-down actions (stateCode, type: 'cities'|'timeline') => void
+ * @returns {JSX.Element|null}
+ */
 const StateDetailPanel = ({ stateCode, stateData, onClose, onDrillDown }) => {
   const [loading, setLoading] = useState(false);
 

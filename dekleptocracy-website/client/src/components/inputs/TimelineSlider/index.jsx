@@ -2,6 +2,20 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { format, parseISO, differenceInDays, addDays } from 'date-fns';
 import './TimelineSlider.css';
 
+/**
+ * TimelineSlider - Date range slider with milestone markers
+ * Allows selecting dates within a range with visual milestone indicators.
+ * @param {Object} props
+ * @param {Object} props.config - Configuration object with minDate, maxDate, milestones, defaultDate
+ * @param {string} props.config.minDate - Start date in YYYY-MM-DD format
+ * @param {string} props.config.maxDate - End date in YYYY-MM-DD format
+ * @param {Array<{date: string, label: string, highlighted?: boolean}>} [props.config.milestones] - Milestone markers
+ * @param {string} [props.config.defaultDate] - Initial selected date
+ * @param {string} props.value - Currently selected date (YYYY-MM-DD)
+ * @param {Function} props.onChange - Callback when date changes (date: string) => void
+ * @param {Function} [props.onMilestoneClick] - Callback when milestone is clicked (milestone: Object) => void
+ * @returns {JSX.Element}
+ */
 const TimelineSlider = ({
   config,
   value,

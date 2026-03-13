@@ -5,6 +5,18 @@ import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { feature } from 'topojson-client';
 import './InteractiveMap.css';
 
+/**
+ * InteractiveMap - Choropleth US map visualization for price impact data
+ * Features pan/zoom controls, state hover tooltips, metric switching,
+ * and state selection with drill-down capability.
+ * @param {Object} props
+ * @param {Array<Object>} props.data - State data with name, priceImpact, costOfLiving, topShocks
+ * @param {string} [props.selectedState] - Currently selected state name
+ * @param {Function} [props.onStateSelect] - Callback when state is selected (stateName: string) => void
+ * @param {Function} [props.onDrillDown] - Callback for state drill-down (stateName: string) => void
+ * @returns {JSX.Element}
+ */
+
 const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
 // Metric configurations
