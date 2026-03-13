@@ -14,6 +14,10 @@ export const STORAGE_KEYS = {
   CHAT_HISTORY: 'dekleptocracy_chat_history',
   /** Legacy key for backward compatibility with preferences.js */
   USER_PREFERENCES_LEGACY: 'dekleptocracy_user_preferences',
+  /** Monitoring metrics storage */
+  METRICS: 'dekleptocracy_metrics',
+  /** Error log storage */
+  ERRORS: 'dekleptocracy_errors',
 };
 
 // ============================================

@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { logError } from '../../../utils/errorLogger';
 import './ErrorBoundary.css';
 
 class ErrorBoundary extends Component {
@@ -10,17 +11,12 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    if (import.meta.env.DEV) {
-      console.error('[DEV] Error caught by boundary:', error, errorInfo);
-    }
     this.setState({ errorInfo });
 
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'exception', {
-        description: error.toString(),
-        fatal: false
-      });
-    }
+    logError(error, {
+      componentStack: errorInfo.componentStack?.slice(0, 500),
+      boundary: 'ErrorBoundary'
+    });
   }
 
   handleRetry = () => {
