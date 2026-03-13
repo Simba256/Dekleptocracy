@@ -1,9 +1,9 @@
+import { memo, useState } from 'react';
 import { useHomepage } from '../../../context/HomepageContext';
 import StateDropdown from '../../../components/common/StateDropdown';
 import InteractiveMap from '../../../components/charts/InteractiveMap';
-import { useState } from 'react';
 
-export function PriceMapSection() {
+export const PriceMapSection = memo(function PriceMapSection() {
   const { state, actions } = useHomepage();
   const { mapRegions, nearbyShocks, selectedState, dropdownStates, searchStates } = state;
   const [mapState, setMapState] = useState(null);
@@ -79,6 +79,6 @@ export function PriceMapSection() {
       </div>
     </section>
   );
-}
+});
 
 export default PriceMapSection;

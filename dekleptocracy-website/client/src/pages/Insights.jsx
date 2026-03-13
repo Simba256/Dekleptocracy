@@ -82,17 +82,9 @@ const Insights = () => {
     return (
       <div className="insights-page">
         <div className="insights-container">
-          <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-            <div className="loading-spinner" style={{ 
-              width: '50px', 
-              height: '50px', 
-              border: '4px solid #f3f4f6', 
-              borderTop: '4px solid #4A5D3F',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 20px'
-            }}></div>
-            <p style={{ color: '#6b7280', fontSize: '16px' }}>Loading articles...</p>
+          <div className="insights__loading">
+            <div className="insights__spinner"></div>
+            <p className="insights__loading-text">Loading articles...</p>
           </div>
         </div>
       </div>
@@ -103,21 +95,12 @@ const Insights = () => {
     return (
       <div className="insights-page">
         <div className="insights-container">
-          <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-            <h2 style={{ color: '#ef4444', marginBottom: '20px' }}>Error Loading Articles</h2>
-            <p style={{ color: '#6b7280', marginBottom: '30px' }}>{error}</p>
-            <button 
+          <div className="insights__error">
+            <h2 className="insights__error-title">Error Loading Articles</h2>
+            <p className="insights__error-message">{error}</p>
+            <button
               onClick={() => window.location.reload()}
-              style={{
-                padding: '12px 30px',
-                backgroundColor: '#4A5D3F',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: '600'
-              }}
+              className="insights__retry-btn"
             >
               Try Again
             </button>
@@ -139,23 +122,14 @@ const Insights = () => {
     return (
       <div className="insights-page">
         <div className="insights-container">
-          <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-            <h2 style={{ color: '#4A5D3F' }}>No Articles Found</h2>
-            <p style={{ color: '#6b7280', margin: '20px 0' }}>
+          <div className="insights__empty">
+            <h2 className="insights__empty-title">No Articles Found</h2>
+            <p className="insights__empty-message">
               There are no articles available in this category yet.
             </p>
-            <button 
+            <button
               onClick={() => navigate('/insights')}
-              style={{
-                padding: '12px 30px',
-                backgroundColor: '#4A5D3F',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: '600'
-              }}
+              className="insights__retry-btn"
             >
               View All Articles
             </button>
@@ -192,9 +166,13 @@ const Insights = () => {
 
         {/* Hero Image */}
         <div className="insights-hero-image">
-          <img 
-            src={insightData.heroImage} 
+          <img
+            src={insightData.heroImage}
             alt={insightData.title}
+            loading="lazy"
+            decoding="async"
+            width={1200}
+            height={600}
             onError={(e) => {
               e.target.onerror = null; // Prevent infinite loop
               e.target.src = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=600&fit=crop&q=80';
@@ -389,7 +367,7 @@ const Insights = () => {
                     {source.title}
                   </a>
                   {source.publishedDate && (
-                    <span style={{ color: '#9ca3af', fontSize: '13px', marginLeft: '10px' }}>
+                    <span className="insights__source-date">
                       ({new Date(source.publishedDate).toLocaleDateString()})
                     </span>
                   )}
@@ -429,28 +407,11 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
           <select
             value={selectedLocation}
             onChange={(e) => setSelectedLocation(e.target.value)}
-            className="insights-location-badge"
-            style={{
-              border: 'none',
-              outline: 'none',
-              cursor: 'pointer',
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              MozAppearance: 'none',
-              paddingRight: '30px',
-              maxWidth: '250px',
-              width: '250px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 10px center',
-              backgroundSize: '14px'
-            }}
+            className="insights-location-badge insights-location-select"
           >
-            <option value="all" style={{ backgroundColor: 'white', color: '#374151' }}>All Locations</option>
+            <option value="all">All Locations</option>
             {uniqueLocations.filter(loc => loc !== 'All Locations').map(location => (
-              <option key={location} value={location} style={{ backgroundColor: 'white', color: '#374151' }}>
+              <option key={location} value={location}>
                 {location}
               </option>
             ))}
@@ -462,20 +423,13 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
 
         {/* Insights Grid */}
         {filteredArticles.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '60px 20px',
-            backgroundColor: '#f9fafb',
-            borderRadius: '12px',
-            border: '2px dashed #e5e7eb',
-            marginTop: '20px'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '20px' }}>📰</div>
-            <h2 style={{ color: '#4A5D3F', marginBottom: '15px' }}>
+          <div className="insights__empty-grid">
+            <div className="insights__empty-icon">📰</div>
+            <h2 className="insights__empty-title">
               {selectedLocation === 'all' ? 'No Articles Yet' : `No Articles for ${selectedLocation}`}
             </h2>
-            <p style={{ color: '#6b7280', marginBottom: '25px', maxWidth: '500px', margin: '0 auto 25px' }}>
-              {selectedLocation === 'all' 
+            <p className="insights__empty-description">
+              {selectedLocation === 'all'
                 ? 'Articles are automatically generated weekly. Check back soon for new policy impact analysis!'
                 : 'Try selecting a different location to see more articles.'}
             </p>
@@ -491,9 +445,13 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
               .map((article) => (
               <div key={article._id} className="all-insights-card">
                 <div className="all-insights-hero">
-                  <img 
-                    src={article.heroImage} 
+                  <img
+                    src={article.heroImage}
                     alt={article.title}
+                    loading="lazy"
+                    decoding="async"
+                    width={600}
+                    height={300}
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=600&fit=crop&q=80';
@@ -502,19 +460,7 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
                   <div className="all-insights-category-badge">{article.category}</div>
                   
                   {/* Content Type Badge - RIGHT */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    padding: '4px 12px',
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    backgroundColor: article.contentType === 'research' ? '#3b82f6' : '#10b981',
-                    color: 'white',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}>
+                  <div className={`content-type-badge content-type-badge--${article.contentType === 'research' ? 'research' : 'article'}`}>
                     {article.contentType === 'research' ? '🔬 Research' : '📰 Article'}
                   </div>
                 </div>
@@ -546,13 +492,7 @@ const AllInsightsView = ({ articles, state, contentTypeFilter, navigate }) => {
                   </div>
                 </div>
 
-                <div style={{ 
-                  fontSize: '12px', 
-                  color: '#9ca3af', 
-                  marginBottom: '15px',
-                  paddingTop: '10px',
-                  borderTop: '1px solid #f3f4f6'
-                }}>
+                <div className="all-insights-meta">
                   Published: {new Date(article.publishedAt).toLocaleDateString()} • Views: {article.views || 0}
                 </div>
 

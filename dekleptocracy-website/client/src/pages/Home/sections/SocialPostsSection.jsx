@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { useHomepage } from '../../../context/HomepageContext';
 
-export function SocialPostsSection() {
+export const SocialPostsSection = memo(function SocialPostsSection() {
   const { state } = useHomepage();
   const { socialPosts } = state;
 
@@ -133,6 +134,6 @@ export function SocialPostsSection() {
       </div>
     </section>
   );
-}
+});
 
 export default SocialPostsSection;

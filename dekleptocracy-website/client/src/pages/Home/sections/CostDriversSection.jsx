@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { useHomepage } from '../../../context/HomepageContext';
 import StateDropdown from '../../../components/common/StateDropdown';
 
-export function CostDriversSection() {
+export const CostDriversSection = memo(function CostDriversSection() {
   const { state, actions } = useHomepage();
   const { costDrivers, stateComparisons, timePeriod, selectedState, dropdownStates, searchStates } = state;
 
@@ -118,6 +119,6 @@ export function CostDriversSection() {
       </div>
     </section>
   );
-}
+});
 
 export default CostDriversSection;

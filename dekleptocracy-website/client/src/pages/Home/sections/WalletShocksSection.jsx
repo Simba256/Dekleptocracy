@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHomepage, FEATURED_STATES } from '../../../context/HomepageContext';
 import StateDropdown from '../../../components/common/StateDropdown';
 
-export function WalletShocksSection() {
+export const WalletShocksSection = memo(function WalletShocksSection() {
   const navigate = useNavigate();
   const { state, actions, getEffectiveState } = useHomepage();
   const { walletShocks, selectedState, dropdownStates, searchStates, isRefreshing } = state;
@@ -121,6 +122,6 @@ export function WalletShocksSection() {
       </div>
     </section>
   );
-}
+});
 
 export default WalletShocksSection;

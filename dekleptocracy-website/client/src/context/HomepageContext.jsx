@@ -1,9 +1,10 @@
-import { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
+import { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
 import { API_URL } from '../utils/apiUrl';
+import { CACHE_CONFIG, STORAGE_KEYS } from '../utils/constants';
 import * as homepageApi from '../api/homepage';
 
 // Response cache for avoiding redundant API calls
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = CACHE_CONFIG.DEFAULT_TTL_MS;
 const responseCache = new Map();
 
 function getCachedData(key) {
@@ -274,7 +275,9 @@ export function HomepageProvider({ children }) {
         payload
       });
     } catch (err) {
-      console.error('Error fetching homepage data:', err);
+      if (import.meta.env.DEV) {
+        console.error('[DEV] Error fetching homepage data:', err);
+      }
       dispatch({ type: ActionTypes.SET_ERROR, payload: err.message });
     } finally {
       dispatch({ type: ActionTypes.SET_LOADING, payload: false });
@@ -286,10 +289,10 @@ export function HomepageProvider({ children }) {
   useEffect(() => {
     async function loadUserPreferences() {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
         // Check cached preferences first
-        const cachedPrefs = localStorage.getItem('user_preferences');
+        const cachedPrefs = localStorage.getItem(STORAGE_KEYS.USER_PREFERENCES);
         if (cachedPrefs) {
           try {
             const prefs = JSON.parse(cachedPrefs);
@@ -299,8 +302,8 @@ export function HomepageProvider({ children }) {
             if (prefs.defaultTimePeriod) {
               dispatch({ type: ActionTypes.SET_TIME_PERIOD, payload: prefs.defaultTimePeriod });
             }
-          } catch (e) {
-            console.error('Error parsing cached preferences:', e);
+          } catch {
+            // Silent fail for corrupt cached preferences
           }
         }
 
@@ -313,7 +316,7 @@ export function HomepageProvider({ children }) {
           if (response.ok) {
             const data = await response.json();
             if (data.success && data.user.preferences) {
-              localStorage.setItem('user_preferences', JSON.stringify(data.user.preferences));
+              localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(data.user.preferences));
               if (data.user.preferences.selectedState) {
                 dispatch({ type: ActionTypes.SET_SELECTED_STATE, payload: data.user.preferences.selectedState });
               }
@@ -323,8 +326,8 @@ export function HomepageProvider({ children }) {
             }
           }
         }
-      } catch (err) {
-        console.error('Error loading user preferences:', err);
+      } catch {
+        // Silent fail for user preferences loading
       }
     }
 
@@ -338,8 +341,8 @@ export function HomepageProvider({ children }) {
       if (data.success && data.regions) {
         dispatch({ type: ActionTypes.SET_MAP_REGIONS, payload: data.regions });
       }
-    } catch (err) {
-      console.error('Error fetching map data:', err);
+    } catch {
+      // Silent fail for map data fetching
     }
   }, []);
 
@@ -353,20 +356,20 @@ export function HomepageProvider({ children }) {
   const savePreferences = useCallback(async (updates) => {
     try {
       // Update cache immediately
-      const cachedPrefs = localStorage.getItem('user_preferences');
+      const cachedPrefs = localStorage.getItem(STORAGE_KEYS.USER_PREFERENCES);
       let prefs = {};
       if (cachedPrefs) {
         try {
           prefs = JSON.parse(cachedPrefs);
-        } catch (e) {
-          console.error('Error parsing cached preferences:', e);
+        } catch {
+          // Silent fail for corrupt cached preferences
         }
       }
       const updatedPrefs = { ...prefs, ...updates };
-      localStorage.setItem('user_preferences', JSON.stringify(updatedPrefs));
+      localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(updatedPrefs));
 
       // Save to backend if logged in
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
       if (token) {
         await fetch(`${API_URL}/api/user/preferences`, {
           method: 'PUT',
@@ -377,8 +380,8 @@ export function HomepageProvider({ children }) {
           body: JSON.stringify(updates)
         });
       }
-    } catch (err) {
-      console.error('Error saving preferences:', err);
+    } catch {
+      // Silent fail for preference saving
     }
   }, []);
 
@@ -402,8 +405,8 @@ export function HomepageProvider({ children }) {
           type: ActionTypes.UPDATE_REACTION,
           payload: { shockId, reactions: data.reactions }
         });
-      } catch (err) {
-        console.error('Error adding reaction:', err);
+      } catch {
+        // Silent fail for reaction adding
       }
     },
 
@@ -455,11 +458,18 @@ export function HomepageProvider({ children }) {
     }
   };
 
-  const value = {
+  // Memoize the actions object to prevent unnecessary re-renders
+  const memoizedActions = useMemo(() => actions, [
+    savePreferences,
+    fetchData
+  ]);
+
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
     state,
-    actions,
+    actions: memoizedActions,
     getEffectiveState
-  };
+  }), [state, memoizedActions, getEffectiveState]);
 
   return (
     <HomepageContext.Provider value={value}>

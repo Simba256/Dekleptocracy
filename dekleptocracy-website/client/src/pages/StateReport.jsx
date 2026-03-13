@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { API_URL } from '../utils/apiUrl';
 import SEO, { generateStateReportSchema } from '../components/common/SEO';
+import Breadcrumbs from '../components/common/Breadcrumbs';
 import './StateReport.css';
 
 // AI Insight Card Component
@@ -268,6 +267,12 @@ const StateReport = () => {
       event.target.textContent = 'Generating PDF...';
       event.target.disabled = true;
 
+      // Dynamic import - saves ~30KB from initial bundle
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ]);
+
       const canvas = await html2canvas(reportRef.current, {
         scale: 2,
         useCORS: true,
@@ -420,6 +425,15 @@ const StateReport = () => {
         url={`/reports/state-report?state=${encodeURIComponent(stateName)}`}
         structuredData={generateStateReportSchema(stateName, data)}
       />
+
+      {/* Breadcrumbs Navigation */}
+      <Breadcrumbs
+        items={[
+          { label: 'Reports', path: '/reports' },
+          { label: stateName, path: `/reports/state-report?state=${encodeURIComponent(stateName)}` }
+        ]}
+      />
+
       {/* Header Section */}
       <div className="district-report-header">
         <div className="district-report-header-content">

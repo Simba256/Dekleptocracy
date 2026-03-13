@@ -1,12 +1,11 @@
+import { memo } from 'react';
+import PropTypes from 'prop-types';
 import './SocialPostCard.css';
 
 /**
- * Social Post Card Component
- * @param {Object} props
- * @param {Object} props.post - Social post data
- * @param {number} props.avatarIndex - Index for avatar generation
+ * Social Post Card Component - Memoized to prevent unnecessary re-renders
  */
-export function SocialPostCard({ post, avatarIndex = 10 }) {
+export const SocialPostCard = memo(function SocialPostCard({ post, avatarIndex = 10 }) {
   return (
     <div className="social-post-card">
       <div className="social-post-card__header">
@@ -88,6 +87,28 @@ export function SocialPostCard({ post, avatarIndex = 10 }) {
       </div>
     </div>
   );
-}
+});
+
+SocialPostCard.propTypes = {
+  post: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+    avatarUrl: PropTypes.string,
+    verified: PropTypes.bool,
+    platform: PropTypes.string,
+    timeAgo: PropTypes.string,
+    text: PropTypes.string.isRequired,
+    image: PropTypes.string,
+    engagement: PropTypes.shape({
+      comments: PropTypes.number,
+      retweets: PropTypes.number,
+      likes: PropTypes.number,
+    }),
+  }).isRequired,
+  avatarIndex: PropTypes.number,
+};
+
+SocialPostCard.defaultProps = {
+  avatarIndex: 10,
+};
 
 export default SocialPostCard;

@@ -42,10 +42,14 @@ const AboutUs = () => {
           {/* Right Column - Image */}
           <div className="about-image-column">
             <div className="about-image-container">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=1200&fit=crop"
                 alt="Industrial infrastructure with fans and piping"
                 className="about-image"
+                loading="lazy"
+                decoding="async"
+                width={800}
+                height={1200}
               />
             </div>
           </div>
@@ -67,6 +71,10 @@ const AboutUs = () => {
                         src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500&h=300&fit=crop"
                         alt="Person in high-visibility vest with wind turbines"
                         className="card-image"
+                        loading="lazy"
+                        decoding="async"
+                        width={500}
+                        height={300}
                       />
                       <div className="card-icon-circle">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
@@ -91,6 +99,10 @@ const AboutUs = () => {
                         src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=500&h=300&fit=crop"
                         alt="Hand holding multimeter with solar panel"
                         className="card-image"
+                        loading="lazy"
+                        decoding="async"
+                        width={500}
+                        height={300}
                       />
                       <div className="card-icon-circle">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
@@ -212,6 +224,10 @@ const AboutUs = () => {
                         src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop"
                         alt="John Smith"
                         className="expert-image"
+                        loading="lazy"
+                        decoding="async"
+                        width={300}
+                        height={300}
                       />
                     </div>
                     <h3 className="expert-name">John Smith</h3>
@@ -225,6 +241,10 @@ const AboutUs = () => {
                         src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop"
                         alt="Sarah Liu"
                         className="expert-image"
+                        loading="lazy"
+                        decoding="async"
+                        width={300}
+                        height={300}
                       />
                     </div>
                     <h3 className="expert-name">Sarah Liu</h3>
@@ -238,6 +258,10 @@ const AboutUs = () => {
                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop"
                         alt="Emma Raynor"
                         className="expert-image"
+                        loading="lazy"
+                        decoding="async"
+                        width={300}
+                        height={300}
                       />
                     </div>
                     <h3 className="expert-name">Emma Raynor</h3>

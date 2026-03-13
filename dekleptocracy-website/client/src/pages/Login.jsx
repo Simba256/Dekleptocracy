@@ -5,15 +5,6 @@ import { API_URL } from '../utils/apiUrl';
 import './Login.css';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '';
 
-// Debug: Log environment variables (only in development)
-if (import.meta.env.DEV) {
-  console.log('🔧 [Login] Environment configuration:', {
-    mode: import.meta.env.MODE,
-    API_URL: API_URL,
-    GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? `${GOOGLE_CLIENT_ID.substring(0, 30)}...` : 'NOT SET',
-  });
-}
-
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,19 +23,11 @@ const Login = () => {
 
   // Initialize Google Sign-In
   useEffect(() => {
-    console.log('🔄 [Login] Google Sign-In initialization started');
-    console.log('🔑 [Login] GOOGLE_CLIENT_ID available:', !!GOOGLE_CLIENT_ID);
-    console.log('🎯 [Login] Button ref exists:', !!googleButtonRef.current);
-
     if (GOOGLE_CLIENT_ID && googleButtonRef.current) {
-      console.log('✅ [Login] Prerequisites met, loading Google script...');
       loadGoogleScript().then((google) => {
-        console.log('✅ [Login] Google script loaded successfully');
         google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: async (response) => {
-            console.log('🎉 [Login] Google callback triggered');
-            console.log('🎫 [Login] Response received:', response ? 'Yes' : 'No');
             setLoading(true);
             setError('');
             try {
@@ -52,7 +35,6 @@ const Login = () => {
                 response,
                 API_URL,
                 (data) => {
-                  console.log('✅ [Login] Sign-in successful, navigating to:', from);
                   if (data?.isNewUser) {
                     navigate('/survey', { replace: true });
                   } else {
@@ -60,13 +42,11 @@ const Login = () => {
                   }
                 },
                 (error) => {
-                  console.error('❌ [Login] Sign-in failed:', error);
                   setError(error.message || 'Google sign-in failed. Please try again.');
                   setLoading(false);
                 }
               );
             } catch (error) {
-              console.error('❌ [Login] Exception during sign-in:', error);
               setError(error.message || 'Google sign-in failed. Please try again.');
               setLoading(false);
             }
@@ -74,7 +54,6 @@ const Login = () => {
         });
 
         // Render Google button
-        console.log('🎨 [Login] Rendering Google button...');
         google.accounts.id.renderButton(googleButtonRef.current, {
           type: 'standard',
           theme: 'outline',
@@ -82,17 +61,9 @@ const Login = () => {
           text: 'signin_with',
           width: '100%',
         });
-        console.log('✅ [Login] Google button rendered successfully');
-      }).catch((error) => {
-        console.error('❌ [Login] Error loading Google script:', error);
+      }).catch(() => {
+        // Google script failed to load - button won't render
       });
-    } else {
-      if (!GOOGLE_CLIENT_ID) {
-        console.warn('⚠️ [Login] GOOGLE_CLIENT_ID not set');
-      }
-      if (!googleButtonRef.current) {
-        console.warn('⚠️ [Login] Button ref not ready yet');
-      }
     }
   }, [from, navigate]);
 
@@ -162,12 +133,12 @@ const Login = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="alert alert-error">
+              <div className="alert alert-error" role="alert" id="login-error-message">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={handleSubmit} className="login-form" noValidate>
               <div className="form-group">
                 <label htmlFor="email" className="form-label">Your email*</label>
                 <input
@@ -179,6 +150,8 @@ const Login = () => {
                   placeholder="Enter your email"
                   className="form-input"
                   required
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "login-error-message" : undefined}
                 />
               </div>
 
@@ -194,6 +167,8 @@ const Login = () => {
                     placeholder="Enter password"
                     className="form-input password-input"
                     required
+                    aria-invalid={error ? "true" : "false"}
+                    aria-describedby={error ? "login-error-message" : undefined}
                   />
                   <button
                     type="button"
@@ -230,7 +205,7 @@ const Login = () => {
                     required
                   />
                   <span className="checkbox-text">
-                    I agree to <Link to="/terms-of-service" target="_blank" style={{ color: '#3e5132', textDecoration: 'underline' }}>terms & conditions</Link>
+                    I agree to <Link to="/terms-of-service" target="_blank" className="terms-link">terms & conditions</Link>
                   </span>
                 </label>
               </div>
@@ -275,7 +250,15 @@ const Login = () => {
               <div className="speech-bubble bubble-3"></div>
             </div>
             <div className="robot-image-container">
-              <img src="/robo.jpg" alt="Friendly AI Robot" className="robot-image" />
+              <img
+                src="/robo.jpg"
+                alt="Friendly AI Robot"
+                className="robot-image"
+                loading="lazy"
+                decoding="async"
+                width={600}
+                height={600}
+              />
             </div>
           </div>
         </div>

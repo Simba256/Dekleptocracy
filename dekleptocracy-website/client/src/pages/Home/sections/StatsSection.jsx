@@ -1,10 +1,9 @@
+import { memo, useState, lazy, Suspense } from 'react';
 import { useHomepage } from '../../../context/HomepageContext';
-import { useState, lazy } from 'react';
-import Suspense from 'react';
 
 const StateComparison = lazy(() => import('../../../components/modals/StateComparison'));
 
-export function StatsSection() {
+export const StatsSection = memo(function StatsSection() {
   const { state } = useHomepage();
   const { stats, selectedState } = state;
   const [showComparison, setShowComparison] = useState(false);
@@ -22,7 +21,7 @@ export function StatsSection() {
       <h2 id="stats-heading" className="sr-only">Key Statistics</h2>
       <div className="stats-container">
         {/* Lobbying Cases Tracked */}
-        <div className="stat-card stat-card-large">
+        <div className="home-stat-card home-stat-card-large">
           <div className="stat-header">
             <h3 className="stat-title">Lobbying Cases Tracked</h3>
           </div>
@@ -52,7 +51,7 @@ export function StatsSection() {
         </div>
 
         {/* Consumer Cost Impact */}
-        <div className="stat-card stat-card-pink">
+        <div className="home-stat-card home-stat-card-pink">
           <div className="stat-icon">💳</div>
           <h3 className="stat-title-small">Consumer Cost Impact</h3>
           <div className="stat-value-medium">{consumerCost.displayValue}</div>
@@ -63,7 +62,7 @@ export function StatsSection() {
         </div>
 
         {/* Lobbyist Contributions */}
-        <div className="stat-card stat-card-red">
+        <div className="home-stat-card home-stat-card-red">
           <div className="stat-icon">💰</div>
           <h3 className="stat-title-small">Lobbyist Contributions</h3>
           <div className="stat-value-medium">{contributions.displayValue}</div>
@@ -74,7 +73,7 @@ export function StatsSection() {
         </div>
 
         {/* Tariff Revenue */}
-        <div className="stat-card stat-card-pink">
+        <div className="home-stat-card home-stat-card-pink">
           <div className="stat-header">
             <h3 className="stat-title">Tariff Revenue</h3>
           </div>
@@ -115,6 +114,6 @@ export function StatsSection() {
       )}
     </section>
   );
-}
+});
 
 export default StatsSection;

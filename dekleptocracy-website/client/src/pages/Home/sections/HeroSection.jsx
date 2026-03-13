@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHomepage, ALL_STATES } from '../../../context/HomepageContext';
 import StateDropdown from '../../../components/common/StateDropdown';
 
-export function HeroSection() {
+export const HeroSection = memo(function HeroSection() {
   const navigate = useNavigate();
   const { state, actions } = useHomepage();
   const { searchQuery, dropdownStates, searchStates, selectedState, quickQuestions } = state;
@@ -139,6 +140,6 @@ export function HeroSection() {
       </div>
     </section>
   );
-}
+});
 
 export default HeroSection;

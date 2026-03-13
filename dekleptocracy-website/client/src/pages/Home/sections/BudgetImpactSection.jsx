@@ -1,9 +1,9 @@
+import { memo, useState, useMemo } from 'react';
 import { useHomepage } from '../../../context/HomepageContext';
 import TimelineSlider from '../../../components/inputs/TimelineSlider';
 import ProductSearch from '../../../components/inputs/ProductSearch';
-import { useState, useMemo } from 'react';
 
-export function BudgetImpactSection() {
+export const BudgetImpactSection = memo(function BudgetImpactSection() {
   const { state, actions } = useHomepage();
   const { timelineDate, timelineConfig, trendingProducts } = state;
   const [selectedDate, setSelectedDate] = useState('2025-01-20');
@@ -64,6 +64,6 @@ export function BudgetImpactSection() {
       </div>
     </section>
   );
-}
+});
 
 export default BudgetImpactSection;

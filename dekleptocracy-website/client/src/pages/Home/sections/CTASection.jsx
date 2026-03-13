@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export function CTASection() {
+export const CTASection = memo(function CTASection() {
   const navigate = useNavigate();
 
   return (
@@ -35,6 +36,6 @@ export function CTASection() {
       </div>
     </section>
   );
-}
+});
 
 export default CTASection;

@@ -1,20 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { isAuthenticated, verifyToken } from '../utils/auth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import SEO from '../components/common/SEO';
+import { STORAGE_KEYS } from '../utils/constants';
 import './Chatbot.css';
 
 // localStorage utilities for chat history
-const STORAGE_KEY = 'dekleptocracy_chat_history';
+const STORAGE_KEY = STORAGE_KEYS.CHAT_HISTORY;
 
 const getChatHistory = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : { chats: [], currentChatId: null };
-  } catch (error) {
-    console.error('Error loading chat history:', error);
+  } catch {
     return { chats: [], currentChatId: null };
   }
 };
@@ -22,8 +22,8 @@ const getChatHistory = () => {
 const saveChatHistory = (history) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch (error) {
-    console.error('Error saving chat history:', error);
+  } catch {
+    // Silent fail for localStorage issues
   }
 };
 
@@ -108,8 +108,7 @@ const generateChatTitle = async (messages, mcpServerUrl) => {
     }
 
     return title || generateChatTitleFallback(messages);
-  } catch (error) {
-    console.warn('LLM title generation failed, using fallback:', error);
+  } catch {
     // Fallback to keyword extraction if LLM fails
     return generateChatTitleFallback(messages);
   }
@@ -165,9 +164,8 @@ const Chatbot = () => {
         if (!isValid) {
           navigate('/chatbot/login', { state: { from: { pathname: '/chatbot' } } });
         }
-      } catch (error) {
-        console.error('Auth verification error:', error);
-        // Don't redirect on network error, just log it
+      } catch {
+        // Don't redirect on network error
       }
     };
 
@@ -188,8 +186,8 @@ const Chatbot = () => {
             if (prefs.selectedState) {
               setUserLocation(prefs.selectedState);
             }
-          } catch (e) {
-            console.error('Error parsing cached preferences:', e);
+          } catch {
+            // Silent fail for corrupt cached preferences
           }
         }
 
@@ -211,8 +209,8 @@ const Chatbot = () => {
             setUserLocation(data.user.preferences.selectedState);
           }
         }
-      } catch (err) {
-        console.error('Error loading user location:', err);
+      } catch {
+        // Silent fail for user location loading
       }
     };
 
@@ -480,38 +478,19 @@ IMPORTANT GUIDELINES:
         )
       );
 
-      // Log metadata for debugging
-      if (data.metadata) {
-        console.log('MCP V2 Metadata:', data.metadata);
-        console.log(`Tools used: ${data.metadata.tool_count}, Iterations: ${data.metadata.iterations}, Tokens: ${data.metadata.tokens_used}`);
-
-        // Log token/context metadata
-        if (data.metadata.token_metadata) {
-          const tm = data.metadata.token_metadata;
-          console.log(`Context Window: ${tm.initial_messages_tokens?.toLocaleString() || 'N/A'} / ${tm.context_limit?.toLocaleString() || 'N/A'} tokens (${tm.initial_utilization_percent || 0}%)`);
-
-          if (tm.truncation_occurred) {
-            console.warn(`⚠️ Context truncation occurred: ${tm.messages_removed} messages removed`);
-          }
+      // Log metadata for debugging (DEV only)
+      if (import.meta.env.DEV && data.metadata) {
+        console.log('[DEV] MCP V2 Metadata:', data.metadata);
+        if (data.tools_used) {
+          console.log('[DEV] Tools used:', data.tools_used);
         }
-
-        // Log if limits were reached
-        if (data.metadata.tool_limit_reached) {
-          console.warn('⚠️ Tool limit reached - some analysis may be incomplete');
-        }
-        if (data.metadata.max_iterations_reached) {
-          console.warn('⚠️ Max iterations reached - some analysis may be incomplete');
-        }
-      }
-      if (data.tools_used) {
-        console.log('Tools used:', data.tools_used);
       }
     } catch (error) {
       clearInterval(statusInterval);
-      if (error.name === 'AbortError') {
-        console.log('Request aborted');
-      } else {
-        console.error('Chat error:', error);
+      if (error.name !== 'AbortError') {
+        if (import.meta.env.DEV) {
+          console.error('[DEV] Chat error:', error);
+        }
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMessage.id
@@ -558,8 +537,8 @@ IMPORTANT GUIDELINES:
     navigator.clipboard.writeText(content).then(() => {
       setShowCopyNotification(true);
       setTimeout(() => setShowCopyNotification(false), 3000);
-    }).catch(err => {
-      console.error('Failed to copy:', err);
+    }).catch(() => {
+      // Silent fail for clipboard errors
     });
   };
 
@@ -696,8 +675,8 @@ IMPORTANT GUIDELINES:
     return preview.length > 60 ? preview.substring(0, 60) + '...' : preview;
   };
 
-  // Helper function to group chats by date
-  const groupChatsByDate = (chats) => {
+  // Memoized function to group chats by date
+  const groupChatsByDate = useCallback((chats) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today);
@@ -728,7 +707,12 @@ IMPORTANT GUIDELINES:
     });
 
     return groups;
-  };
+  }, []);
+
+  // Memoize grouped chat history to prevent recalculation on every render
+  const groupedChatHistory = useMemo(() => {
+    return groupChatsByDate(chatHistory.chats);
+  }, [chatHistory.chats, groupChatsByDate]);
 
   // Show loading state while checking authentication
   if (!authChecked) {
@@ -781,8 +765,7 @@ IMPORTANT GUIDELINES:
             <div className="history-empty">No chat history yet</div>
           ) : (
             (() => {
-              const groupedChats = groupChatsByDate(chatHistory.chats);
-              return Object.entries(groupedChats).map(([groupName, chats]) => {
+              return Object.entries(groupedChatHistory).map(([groupName, chats]) => {
                 if (chats.length === 0) return null;
 
                 return (

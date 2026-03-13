@@ -1,19 +1,11 @@
+import { memo } from 'react';
+import PropTypes from 'prop-types';
 import './StatCard.css';
 
 /**
- * Stat Card Component
- * @param {Object} props
- * @param {string} props.title - Card title
- * @param {string} props.value - Main value
- * @param {string} props.change - Change value (e.g., "+28.42%")
- * @param {string} props.changeDirection - 'up' or 'down'
- * @param {string} props.subtitle - Optional subtitle
- * @param {string} props.icon - Optional emoji icon
- * @param {string} props.variant - 'default', 'large', 'pink', 'red'
- * @param {Array} props.chartData - Optional chart data
- * @param {React.ReactNode} props.children - Custom chart content
+ * Stat Card Component - Memoized to prevent unnecessary re-renders
  */
-export function StatCard({
+export const StatCard = memo(function StatCard({
   title,
   value,
   change,
@@ -62,7 +54,34 @@ export function StatCard({
       )}
     </div>
   );
-}
+});
+
+StatCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  change: PropTypes.string,
+  changeDirection: PropTypes.oneOf(['up', 'down']),
+  subtitle: PropTypes.string,
+  icon: PropTypes.string,
+  variant: PropTypes.oneOf(['default', 'large', 'pink', 'red', 'compact']),
+  chartData: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.number.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ),
+  children: PropTypes.node,
+};
+
+StatCard.defaultProps = {
+  change: '',
+  changeDirection: 'up',
+  subtitle: '',
+  icon: '',
+  variant: 'default',
+  chartData: null,
+  children: null,
+};
 
 /**
  * Lobbying Stat Card with line chart
@@ -92,5 +111,9 @@ export function LobbyingStatCard({ value }) {
     </StatCard>
   );
 }
+
+LobbyingStatCard.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
 
 export default StatCard;
