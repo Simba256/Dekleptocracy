@@ -93,7 +93,7 @@
 /* Header */
 .chatbot-header {
   background: linear-gradient(135deg, var(--chatbot-primary) 0%, var(--chatbot-primary-light) 100%);
-  color: #ffffff;
+  color: var(--color-white);
   padding: var(--chatbot-space-md) 28px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -301,7 +301,7 @@
 
 .message-user .message-text {
   background: linear-gradient(135deg, var(--chatbot-primary) 0%, var(--chatbot-primary-light) 100%);
-  color: #ffffff;
+  color: var(--color-white);
   border: none;
   box-shadow: 0 3px 10px rgba(44, 95, 62, 0.25), 0 1px 3px rgba(44, 95, 62, 0.15);
   border-radius: var(--chatbot-radius-xl) var(--chatbot-radius-xl) var(--chatbot-space-xs) var(--chatbot-radius-xl);
@@ -311,7 +311,7 @@
 .message-user .message-text p,
 .message-user .message-text span,
 .message-user .message-text div {
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .message-user .message-text:hover {
@@ -340,7 +340,8 @@
   pointer-events: none;
 }
 
-.message:hover .message-actions {
+.message:hover .message-actions,
+.message:focus-within .message-actions {
   opacity: 1;
   transform: translateY(0);
   pointer-events: all;
@@ -393,6 +394,19 @@
   transition: all 0.1s ease;
 }
 
+/* Focus states for accessibility */
+.action-btn:focus-visible,
+.quick-action-btn:focus-visible,
+.follow-up-chip:focus-visible,
+.prompt-chip:focus-visible,
+.new-chat-btn:focus-visible,
+.history-delete-btn:focus-visible,
+.chatbot-send-btn:focus-visible,
+.input-tool-btn:focus-visible {
+  outline: 2px solid var(--chatbot-accent);
+  outline-offset: 2px;
+}
+
 .action-btn svg {
   width: 14px;
   height: 14px;
@@ -401,7 +415,7 @@
 .message-user .action-btn {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.25);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .message-user .action-btn:hover {
@@ -543,7 +557,7 @@
 
 .input-wrapper:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #cbd5e1;
+  border-color: var(--color-gray-300);
   transform: translateY(-1px);
 }
 
@@ -575,7 +589,7 @@
 }
 
 .chatbot-input:focus::placeholder {
-  color: #cbd5e1;
+  color: var(--color-gray-300);
 }
 
 .chatbot-input:disabled {
@@ -589,7 +603,7 @@
   gap: 6px;
   align-items: center;
   padding-right: 12px;
-  border-right: 1px solid #cbd5e1;
+  border-right: 1px solid var(--color-gray-300);
 }
 
 .input-tool-btn {
@@ -641,7 +655,7 @@
 
 .chatbot-send-btn {
   background: linear-gradient(135deg, var(--chatbot-accent) 0%, #ff8555 100%);
-  color: #ffffff;
+  color: var(--color-white);
   border: none;
   border-radius: var(--chatbot-radius-md);
   padding: 10px var(--chatbot-space-lg);
@@ -710,7 +724,7 @@
 .chatbot-stop-btn {
   padding: 11px var(--chatbot-space-lg);
   background: linear-gradient(135deg, var(--chatbot-error) 0%, #e55563 100%);
-  color: #ffffff;
+  color: var(--color-white);
   border: none;
   border-radius: var(--chatbot-radius-sm);
   font-size: var(--chatbot-font-size-base);
@@ -837,8 +851,8 @@
 
 .quick-action-btn.danger:hover {
   background-color: rgba(239, 68, 68, 0.05);
-  border-color: #ef4444;
-  color: #ef4444;
+  border-color: var(--color-error);
+  color: var(--color-error);
 }
 
 /* Follow-up Suggestions */
@@ -1080,17 +1094,17 @@
 /* Markdown Content Styling */
 .chatbot-container .markdown-content {
   line-height: 1.6;
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 /* Force all text and nested elements to be dark and visible */
 .chatbot-container .markdown-content *:not(th):not(a):not(code) {
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content p,
 .chatbot-container .markdown-content p *:not(a):not(code) {
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 /* Override for user messages - keep text white on green background */
@@ -1100,7 +1114,7 @@
 .chatbot-container .message-user .markdown-content p *,
 .chatbot-container .message-user .markdown-content span,
 .chatbot-container .message-user .markdown-content div {
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .chatbot-container .markdown-content h1,
@@ -1112,69 +1126,69 @@
   margin: 16px 0 10px 0;
   font-weight: 700;
   line-height: 1.3;
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content h1 {
   font-size: 1.75em;
-  border-bottom: 2px solid #2c5f3e;
+  border-bottom: 2px solid var(--color-green-primary);
   padding-bottom: 8px;
-  color: #0f172a;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content h2 {
   font-size: 1.5em;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
   padding-bottom: 6px;
-  color: #1e3a8a;
+  color: var(--color-info);
   font-weight: 700;
 }
 
 .chatbot-container .markdown-content h3 {
   font-size: 1.25em;
-  color: #1e40af;
+  color: var(--color-info);
   font-weight: 700;
 }
 
 .chatbot-container .markdown-content h4 {
   font-size: 1.1em;
-  color: #111827;
+  color: var(--color-gray-900);
   font-weight: 600;
 }
 
 .chatbot-container .markdown-content p {
   margin: 6px 0;
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content strong {
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content em {
   font-style: italic;
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content ul,
 .chatbot-container .markdown-content ol {
   margin: 10px 0;
   padding-left: 24px;
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content li {
   margin: 6px 0;
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content li *:not(a):not(code) {
-  color: #111827;
+  color: var(--color-gray-900);
 }
 
 .chatbot-container .markdown-content li strong {
-  color: #111827;
+  color: var(--color-gray-900);
   font-weight: 600;
 }
 
@@ -1187,12 +1201,12 @@
 
 .chatbot-container .markdown-content code {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #fcd34d;
+  border: 1px solid var(--color-warning);
   border-radius: 5px;
   padding: 3px 8px;
   font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
   font-size: 0.88em;
-  color: #92400e;
+  color: var(--color-warning-text);
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -1278,7 +1292,7 @@
 .chatbot-container .markdown-content thead th,
 .chatbot-container .markdown-content table th {
   background: linear-gradient(135deg, #2c5f3e 0%, #3a7b4e 100%);
-  color: #ffffff;
+  color: var(--color-white);
   font-weight: 600;
   font-size: 0.92em;
   text-transform: uppercase;
@@ -1301,7 +1315,7 @@
   line-height: 1.6;
   color: #1f2937;
   font-weight: 500;
-  background-color: #ffffff;
+  background-color: var(--color-white);
 }
 
 .chatbot-container .markdown-content tbody td *,
@@ -1383,7 +1397,7 @@
 }
 
 .history-title {
-  color: #ffffff;
+  color: var(--color-white);
   font-size: 15px;
   font-weight: 600;
   margin: 0;
@@ -1393,7 +1407,7 @@
 .history-close-btn-mobile {
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: var(--color-white);
   font-size: 24px;
   cursor: pointer;
   padding: 0;
@@ -1414,7 +1428,7 @@
   margin: 14px;
   padding: 11px 18px;
   background: linear-gradient(135deg, var(--chatbot-accent) 0%, #ff8555 100%);
-  color: #ffffff;
+  color: var(--color-white);
   border: none;
   border-radius: var(--chatbot-radius-sm);
   font-size: var(--chatbot-font-size-base);
@@ -1521,7 +1535,7 @@
 
 .history-item.active .history-item-title,
 .history-item.active .history-item-preview {
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .history-item.active .history-item-title {
@@ -1633,7 +1647,7 @@
   left: var(--chatbot-space-md);
   top: calc(var(--navbar-height, 100px) + 10px);
   background: linear-gradient(135deg, var(--chatbot-primary) 0%, var(--chatbot-primary-light) 100%);
-  color: #ffffff;
+  color: var(--color-white);
   border: none;
   border-radius: var(--chatbot-radius-sm);
   padding: 10px 13px;
@@ -1679,7 +1693,7 @@
 }
 
 .new-chat-btn-header:hover {
-  background-color: #ffffff;
+  background-color: var(--color-white);
   transform: translateY(-1px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }

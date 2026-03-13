@@ -1,6 +1,6 @@
 .about-us-page {
   min-height: 100vh;
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   padding: 100px 0 0;
   overflow-x: hidden;
 }
@@ -28,7 +28,7 @@
 .about-subtitle {
   font-size: 14px;
   font-weight: 500;
-  color: #6B7280;
+  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -36,7 +36,7 @@
 .about-title {
   font-size: 48px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
@@ -50,14 +50,14 @@
 .about-paragraph {
   font-size: 16px;
   line-height: 1.6;
-  color: #374151;
+  color: var(--color-gray-800);
   letter-spacing: -0.01em;
 }
 
 .ask-ai-button {
   align-self: flex-start;
-  background-color: #FF6B5A;
-  color: white;
+  background-color: var(--color-coral);
+  color: var(--color-white);
   border: none;
   padding: 16px 32px;
   border-radius: 8px;
@@ -69,7 +69,7 @@
 }
 
 .ask-ai-button:hover {
-  background-color: #FF5647;
+  background-color: var(--color-coral-hover);
   transform: translateY(-1px);
 }
 
@@ -164,7 +164,7 @@
 /* Mission & Vision Section */
 .mission-vision-section {
   padding: 80px 0;
-  background-color: #F5F7F3;
+  background-color: var(--color-green-section);
   width: 100vw;
   margin-left: calc(-50vw + 50%);
   margin-top: 80px;
@@ -180,14 +180,14 @@
 .mission-vision-title {
   font-size: 48px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin-bottom: 16px;
   letter-spacing: -0.02em;
 }
 
 .mission-vision-subtitle {
   font-size: 16px;
-  color: #374151;
+  color: var(--color-gray-800);
   line-height: 1.6;
   margin-bottom: 40px;
   letter-spacing: -0.01em;
@@ -202,7 +202,7 @@
 }
 
 .mission-vision-card {
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 0;
   overflow: visible;
 }
@@ -229,7 +229,7 @@
   transform: translateX(-50%);
   width: 80px;
   height: 80px;
-  background-color: #4A5D3F;
+  background-color: var(--color-green-muted);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -251,7 +251,7 @@
 .card-title-text {
   font-size: 24px;
   font-weight: 700;
-  color: #FF6B5A;
+  color: var(--color-coral);
   margin-bottom: 16px;
   letter-spacing: -0.01em;
 }
@@ -259,7 +259,7 @@
 .card-description-text {
   font-size: 15px;
   line-height: 1.6;
-  color: #374151;
+  color: var(--color-gray-800);
   letter-spacing: -0.01em;
 }
 
@@ -397,7 +397,7 @@
 /* Core Values Section */
 .core-values-section {
   padding: 80px 0;
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   width: 100vw;
   margin-left: calc(-50vw + 50%);
 }
@@ -411,7 +411,7 @@
 .core-values-title {
   font-size: 36px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   text-align: center;
   margin-bottom: 16px;
   letter-spacing: -0.02em;
@@ -419,7 +419,7 @@
 
 .core-values-subtitle {
   font-size: 16px;
-  color: #374151;
+  color: var(--color-gray-800);
   text-align: center;
   margin-bottom: 48px;
   max-width: 600px;
@@ -438,7 +438,7 @@
 }
 
 .core-value-card {
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   border-radius: 12px;
   padding: 32px 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -454,7 +454,7 @@
 .value-icon-container {
   width: 56px;
   height: 56px;
-  background-color: #4A5D3F;
+  background-color: var(--color-green-muted);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -467,7 +467,7 @@
 }
 
 .value-icon-container svg {
-  color: #FFFFFF;
+  color: var(--color-white);
 }
 
 .value-content {
@@ -477,14 +477,14 @@
 .value-title {
   font-size: 20px;
   font-weight: 700;
-  color: #F06449;
+  color: var(--color-coral);
   margin-bottom: 12px;
   letter-spacing: -0.01em;
 }
 
 .value-description {
   font-size: 15px;
-  color: #374151;
+  color: var(--color-gray-800);
   line-height: 1.6;
   letter-spacing: -0.01em;
 }
@@ -596,7 +596,7 @@
 /* Experts Section */
 .experts-section {
   padding: 80px 0;
-  background-color: #F8F9F7;
+  background-color: var(--color-green-panel);
   width: 100vw;
   margin-left: calc(-50vw + 50%);
 }
@@ -610,7 +610,7 @@
 .experts-title {
   font-size: 36px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   text-align: center;
   margin-bottom: 16px;
   letter-spacing: -0.02em;
@@ -618,7 +618,7 @@
 
 .experts-subtitle {
   font-size: 16px;
-  color: #374151;
+  color: var(--color-gray-800);
   text-align: center;
   margin-bottom: 48px;
   max-width: 700px;
@@ -660,14 +660,14 @@
 .expert-name {
   font-size: 20px;
   font-weight: 700;
-  color: #F06449;
+  color: var(--color-coral);
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
 
 .expert-title {
   font-size: 15px;
-  color: #374151;
+  color: var(--color-gray-800);
   letter-spacing: -0.01em;
 }
 
@@ -676,8 +676,8 @@
 }
 
 .ask-ai-button-experts {
-  background-color: #F06449;
-  color: #FFFFFF;
+  background-color: var(--color-coral);
+  color: var(--color-white);
   border: none;
   border-radius: 8px;
   padding: 16px 32px;
@@ -689,7 +689,7 @@
 }
 
 .ask-ai-button-experts:hover {
-  background-color: #E55A42;
+  background-color: var(--color-coral-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(240, 100, 73, 0.3);
 }
@@ -783,7 +783,7 @@
 /* What Sets Us Apart Section */
   .what-sets-us-apart-section {
     padding: 80px 0;
-    background-color: #FEF7F3;
+    background-color: var(--color-coral-light);
     width: 100vw;
     margin-left: calc(-50vw + 50%);
   }
@@ -797,7 +797,7 @@
 .what-sets-us-apart-title {
   font-size: 36px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   text-align: center;
   margin-bottom: 32px;
   letter-spacing: -0.02em;
@@ -810,7 +810,7 @@
 
 .what-sets-us-apart-paragraph {
   font-size: 16px;
-  color: #374151;
+  color: var(--color-gray-800);
   line-height: 1.6;
   margin-bottom: 24px;
   letter-spacing: -0.01em;
@@ -825,8 +825,8 @@
 }
 
 .ask-ai-button-what-sets {
-  background-color: #F06449;
-  color: #FFFFFF;
+  background-color: var(--color-coral);
+  color: var(--color-white);
   border: none;
   border-radius: 8px;
   padding: 16px 32px;
@@ -838,7 +838,7 @@
 }
 
 .ask-ai-button-what-sets:hover {
-  background-color: #E55A42;
+  background-color: var(--color-coral-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(240, 100, 73, 0.3);
 }
@@ -902,7 +902,7 @@
 /* About Us CTA Section */
 .about-cta-section {
   padding: 80px 0;
-  background-color: #F8F9FA;
+  background-color: var(--color-gray-150);
   width: 100vw;
   margin-left: calc(-50vw + 50%);
 }
@@ -914,7 +914,7 @@
 }
 
 .about-cta-card {
-  background-color: #3E5132;
+  background-color: var(--color-green-dark);
   border-radius: 16px;
   padding: 48px 40px 48px 40px;
   text-align: center;
@@ -935,14 +935,14 @@
 .about-cta-title {
   font-size: 32px;
   font-weight: 700;
-  color: #F8F9FA;
+  color: var(--color-gray-150);
   margin-bottom: 16px;
   letter-spacing: -0.02em;
 }
 
 .about-cta-description {
   font-size: 18px;
-  color: #E5E7EB;
+  color: var(--color-gray-200);
   line-height: 1.6;
   max-width: 600px;
   margin: 0 auto;
@@ -957,8 +957,8 @@
 }
 
 .about-cta-primary-button {
-  background-color: #FFFFFF;
-  color: #3E5132;
+  background-color: var(--color-white);
+  color: var(--color-green-dark);
   border: none;
   border-radius: 8px;
   padding: 16px 32px;
@@ -970,15 +970,15 @@
 }
 
 .about-cta-primary-button:hover {
-  background-color: #F8F9FA;
+  background-color: var(--color-gray-150);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
 }
 
 .about-cta-secondary-button {
   background-color: transparent;
-  color: #F06449;
-  border: 2px solid #F06449;
+  color: var(--color-coral);
+  border: 2px solid var(--color-coral);
   border-radius: 8px;
   padding: 14px 30px;
   font-size: 16px;
@@ -989,8 +989,8 @@
 }
 
 .about-cta-secondary-button:hover {
-  background-color: #F06449;
-  color: #FFFFFF;
+  background-color: var(--color-coral);
+  color: var(--color-white);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(240, 100, 73, 0.3);
 }
@@ -1004,7 +1004,7 @@
 }
 
 .about-chain-decoration {
-  color: #F8F9FA;
+  color: var(--color-gray-150);
   margin-left: 8px;
 }
 

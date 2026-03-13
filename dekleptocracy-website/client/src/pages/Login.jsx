@@ -155,30 +155,14 @@ const Login = () => {
 
             {/* Info Message if redirected from protected route */}
             {location.state?.from && (
-              <div className="info-message" style={{
-                padding: '12px 16px',
-                backgroundColor: '#e3f2fd',
-                color: '#1976d2',
-                borderRadius: '8px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                border: '1px solid #90caf9'
-              }}>
+              <div className="alert alert-info">
                 Please login to access the chatbot
               </div>
             )}
 
             {/* Error Message */}
             {error && (
-              <div className="error-message" style={{
-                padding: '12px 16px',
-                backgroundColor: '#fee',
-                color: '#c33',
-                borderRadius: '8px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                border: '1px solid #fcc'
-              }}>
+              <div className="alert alert-error">
                 {error}
               </div>
             )}
@@ -215,6 +199,8 @@ const Login = () => {
                     type="button"
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       {showPassword ? (
@@ -257,36 +243,19 @@ const Login = () => {
                 <span>Or</span>
               </div>
 
-              <div ref={googleButtonRef} id="google-signin-button" style={{ 
-                width: '100%', 
-                display: 'flex', 
-                justifyContent: 'center',
-                marginTop: '8px',
-                minHeight: '40px'
-              }}></div>
+              <div ref={googleButtonRef} id="google-signin-button" className="google-signin-container"></div>
               {!GOOGLE_CLIENT_ID && (
-                <div style={{
-                  padding: '12px',
-                  backgroundColor: '#fff3cd',
-                  color: '#856404',
-                  borderRadius: '8px',
-                  fontSize: '13px',
-                  textAlign: 'left',
-                  marginTop: '12px',
-                  border: '1px solid #ffc107'
-                }}>
+                <div className="config-warning">
                   <strong>⚠️ Google Sign-In Not Configured</strong>
-                  <div style={{ marginTop: '8px', fontSize: '12px' }}>
-                    <p style={{ margin: '4px 0' }}>To enable Google Sign-In:</p>
-                    <ol style={{ margin: '4px 0', paddingLeft: '20px' }}>
-                      <li>Create a <code>.env</code> file in the <code>client/</code> directory</li>
-                      <li>Add: <code>VITE_GOOGLE_CLIENT_ID=your-client-id</code></li>
-                      <li><strong>Restart the dev server</strong> (Ctrl+C then npm run dev)</li>
-                    </ol>
-                    <p style={{ margin: '8px 0 4px 0', fontSize: '11px', color: '#666' }}>
-                      Check browser console (F12) for debug info. See ENV_SETUP.md for details.
-                    </p>
-                  </div>
+                  <p>To enable Google Sign-In:</p>
+                  <ol>
+                    <li>Create a <code>.env</code> file in the <code>client/</code> directory</li>
+                    <li>Add: <code>VITE_GOOGLE_CLIENT_ID=your-client-id</code></li>
+                    <li><strong>Restart the dev server</strong> (Ctrl+C then npm run dev)</li>
+                  </ol>
+                  <p className="hint-text">
+                    Check browser console (F12) for debug info. See ENV_SETUP.md for details.
+                  </p>
                 </div>
               )}
 

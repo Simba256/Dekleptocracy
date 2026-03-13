@@ -13,7 +13,7 @@
 }
 
 .comparison-modal {
-  background: white;
+  background: var(--color-white);
   border-radius: 12px;
   max-width: 900px;
   width: 100%;
@@ -30,31 +30,31 @@
   width: 36px;
   height: 36px;
   border: none;
-  background: #f7fafc;
+  background: var(--color-gray-50);
   border-radius: 8px;
   font-size: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #718096;
+  color: var(--color-gray-500);
   transition: all 0.2s;
 }
 
 .modal-close:hover {
-  background: #edf2f7;
-  color: #2d3748;
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
 }
 
 .comparison-modal h2 {
   margin: 0;
   font-size: 24px;
-  color: #2d3748;
+  color: var(--color-gray-800);
   padding: 20px 20px 0 20px;
 }
 
 .modal-subtitle {
-  color: #718096;
+  color: var(--color-gray-500);
   font-size: 14px;
   margin: 8px 20px 20px 20px;
 }
@@ -76,37 +76,37 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #edf2f7;
+  background: var(--color-gray-200);
   border-radius: 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #2d3748;
+  color: var(--color-gray-800);
 }
 
 .selected-state-chip button {
   width: 20px;
   height: 20px;
   border: none;
-  background: #cbd5e0;
+  background: var(--color-gray-300);
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--color-white);
   font-size: 14px;
   line-height: 1;
 }
 
 .selected-state-chip button:hover {
-  background: #a0aec0;
+  background: var(--color-gray-400);
 }
 
 .category-tabs {
   display: flex;
   gap: 8px;
   padding: 0 20px 20px 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-gray-200);
   overflow-x: auto;
 }
 
@@ -117,20 +117,20 @@
   border-radius: 8px 8px 0 0;
   font-size: 14px;
   font-weight: 500;
-  color: #718096;
+  color: var(--color-gray-500);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .category-tab:hover {
-  background: #f7fafc;
-  color: #2d3748;
+  background: var(--color-gray-50);
+  color: var(--color-gray-800);
 }
 
 .category-tab.active {
-  background: #4A5D3F;
-  color: white;
+  background: var(--color-green-muted);
+  color: var(--color-white);
 }
 
 .comparison-loading {
@@ -144,8 +144,8 @@
 .comparison-loading .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #4A5D3F;
+  border: 3px solid var(--color-gray-200);
+  border-top-color: var(--color-green-muted);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -158,7 +158,7 @@
 
 .comparison-loading p {
   margin-top: 16px;
-  color: #718096;
+  color: var(--color-gray-500);
   font-size: 14px;
 }
 
@@ -174,7 +174,7 @@
 }
 
 .state-summary-card {
-  background: #f7fafc;
+  background: var(--color-gray-50);
   border-radius: 8px;
   padding: 16px;
 }
@@ -183,7 +183,7 @@
   margin: 0 0 12px 0;
   font-size: 16px;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--color-gray-800);
 }
 
 .summary-value {
@@ -195,18 +195,18 @@
 
 .summary-value .label {
   font-size: 12px;
-  color: #718096;
+  color: var(--color-gray-500);
 }
 
 .summary-value .value {
   font-size: 20px;
   font-weight: 700;
-  color: #c53030;
+  color: var(--color-error-text);
 }
 
 .summary-rank {
   font-size: 12px;
-  color: #718096;
+  color: var(--color-gray-500);
 }
 
 .comparison-details {
@@ -221,22 +221,22 @@
 .comparison-table thead th {
   padding: 12px;
   text-align: left;
-  background: #f7fafc;
+  background: var(--color-gray-50);
   font-size: 13px;
   font-weight: 600;
-  color: #2d3748;
-  border-bottom: 2px solid #e2e8f0;
+  color: var(--color-gray-800);
+  border-bottom: 2px solid var(--color-gray-200);
 }
 
 .comparison-table tbody td {
   padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-gray-200);
   font-size: 14px;
 }
 
 .comparison-table tbody td .value {
   font-weight: 600;
-  color: #2d3748;
+  color: var(--color-gray-800);
   margin-right: 8px;
 }
 
@@ -248,19 +248,19 @@
 }
 
 .comparison-table tbody td .diff.up {
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--color-error-border);
+  color: var(--color-error-text);
 }
 
 .comparison-table tbody td .diff.down {
-  background: #d1f4dd;
-  color: #047857;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .comparison-empty {
   padding: 60px 20px;
   text-align: center;
-  color: #718096;
+  color: var(--color-gray-500);
   font-size: 14px;
 }
 
@@ -268,14 +268,14 @@
   display: flex;
   gap: 12px;
   padding: 20px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-gray-200);
   justify-content: center;
 }
 
 .comparison-actions button {
   padding: 10px 20px;
-  background: #4A5D3F;
-  color: white;
+  background: var(--color-green-muted);
+  color: var(--color-white);
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -285,7 +285,7 @@
 }
 
 .comparison-actions button:hover {
-  background: #2d3748;
+  background: var(--color-gray-800);
 }
 
 @media (max-width: 768px) {

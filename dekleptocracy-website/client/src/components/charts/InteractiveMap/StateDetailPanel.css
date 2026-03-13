@@ -3,7 +3,7 @@
   top: 20px;
   right: 20px;
   width: 320px;
-  background: white;
+  background: var(--color-white);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 100;
@@ -17,32 +17,32 @@
   width: 28px;
   height: 28px;
   border: none;
-  background: #f7fafc;
+  background: var(--color-gray-50);
   border-radius: 6px;
   font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #718096;
+  color: var(--color-gray-500);
   transition: all 0.2s;
 }
 
 .close-btn:hover {
-  background: #edf2f7;
-  color: #2d3748;
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
 }
 
 .panel-header {
   padding: 20px 20px 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .panel-header h3 {
   margin: 0 0 8px 0;
   font-size: 20px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--color-gray-800);
 }
 
 .intensity-badge {
@@ -56,8 +56,8 @@
 }
 
 .intensity-badge {
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--color-error-border);
+  color: var(--color-error-text);
 }
 
 .state-stats {
@@ -76,20 +76,20 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 12px;
-  background: #f7fafc;
+  background: var(--color-gray-50);
   border-radius: 6px;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #718096;
+  color: var(--color-gray-500);
   font-weight: 500;
 }
 
 .stat-value {
   font-size: 15px;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--color-gray-800);
 }
 
 .stat-trend {
@@ -100,13 +100,13 @@
 }
 
 .stat-trend.up {
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--color-error-border);
+  color: var(--color-error-text);
 }
 
 .stat-trend.down {
-  background: #d1f4dd;
-  color: #047857;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .top-shocks-list {
@@ -117,7 +117,7 @@
   margin: 0 0 12px 0;
   font-size: 14px;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--color-gray-800);
 }
 
 .shock-row {
@@ -125,7 +125,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .shock-row:last-child {
@@ -139,7 +139,7 @@
 .shock-name {
   flex: 1;
   font-size: 13px;
-  color: #2d3748;
+  color: var(--color-gray-800);
   font-weight: 500;
 }
 
@@ -151,27 +151,27 @@
 }
 
 .shock-change.up {
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--color-error-border);
+  color: var(--color-error-text);
 }
 
 .shock-change.down {
-  background: #d1f4dd;
-  color: #047857;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .panel-actions {
   display: flex;
   gap: 8px;
   padding: 16px 20px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-gray-200);
 }
 
 .panel-actions button {
   flex: 1;
   padding: 10px 16px;
-  background: #4A5D3F;
-  color: white;
+  background: var(--color-green-muted);
+  color: var(--color-white);
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -181,7 +181,7 @@
 }
 
 .panel-actions button:hover:not(:disabled) {
-  background: #2d3748;
+  background: var(--color-gray-800);
 }
 
 .panel-actions button:disabled {

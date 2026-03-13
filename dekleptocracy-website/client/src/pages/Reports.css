@@ -2,7 +2,7 @@
 .reports-page {
   padding: 80px 20px 80px;
   min-height: 100vh;
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,8 +18,8 @@
 /* Top Banner */
 .reports-banner {
   display: inline-block;
-  background-color: #FF6B5A;
-  color: white;
+  background-color: var(--color-coral);
+  color: var(--color-white);
   padding: 12px 28px;
   border-radius: 24px;
   font-size: 14px;
@@ -33,7 +33,7 @@
 .reports-title {
   font-size: 48px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin-bottom: 24px;
   letter-spacing: -0.02em;
 }
@@ -49,7 +49,7 @@
 .reports-subtitle-line1,
 .reports-subtitle-line2 {
   font-size: 18px;
-  color: #333333;
+  color: var(--color-gray-750);
   line-height: 1.4;
   letter-spacing: -0.01em;
   margin: 0;
@@ -62,11 +62,11 @@
 
 /* Main Card */
 .reports-card {
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 16px;
   padding: 40px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   text-align: left;
 }
 
@@ -78,14 +78,14 @@
 .reports-card-title {
   font-size: 28px;
   font-weight: 700;
-  color: #333333;
+  color: var(--color-gray-750);
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
 
 .reports-card-subtitle {
   font-size: 16px;
-  color: #888888;
+  color: var(--color-gray-450);
   margin: 0;
   letter-spacing: -0.01em;
 }
@@ -95,7 +95,7 @@
   display: block;
   font-size: 16px;
   font-weight: 600;
-  color: #333333;
+  color: var(--color-gray-750);
   margin-bottom: 16px;
   letter-spacing: -0.01em;
 }
@@ -114,8 +114,8 @@
 .reports-role-card {
   flex: 1;
   max-width: 150px;
-  background-color: white;
-  border: 2px solid #e0e0e0;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   padding: 24px 16px;
   text-align: center;
@@ -125,17 +125,17 @@
 }
 
 .reports-role-card:hover {
-  border-color: #FF6B5A;
+  border-color: var(--color-coral);
   transform: translateY(-2px);
 }
 
 .reports-role-card.selected {
-  background-color: #FFF8F5;
-  border-color: #FF6B5A;
+  background-color: var(--color-coral-light);
+  border-color: var(--color-coral);
 }
 
 .reports-role-icon {
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin-bottom: 12px;
   display: flex;
   justify-content: center;
@@ -144,7 +144,7 @@
 .reports-role-short-label {
   font-size: 14px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin-bottom: 4px;
   letter-spacing: -0.01em;
 }
@@ -152,7 +152,7 @@
 .reports-role-label {
   font-size: 14px;
   font-weight: 600;
-  color: #FF6B5A;
+  color: var(--color-coral);
   letter-spacing: -0.01em;
 }
 
@@ -168,11 +168,11 @@
 .reports-dropdown {
   width: 100%;
   padding: 16px 48px 16px 16px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   font-size: 16px;
-  color: #333333;
-  background-color: white;
+  color: var(--color-gray-750);
+  background-color: var(--color-white);
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
@@ -182,7 +182,7 @@
 
 .reports-dropdown:focus {
   outline: none;
-  border-color: #FF6B5A;
+  border-color: var(--color-coral);
 }
 
 .reports-dropdown-arrow {
@@ -190,7 +190,7 @@
   right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #888888;
+  color: var(--color-gray-450);
   pointer-events: none;
 }
 
@@ -202,28 +202,28 @@
 .reports-name-input {
   width: 100%;
   padding: 16px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   font-size: 16px;
-  color: #333333;
-  background-color: white;
+  color: var(--color-gray-750);
+  background-color: var(--color-white);
   transition: border-color 0.2s ease;
 }
 
 .reports-name-input:focus {
   outline: none;
-  border-color: #FF6B5A;
+  border-color: var(--color-coral);
 }
 
 .reports-name-input::placeholder {
-  color: #888888;
+  color: var(--color-gray-450);
 }
 
 /* Generate Button */
 .reports-generate-button {
   width: 100%;
-  background-color: #FF6B5A;
-  color: white;
+  background-color: var(--color-coral);
+  color: var(--color-white);
   border: none;
   border-radius: 12px;
   padding: 18px 24px;
@@ -235,7 +235,7 @@
 }
 
 .reports-generate-button:hover {
-  background-color: #FF5647;
+  background-color: var(--color-coral-hover);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(255, 107, 90, 0.3);
 }

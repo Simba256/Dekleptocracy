@@ -734,29 +734,9 @@ IMPORTANT GUIDELINES:
   if (!authChecked) {
     return (
       <div className="chatbot-page">
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          flexDirection: 'column',
-          gap: '20px'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid #f3f3f3',
-            borderTop: '4px solid #ff6b35',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
-          <p style={{ color: '#666' }}>Checking authentication...</p>
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
+        <div className="auth-loading-spinner">
+          <div className="spinner"></div>
+          <p className="spinner-text">Checking authentication...</p>
         </div>
       </div>
     );
@@ -967,6 +947,7 @@ IMPORTANT GUIDELINES:
                         className="action-btn"
                         onClick={() => copyMessageToClipboard(message.content)}
                         title="Copy message"
+                        aria-label="Copy message"
                       >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -979,6 +960,7 @@ IMPORTANT GUIDELINES:
                           className="action-btn"
                           onClick={() => regenerateResponse(message.id)}
                           title="Regenerate response"
+                          aria-label="Regenerate response"
                           disabled={isLoading}
                         >
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1030,6 +1012,7 @@ IMPORTANT GUIDELINES:
                   type="button"
                   className="input-tool-btn"
                   title="Attach file"
+                  aria-label="Attach file"
                   onClick={() => alert('File attachment coming soon!')}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1040,6 +1023,7 @@ IMPORTANT GUIDELINES:
                   type="button"
                   className="input-tool-btn"
                   title="Add emoji"
+                  aria-label="Add emoji"
                   onClick={() => alert('Emoji picker coming soon!')}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1051,6 +1035,7 @@ IMPORTANT GUIDELINES:
                   type="button"
                   className="input-tool-btn"
                   title="Voice input"
+                  aria-label="Voice input"
                   onClick={() => alert('Voice input coming soon!')}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1100,6 +1085,7 @@ IMPORTANT GUIDELINES:
                   className="quick-action-btn danger"
                   onClick={clearConversation}
                   disabled={messages.length <= 1}
+                  aria-label="Clear conversation"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="3 6 5 6 21 6" />
@@ -1112,6 +1098,7 @@ IMPORTANT GUIDELINES:
                   className="quick-action-btn"
                   onClick={exportChat}
                   disabled={messages.length <= 1}
+                  aria-label="Export chat"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -1125,6 +1112,7 @@ IMPORTANT GUIDELINES:
                     type="button"
                     onClick={stopRequest}
                     className="chatbot-stop-btn"
+                    aria-label="Stop generating"
                   >
                     Stop
                   </button>

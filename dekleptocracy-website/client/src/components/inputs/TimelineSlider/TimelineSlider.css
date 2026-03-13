@@ -28,42 +28,42 @@
 }
 
 .milestone-label:hover {
-  background: #f7fafc;
+  background: var(--color-gray-50);
 }
 
 .milestone-label.highlighted .milestone-name {
-  color: #2d3748;
+  color: var(--color-gray-800);
   font-weight: 700;
 }
 
 .milestone-label.passed .milestone-name {
-  color: #4A5D3F;
+  color: var(--color-green-muted);
 }
 
 .milestone-label.active {
   transform: translateX(-50%) scale(1.15);
-  background: #fef3c7;
+  background: var(--color-warning-bg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .milestone-label.active .milestone-date {
-  color: #92400e;
+  color: var(--color-warning-text);
   font-weight: 600;
 }
 
 .milestone-label.active .milestone-name {
-  color: #92400e;
+  color: var(--color-warning-text);
 }
 
 .milestone-date {
   font-size: 11px;
-  color: #718096;
+  color: var(--color-gray-500);
   white-space: nowrap;
 }
 
 .milestone-name {
   font-size: 12px;
-  color: #2d3748;
+  color: var(--color-gray-800);
   font-weight: 600;
   text-align: center;
   max-width: 120px;
@@ -84,7 +84,7 @@
   top: 50%;
   transform: translateY(-50%);
   height: 4px;
-  background: #e2e8f0;
+  background: var(--color-gray-200);
   border-radius: 2px;
   z-index: 1;
 }
@@ -107,8 +107,8 @@
   transform: translate(-50%, -50%);
   width: 20px;
   height: 20px;
-  background: #4A5D3F;
-  border: 3px solid #fff;
+  background: var(--color-green-muted);
+  border: 3px solid var(--color-white);
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 5;
@@ -127,15 +127,15 @@
   transform: translateY(-50%);
   width: 12px;
   height: 12px;
-  background: #cbd5e0;
-  border: 2px solid #fff;
+  background: var(--color-gray-300);
+  border: 2px solid var(--color-white);
   border-radius: 50%;
   z-index: 2;
   transition: all 0.2s;
 }
 
 .milestone-marker.passed {
-  background: #4A5D3F;
+  background: var(--color-green-muted);
 }
 
 .milestone-marker.active {
@@ -146,8 +146,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%) translateX(-50%);
-  background: #2d3748;
-  color: white;
+  background: var(--color-gray-800);
+  color: var(--color-white);
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
@@ -175,8 +175,8 @@
   appearance: none;
   width: 20px;
   height: 20px;
-  background: #4A5D3F;
-  border: 3px solid #fff;
+  background: var(--color-green-muted);
+  border: 3px solid var(--color-white);
   border-radius: 50%;
   cursor: grab;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -190,8 +190,8 @@
   appearance: none;
   width: 20px;
   height: 20px;
-  background: #4A5D3F;
-  border: 3px solid #fff;
+  background: var(--color-green-muted);
+  border: 3px solid var(--color-white);
   border-radius: 50%;
   cursor: grab;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -212,19 +212,19 @@
   justify-content: center;
   gap: 12px;
   padding: 12px;
-  background: #f7fafc;
+  background: var(--color-gray-50);
   border-radius: 8px;
 }
 
 .current-date-display .label {
   font-size: 13px;
-  color: #718096;
+  color: var(--color-gray-500);
   font-weight: 500;
 }
 
 .current-date-display .date {
   font-size: 15px;
-  color: #2d3748;
+  color: var(--color-gray-800);
   font-weight: 600;
 }
 

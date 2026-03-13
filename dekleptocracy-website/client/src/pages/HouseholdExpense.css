@@ -1,6 +1,6 @@
 .household-expense-page {
   height: 100vh;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -23,7 +23,7 @@
 .household-expense-question {
   font-size: 28px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   line-height: 1.2;
   margin: 0;
   max-width: 600px;
@@ -32,7 +32,7 @@
 
 .household-expense-subtitle {
   font-size: 16px;
-  color: #6c757d;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.2;
   max-width: 500px;
@@ -49,14 +49,14 @@
 
 .expense-option {
   padding: 10px 16px;
-  background-color: #ffffff;
-  border: 2px solid #ff6b35;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-orange-accent);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 14px;
   font-weight: 500;
-  color: #495057;
+  color: var(--color-gray-700);
   text-align: left;
   display: flex;
   align-items: center;
@@ -65,15 +65,15 @@
 }
 
 .expense-option:hover {
-  border-color: #ff6b35;
-  background-color: #fff8f5;
+  border-color: var(--color-orange-accent);
+  background-color: var(--color-coral-light);
   transform: translateY(-1px);
 }
 
 .expense-option.selected {
-  border-color: #ff6b35;
-  background-color: #ff6b35;
-  color: #ffffff;
+  border-color: var(--color-orange-accent);
+  background-color: var(--color-orange-accent);
+  color: var(--color-white);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
@@ -88,26 +88,26 @@
 
 .skip-button {
   padding: 12px 24px;
-  background-color: #ffffff;
-  color: #6c757d;
+  background-color: var(--color-white);
+  color: var(--color-gray-500);
   text-decoration: none;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   transition: all 0.3s ease;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--color-gray-250);
 }
 
 .skip-button:hover {
-  background-color: #f8f9fa;
-  color: #495057;
-  border-color: #dee2e6;
+  background-color: var(--color-gray-150);
+  color: var(--color-gray-700);
+  border-color: var(--color-gray-300);
 }
 
 .next-button {
   padding: 12px 24px;
-  background-color: #ff6b35;
-  color: #ffffff;
+  background-color: var(--color-orange-accent);
+  color: var(--color-white);
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -120,13 +120,13 @@
 }
 
 .next-button:hover:not(:disabled) {
-  background-color: #e55a2b;
+  background-color: var(--color-orange-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 .next-button:disabled {
-  background-color: #adb5bd;
+  background-color: var(--color-gray-400);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;

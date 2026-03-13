@@ -1,7 +1,7 @@
 /* District Report Page */
 .district-report-page {
   min-height: 100vh;
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   padding-top: 0;
 }
 
@@ -9,7 +9,7 @@
 .district-report-header {
   background: linear-gradient(135deg, #4A5D3F 0%, #5a7249 50%, #6b8a55 100%);
   padding: 40px 20px;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .district-report-header-content {
@@ -30,7 +30,7 @@
   justify-content: center;
   font-size: 48px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -42,7 +42,7 @@
 .district-report-name {
   font-size: 48px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-white);
   margin: 0 0 16px 0;
   letter-spacing: -0.02em;
 }
@@ -55,7 +55,7 @@
 
 .district-report-tag {
   background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  color: var(--color-white);
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 14px;
@@ -80,7 +80,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .district-report-status {
@@ -88,39 +88,39 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--color-gray-500);
 }
 
 .district-report-dot {
   width: 8px;
   height: 8px;
-  background-color: #10b981;
+  background-color: var(--color-success);
   border-radius: 50%;
 }
 
 .district-report-dot.dot-stale {
-  background-color: #f59e0b;
+  background-color: var(--color-warning);
 }
 
 .status-fresh {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 600;
 }
 
 .status-warning {
-  color: #f59e0b;
+  color: var(--color-warning);
   font-weight: 500;
 }
 
 .data-sources {
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 12px;
 }
 
 .retry-link {
   background: none;
   border: none;
-  color: #2c5f3e;
+  color: var(--color-green-primary);
   text-decoration: underline;
   cursor: pointer;
   font-size: inherit;
@@ -130,7 +130,7 @@
 }
 
 .retry-link:hover {
-  color: #1e4a2c;
+  color: var(--color-green-primary);
 }
 
 .retry-link:disabled {
@@ -144,8 +144,8 @@
 }
 
 .district-report-button {
-  background-color: #4A5D3F;
-  color: white;
+  background-color: var(--color-green-muted);
+  color: var(--color-white);
   border: none;
   border-radius: 8px;
   padding: 12px 24px;
@@ -164,14 +164,14 @@
 }
 
 .district-report-button:hover {
-  background-color: #3d4a32;
+  background-color: var(--color-green-dark);
   transform: translateY(-1px);
 }
 
 /* Fallback Warning Banner */
 .fallback-warning-banner {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #f59e0b;
+  border: 1px solid var(--color-warning);
   border-radius: 8px;
   padding: 12px 20px;
   margin: 20px auto;
@@ -180,7 +180,7 @@
   align-items: center;
   gap: 12px;
   font-size: 14px;
-  color: #92400e;
+  color: var(--color-warning-text);
 }
 
 .fallback-warning-banner svg {
@@ -203,8 +203,8 @@
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #f3f4f6;
-  border-top: 4px solid #2c5f3e;
+  border: 4px solid var(--color-gray-100);
+  border-top: 4px solid var(--color-green-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -215,29 +215,29 @@
 }
 
 .loading-subtext {
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 14px;
 }
 
 .error-container svg {
-  color: #ef4444;
+  color: var(--color-error);
 }
 
 .error-container h2 {
   font-size: 24px;
-  color: #1f2937;
+  color: var(--color-gray-900);
   margin: 0;
 }
 
 .error-container p {
-  color: #6b7280;
+  color: var(--color-gray-500);
   max-width: 500px;
   text-align: center;
 }
 
 .error-subtext {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin-top: 8px;
 }
 
@@ -258,7 +258,7 @@
 
 .primary-button {
   background: linear-gradient(135deg, #2c5f3e 0%, #3a7b4e 100%);
-  color: white;
+  color: var(--color-white);
   border: none;
 }
 
@@ -268,13 +268,13 @@
 }
 
 .secondary-button {
-  background: white;
-  color: #2c5f3e;
-  border: 1px solid #2c5f3e;
+  background: var(--color-white);
+  color: var(--color-green-primary);
+  border: 1px solid var(--color-green-primary);
 }
 
 .secondary-button:hover {
-  background: #f0f5f1;
+  background: var(--color-green-section);
 }
 
 /* District Impact Overview */
@@ -285,11 +285,11 @@
 }
 
 .district-report-overview-container {
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   border-radius: 16px;
   padding: 40px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 }
 
 .district-report-overview-header {
@@ -302,7 +302,7 @@
 .district-report-overview-title {
   font-size: 36px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin: 0;
   letter-spacing: -0.02em;
 }
@@ -316,7 +316,7 @@
 
 .district-report-overview-statement {
   font-size: 20px;
-  color: #374151;
+  color: var(--color-gray-800);
   margin: 0 0 40px 0;
   line-height: 1.5;
   letter-spacing: -0.01em;
@@ -330,7 +330,7 @@
 }
 
 .district-report-comparison-card {
-  background-color: #FED7D7;
+  background-color: var(--color-coral-light);
   border: none;
   border-radius: 16px;
   padding: 32px;
@@ -341,7 +341,7 @@
 }
 
 .district-report-comparison-icon {
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin-bottom: 16px;
   display: flex;
   justify-content: center;
@@ -350,7 +350,7 @@
 .district-report-comparison-value {
   font-size: 48px;
   font-weight: 700;
-  color: #FF6B5A;
+  color: var(--color-coral);
   margin-bottom: 8px;
   letter-spacing: -0.02em;
 }
@@ -358,14 +358,14 @@
 .district-report-comparison-label {
   font-size: 16px;
   font-weight: 600;
-  color: #FF6B5A;
+  color: var(--color-coral);
   margin-bottom: 16px;
   letter-spacing: -0.01em;
 }
 
 .district-report-comparison-description {
   font-size: 14px;
-  color: #374151;
+  color: var(--color-gray-800);
   line-height: 1.5;
   margin: 0;
   letter-spacing: -0.01em;
@@ -374,7 +374,7 @@
 .district-report-vs {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-gray-900);
   letter-spacing: -0.01em;
 }
 
@@ -383,13 +383,13 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 60px 20px;
-  background-color: #F8F9FA;
+  background-color: var(--color-gray-150);
 }
 
 .district-report-section-title {
   font-size: 28px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin: 0 0 40px 0;
   letter-spacing: -0.02em;
   text-align: center;
@@ -402,17 +402,17 @@
 }
 
 .district-report-metric-card {
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 12px;
   padding: 24px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   overflow: hidden;
 }
 
 .district-report-metric-icon {
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin-bottom: 16px;
   display: flex;
   justify-content: center;
@@ -420,7 +420,7 @@
 
 .district-report-metric-title {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 12px;
   letter-spacing: -0.01em;
 }
@@ -442,13 +442,13 @@
 
 .district-report-metric-source {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin-top: 8px;
   letter-spacing: 0;
 }
 
 .stale-indicator {
-  color: #f59e0b;
+  color: var(--color-warning);
   font-style: italic;
 }
 
@@ -466,17 +466,17 @@
 }
 
 .district-report-trend-card {
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 }
 
 .district-report-trend-title {
   font-size: 16px;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-800);
   margin: 0 0 8px 0;
   letter-spacing: -0.01em;
 }
@@ -484,7 +484,7 @@
 .district-report-trend-value {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-gray-900);
   margin-bottom: 20px;
   letter-spacing: -0.02em;
 }
@@ -504,7 +504,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 60px 20px;
-  background-color: #F8F9FA;
+  background-color: var(--color-gray-150);
 }
 
 .district-report-comparison-content {
@@ -516,7 +516,7 @@
 
 .district-report-comparison-text {
   font-size: 16px;
-  color: #374151;
+  color: var(--color-gray-800);
   line-height: 1.6;
   letter-spacing: -0.01em;
 }
@@ -530,16 +530,16 @@
 }
 
 .district-report-comparison-box {
-  background-color: #F0F7F3;
+  background-color: var(--color-green-section);
   border-radius: 12px;
   padding: 24px;
-  border: 1px solid #D1E7DD;
+  border: 1px solid var(--color-success-bg);
 }
 
 .district-report-comparison-box-title {
   font-size: 18px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin: 0 0 20px 0;
   letter-spacing: -0.01em;
 }
@@ -551,16 +551,16 @@
 }
 
 .district-report-comparison-item {
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 8px;
   padding: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 }
 
 .district-report-comparison-item-title {
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-800);
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
@@ -568,14 +568,14 @@
 .district-report-comparison-item-change {
   font-size: 16px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   margin-bottom: 4px;
   letter-spacing: -0.01em;
 }
 
 .district-report-comparison-item-details {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   letter-spacing: -0.01em;
 }
 
@@ -763,18 +763,18 @@
 }
 
 .metric-alert--warning {
-  background-color: #FEF3C7;
-  color: #92400E;
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .metric-alert--critical {
-  background-color: #FEE2E2;
-  color: #991B1B;
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
 }
 
 .metric-alert--info {
-  background-color: #DBEAFE;
-  color: #1E40AF;
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
 }
 
 /* Trend Alerts */
@@ -808,23 +808,23 @@
 }
 
 .trend-momentum--steady_up {
-  background-color: #FEE2E2;
-  color: #991B1B;
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
 }
 
 .trend-momentum--up {
-  background-color: #FEF3C7;
-  color: #92400E;
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .trend-momentum--steady_down {
-  background-color: #D1FAE5;
-  color: #065F46;
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .trend-momentum--down {
-  background-color: #ECFDF5;
-  color: #047857;
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .trend-momentum--volatile {
@@ -833,8 +833,8 @@
 }
 
 .trend-momentum--stable {
-  background-color: #F3F4F6;
-  color: #4B5563;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-600);
 }
 
 /* Historical Context Styles */
@@ -851,7 +851,7 @@
 
 .district-report-metric-yoy {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-top: 4px;
 }
 
@@ -876,33 +876,33 @@
 .historical-badge--record_high,
 .historical-badge--high,
 .historical-badge--elevated {
-  background-color: #FEE2E2;
-  color: #991B1B;
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
 }
 
 .historical-badge--record_low,
 .historical-badge--low,
 .historical-badge--depressed {
-  background-color: #D1FAE5;
-  color: #065F46;
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .historical-badge--typical {
-  background-color: #F3F4F6;
-  color: #4B5563;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-600);
 }
 
 .historical-yoy {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   padding: 4px 10px;
-  background-color: #f9fafb;
+  background-color: var(--color-gray-50);
   border-radius: 12px;
 }
 
 .historical-peak {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-style: italic;
 }
 
@@ -976,7 +976,7 @@
   height: 36px;
   border-radius: 8px;
   background-color: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  color: var(--color-info);
   flex-shrink: 0;
 }
 
@@ -987,13 +987,13 @@
 
 .ai-insight-card--projection .ai-insight-icon {
   background-color: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 .ai-insight-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-info);
   margin: 0;
   letter-spacing: -0.01em;
 }
@@ -1003,12 +1003,12 @@
 }
 
 .ai-insight-card--projection .ai-insight-title {
-  color: #166534;
+  color: var(--color-success-text);
 }
 
 .ai-insight-text {
   font-size: 15px;
-  color: #1f2937;
+  color: var(--color-gray-900);
   line-height: 1.6;
   margin: 0;
   letter-spacing: -0.01em;
@@ -1073,11 +1073,11 @@
 
 .household-impact-item-amount {
   font-weight: 700;
-  color: #dc2626;
+  color: var(--color-error);
 }
 
 .household-impact-item-amount.positive {
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 /* Metrics Insights Row */
@@ -1105,7 +1105,7 @@
   border-radius: 16px;
   padding: 4px 12px;
   font-size: 11px;
-  color: #166534;
+  color: var(--color-success-text);
   font-weight: 500;
 }
 
@@ -1219,15 +1219,15 @@
   display: flex;
   gap: 8px;
   font-weight: 500;
-  color: #666;
+  color: var(--color-gray-500);
 }
 
 .squeeze-index-details .pressure-count {
-  color: #dc2626;
+  color: var(--color-error);
 }
 
 .squeeze-index-details .relief-count {
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 @media (max-width: 768px) {
@@ -1265,7 +1265,7 @@
 /* Executive Summary */
 .overview-executive-summary {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-left: 4px solid #4A5D3F;
+  border-left: 4px solid var(--color-green-muted);
   padding: 20px 24px;
   border-radius: 0 12px 12px 0;
   margin-bottom: 24px;
@@ -1275,7 +1275,7 @@
   margin: 0;
   font-size: 16px;
   line-height: 1.7;
-  color: #334155;
+  color: var(--color-gray-800);
 }
 
 /* Overview Insights Grid */
@@ -1290,9 +1290,9 @@
   display: flex;
   gap: 16px;
   padding: 16px 20px;
-  background: #ffffff;
+  background: var(--color-white);
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-gray-200);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
@@ -1317,28 +1317,28 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #64748b;
+  color: var(--color-gray-600);
   margin-bottom: 6px;
 }
 
 .overview-insight-text {
   font-size: 14px;
   line-height: 1.6;
-  color: #334155;
+  color: var(--color-gray-800);
   margin: 0;
 }
 
 /* Insight Item Variants */
 .overview-insight-energy {
-  border-left: 3px solid #f59e0b;
+  border-left: 3px solid var(--color-warning);
 }
 
 .overview-insight-employment {
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--color-info);
 }
 
 .overview-insight-food {
-  border-left: 3px solid #10b981;
+  border-left: 3px solid var(--color-success);
 }
 
 /* Enhanced Comparison Section */
@@ -1356,8 +1356,8 @@
 }
 
 .district-report-comparison-box--enhanced {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -1369,7 +1369,7 @@
   gap: 10px;
   font-size: 18px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-gray-900);
   margin-bottom: 20px;
 }
 
@@ -1385,7 +1385,7 @@
 
 /* Comparison Cards */
 .comparison-card {
-  background: #f8fafc;
+  background: var(--color-gray-50);
   border-radius: 12px;
   padding: 20px;
   border: 2px solid transparent;
@@ -1412,7 +1412,7 @@
 .comparison-card-category {
   font-size: 14px;
   font-weight: 700;
-  color: #334155;
+  color: var(--color-gray-800);
 }
 
 .comparison-card-badge {
@@ -1423,13 +1423,13 @@
 }
 
 .badge--higher {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--color-error-bg);
+  color: var(--color-error);
 }
 
 .badge--lower {
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .comparison-card-values {
@@ -1449,31 +1449,31 @@
 .comparison-card-label {
   display: block;
   font-size: 11px;
-  color: #64748b;
+  color: var(--color-gray-600);
   margin-bottom: 4px;
 }
 
 .comparison-card-value {
   font-size: 18px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-gray-900);
 }
 
 .comparison-card-vs {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   font-weight: 500;
 }
 
 .comparison-card-change {
   text-align: center;
   padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-gray-200);
 }
 
 .comparison-card-yoy {
   font-size: 12px;
-  color: #64748b;
+  color: var(--color-gray-600);
 }
 
 /* Forward Looking in Comparison Section */
@@ -1493,8 +1493,8 @@
 }
 
 .projection-tag {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--color-info-bg);
+  color: var(--color-info);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;

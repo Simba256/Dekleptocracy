@@ -1,8 +1,8 @@
 /* Footer */
 .site-footer {
-  background-color: #3E5132;
+  background-color: var(--color-green-dark);
   padding: 60px 0 30px;
-  color: #F5F5F5;
+  color: var(--color-gray-25);
   margin: 0;
   width: 100%;
 }
@@ -38,12 +38,12 @@
 
 .footer-logo .logo-bold {
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .footer-logo .logo-light {
   font-weight: 300;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .footer-logo .e-with-dash {
@@ -59,7 +59,7 @@
   transform: translateX(-50%);
   width: 9px;
   height: 2.5px;
-  background-color: #FF6B5A;
+  background-color: var(--color-coral);
   border-radius: 2px;
 }
 
@@ -71,14 +71,14 @@
 
 .footer-link {
   font-size: 14px;
-  color: #F5F5F5;
+  color: var(--color-gray-25);
   text-decoration: none;
   transition: color 0.2s;
   letter-spacing: -0.01em;
 }
 
 .footer-link:hover {
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .footer-right {
@@ -95,19 +95,19 @@
 
 .footer-nav-link {
   font-size: 14px;
-  color: #F5F5F5;
+  color: var(--color-gray-25);
   text-decoration: none;
   transition: color 0.2s;
   letter-spacing: -0.01em;
 }
 
 .footer-nav-link:hover {
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .footer-copyright {
   font-size: 13px;
-  color: #F5F5F5;
+  color: var(--color-gray-25);
   text-align: center;
   letter-spacing: -0.01em;
 }

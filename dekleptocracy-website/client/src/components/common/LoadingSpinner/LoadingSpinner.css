@@ -14,7 +14,7 @@
   min-height: 100vh;
   flex-direction: column;
   gap: 20px;
-  background-color: #F8F9FA;
+  background-color: var(--color-gray-150);
 }
 
 .loading-spinner-content {
@@ -28,8 +28,8 @@
 .loading-spinner {
   border-radius: 50%;
   border-style: solid;
-  border-color: #f3f4f6;
-  border-top-color: #4A5D3F;
+  border-color: var(--color-gray-100);
+  border-top-color: var(--color-green-muted);
   animation: spin 1s linear infinite;
 }
 
@@ -54,7 +54,7 @@
 
 /* Message */
 .loading-spinner-message {
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 16px;
   margin: 0;
   text-align: center;

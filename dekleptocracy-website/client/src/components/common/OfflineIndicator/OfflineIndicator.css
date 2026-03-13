@@ -3,8 +3,8 @@
   top: 0;
   left: 0;
   right: 0;
-  background: #1f2937;
-  color: white;
+  background: var(--color-gray-900);
+  color: var(--color-white);
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -51,13 +51,13 @@
 .offline-fallback-title {
   font-size: 28px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-gray-900);
   margin: 0;
 }
 
 .offline-fallback-message {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.6;
 }
@@ -67,7 +67,7 @@
   font-size: 16px;
   font-weight: 600;
   background: #b91c1c;
-  color: white;
+  color: var(--color-white);
   border: none;
   border-radius: 8px;
   cursor: pointer;

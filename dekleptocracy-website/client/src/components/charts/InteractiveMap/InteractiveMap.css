@@ -15,15 +15,15 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  color: #718096;
+  color: var(--color-gray-500);
   z-index: 5;
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #4A5D3F;
+  border: 3px solid var(--color-gray-200);
+  border-top-color: var(--color-green-muted);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -51,7 +51,7 @@
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #4a5568;
+  color: var(--color-gray-600);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -60,13 +60,13 @@
 }
 
 .metric-btn:hover {
-  background: #f7fafc;
-  color: #2d3748;
+  background: var(--color-gray-50);
+  color: var(--color-gray-800);
 }
 
 .metric-btn.active {
-  background: #4A5D3F;
-  color: white;
+  background: var(--color-green-muted);
+  color: var(--color-white);
 }
 
 .map-controls {
@@ -84,8 +84,8 @@
   height: 36px;
   border: none;
   border-radius: 4px;
-  background: #2d3748;
-  color: white;
+  background: var(--color-gray-800);
+  color: var(--color-white);
   font-size: 18px;
   cursor: pointer;
   display: flex;
@@ -95,7 +95,7 @@
 }
 
 .map-controls button:hover {
-  background: #4A5D3F;
+  background: var(--color-green-muted);
   transform: scale(1.05);
 }
 
@@ -128,8 +128,11 @@
 
 .state-geo.selected {
   filter: brightness(1.15);
-  stroke: #2d3748 !important;
-  stroke-width: 3px !important;
+}
+
+.interactive-map-container .state-geo.selected {
+  stroke: var(--color-gray-800);
+  stroke-width: 3px;
 }
 
 .state-geo.hovered {
@@ -157,25 +160,25 @@
 }
 
 /* Ensure tooltip appears above all map elements */
-#map-tooltip {
-  z-index: 1000 !important;
+.interactive-map-container #map-tooltip {
+  z-index: 1000;
 }
 
-.map-state-tooltip {
-  background: #ffffff !important;
-  color: #1a202c !important;
+.interactive-map-container .map-state-tooltip {
+  background: var(--color-white);
+  color: var(--color-gray-900);
   padding: 12px;
   border-radius: 8px;
   max-width: 250px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-gray-200);
 }
 
 .map-state-tooltip h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: 600;
-  color: #1a202c;
+  color: var(--color-gray-900);
 }
 
 .tooltip-metric {
@@ -184,18 +187,18 @@
   align-items: center;
   padding: 6px 0;
   margin-bottom: 8px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .tooltip-metric .metric-label {
   font-size: 12px;
-  color: #718096;
+  color: var(--color-gray-500);
 }
 
 .tooltip-metric .metric-value {
   font-size: 16px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
 }
 
 .tooltip-item {
@@ -204,7 +207,7 @@
   gap: 8px;
   font-size: 12px;
   margin-bottom: 4px;
-  color: #2d3748;
+  color: var(--color-gray-800);
 }
 
 .tooltip-icon {
@@ -214,13 +217,13 @@
 .tooltip-change {
   margin-left: auto;
   font-weight: 600;
-  color: #e53e3e;
+  color: var(--color-error);
 }
 
 .tooltip-cta {
   margin: 8px 0 0 0;
   font-size: 11px;
-  color: #718096;
+  color: var(--color-gray-500);
   text-align: center;
   font-style: italic;
 }
@@ -240,7 +243,7 @@
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: #2d3748;
+  color: var(--color-gray-800);
 }
 
 .legend-scale {
@@ -260,7 +263,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 10px;
-  color: #718096;
+  color: var(--color-gray-500);
 }
 
 @media (max-width: 768px) {

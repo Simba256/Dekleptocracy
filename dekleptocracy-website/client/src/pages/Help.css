@@ -1,13 +1,13 @@
 .help-page {
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: var(--color-gray-50);
 }
 
 .help-hero {
   background: linear-gradient(135deg, #3e5132 0%, #6B7F5F 100%);
   padding: 100px 20px 80px;
   text-align: center;
-  color: white;
+  color: var(--color-white);
 }
 
 .help-hero-content {
@@ -34,7 +34,7 @@
 
 /* Quick Links Section */
 .quick-links-section {
-  background: white;
+  background: var(--color-white);
   padding: 50px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -44,7 +44,7 @@
 .section-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text-dark);
   margin-bottom: 30px;
   text-align: center;
 }
@@ -57,7 +57,7 @@
 
 .quick-link-card {
   padding: 30px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 8px;
   text-align: center;
   cursor: pointer;
@@ -65,7 +65,7 @@
 }
 
 .quick-link-card:hover {
-  border-color: #3e5132;
+  border-color: var(--color-green-dark);
   transform: translateY(-5px);
   box-shadow: 0 4px 12px rgba(62, 81, 50, 0.15);
 }
@@ -74,30 +74,30 @@
   width: 64px;
   height: 64px;
   margin: 0 auto 20px;
-  background-color: #f0f4f0;
+  background-color: var(--color-green-panel);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3e5132;
+  color: var(--color-green-dark);
 }
 
 .quick-link-card h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--color-gray-800);
   margin-bottom: 10px;
 }
 
 .quick-link-card p {
   font-size: 0.95rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   line-height: 1.5;
 }
 
 /* FAQ Section */
 .faq-section {
-  background: white;
+  background: var(--color-white);
   padding: 50px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -110,7 +110,7 @@
 }
 
 .faq-item {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   padding: 20px 0;
 }
 
@@ -128,24 +128,24 @@
   border: none;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--color-gray-800);
   cursor: pointer;
   text-align: left;
   transition: color 0.2s;
 }
 
 .faq-question:hover {
-  color: #3e5132;
+  color: var(--color-green-dark);
 }
 
 .faq-question.active {
-  color: #3e5132;
+  color: var(--color-green-dark);
 }
 
 .faq-icon {
   flex-shrink: 0;
   transition: transform 0.3s ease;
-  color: #3e5132;
+  color: var(--color-green-dark);
 }
 
 .faq-icon.open {
@@ -160,7 +160,7 @@
 .faq-answer p {
   font-size: 1rem;
   line-height: 1.7;
-  color: #4a5568;
+  color: var(--color-gray-600);
 }
 
 @keyframes fadeIn {
@@ -180,12 +180,12 @@
   padding: 50px;
   border-radius: 12px;
   text-align: center;
-  color: white;
+  color: var(--color-white);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .help-contact-section .section-title {
-  color: white;
+  color: var(--color-white);
 }
 
 .help-contact-text {
@@ -225,8 +225,8 @@
 }
 
 .contact-button {
-  background-color: white;
-  color: #3e5132;
+  background-color: var(--color-white);
+  color: var(--color-green-dark);
   border: none;
   padding: 15px 40px;
   font-size: 1rem;
@@ -237,7 +237,7 @@
 }
 
 .contact-button:hover {
-  background-color: #f9fafb;
+  background-color: var(--color-gray-50);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

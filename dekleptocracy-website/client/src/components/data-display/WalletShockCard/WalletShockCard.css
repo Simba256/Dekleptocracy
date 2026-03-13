@@ -1,12 +1,12 @@
 /* Wallet Shock Card Component Styles */
 
 .wallet-shock-card {
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   transition: all 0.2s;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 }
 
 .wallet-shock-card:hover {
@@ -25,8 +25,8 @@
   font-size: 11px;
   font-weight: 600;
   padding: 4px 12px;
-  background-color: #ffe4e6;
-  color: #FF6B5A;
+  background-color: var(--color-coral-light);
+  color: var(--color-coral);
   border-radius: 12px;
   letter-spacing: 0.02em;
   text-transform: capitalize;
@@ -52,7 +52,7 @@
 
 .wallet-shock-card__title {
   font-size: 14px;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   line-height: 1.5;
   margin: 0;
   letter-spacing: -0.01em;
@@ -70,13 +70,13 @@
 .wallet-shock-card__price-value {
   font-size: 28px;
   font-weight: 700;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   letter-spacing: -0.02em;
 }
 
 .wallet-shock-card__price-unit {
   font-size: 13px;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
   letter-spacing: -0.01em;
 }
 
@@ -84,8 +84,8 @@
   font-size: 13px;
   font-weight: 600;
   padding: 4px 10px;
-  background-color: #ffe4e6;
-  color: #FF6B5A;
+  background-color: var(--color-coral-light);
+  color: var(--color-coral);
   border-radius: 6px;
   margin-left: auto;
 }
@@ -105,13 +105,13 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 }
 
 .wallet-shock-card__details-btn {
   font-size: 13px;
   font-weight: 500;
-  color: #2563eb;
+  color: var(--color-link);
   text-decoration: none;
   transition: color 0.2s;
   letter-spacing: -0.01em;
@@ -122,14 +122,14 @@
 }
 
 .wallet-shock-card__details-btn:hover {
-  color: #1d4ed8;
+  color: var(--color-link-hover);
 }
 
 .wallet-shock-card__reactions {
   display: flex;
   gap: 8px;
   font-size: 12px;
-  color: #4A5D3F;
+  color: var(--color-green-muted);
 }
 
 .wallet-shock-card__reaction {

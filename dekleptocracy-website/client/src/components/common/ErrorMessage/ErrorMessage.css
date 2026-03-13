@@ -14,7 +14,7 @@
   min-height: 100vh;
   flex-direction: column;
   gap: 20px;
-  background-color: #F8F9FA;
+  background-color: var(--color-gray-150);
 }
 
 .error-message-content {
@@ -32,15 +32,15 @@
 }
 
 .error-message-text {
-  color: #ef4444;
+  color: var(--color-error);
   font-size: 18px;
   margin: 0;
 }
 
 .error-message-retry-btn {
   padding: 10px 24px;
-  background-color: #4A5D3F;
-  color: white;
+  background-color: var(--color-green-muted);
+  color: var(--color-white);
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -50,7 +50,7 @@
 }
 
 .error-message-retry-btn:hover {
-  background-color: #3d4f3d;
+  background-color: var(--color-green-dark);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

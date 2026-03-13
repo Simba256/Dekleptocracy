@@ -1,0 +1,134 @@
+/* Design Tokens - Single Source of Truth for Design Values */
+:root {
+  /* Brand Colors */
+  --color-coral: #FF6B5A;
+  --color-coral-hover: #FF5647;
+  --color-coral-dark: #e85d4a;
+  --color-coral-light: #ffe4e6;
+
+  --color-green-primary: #2c5f3e;
+  --color-green-light: #3a7b4e;
+  --color-green-muted: #4A5D3F;
+  --color-green-dark: #3E5132;
+  --color-green-bg: #E8EDE5;
+  --color-green-section: #F5F7F3;
+  --color-green-panel: #F8FAF6;
+
+  /* Neutrals */
+  --color-white: #ffffff;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-150: #F8F9FA;
+  --color-gray-200: #e5e7eb;
+  --color-gray-250: #e9ecef;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #64748b;
+  --color-gray-700: #495057;
+  --color-gray-800: #374151;
+  --color-gray-900: #1f2937;
+  --color-text-primary: #212529;
+  --color-text-dark: #2E3A2E;
+
+  /* Orange/Secondary Accent */
+  --color-orange-primary: #E76F51;
+  --color-orange-hover: #D65A43;
+  --color-orange-accent: #ff6b35;
+
+  /* Extended Gray Scale */
+  --color-gray-25: #F5F5F5;
+  --color-gray-175: #E5E5E5;
+  --color-gray-450: #888888;
+  --color-gray-750: #333333;
+
+  /* Semantic Colors */
+  --color-error: #dc2626;
+  --color-error-bg: #fff5f5;
+  --color-error-light: #fcc;
+  --color-error-text: #c53030;
+  --color-error-border: #feb2b2;
+  --color-warning: #ffc107;
+  --color-warning-bg: #fff3cd;
+  --color-warning-text: #856404;
+  --color-warning-light: #fefce8;
+  --color-warning-border: #fef08a;
+  --color-success: #10b981;
+  --color-success-bg: #f0fff4;
+  --color-success-text: #22543d;
+  --color-success-border: #9ae6b4;
+  --color-info: #1976d2;
+  --color-info-bg: #e3f2fd;
+  --color-info-border: #90caf9;
+
+  /* Links */
+  --color-link: #2563eb;
+  --color-link-hover: #1d4ed8;
+
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 60px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1);
+  --shadow-focus: 0 0 0 3px rgba(255, 107, 90, 0.3);
+  --shadow-focus-light: 0 0 0 3px rgba(255, 107, 90, 0.1);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* Typography */
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 28px;
+  --font-size-5xl: 32px;
+  --font-size-6xl: 38px;
+  --font-size-7xl: 46px;
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.4;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: -0.01em;
+  --letter-spacing-wide: 0.02em;
+
+  /* Z-Index Scale */
+  --z-dropdown: 100;
+  --z-modal: 1000;
+  --z-tooltip: 1100;
+}

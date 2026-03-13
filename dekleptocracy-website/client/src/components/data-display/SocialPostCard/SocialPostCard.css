@@ -1,8 +1,8 @@
 /* Social Post Card Component Styles */
 
 .social-post-card {
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
   border-radius: 16px;
   padding: 20px;
   transition: all 0.2s;
@@ -45,7 +45,7 @@
 .social-post-card__username {
   font-size: 15px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-gray-900);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -61,7 +61,7 @@
 
 .social-post-card__platform {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -76,7 +76,7 @@
 /* Content */
 .social-post-card__text {
   font-size: 15px;
-  color: #1f2937;
+  color: var(--color-gray-900);
   line-height: 1.5;
   margin-bottom: 14px;
   letter-spacing: -0.01em;
@@ -87,7 +87,7 @@
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 14px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 }
 
 .social-post-card__image {
@@ -103,7 +103,7 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 }
 
 .social-post-card__stats {
@@ -117,12 +117,12 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   letter-spacing: -0.01em;
 }
 
 .social-post-card__stat svg {
-  stroke: #9ca3af;
+  stroke: var(--color-gray-400);
 }
 
 .social-post-card__share-btn {
@@ -132,9 +132,9 @@
   padding: 6px 14px;
   font-size: 13px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   background-color: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
@@ -142,9 +142,9 @@
 }
 
 .social-post-card__share-btn:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: #1f2937;
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-900);
 }
 
 .social-post-card__share-btn svg {
