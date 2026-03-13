@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { isAuthenticated, verifyToken, logout } from '../utils/auth';
+import './ProtectedRoute.css';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -28,11 +30,13 @@ const ProtectedRoute = ({ children }) => {
           setIsAuth(true);
         }
       } catch (error) {
-        console.error('Auth verification error:', error);
+        if (import.meta.env.DEV) {
+          console.error('[DEV] Auth verification error:', error);
+        }
         logout();
         setIsAuth(false);
       }
-      
+
       setIsLoading(false);
     };
 
@@ -42,29 +46,9 @@ const ProtectedRoute = ({ children }) => {
   // Show loading state while checking
   if (isLoading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        flexDirection: 'column',
-        gap: '20px'
-      }}>
-        <div style={{
-          width: '50px',
-          height: '50px',
-          border: '4px solid #f3f3f3',
-          borderTop: '4px solid #ff6b35',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }}></div>
-        <p style={{ color: '#666' }}>Checking authentication...</p>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+      <div className="protected-route__loading">
+        <div className="protected-route__spinner"></div>
+        <p className="protected-route__text">Checking authentication...</p>
       </div>
     );
   }
@@ -78,5 +62,8 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-export default ProtectedRoute;
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
+export default ProtectedRoute;

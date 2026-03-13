@@ -2,6 +2,14 @@
 import { getApiUrl } from './apiUrl';
 
 /**
+ * Clear authentication data
+ */
+export const clearAuth = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+};
+
+/**
  * Decode a JWT token without verification (client-side only)
  * @param {string} token - JWT token
  * @returns {object|null} Decoded payload or null if invalid
@@ -19,7 +27,9 @@ const decodeToken = (token) => {
     const decoded = atob(base64);
     return JSON.parse(decoded);
   } catch (error) {
-    console.error('Error decoding token:', error);
+    if (import.meta.env.DEV) {
+      console.error('[DEV] Error decoding token:', error);
+    }
     return null;
   }
 };
@@ -67,7 +77,9 @@ export const getCurrentUser = () => {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
-    console.error('Error parsing user data:', error);
+    if (import.meta.env.DEV) {
+      console.error('[DEV] Error parsing user data:', error);
+    }
     return null;
   }
 };
@@ -131,7 +143,9 @@ export const verifyToken = async () => {
     const data = await response.json();
     return data.success === true;
   } catch (error) {
-    console.error('Token verification error:', error);
+    if (import.meta.env.DEV) {
+      console.error('[DEV] Token verification error:', error);
+    }
     // If backend is not reachable or there's an error, deny access
     // This ensures security - user must have valid token verified by backend
     logout();
@@ -139,3 +153,42 @@ export const verifyToken = async () => {
   }
 };
 
+/**
+ * Setup automatic token refresh before expiry
+ * @param {function} refreshCallback - Callback to execute when token needs refresh
+ * @returns {number|null} Timer ID for cleanup, or null if no valid token
+ */
+export const setupTokenRefresh = (refreshCallback) => {
+  const token = getToken();
+  if (!token) return null;
+
+  try {
+    const payload = decodeToken(token);
+    if (!payload || !payload.exp) return null;
+
+    const expiresIn = payload.exp * 1000 - Date.now();
+    const refreshBuffer = 5 * 60 * 1000; // 5 minutes before expiry
+
+    if (expiresIn > refreshBuffer) {
+      return setTimeout(() => {
+        refreshCallback?.();
+      }, expiresIn - refreshBuffer);
+    }
+  } catch {
+    // Token parsing failed
+  }
+  return null;
+};
+
+/**
+ * Clear expired tokens on app initialization
+ * @returns {boolean} True if valid token exists, false otherwise
+ */
+export const initAuthCheck = () => {
+  const token = getToken();
+  if (token && isTokenExpired(token)) {
+    clearAuth();
+    return false;
+  }
+  return !!token;
+};

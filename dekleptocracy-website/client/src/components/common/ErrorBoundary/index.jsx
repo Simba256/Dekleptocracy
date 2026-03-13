@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import './ErrorBoundary.css';
 
 class ErrorBoundary extends Component {
@@ -9,7 +10,9 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    if (import.meta.env.DEV) {
+      console.error('[DEV] Error caught by boundary:', error, errorInfo);
+    }
     this.setState({ errorInfo });
 
     if (typeof window !== 'undefined' && window.gtag) {
@@ -45,6 +48,17 @@ class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
+
+ErrorBoundary.propTypes = {
+  children: PropTypes.node.isRequired,
+  fallback: PropTypes.func,
+  sectionName: PropTypes.string,
+};
+
+ErrorBoundary.defaultProps = {
+  fallback: null,
+  sectionName: '',
+};
 
 const ErrorFallback = ({ error, errorInfo, onRetry, sectionName }) => {
   const errorDetails = {
@@ -105,6 +119,19 @@ const ErrorFallback = ({ error, errorInfo, onRetry, sectionName }) => {
   );
 };
 
+ErrorFallback.propTypes = {
+  error: PropTypes.object,
+  errorInfo: PropTypes.object,
+  onRetry: PropTypes.func.isRequired,
+  sectionName: PropTypes.string,
+};
+
+ErrorFallback.defaultProps = {
+  error: null,
+  errorInfo: null,
+  sectionName: '',
+};
+
 export const SectionErrorBoundary = ({ children, sectionName, fallbackData }) => (
   <ErrorBoundary
     sectionName={sectionName}
@@ -131,5 +158,15 @@ export const SectionErrorBoundary = ({ children, sectionName, fallbackData }) =>
     {children}
   </ErrorBoundary>
 );
+
+SectionErrorBoundary.propTypes = {
+  children: PropTypes.node.isRequired,
+  sectionName: PropTypes.string.isRequired,
+  fallbackData: PropTypes.node,
+};
+
+SectionErrorBoundary.defaultProps = {
+  fallbackData: null,
+};
 
 export default ErrorBoundary;
