@@ -26,7 +26,7 @@
   align-items: center;
   height: var(--navbar-height);
   position: relative;
-  gap: 20px;
+  gap: var(--space-2-5);
   overflow: visible;
 }
 
@@ -81,7 +81,7 @@
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 3rem;
+  gap: var(--space-2xl);
 }
 
 .navbar-link {

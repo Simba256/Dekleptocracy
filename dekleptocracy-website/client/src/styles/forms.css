@@ -1,0 +1,220 @@
+/* Shared Form Styles */
+
+/* Form Groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+}
+
+/* Form Inputs */
+.form-input {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--color-gray-250);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
+  transition: all var(--transition-normal);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-coral);
+  box-shadow: var(--shadow-focus-light);
+}
+
+.form-input::placeholder {
+  color: var(--color-placeholder);
+}
+
+/* Input with error state */
+.form-input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.form-input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Password Input Container */
+.password-input-container {
+  position: relative;
+}
+
+.password-input {
+  padding-right: var(--space-2xl);
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--space-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-gray-500);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-normal);
+}
+
+.password-toggle:hover {
+  color: var(--color-gray-700);
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 2px;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  margin: var(--space-xs) 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  color: var(--color-gray-700);
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-coral);
+  cursor: pointer;
+}
+
+.checkbox-text {
+  user-select: none;
+}
+
+/* Form Buttons */
+.form-button {
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-coral);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  margin-top: var(--space-xs);
+}
+
+.form-button:hover:not(:disabled) {
+  background-color: var(--color-coral-dark);
+  transform: translateY(-1px);
+}
+
+.form-button:disabled {
+  background-color: var(--color-gray-300);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-button:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 2px;
+}
+
+/* Form Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-md) 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-gray-250);
+}
+
+.divider span {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Alert Messages */
+.alert {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-md);
+}
+
+.alert-info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid var(--color-info-border);
+}
+
+.alert-error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error-light);
+}
+
+.alert-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid var(--color-success-border);
+}
+
+.alert-warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border: 1px solid var(--color-warning);
+}
+
+/* Form Links */
+.form-link {
+  color: var(--color-coral);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-normal);
+}
+
+.form-link:hover {
+  color: var(--color-coral-hover);
+  text-decoration: underline;
+}
+
+/* Form Footer Links */
+.signup-link,
+.login-link {
+  text-align: center;
+  font-size: var(--font-size-base);
+  color: var(--color-gray-600);
+  margin-top: var(--space-md);
+}
+
+.signup-text,
+.login-text {
+  color: var(--color-coral);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  margin-left: var(--space-xs);
+}
+
+.signup-text:hover,
+.login-text:hover {
+  text-decoration: underline;
+}

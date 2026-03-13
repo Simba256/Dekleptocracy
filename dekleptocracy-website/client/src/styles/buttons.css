@@ -96,7 +96,7 @@
 
 /* Auth Buttons - Specific styles for login/signup pages */
 .auth-button {
-  padding: 12px 20px;
+  padding: var(--space-1-5) var(--space-2-5);
   background-color: var(--color-coral);
   color: var(--color-white);
   border: none;

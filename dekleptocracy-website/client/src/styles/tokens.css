@@ -57,6 +57,8 @@
   --color-success-bg: #f0fff4;
   --color-success-text: #22543d;
   --color-success-border: #9ae6b4;
+  --color-error-dark: #b91c1c;
+  --color-gray-loading: #f3f3f3;
   --color-info: #1976d2;
   --color-info-bg: #e3f2fd;
   --color-info-border: #90caf9;
@@ -67,8 +69,11 @@
 
   /* Spacing Scale */
   --space-xs: 4px;
+  --space-1: 6px;      /* Between xs and sm */
   --space-sm: 8px;
+  --space-1-5: 12px;   /* Between sm and md */
   --space-md: 16px;
+  --space-2-5: 20px;   /* Between md and lg */
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
@@ -131,4 +136,16 @@
   --z-dropdown: 100;
   --z-modal: 1000;
   --z-tooltip: 1100;
+
+  /* Gradient Tokens */
+  --gradient-green-primary: linear-gradient(135deg, var(--color-green-dark) 0%, var(--color-green-muted) 100%);
+  --gradient-hero-subtle: linear-gradient(135deg, #ffd6e5 0%, #e5d4ff 40%, #c9e9ff 100%);
+  --gradient-heat-map: linear-gradient(to right, #fef3c7, #f97316, #dc2626, var(--color-error-dark));
+
+  /* Overlay Tokens */
+  --color-overlay-dark: rgba(0, 0, 0, 0.6);
+  --color-overlay-light: rgba(0, 0, 0, 0.1);
+
+  /* Additional Colors */
+  --color-placeholder: #adb5bd;
 }
