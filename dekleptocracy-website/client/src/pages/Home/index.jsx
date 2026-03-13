@@ -16,7 +16,7 @@ import {
   SocialPostsSkeleton,
   CTASkeleton
 } from '../../components/skeletons/HomepageSkeleton';
-import './Home.css';
+import './styles/index.css';
 
 // Lazy load below-fold sections for better initial load performance
 const WalletShocksSection = lazy(() => import('./sections/WalletShocksSection').then(m => ({ default: m.WalletShocksSection })));
