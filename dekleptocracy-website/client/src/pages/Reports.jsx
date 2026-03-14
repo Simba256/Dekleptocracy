@@ -157,9 +157,6 @@ const Reports = () => {
                   <div className="reports-role-icon">
                     {role.icon}
                   </div>
-                  {role.shortLabel && (
-                    <div className="reports-role-short-label">{role.shortLabel}</div>
-                  )}
                   <div className="reports-role-label">{role.label}</div>
                 </div>
               ))}

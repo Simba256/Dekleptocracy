@@ -32,8 +32,8 @@ export const PriceMapSection = memo(function PriceMapSection() {
                 setMapState(stateName);
                 actions.setSelectedState(stateName);
               }}
-              onDrillDown={(stateName) => {
-                console.log('Drill down to state:', stateName);
+              onDrillDown={() => {
+                // Drill down functionality
               }}
             />
           </div>

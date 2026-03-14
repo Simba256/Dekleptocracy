@@ -23,7 +23,6 @@ const ContactUs = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    console.log('Form submitted:', formData);
     alert('Thank you for your message! We will get back to you within 1-2 business days.');
     setFormData({ fullName: '', email: '', phoneNumber: '', subject: '', additionalInfo: '' });
   };
@@ -54,10 +53,6 @@ const ContactUs = () => {
               <p className="contact-info-subtitle">Reach out in seconds</p>
               
               <div className="contact-details">
-                <div className="contact-detail-item">
-                  <span className="contact-label">Address:</span>
-                  <span className="contact-value">Address goes here</span>
-                </div>
                 <div className="contact-detail-item">
                   <span className="contact-label">Phone Number:</span>
                   <span className="contact-value">0432 740 160</span>
@@ -203,7 +198,7 @@ const ContactUs = () => {
                 <button className="cta-btn-white" onClick={() => navigate('/chatbot')}>
                   Ask AI Now
                 </button>
-                <button className="cta-btn-orange">
+                <button className="cta-btn-orange" onClick={() => navigate('/#price-map')}>
                   Explore Local Impact
                 </button>
               </div>

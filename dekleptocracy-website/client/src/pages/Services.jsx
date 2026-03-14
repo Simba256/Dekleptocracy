@@ -46,7 +46,7 @@ const Services = () => {
       icon: '📱',
       title: 'Multi-Device Access',
       description: 'Access Dekleptocracy from any device. Our responsive design works seamlessly on desktop, tablet, and mobile.',
-      features: ['Web platform', 'Mobile responsive', 'Sync across devices', 'Offline access (coming soon)']
+      features: ['Web platform', 'Mobile responsive', 'Sync across devices']
     },
     {
       icon: '🔍',

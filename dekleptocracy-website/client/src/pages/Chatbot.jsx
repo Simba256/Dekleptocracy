@@ -478,19 +478,9 @@ IMPORTANT GUIDELINES:
         )
       );
 
-      // Log metadata for debugging (DEV only)
-      if (import.meta.env.DEV && data.metadata) {
-        console.log('[DEV] MCP V2 Metadata:', data.metadata);
-        if (data.tools_used) {
-          console.log('[DEV] Tools used:', data.tools_used);
-        }
-      }
     } catch (error) {
       clearInterval(statusInterval);
       if (error.name !== 'AbortError') {
-        if (import.meta.env.DEV) {
-          console.error('[DEV] Chat error:', error);
-        }
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMessage.id
@@ -1002,29 +992,6 @@ IMPORTANT GUIDELINES:
           <form onSubmit={handleSubmit} className="chatbot-form">
             <div className="input-wrapper">
               <div className="input-tools">
-                <button
-                  type="button"
-                  className="input-tool-btn"
-                  title="Attach file"
-                  aria-label="Attach file"
-                  onClick={() => alert('File attachment coming soon!')}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="input-tool-btn"
-                  title="Add emoji"
-                  aria-label="Add emoji"
-                  onClick={() => alert('Emoji picker coming soon!')}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
-                  </svg>
-                </button>
                 <button
                   type="button"
                   className="input-tool-btn"

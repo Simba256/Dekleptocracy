@@ -6,15 +6,6 @@ import { API_URL } from '../utils/apiUrl';
 import './CreateAccount.css';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '';
 
-// Debug: Log environment variables (remove in production)
-if (import.meta.env.DEV) {
-  console.log('Environment variables:', {
-    VITE_GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? `${GOOGLE_CLIENT_ID.substring(0, 20)}...` : 'NOT SET',
-    hasGoogleClientId: !!GOOGLE_CLIENT_ID,
-    allEnvKeys: Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'))
-  });
-}
-
 const CreateAccount = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -69,8 +60,8 @@ const CreateAccount = () => {
           text: 'signup_with',
           width: '100%',
         });
-      }).catch((error) => {
-        console.error('Error loading Google script:', error);
+      }).catch(() => {
+        // Silent fail for Google script loading errors
       });
     }
   }, [navigate]);
@@ -140,35 +131,23 @@ const CreateAccount = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="error-message" style={{
-                padding: '12px 16px',
-                backgroundColor: '#fee',
-                color: '#c33',
-                borderRadius: '8px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                border: '1px solid #fcc'
-              }}>
+              <div
+                className="alert-message alert-message--error"
+                role="alert"
+                id="signup-error-message"
+              >
                 {error}
               </div>
             )}
 
             {/* Success Message */}
             {success && (
-              <div className="success-message" style={{
-                padding: '12px 16px',
-                backgroundColor: '#efe',
-                color: '#3c3',
-                borderRadius: '8px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                border: '1px solid #cfc'
-              }}>
+              <div className="alert-message alert-message--success">
                 Account created successfully! Redirecting...
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="account-form">
+            <form onSubmit={handleSubmit} className="account-form" noValidate>
               <div className="form-group">
                 <label htmlFor="fullName" className="form-label">Your fullname*</label>
                 <input
@@ -180,6 +159,8 @@ const CreateAccount = () => {
                   placeholder="Enter your name"
                   className="form-input"
                   required
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "signup-error-message" : undefined}
                 />
               </div>
 
@@ -194,6 +175,8 @@ const CreateAccount = () => {
                   placeholder="Enter your email"
                   className="form-input"
                   required
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "signup-error-message" : undefined}
                 />
               </div>
 
@@ -209,11 +192,15 @@ const CreateAccount = () => {
                     placeholder="Enter password"
                     className="form-input password-input"
                     required
+                    aria-invalid={error ? "true" : "false"}
+                    aria-describedby={error ? "signup-error-message" : undefined}
                   />
                   <button
                     type="button"
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       {showPassword ? (
@@ -243,7 +230,7 @@ const CreateAccount = () => {
                     required
                   />
                   <span className="checkbox-text">
-                    I agree to <Link to="/terms-of-service" target="_blank" style={{ color: '#3e5132', textDecoration: 'underline' }}>terms & conditions</Link>
+                    I agree to <Link to="/terms-of-service" target="_blank" className="terms-link">terms & conditions</Link>
                   </span>
                 </label>
               </div>
@@ -256,33 +243,18 @@ const CreateAccount = () => {
                 <span>Or</span>
               </div>
 
-              <div ref={googleButtonRef} id="google-signup-button" style={{ 
-                width: '100%', 
-                display: 'flex', 
-                justifyContent: 'center',
-                marginTop: '8px',
-                minHeight: '40px'
-              }}></div>
+              <div ref={googleButtonRef} id="google-signup-button" className="google-signin-container"></div>
               {!GOOGLE_CLIENT_ID && (
-                <div style={{
-                  padding: '12px',
-                  backgroundColor: '#fff3cd',
-                  color: '#856404',
-                  borderRadius: '8px',
-                  fontSize: '13px',
-                  textAlign: 'left',
-                  marginTop: '12px',
-                  border: '1px solid #ffc107'
-                }}>
+                <div className="config-warning">
                   <strong>⚠️ Google Sign-In Not Configured</strong>
-                  <div style={{ marginTop: '8px', fontSize: '12px' }}>
-                    <p style={{ margin: '4px 0' }}>To enable Google Sign-In:</p>
-                    <ol style={{ margin: '4px 0', paddingLeft: '20px' }}>
+                  <div className="config-warning__content">
+                    <p>To enable Google Sign-In:</p>
+                    <ol>
                       <li>Create a <code>.env</code> file in the <code>client/</code> directory</li>
                       <li>Add: <code>VITE_GOOGLE_CLIENT_ID=your-client-id</code></li>
                       <li><strong>Restart the dev server</strong> (Ctrl+C then npm run dev)</li>
                     </ol>
-                    <p style={{ margin: '8px 0 4px 0', fontSize: '11px', color: '#666' }}>
+                    <p className="config-warning__hint">
                       Check browser console for debug info. See ENV_SETUP.md for details.
                     </p>
                   </div>

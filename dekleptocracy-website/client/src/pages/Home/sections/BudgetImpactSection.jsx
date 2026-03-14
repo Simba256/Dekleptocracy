@@ -42,8 +42,8 @@ export const BudgetImpactSection = memo(function BudgetImpactSection() {
             config={timelineConfigData}
             value={selectedDate}
             onChange={setSelectedDate}
-            onMilestoneClick={(milestone) => {
-              console.log('Milestone clicked:', milestone);
+            onMilestoneClick={() => {
+              // Milestone click handler
             }}
           />
         </div>
