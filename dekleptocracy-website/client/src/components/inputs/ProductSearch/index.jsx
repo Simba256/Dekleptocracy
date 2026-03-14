@@ -48,7 +48,9 @@ const ProductSearch = ({
       }));
       setSuggestions(suggestionsList);
     } catch (error) {
-      console.error('Error fetching suggestions:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching suggestions:', error);
+      }
       setSuggestions([]);
     } finally {
       setIsLoading(false);

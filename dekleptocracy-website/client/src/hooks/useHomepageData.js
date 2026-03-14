@@ -41,7 +41,9 @@ export function useHomepageData(options = {}) {
       const result = await homepageApi.fetchAllHomepageData(state, timePeriod);
       setData(result);
     } catch (err) {
-      console.error('Error fetching homepage data:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching homepage data:', err);
+      }
       setError(err.message);
     } finally {
       setLoading(false);
@@ -103,7 +105,9 @@ export function useWalletShocks(state = 'nationwide', limit = 4) {
           : shock
       ));
     } catch (err) {
-      console.error('Error adding reaction:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error adding reaction:', err);
+      }
     }
   }, []);
 

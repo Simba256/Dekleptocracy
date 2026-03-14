@@ -6,7 +6,9 @@ const safeParse = (raw) => {
   try {
     return raw ? JSON.parse(raw) : {};
   } catch (error) {
-    console.warn('Failed to parse stored preferences, clearing.', error);
+    if (import.meta.env.DEV) {
+      console.warn('Failed to parse stored preferences, clearing.', error);
+    }
     localStorage.removeItem(PREFERENCES_KEY);
     return {};
   }

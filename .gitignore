@@ -240,6 +240,7 @@ Desktop.ini
 
 *env*
 *env
+!**/.env.example
 
 # Screenshots and verification images
 *.png

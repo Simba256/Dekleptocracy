@@ -13,15 +13,9 @@ from mcp.server.stdio import stdio_server
 # Load environment variables
 load_dotenv()
 
-# API Keys - Use provided keys or fallback to environment variables
-GNEWS_API_KEY = "afcc06e1baf1f551f5231cf621a210e4"
-GEMINI_API_KEY = "AIzaSyD1tu-eIUXRjEVBBtC3GdnC--HzWe1Mxvc"
-
-# Fallback to environment variables if needed
-if not GNEWS_API_KEY:
-    GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
-if not GEMINI_API_KEY:
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# API Keys - loaded from environment variables
+GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Configure Gemini
 if GEMINI_API_KEY:

@@ -13,12 +13,16 @@ export const useOnlineStatus = () => {
 
     const handleOnline = () => {
       setIsOnline(true);
-      console.log('Network connection restored');
+      if (import.meta.env.DEV) {
+        console.log('Network connection restored');
+      }
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      console.warn('Network connection lost');
+      if (import.meta.env.DEV) {
+        console.warn('Network connection lost');
+      }
     };
 
     window.addEventListener('online', handleOnline);

@@ -68,7 +68,9 @@ const Insights = () => {
           setArticles(data.articles);
         }
       } catch (err) {
-        console.error('Error fetching articles:', err);
+        if (import.meta.env.DEV) {
+          console.error('Error fetching articles:', err);
+        }
         setError(err.message);
       } finally {
         setLoading(false);

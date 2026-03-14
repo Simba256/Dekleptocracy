@@ -70,6 +70,10 @@ const userSchema = new mongoose.Schema({
       enum: ['YoY', '3 months', '30 days']
     }
   },
+  tokenVersion: {
+    type: Number,
+    default: 0
+  },
   profilePhoto: {
     type: String,
     default: null

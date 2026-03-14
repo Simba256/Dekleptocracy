@@ -100,10 +100,13 @@ const Login = () => {
         throw new Error(data.message || 'Login failed. Please try again.');
       }
 
-      // Store token in localStorage
+      // Store tokens in localStorage
       if (data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        if (data.refreshToken) {
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
       }
 
       // Redirect to intended destination or chatbot after successful login

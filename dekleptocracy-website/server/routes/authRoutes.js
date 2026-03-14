@@ -1,16 +1,10 @@
 import express from 'express';
-import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import { JWT_SECRET, generateAccessToken, generateRefreshToken } from '../utils/jwtConfig.js';
+import verifyToken from '../middleware/auth.js';
 
 const router = express.Router();
-
-// Generate JWT Token
-// Token expires in 30 days - users stay logged in unless they explicitly log out
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || 'your-secret-key-change-in-production', {
-    expiresIn: '30d'
-  });
-};
 
 const normalizePreferences = (preferences = {}) => {
   const toArray = (value) => Array.isArray(value)
@@ -78,14 +72,16 @@ router.post('/signup', async (req, res) => {
 
     await user.save();
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Generate tokens
+    const token = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id, user.tokenVersion);
 
     // Return success response
     res.status(201).json({
       success: true,
       message: 'Account created successfully',
       token,
+      refreshToken,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -122,7 +118,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Login route (for future use)
+// Login route
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -153,14 +149,16 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Generate tokens
+    const token = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id, user.tokenVersion);
 
     // Return success response
     res.status(200).json({
       success: true,
       message: 'Login successful',
       token,
+      refreshToken,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -181,50 +179,36 @@ router.post('/login', async (req, res) => {
 
 // Google OAuth route
 router.post('/google', async (req, res) => {
-  console.log('🔐 Google OAuth request received');
-  console.log(`📍 Origin: ${req.get('origin') || 'unknown'}`);
-  console.log(`🌐 User-Agent: ${req.get('user-agent')?.substring(0, 50)}...`);
-
   try {
-    const { credential, preferences } = req.body; // Google ID token
+    const { credential, preferences } = req.body;
     const normalizedPreferences = normalizePreferences(preferences);
 
     if (!credential) {
-      console.log('❌ No credential provided in request body');
       return res.status(400).json({
         success: false,
         message: 'Google credential is required'
       });
     }
 
-    console.log('✅ Credential received:', credential.substring(0, 30) + '...');
-
     // Verify Google token
     const { OAuth2Client } = await import('google-auth-library');
 
     if (!process.env.GOOGLE_CLIENT_ID) {
-      console.error('❌ GOOGLE_CLIENT_ID not set in environment variables');
       return res.status(500).json({
         success: false,
         message: 'Google OAuth is not configured on the server'
       });
     }
 
-    console.log('✅ GOOGLE_CLIENT_ID configured:', process.env.GOOGLE_CLIENT_ID.substring(0, 30) + '...');
-
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
     let ticket;
     try {
-      console.log('🔍 Verifying Google token...');
       ticket = await client.verifyIdToken({
         idToken: credential,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
-      console.log('✅ Google token verified successfully');
     } catch (error) {
-      console.error('❌ Google token verification error:', error.message);
-      console.error('Error details:', error);
       return res.status(401).json({
         success: false,
         message: 'Invalid Google token',
@@ -235,53 +219,44 @@ router.post('/google', async (req, res) => {
     const payload = ticket.getPayload();
     const { sub: googleId, email, name: fullName, picture } = payload;
 
-    console.log('👤 Google user info:', { googleId: googleId.substring(0, 20) + '...', email, fullName });
-
     // Check if user exists with this Google ID
     let user = await User.findOne({ googleId });
     let isNewUser = false;
     let isLinkedAccount = false;
 
     if (!user) {
-      console.log('🔍 User not found by Google ID, checking by email...');
       // Check if user exists with this email
       user = await User.findOne({ email: email.toLowerCase() });
 
       if (user) {
-        console.log('🔗 Linking Google account to existing user');
-        // Link Google account to existing user (login with Google for existing email account)
+        // Link Google account to existing user
         user.googleId = googleId;
         user.isGoogleUser = true;
         if (!user.fullName && fullName) {
           user.fullName = fullName;
         }
-        // Save Google profile picture if user doesn't have one
         if (!user.profilePhoto && picture) {
           user.profilePhoto = picture;
         }
         await user.save();
         isLinkedAccount = true;
-        console.log('✅ Google account linked successfully');
       } else {
-        console.log('➕ Creating new user with Google account');
-        // Create new user with Google account (signup with Google)
+        // Create new user with Google account
         user = new User({
           fullName: fullName || email.split('@')[0],
           email: email.toLowerCase(),
           googleId,
           isGoogleUser: true,
-          agreeToTerms: true, // Assume user agrees when using Google OAuth
+          agreeToTerms: true,
           preferences: normalizedPreferences,
-          password: undefined, // No password for Google users
-          profilePhoto: picture || null // Save Google profile picture
+          password: undefined,
+          profilePhoto: picture || null
         });
         await user.save();
         isNewUser = true;
-        console.log('✅ New user created successfully');
       }
     } else {
-      console.log('✅ Existing Google user found');
-      // Update profile picture if it's a Google URL and user doesn't have a custom one
+      // Update profile picture if needed
       if (!user.profilePhoto && picture) {
         user.profilePhoto = picture;
         await user.save();
@@ -297,9 +272,9 @@ router.post('/google', async (req, res) => {
       await user.save();
     }
 
-    // Generate token
-    const token = generateToken(user._id);
-    console.log('🎫 JWT token generated');
+    // Generate tokens
+    const token = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id, user.tokenVersion);
 
     // Determine appropriate message
     let message = 'Google authentication successful';
@@ -311,13 +286,12 @@ router.post('/google', async (req, res) => {
       message = 'Google login successful';
     }
 
-    console.log(`✅ ${message} for user:`, user.email);
-
     // Return success response
     res.status(200).json({
       success: true,
       message,
       token,
+      refreshToken,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -329,8 +303,7 @@ router.post('/google', async (req, res) => {
       isNewUser
     });
   } catch (error) {
-    console.error('❌ Google OAuth error:', error);
-    console.error('Stack trace:', error.stack);
+    console.error('Google OAuth error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error. Please try again later.',
@@ -339,46 +312,102 @@ router.post('/google', async (req, res) => {
   }
 });
 
-// Token verification middleware
-const verifyToken = (req, res, next) => {
+// Refresh token endpoint
+router.post('/refresh', async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]; // Get token from "Bearer <token>"
-    
-    if (!token) {
-      return res.status(401).json({
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({
         success: false,
-        message: 'No token provided'
+        message: 'Refresh token is required'
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
-    req.userId = decoded.userId;
-    next();
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, JWT_SECRET);
+    } catch (error) {
       return res.status(401).json({
         success: false,
-        message: 'Token expired'
-      });
-    } else if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid token'
+        message: 'Invalid or expired refresh token'
       });
     }
-    return res.status(500).json({
+
+    if (decoded.type !== 'refresh') {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token type'
+      });
+    }
+
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check token version for revocation
+    if (decoded.version !== user.tokenVersion) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token has been revoked'
+      });
+    }
+
+    // Issue new token pair
+    const newToken = generateAccessToken(user._id);
+    const newRefreshToken = generateRefreshToken(user._id, user.tokenVersion);
+
+    res.status(200).json({
+      success: true,
+      token: newToken,
+      refreshToken: newRefreshToken
+    });
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    res.status(500).json({
       success: false,
-      message: 'Token verification failed'
+      message: 'Server error during token refresh'
     });
   }
-};
+});
+
+// Revoke all refresh tokens for a user
+router.post('/revoke', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    user.tokenVersion += 1;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'All refresh tokens revoked'
+    });
+  } catch (error) {
+    console.error('Token revocation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during token revocation'
+    });
+  }
+});
 
 // Verify token endpoint
 router.get('/verify', verifyToken, async (req, res) => {
   try {
     // Check if user exists in database
     const user = await User.findById(req.userId);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -406,4 +435,3 @@ router.get('/verify', verifyToken, async (req, res) => {
 });
 
 export default router;
-

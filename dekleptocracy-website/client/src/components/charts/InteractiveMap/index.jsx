@@ -74,7 +74,9 @@ const InteractiveMap = ({
         setIsLoading(false);
       })
       .catch(err => {
-        console.error('Failed to load US map data:', err);
+        if (import.meta.env.DEV) {
+          console.error('Failed to load US map data:', err);
+        }
         setIsLoading(false);
       });
   }, []);

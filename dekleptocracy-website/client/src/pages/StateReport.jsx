@@ -252,7 +252,9 @@ const StateReport = () => {
       setMetadata(data.metadata || null);
       setError(null);
     } catch (err) {
-      console.error('Refresh failed:', err);
+      if (import.meta.env.DEV) {
+        console.error('Refresh failed:', err);
+      }
       setError(err.message);
     } finally {
       setRefreshing(false);
@@ -308,7 +310,9 @@ const StateReport = () => {
       event.target.textContent = originalText;
       event.target.disabled = false;
     } catch (error) {
-      console.error('PDF generation failed:', error);
+      if (import.meta.env.DEV) {
+        console.error('PDF generation failed:', error);
+      }
       alert('Failed to generate PDF. Please try again.');
       event.target.textContent = 'Download Report';
       event.target.disabled = false;

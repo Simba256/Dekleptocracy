@@ -100,10 +100,13 @@ const CreateAccount = () => {
         throw new Error(data.message || 'Signup failed. Please try again.');
       }
 
-      // Store token in localStorage
+      // Store tokens in localStorage
       if (data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        if (data.refreshToken) {
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
       }
 
       setSuccess(true);

@@ -6,6 +6,7 @@ import { getApiUrl } from './apiUrl';
  */
 export const clearAuth = () => {
   localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
 };
 
@@ -16,13 +17,10 @@ export const clearAuth = () => {
  */
 const decodeToken = (token) => {
   try {
-    // JWT format: header.payload.signature
     const parts = token.split('.');
     if (parts.length !== 3) return null;
 
-    // Decode the payload (base64url encoded)
     const payload = parts[1];
-    // Handle base64url encoding (replace - with + and _ with /)
     const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
     const decoded = atob(base64);
     return JSON.parse(decoded);
@@ -43,8 +41,6 @@ const isTokenExpired = (token) => {
   const decoded = decodeToken(token);
   if (!decoded || !decoded.exp) return true;
 
-  // exp is in seconds, Date.now() is in milliseconds
-  // Add 60 second buffer to handle clock skew
   const expirationTime = decoded.exp * 1000;
   return Date.now() >= expirationTime;
 };
@@ -57,11 +53,14 @@ export const isAuthenticated = () => {
   const token = localStorage.getItem('token');
   if (!token) return false;
 
-  // Check if token is expired
   if (isTokenExpired(token)) {
-    // Clear expired token and user data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Don't clear yet — the refresh token might still be valid
+    // The apiClient will handle silent refresh on next API call
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      return true;
+    }
+    clearAuth();
     return false;
   }
 
@@ -93,21 +92,34 @@ export const getToken = () => {
 };
 
 /**
- * Clear authentication data
+ * Get the refresh token
+ * @returns {string|null} Refresh token or null
+ */
+export const getRefreshToken = () => {
+  return localStorage.getItem('refreshToken');
+};
+
+/**
+ * Clear authentication data and redirect
  */
 export const logout = () => {
   localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
 };
 
 /**
  * Set authentication data
- * @param {string} token - JWT token
+ * @param {string} token - JWT access token
  * @param {object} user - User object
+ * @param {string} [refreshToken] - JWT refresh token (optional for backward compat)
  */
-export const setAuth = (token, user) => {
+export const setAuth = (token, user, refreshToken) => {
   localStorage.setItem('token', token);
   localStorage.setItem('user', JSON.stringify(user));
+  if (refreshToken) {
+    localStorage.setItem('refreshToken', refreshToken);
+  }
 };
 
 /**
@@ -121,7 +133,7 @@ export const verifyToken = async () => {
   }
 
   const API_URL = getApiUrl();
-  
+
   try {
     const response = await fetch(`${API_URL}/api/auth/verify`, {
       method: 'GET',
@@ -132,9 +144,12 @@ export const verifyToken = async () => {
     });
 
     if (!response.ok) {
-      // Token is invalid or expired
       if (response.status === 401) {
-        // Clear invalid token
+        // Try silent refresh before giving up
+        const refreshed = await silentRefresh();
+        if (refreshed) {
+          return true;
+        }
         logout();
       }
       return false;
@@ -146,9 +161,40 @@ export const verifyToken = async () => {
     if (import.meta.env.DEV) {
       console.error('[DEV] Token verification error:', error);
     }
-    // If backend is not reachable or there's an error, deny access
-    // This ensures security - user must have valid token verified by backend
     logout();
+    return false;
+  }
+};
+
+/**
+ * Attempt a silent token refresh
+ * @returns {Promise<boolean>} True if refresh succeeded
+ */
+export const silentRefresh = async () => {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return false;
+
+  const API_URL = getApiUrl();
+
+  try {
+    const response = await fetch(`${API_URL}/api/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) return false;
+
+    const data = await response.json();
+    if (data.success && data.token) {
+      localStorage.setItem('token', data.token);
+      if (data.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+      }
+      return true;
+    }
+    return false;
+  } catch {
     return false;
   }
 };
@@ -167,12 +213,24 @@ export const setupTokenRefresh = (refreshCallback) => {
     if (!payload || !payload.exp) return null;
 
     const expiresIn = payload.exp * 1000 - Date.now();
-    const refreshBuffer = 5 * 60 * 1000; // 5 minutes before expiry
+    const refreshBuffer = 60 * 1000; // 1 minute before expiry (shorter for 15m tokens)
 
     if (expiresIn > refreshBuffer) {
-      return setTimeout(() => {
+      return setTimeout(async () => {
+        const refreshed = await silentRefresh();
+        if (refreshed) {
+          // Set up next refresh cycle
+          setupTokenRefresh(refreshCallback);
+        }
         refreshCallback?.();
       }, expiresIn - refreshBuffer);
+    } else {
+      // Token about to expire — refresh now
+      silentRefresh().then((refreshed) => {
+        if (!refreshed) {
+          refreshCallback?.();
+        }
+      });
     }
   } catch {
     // Token parsing failed
@@ -187,6 +245,11 @@ export const setupTokenRefresh = (refreshCallback) => {
 export const initAuthCheck = () => {
   const token = getToken();
   if (token && isTokenExpired(token)) {
+    // Check if refresh token is still valid
+    const refreshToken = getRefreshToken();
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      return true; // Will be refreshed on next API call
+    }
     clearAuth();
     return false;
   }

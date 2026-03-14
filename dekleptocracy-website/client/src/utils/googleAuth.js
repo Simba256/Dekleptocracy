@@ -82,10 +82,13 @@ export const handleGoogleSignIn = async (response, apiUrl, onSuccess, onError) =
       throw new Error(data.message || 'Google sign-in failed');
     }
 
-    // Store token in localStorage
+    // Store tokens in localStorage
     if (data.token) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      if (data.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+      }
     }
     clearPreferences();
 

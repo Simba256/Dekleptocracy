@@ -124,18 +124,24 @@ const ChatbotDebug = () => {
 
       setDebugInfo((prev) => [...prev, newDebugInfo]);
 
-      // Log to console as well
-      console.log('=== DEBUG INFO ===');
-      console.log('Total request time:', totalTime, 'ms');
-      console.log('Metadata:', data.metadata);
-      console.log('Tool calls:', data.tool_calls);
-      console.log('Tool results:', data.tool_results);
+      // Log to console in dev only
+      if (import.meta.env.DEV) {
+        console.log('=== DEBUG INFO ===');
+        console.log('Total request time:', totalTime, 'ms');
+        console.log('Metadata:', data.metadata);
+        console.log('Tool calls:', data.tool_calls);
+        console.log('Tool results:', data.tool_results);
+      }
 
     } catch (error) {
       if (error.name === 'AbortError') {
-        console.log('Request aborted');
+        if (import.meta.env.DEV) {
+          console.log('Request aborted');
+        }
       } else {
-        console.error('Chat error:', error);
+        if (import.meta.env.DEV) {
+          console.error('Chat error:', error);
+        }
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMessage.id
