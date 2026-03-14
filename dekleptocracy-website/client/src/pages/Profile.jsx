@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAuthenticated, logout } from '../utils/auth';
 import { API_URL } from '../utils/apiUrl';
+import { STORAGE_KEYS } from '../utils/constants';
 import './Profile.css';
 
 const TOPIC_OPTIONS = [
@@ -58,10 +59,10 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
       // Load from cache first for instant display
-      const cachedProfile = localStorage.getItem('user_profile');
+      const cachedProfile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       if (cachedProfile) {
         try {
           const data = JSON.parse(cachedProfile);
@@ -80,8 +81,8 @@ const Profile = () => {
               : `${API_URL}/${data.profilePhoto}`;
             setPreview(photoUrl);
           }
-        } catch (e) {
-          console.error('Error parsing cached profile:', e);
+        } catch {
+          // Silent fail for corrupt cached profile
         }
       }
 
@@ -99,9 +100,9 @@ const Profile = () => {
       }
 
       // Cache profile data
-      localStorage.setItem('user_profile', JSON.stringify(data.user));
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(data.user));
       if (data.user.preferences) {
-        localStorage.setItem('user_preferences', JSON.stringify(data.user.preferences));
+        localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(data.user.preferences));
       }
 
       setUser(data.user);
@@ -121,7 +122,9 @@ const Profile = () => {
         setPreview(photoUrl);
       }
     } catch (err) {
-      console.error('Fetch profile error:', err);
+      if (import.meta.env.DEV) {
+        console.error('[DEV] Fetch profile error:', err);
+      }
       setError(err.message || 'Failed to load profile');
     } finally {
       setLoading(false);
@@ -187,7 +190,7 @@ const Profile = () => {
     setUpdating(true);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
       const formDataToSend = new FormData();
       
       if (formData.fullName) {
@@ -238,14 +241,16 @@ const Profile = () => {
       }));
 
       // Update localStorage user data
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      localStorage.setItem('user', JSON.stringify({
+      const storedUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || '{}');
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify({
         ...storedUser,
         fullName: data.user.fullName,
         profilePhoto: data.user.profilePhoto
       }));
     } catch (err) {
-      console.error('Update profile error:', err);
+      if (import.meta.env.DEV) {
+        console.error('[DEV] Update profile error:', err);
+      }
       setError(err.message || 'Failed to update profile');
     } finally {
       setUpdating(false);

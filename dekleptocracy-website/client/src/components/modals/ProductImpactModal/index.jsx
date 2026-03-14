@@ -1,16 +1,64 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import './ProductImpactModal.css';
 
 /**
  * Product Impact Modal Component
- * @param {Object} props
- * @param {boolean} props.isOpen - Whether modal is open
- * @param {Function} props.onClose - Close handler
- * @param {string} props.product - Product name
- * @param {Object} props.data - Product impact data
  */
 export function ProductImpactModal({ isOpen, onClose, product = 'Housing', data }) {
   const navigate = useNavigate();
+  const modalRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const previouslyFocusedElement = useRef(null);
+
+  // Focus trap implementation
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') {
+      onClose();
+      return;
+    }
+
+    if (e.key !== 'Tab') return;
+
+    const focusableElements = modalRef.current?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+
+    if (!focusableElements || focusableElements.length === 0) return;
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (e.shiftKey && document.activeElement === firstElement) {
+      e.preventDefault();
+      lastElement.focus();
+    } else if (!e.shiftKey && document.activeElement === lastElement) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+  }, [onClose]);
+
+  // Store previously focused element and set initial focus
+  useEffect(() => {
+    if (isOpen) {
+      previouslyFocusedElement.current = document.activeElement;
+      // Focus the close button when modal opens
+      setTimeout(() => closeButtonRef.current?.focus(), 0);
+      document.addEventListener('keydown', handleKeyDown);
+      // Prevent background scrolling
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+      // Return focus to previously focused element
+      if (previouslyFocusedElement.current) {
+        previouslyFocusedElement.current.focus();
+      }
+    };
+  }, [isOpen, handleKeyDown]);
 
   if (!isOpen) return null;
 
@@ -45,16 +93,30 @@ export function ProductImpactModal({ isOpen, onClose, product = 'Housing', data 
     onClose();
   };
 
+  const modalTitleId = 'product-impact-modal-title';
+
   return (
     <div className="product-impact-modal__overlay" onClick={handleOverlayClick}>
-      <div className="product-impact-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="product-impact-modal__close-btn" onClick={onClose}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <div
+        ref={modalRef}
+        className="product-impact-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={modalTitleId}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          ref={closeButtonRef}
+          className="product-impact-modal__close-btn"
+          onClick={onClose}
+          aria-label="Close modal"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         </button>
 
-        <h2 className="product-impact-modal__title">Price Impact: {product}</h2>
+        <h2 id={modalTitleId} className="product-impact-modal__title">Price Impact: {product}</h2>
 
         {/* Price Cards */}
         <div className="product-impact-modal__price-cards">
@@ -110,5 +172,34 @@ export function ProductImpactModal({ isOpen, onClose, product = 'Housing', data 
     </div>
   );
 }
+
+ProductImpactModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  product: PropTypes.string,
+  data: PropTypes.shape({
+    startingPrice: PropTypes.string,
+    startingDate: PropTypes.string,
+    currentPrice: PropTypes.string,
+    currentDate: PropTypes.string,
+    totalIncrease: PropTypes.string,
+    increaseAmount: PropTypes.string,
+    tariffs: PropTypes.shape({
+      title: PropTypes.string,
+      badges: PropTypes.arrayOf(PropTypes.string),
+      description: PropTypes.string,
+      source: PropTypes.string,
+    }),
+    lobbying: PropTypes.shape({
+      amount: PropTypes.string,
+      description: PropTypes.string,
+    }),
+  }),
+};
+
+ProductImpactModal.defaultProps = {
+  product: 'Housing',
+  data: null,
+};
 
 export default ProductImpactModal;

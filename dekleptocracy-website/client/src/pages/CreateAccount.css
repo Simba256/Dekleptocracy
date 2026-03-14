@@ -170,6 +170,76 @@
   user-select: none;
 }
 
+.terms-link {
+  color: var(--color-green-muted);
+  text-decoration: underline;
+}
+
+.terms-link:hover {
+  color: var(--color-green-dark);
+}
+
+/* Alert Messages */
+.alert-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.alert-message--error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error-text);
+  border: 1px solid var(--color-error-light);
+}
+
+.alert-message--success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid var(--color-success-border);
+}
+
+/* Google Sign-In Container */
+.google-signin-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+  min-height: 40px;
+}
+
+/* Config Warning */
+.config-warning {
+  padding: 12px;
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: left;
+  margin-top: 12px;
+  border: 1px solid var(--color-warning);
+}
+
+.config-warning__content {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.config-warning__content p {
+  margin: 4px 0;
+}
+
+.config-warning__content ol {
+  margin: 4px 0;
+  padding-left: 20px;
+}
+
+.config-warning__hint {
+  margin: 8px 0 4px 0;
+  font-size: 11px;
+  color: var(--color-gray-500);
+}
+
 .signup-button {
   padding: 12px 20px;
   background-color: var(--color-coral);

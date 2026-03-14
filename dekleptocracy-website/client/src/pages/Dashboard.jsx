@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../utils/apiUrl';
+import { STORAGE_KEYS } from '../utils/constants';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -20,15 +21,15 @@ const Dashboard = () => {
       }
 
       // Load from cache first for instant display
-      const cachedPrefs = localStorage.getItem('user_preferences');
-      const cachedProfile = localStorage.getItem('user_profile');
+      const cachedPrefs = localStorage.getItem(STORAGE_KEYS.USER_PREFERENCES);
+      const cachedProfile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       if (cachedProfile) {
         try {
           const profile = JSON.parse(cachedProfile);
           setProfile(profile);
           setLoading(false); // Show cached data immediately
-        } catch (e) {
-          console.error('Error parsing cached profile:', e);
+        } catch {
+          // Silent fail for corrupt cached profile
         }
       }
 
@@ -45,9 +46,9 @@ const Dashboard = () => {
         }
 
         // Cache profile data
-        localStorage.setItem('user_profile', JSON.stringify(data.user));
+        localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(data.user));
         if (data.user.preferences) {
-          localStorage.setItem('user_preferences', JSON.stringify(data.user.preferences));
+          localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(data.user.preferences));
         }
 
         setProfile(data.user);

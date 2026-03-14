@@ -1,4 +1,6 @@
-const PREFERENCES_KEY = 'dekleptocracy_user_preferences';
+import { STORAGE_KEYS } from './constants';
+
+const PREFERENCES_KEY = STORAGE_KEYS.USER_PREFERENCES_LEGACY;
 
 const safeParse = (raw) => {
   try {
