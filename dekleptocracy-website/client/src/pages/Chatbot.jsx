@@ -134,9 +134,12 @@ const Chatbot = () => {
   const [userLocation, setUserLocation] = useState(null); // null = uninitialized, only set when user selects
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
   const hasSubmittedInitialQuery = useRef(false);
+  const recognitionRef = useRef(null);
 
   // MCP Server URL - uses environment variable in production, localhost in development
   const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8000';
@@ -244,6 +247,34 @@ How can I help you today?`;
       }]);
     }
   }, [userLocation]); // Only run when userLocation changes
+
+  // Initialize speech recognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(prev => prev + (prev ? ' ' : '') + transcript);
+        setIsListening(false);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -566,6 +597,21 @@ IMPORTANT GUIDELINES:
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const toggleVoiceInput = () => {
+    if (!speechSupported) {
+      alert('Voice input is not supported in your browser. Try Chrome or Edge.');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current?.start();
+      setIsListening(true);
+    }
   };
 
   const suggestedPrompts = [
@@ -994,10 +1040,11 @@ IMPORTANT GUIDELINES:
               <div className="input-tools">
                 <button
                   type="button"
-                  className="input-tool-btn"
-                  title="Voice input"
-                  aria-label="Voice input"
-                  onClick={() => alert('Voice input coming soon!')}
+                  className={`input-tool-btn ${isListening ? 'listening' : ''}`}
+                  title={isListening ? 'Stop listening' : 'Voice input'}
+                  aria-label={isListening ? 'Stop listening' : 'Voice input'}
+                  onClick={toggleVoiceInput}
+                  disabled={isLoading}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />

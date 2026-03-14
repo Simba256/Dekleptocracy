@@ -1,70 +1,71 @@
 /* ============================================
    CHATBOT DESIGN TOKENS
+   Using global tokens from tokens.css where possible
    ============================================ */
 :root {
-  /* Primary brand colors */
-  --chatbot-primary: #2c5f3e;
-  --chatbot-primary-light: #3a7b4e;
-  --chatbot-primary-dark: #1e4a2c;
+  /* Primary brand colors - mapped to global tokens */
+  --chatbot-primary: var(--color-green-primary);
+  --chatbot-primary-light: var(--color-green-light);
+  --chatbot-primary-dark: var(--color-green-dark);
 
-  /* Accent colors */
-  --chatbot-accent: #ff6b35;
-  --chatbot-accent-hover: #e55a2b;
+  /* Accent colors - mapped to global tokens */
+  --chatbot-accent: var(--color-orange-accent);
+  --chatbot-accent-hover: var(--color-orange-hover);
   --chatbot-accent-light: rgba(255, 107, 53, 0.1);
 
-  /* Status colors */
-  --chatbot-success: #10b981;
-  --chatbot-error: #dc3545;
-  --chatbot-warning: #f59e0b;
+  /* Status colors - mapped to global tokens */
+  --chatbot-success: var(--color-success);
+  --chatbot-error: var(--color-error);
+  --chatbot-warning: var(--color-warning);
 
-  /* Background colors */
-  --chatbot-bg-primary: #ffffff;
+  /* Background colors - mapped to global tokens */
+  --chatbot-bg-primary: var(--color-white);
   --chatbot-bg-secondary: #f8faf9;
-  --chatbot-bg-tertiary: #f3f4f6;
-  --chatbot-bg-page: #F5F5F5;
+  --chatbot-bg-tertiary: var(--color-gray-100);
+  --chatbot-bg-page: var(--color-gray-25);
 
-  /* Text colors */
-  --chatbot-text-primary: #1f2937;
-  --chatbot-text-secondary: #4b5563;
-  --chatbot-text-muted: #64748b;
-  --chatbot-text-light: #94a3b8;
+  /* Text colors - mapped to global tokens */
+  --chatbot-text-primary: var(--color-gray-900);
+  --chatbot-text-secondary: var(--color-gray-600);
+  --chatbot-text-muted: var(--color-gray-600);
+  --chatbot-text-light: var(--color-gray-400);
 
   /* Border colors */
-  --chatbot-border: #e8ebe9;
-  --chatbot-border-light: #f3f4f6;
+  --chatbot-border: var(--color-gray-200);
+  --chatbot-border-light: var(--color-gray-100);
   --chatbot-border-focus: var(--chatbot-primary);
 
-  /* Shadows */
-  --chatbot-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --chatbot-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --chatbot-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  /* Shadows - mapped to global tokens */
+  --chatbot-shadow-sm: var(--shadow-sm);
+  --chatbot-shadow-md: var(--shadow-md);
+  --chatbot-shadow-lg: var(--shadow-lg);
   --chatbot-shadow-message: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
 
-  /* Spacing */
-  --chatbot-space-xs: 4px;
-  --chatbot-space-sm: 8px;
-  --chatbot-space-md: 16px;
-  --chatbot-space-lg: 24px;
-  --chatbot-space-xl: 32px;
+  /* Spacing - mapped to global tokens */
+  --chatbot-space-xs: var(--space-xs);
+  --chatbot-space-sm: var(--space-sm);
+  --chatbot-space-md: var(--space-md);
+  --chatbot-space-lg: var(--space-lg);
+  --chatbot-space-xl: var(--space-xl);
 
-  /* Border radius */
-  --chatbot-radius-sm: 6px;
-  --chatbot-radius-md: 10px;
-  --chatbot-radius-lg: 16px;
-  --chatbot-radius-xl: 20px;
-  --chatbot-radius-full: 9999px;
+  /* Border radius - mapped to global tokens */
+  --chatbot-radius-sm: var(--radius-sm);
+  --chatbot-radius-md: var(--radius-md);
+  --chatbot-radius-lg: var(--radius-lg);
+  --chatbot-radius-xl: var(--radius-xl);
+  --chatbot-radius-full: var(--radius-full);
 
-  /* Transitions */
-  --chatbot-transition-fast: 150ms ease;
-  --chatbot-transition-normal: 250ms ease;
-  --chatbot-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transitions - mapped to global tokens */
+  --chatbot-transition-fast: var(--transition-fast);
+  --chatbot-transition-normal: var(--transition-normal);
+  --chatbot-transition-slow: var(--transition-slow);
 
-  /* Typography */
-  --chatbot-font-size-xs: 11px;
-  --chatbot-font-size-sm: 12px;
-  --chatbot-font-size-base: 14px;
-  --chatbot-font-size-lg: 16px;
-  --chatbot-font-size-xl: 18px;
+  /* Typography - mapped to global tokens */
+  --chatbot-font-size-xs: var(--font-size-xs);
+  --chatbot-font-size-sm: var(--font-size-sm);
+  --chatbot-font-size-base: var(--font-size-base);
+  --chatbot-font-size-lg: var(--font-size-lg);
+  --chatbot-font-size-xl: var(--font-size-xl);
 }
 
 /* ============================================
@@ -651,6 +652,22 @@
 .input-tool-btn svg {
   width: 18px;
   height: 18px;
+}
+
+.input-tool-btn.listening {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  animation: pulse-listening 1.5s ease-in-out infinite;
+}
+
+.input-tool-btn.listening:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #dc2626;
+}
+
+@keyframes pulse-listening {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 .chatbot-send-btn {
