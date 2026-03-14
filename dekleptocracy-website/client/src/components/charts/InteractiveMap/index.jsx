@@ -17,7 +17,7 @@ import './InteractiveMap.css';
  * @returns {JSX.Element}
  */
 
-const US_TOPO_JSON = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
+const US_TOPO_JSON = '/data/states-10m.json';
 
 // Metric configurations
 const METRICS = {
