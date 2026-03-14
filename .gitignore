@@ -240,3 +240,18 @@ Desktop.ini
 
 *env*
 *env
+
+# Screenshots and verification images
+*.png
+*.jpg
+*.jpeg
+*.gif
+!dekleptocracy-website/client/public/**/*.png
+!dekleptocracy-website/client/public/**/*.jpg
+!dekleptocracy-website/client/src/assets/**/*.png
+!dekleptocracy-website/client/src/assets/**/*.jpg
+ui-screenshots*/
+survey/
+
+# Experimental Next.js app (keep locally, don't track)
+next-app/
