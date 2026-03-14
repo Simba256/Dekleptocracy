@@ -1,14 +1,9 @@
-import { memo, useState, lazy, Suspense } from 'react';
+import { memo } from 'react';
 import { useHomepage } from '../../../context/HomepageContext';
-
-const StateComparison = lazy(() => import('../../../components/modals/StateComparison'));
 
 export const StatsSection = memo(function StatsSection() {
   const { state } = useHomepage();
-  const { stats, selectedState } = state;
-  const [showComparison, setShowComparison] = useState(false);
-
-  const handleCloseComparison = () => setShowComparison(false);
+  const { stats } = state;
 
   // Use API data with fallbacks (includes source attributions)
   const lobbying = stats.lobbying || { displayValue: '276K', source: 'U.S. Senate Office of Public Records (LDA)' };
@@ -93,25 +88,7 @@ export const StatsSection = memo(function StatsSection() {
           <div className="stat-source">Source: {tariffRevenue.source}</div>
         </div>
 
-        <div className="stats-actions">
-          <button
-            className="compare-states-btn"
-            onClick={() => setShowComparison(true)}
-          >
-            Compare States {String.fromCharCode(8594)}
-          </button>
-        </div>
       </div>
-
-      {showComparison && (
-        <Suspense fallback={null}>
-          <StateComparison
-            isOpen={showComparison}
-            onClose={handleCloseComparison}
-            initialState={selectedState}
-          />
-        </Suspense>
-      )}
     </section>
   );
 });

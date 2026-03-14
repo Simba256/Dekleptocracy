@@ -180,38 +180,6 @@
   letter-spacing: var(--letter-spacing-normal);
 }
 
-/* Compare States Button */
-.stats-actions {
-  display: flex;
-  justify-content: center;
-  padding: 0 var(--space-lg) var(--space-3xl);
-}
-
-.compare-states-btn {
-  padding: 14px var(--space-xl);
-  background: var(--color-green-muted);
-  color: var(--color-white);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.compare-states-btn:hover {
-  background: var(--color-gray-800);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(74, 93, 63, 0.3);
-}
-
-.compare-states-btn:active {
-  transform: translateY(0);
-}
-
 /* Responsive */
 @media (max-width: 1200px) {
   .stats-container {
