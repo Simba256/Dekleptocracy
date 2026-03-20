@@ -6,14 +6,16 @@ import User from '../../models/User.js';
 import { createTestUser, getAuthHeader } from '../helpers/auth.js';
 import { JWT_SECRET, generateRefreshToken } from '../../utils/jwtConfig.js';
 
-// Mock google-auth-library
+// Mock google-auth-library — must use a real class since the route calls `new OAuth2Client(...)`
+const mockVerifyIdToken = vi.fn();
 vi.mock('google-auth-library', () => {
-  const mockVerifyIdToken = vi.fn();
   return {
-    OAuth2Client: vi.fn().mockImplementation(() => ({
-      verifyIdToken: mockVerifyIdToken,
-    })),
-    __mockVerifyIdToken: mockVerifyIdToken,
+    OAuth2Client: class MockOAuth2Client {
+      constructor() {}
+      verifyIdToken(...args) {
+        return mockVerifyIdToken(...args);
+      }
+    },
   };
 });
 
@@ -123,11 +125,7 @@ describe('Auth Routes', () => {
   });
 
   describe('POST /api/auth/google', () => {
-    let mockVerifyIdToken;
-
-    beforeEach(async () => {
-      const mod = await import('google-auth-library');
-      mockVerifyIdToken = mod.__mockVerifyIdToken;
+    beforeEach(() => {
       mockVerifyIdToken.mockReset();
     });
 

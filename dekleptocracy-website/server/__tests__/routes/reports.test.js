@@ -113,9 +113,10 @@ describe('Report Routes', () => {
       await new StateDataCache({
         state: 'California',
         dataType: 'gas_prices',
+        sourceApi: 'eia',
         rawData: { value: 3.5 },
         processedData: { value: 3.5, displayValue: '$3.50', change: 5 },
-        source: 'test',
+        expiresAt: new Date(Date.now() + 86400000),
       }).save();
 
       const res = await request(app).get('/api/reports/scheduler/status');
@@ -131,9 +132,10 @@ describe('Report Routes', () => {
       await new StateDataCache({
         state: 'Texas',
         dataType: 'gas_prices',
+        sourceApi: 'eia',
         rawData: { value: 3.0 },
         processedData: { value: 3.0, displayValue: '$3.00', change: 2 },
-        source: 'test',
+        expiresAt: new Date(Date.now() + 86400000),
       }).save();
 
       const res = await request(app).get('/api/reports/available-states');
