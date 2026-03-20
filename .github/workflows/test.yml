@@ -1,0 +1,41 @@
+name: Server Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dekleptocracy-website/server/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'dekleptocracy-website/server/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dekleptocracy-website
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: dekleptocracy-website/package-lock.json
+
+      - run: npm ci
+
+      - name: Cache MongoDB binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}
+
+      - run: npm test --prefix server
+        env:
+          JWT_SECRET: ci-test-secret
+          GOOGLE_CLIENT_ID: ci-test-google-id
+          NODE_ENV: test
