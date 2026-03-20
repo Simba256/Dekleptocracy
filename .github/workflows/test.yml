@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - 'dekleptocracy-website/server/**'
+      - '.github/workflows/test.yml'
   pull_request:
     branches: [main]
     paths:
       - 'dekleptocracy-website/server/**'
+  workflow_dispatch:
 
 jobs:
   test:
