@@ -1,5 +1,7 @@
 import express from 'express';
 import Article from '../models/Article.js';
+import { validate } from '../middleware/validate.js';
+import { createArticleSchema, updateArticleSchema } from '../validators/articles.js';
 
 const router = express.Router();
 
@@ -124,7 +126,7 @@ router.get('/category/:category', async (req, res) => {
 });
 
 // Create new article (for LLM generation or manual)
-router.post('/', async (req, res) => {
+router.post('/', validate(createArticleSchema), async (req, res) => {
   try {
     const articleData = req.body;
 
@@ -150,7 +152,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update article
-router.put('/:id', async (req, res) => {
+router.put('/:id', validate(updateArticleSchema), async (req, res) => {
   try {
     const article = await Article.findByIdAndUpdate(
       req.params.id,

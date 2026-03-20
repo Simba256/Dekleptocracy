@@ -25,6 +25,9 @@ coverage/
 client/coverage/
 server/coverage/
 
+# MongoDB Memory Server binary cache
+.cache/mongodb-binaries/
+
 # Editor/OS
 .vscode/
 .idea/

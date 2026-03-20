@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { JWT_SECRET, generateAccessToken, generateRefreshToken } from '../utils/jwtConfig.js';
 import verifyToken from '../middleware/auth.js';
+import { validate } from '../middleware/validate.js';
+import { signupSchema, loginSchema, refreshSchema } from '../validators/auth.js';
 
 const router = express.Router();
 
@@ -33,7 +35,7 @@ const mergePreferences = (existing = {}, incoming = {}) => ({
 });
 
 // Signup route
-router.post('/signup', async (req, res) => {
+router.post('/signup', validate(signupSchema), async (req, res) => {
   try {
     const { fullName, email, password, agreeToTerms, preferences } = req.body;
 
@@ -119,7 +121,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // Login route
-router.post('/login', async (req, res) => {
+router.post('/login', validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -313,7 +315,7 @@ router.post('/google', async (req, res) => {
 });
 
 // Refresh token endpoint
-router.post('/refresh', async (req, res) => {
+router.post('/refresh', validate(refreshSchema), async (req, res) => {
   try {
     const { refreshToken } = req.body;
 

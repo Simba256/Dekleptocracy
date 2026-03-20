@@ -18,16 +18,17 @@ import { generateStateReport, generateCSVExport } from '../services/reportGenera
 const router = express.Router();
 
 // Rate limiting: 500 requests per 15 minutes per IP (allows ~165 page loads)
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // Limit each IP to 500 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
-
-// Apply rate limiter to all routes
-router.use(limiter);
+// Disabled in test environment to prevent flaky tests
+if (process.env.NODE_ENV !== 'test') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 500, // Limit each IP to 500 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.',
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+  router.use(limiter);
+}
 
 /**
  * GET /api/homepage/all

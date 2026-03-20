@@ -4,6 +4,8 @@ import { triggerStateRefresh, getSchedulerStatus } from '../services/stateDataSc
 import { transformAllStates, transformStateData, getTransformationStatus } from '../services/walletShockTransformer.js';
 import { transformStats, getStatsStatus } from '../services/statsTransformer.js';
 import StateDataCache from '../models/StateDataCache.js';
+import { validate } from '../middleware/validate.js';
+import { stateRefreshSchema } from '../validators/reports.js';
 
 const router = express.Router();
 
@@ -89,7 +91,7 @@ router.get('/state/data-status', async (req, res) => {
  * Manually trigger data refresh for a state
  * Starts the refresh in background and returns immediately
  */
-router.post('/state/refresh', async (req, res) => {
+router.post('/state/refresh', validate(stateRefreshSchema), async (req, res) => {
   const { state, waitForCompletion } = req.body;
 
   if (!state) {

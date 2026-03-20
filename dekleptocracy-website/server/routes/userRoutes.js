@@ -5,6 +5,8 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import User from '../models/User.js';
 import verifyToken from '../middleware/auth.js';
+import { validate } from '../middleware/validate.js';
+import { updatePreferencesSchema } from '../validators/user.js';
 
 const router = express.Router();
 
@@ -187,7 +189,7 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
 });
 
 // Update user preferences (homepage state, time period, etc.)
-router.put('/preferences', verifyToken, async (req, res) => {
+router.put('/preferences', verifyToken, validate(updatePreferencesSchema), async (req, res) => {
   try {
     const { selectedState, defaultTimePeriod, conversationStyles, topicsOfInterest, householdExpenseFocus } = req.body;
 
