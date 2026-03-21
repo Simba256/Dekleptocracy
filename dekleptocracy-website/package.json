@@ -9,11 +9,30 @@
     "dev:client": "npm --prefix client run dev",
     "dev:server": "npm --prefix server run dev",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "build": "npm --prefix client run build"
+    "build": "npm --prefix client run build",
+    "lint": "npm --prefix client run lint && npm --prefix server run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "cd .. && husky dekleptocracy-website/.husky"
+  },
+  "lint-staged": {
+    "client/**/*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix --no-warn-ignored --config client/eslint.config.js"
+    ],
+    "server/**/*.js": [
+      "prettier --write",
+      "eslint --fix --no-warn-ignored --config server/eslint.config.js"
+    ],
+    "*.{json,md,css,html,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1"
   }
 }
-
-

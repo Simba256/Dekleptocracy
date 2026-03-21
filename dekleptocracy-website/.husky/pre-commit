@@ -1,0 +1,1 @@
+cd dekleptocracy-website && npx lint-staged

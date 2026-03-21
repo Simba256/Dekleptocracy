@@ -1,6 +1,6 @@
 # Project Tracker
 
-> Last updated: 2026-03-21
+> Last updated: 2026-03-22
 
 ## Project Summary
 Dekleptocracy — a web app exposing how federal policies impact household costs, with AI chatbot, state reports, and data visualizations.
@@ -12,6 +12,12 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 - None
 
 ## Recently Completed
+- [x] Developer Experience: Prettier + pre-commit hooks (2026-03-22)
+  - Prettier config, eslint-config-prettier integration, Husky + lint-staged
+  - Pre-commit hook auto-formats + lints staged files
+  - CI format:check added to lint job
+  - .editorconfig for consistent editor settings
+- [x] Rotate GNEWS_API_KEY and GEMINI_API_KEY (2026-03-21)
 - [x] Phase 4: ESLint server + CI expansion (2026-03-21)
   - Server ESLint flat config with Node.js globals, Express arg patterns, vitest test globals
   - Fixed 40 server + 50 client lint violations (unused vars, missing globals, catch errors)
@@ -43,14 +49,14 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 - [x] Design tokens refactor — replace hardcoded colors (2026-03-07)
 
 ## Upcoming / Planned
-- [ ] Developer Experience remaining — Prettier, pre-commit hooks
 - [ ] Install @sentry/node + @sentry/react and activate with real DSN
-- [ ] Rotate GNEWS_API_KEY and GEMINI_API_KEY (exposed in git history) — critical
+- [ ] Bulk format codebase with `npm run format` (optional, staged files auto-format on commit)
 
 ## Blockers
 - None
 
 ## Key Decisions
+- (2026-03-22) No bulk reformat — Prettier formats only staged files via pre-commit; codebase converges over time
 - (2026-03-21) In-memory cache over Redis — single-process app on Railway, no external dependency needed
 - (2026-03-20) Vitest over Jest — client already uses Vitest, ESM works out of the box
 - (2026-03-20) mongodb-memory-server for isolated in-memory DB per test run
