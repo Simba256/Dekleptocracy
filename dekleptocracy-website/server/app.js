@@ -67,7 +67,7 @@ app.use(compression());
 app.use(express.json());
 
 // Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '1d' }));
 
 // Request logging middleware (skip in test)
 if (process.env.NODE_ENV !== 'test') {

@@ -20,11 +20,9 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom'],
           // Router - loaded with first navigation
           'router': ['react-router-dom'],
+          // Charts/map libs - lazy loaded with PriceMapSection
+          'charts': ['d3-scale', 'react-simple-maps', 'topojson-client', 'react-tooltip'],
         }
-      },
-      // Optimize dependencies
-      optimizeDeps: {
-        include: ['react', 'react-dom', 'react-router-dom']
       }
     },
     // Warn if chunks exceed 500KB

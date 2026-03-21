@@ -156,8 +156,11 @@ stateDataCacheSchema.statics.getAllStateData = async function(state) {
   const results = {};
   const staleData = [];
 
-  for (const dataType of dataTypes) {
-    const data = await this.getLatestData(state, dataType);
+  const dataEntries = await Promise.all(
+    dataTypes.map(dataType => this.getLatestData(state, dataType).then(data => ({ dataType, data })))
+  );
+
+  for (const { dataType, data } of dataEntries) {
     if (data) {
       results[dataType] = {
         processedData: data.processedData,
@@ -182,6 +185,38 @@ stateDataCacheSchema.statics.getAllStateData = async function(state) {
     staleDataTypes: staleData,
     availableDataCount: Object.values(results).filter(v => v !== null).length
   };
+};
+
+/**
+ * Static method to get all map data in a single aggregation (replaces N+1 per-state queries)
+ * Returns Map<state, { gas_prices, electricity_prices, food_prices, gdp, personal_income, unemployment }>
+ */
+stateDataCacheSchema.statics.getAllMapData = async function() {
+  const mapDataTypes = [
+    'gas_prices', 'electricity_prices', 'food_prices',
+    'gdp', 'personal_income', 'unemployment'
+  ];
+
+  const docs = await this.aggregate([
+    { $match: { dataType: { $in: mapDataTypes }, status: { $ne: 'error' } } },
+    { $sort: { fetchedAt: -1 } },
+    { $group: {
+      _id: { state: '$state', dataType: '$dataType' },
+      doc: { $first: '$$ROOT' }
+    }},
+    { $replaceRoot: { newRoot: '$doc' } }
+  ]);
+
+  // Restructure into Map<state, { dataType: doc }>
+  const stateMap = new Map();
+  for (const doc of docs) {
+    if (!stateMap.has(doc.state)) {
+      stateMap.set(doc.state, {});
+    }
+    stateMap.get(doc.state)[doc.dataType] = doc;
+  }
+
+  return stateMap;
 };
 
 /**

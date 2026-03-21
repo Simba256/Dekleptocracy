@@ -4,6 +4,7 @@ import { triggerStateRefresh, getSchedulerStatus } from '../services/stateDataSc
 import { transformAllStates, transformStateData, getTransformationStatus } from '../services/walletShockTransformer.js';
 import { transformStats, getStatsStatus } from '../services/statsTransformer.js';
 import StateDataCache from '../models/StateDataCache.js';
+import cache from '../utils/memoryCache.js';
 import { validate } from '../middleware/validate.js';
 import { stateRefreshSchema } from '../validators/reports.js';
 
@@ -19,10 +20,17 @@ router.get('/state', async (req, res) => {
   const role = req.query.role || 'VOTER';
   const name = req.query.name || `${stateName} Resident`;
 
+  // Check in-memory cache
+  const cacheKey = `report:${stateName}:${role}`;
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return res.json(cached);
+  }
+
   try {
     const report = await generateStateReportData(stateName, role, name);
 
-    res.json({
+    const responseBody = {
       success: true,
       report,
       metadata: {
@@ -33,7 +41,10 @@ router.get('/state', async (req, res) => {
         stateName,
         role
       }
-    });
+    };
+
+    cache.set(cacheKey, responseBody, 15 * 60 * 1000); // 15 min TTL
+    res.json(responseBody);
   } catch (error) {
     // Determine appropriate status code
     let statusCode = 500;

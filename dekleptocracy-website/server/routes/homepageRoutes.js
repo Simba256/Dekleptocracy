@@ -13,6 +13,7 @@ import TimelineConfig from '../models/TimelineConfig.js';
 import User from '../models/User.js';
 import StateDataCache from '../models/StateDataCache.js';
 import logger from '../utils/logger.js';
+import cache from '../utils/memoryCache.js';
 import { generateStateReport, generateCSVExport } from '../services/reportGenerator.js';
 
 const router = express.Router();
@@ -56,6 +57,17 @@ router.get('/all', async (req, res) => {
     // Determine state and period from query, user preferences, or defaults
     const state = req.query.state || userPreferences.selectedState || 'nationwide';
     const period = req.query.period || userPreferences.defaultTimePeriod || 'YoY';
+    const isAuthenticated = !!req.headers.authorization;
+
+    // Check in-memory cache (skip for authenticated users — personalized data)
+    const cacheKey = `all:${state}:${period}`;
+    if (!isAuthenticated) {
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+        return res.json(cached);
+      }
+    }
 
     logger.info(`Fetching aggregated homepage data for state: ${state}, period: ${period}`);
 
@@ -112,7 +124,7 @@ router.get('/all', async (req, res) => {
       topics: q.topics
     }));
 
-    res.json({
+    const responseBody = {
       success: true,
       state,
       period,
@@ -125,7 +137,16 @@ router.get('/all', async (req, res) => {
         quickQuestions: personalizedQuestions,
         timelineConfig: timelineConfig
       }
-    });
+    };
+
+    if (!isAuthenticated) {
+      cache.set(cacheKey, responseBody, 5 * 60 * 1000); // 5 min TTL
+      res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    } else {
+      res.set('Cache-Control', 'private, max-age=60');
+    }
+
+    res.json(responseBody);
 
   } catch (error) {
     logger.error('Error fetching aggregated homepage data', error);
@@ -466,13 +487,19 @@ router.post('/seed', async (req, res) => {
  */
 router.get('/available-states', async (req, res) => {
   try {
+    const cached = cache.get('available-states');
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=600');
+      return res.json(cached);
+    }
+
     // Get unique states from wallet shocks
     const states = await WalletShock.distinct('state', { status: 'published' });
 
-    res.json({
-      success: true,
-      states: states
-    });
+    const responseBody = { success: true, states };
+    cache.set('available-states', responseBody, 30 * 60 * 1000); // 30 min
+    res.set('Cache-Control', 'public, max-age=600');
+    res.json(responseBody);
 
   } catch (error) {
     logger.error('Error fetching available states', error);
@@ -726,10 +753,17 @@ router.get('/social-posts', optionalAuth, async (req, res) => {
  */
 router.get('/map-data', async (req, res) => {
   try {
+    // Check in-memory cache (same for all users)
+    const cached = cache.get('map-data');
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+      return res.json(cached);
+    }
+
     logger.info('Fetching map data with metrics from StateDataCache');
 
-    // Get all states that have cached data
-    const statesWithData = await StateDataCache.distinct('state');
+    // Single aggregation instead of N+1 per-state queries
+    const stateMap = await StateDataCache.getAllMapData();
 
     // US States list (fallback if no cached data)
     const allStates = [
@@ -746,121 +780,105 @@ router.get('/map-data', async (req, res) => {
     ];
 
     // Use states with data, or all states if cache is empty
-    const statesToProcess = statesWithData.length > 0 ? statesWithData : allStates;
+    const statesToProcess = stateMap.size > 0 ? [...stateMap.keys()] : allStates;
 
-    // Generate metrics for each state from cached data
-    const stateDataPromises = statesToProcess.map(async (stateName) => {
-      // Skip District of Columbia for the map (not in TopoJSON)
-      if (stateName === 'District of Columbia') return null;
+    // Generate metrics for each state from the pre-fetched map
+    const regionsWithMetrics = statesToProcess
+      .filter(stateName => stateName !== 'District of Columbia')
+      .map(stateName => {
+        const stateData = stateMap.get(stateName) || {};
+        const gasPrices = stateData.gas_prices;
+        const electricityPrices = stateData.electricity_prices;
+        const foodPrices = stateData.food_prices;
+        const gdp = stateData.gdp;
+        const personalIncome = stateData.personal_income;
+        const unemployment = stateData.unemployment;
 
-      // Fetch cached data for this state
-      const [gasPrices, electricityPrices, foodPrices, gdp, personalIncome, unemployment] = await Promise.all([
-        StateDataCache.getLatestData(stateName, 'gas_prices'),
-        StateDataCache.getLatestData(stateName, 'electricity_prices'),
-        StateDataCache.getLatestData(stateName, 'food_prices'),
-        StateDataCache.getLatestData(stateName, 'gdp'),
-        StateDataCache.getLatestData(stateName, 'personal_income'),
-        StateDataCache.getLatestData(stateName, 'unemployment')
-      ]);
+        // Calculate Price Impact (average of price changes)
+        const gasChange = gasPrices?.processedData?.change || 0;
+        const electricityChange = electricityPrices?.processedData?.change || 0;
+        const foodChange = foodPrices?.processedData?.change || 0;
 
-      // Calculate Price Impact (average of price changes)
-      const gasChange = gasPrices?.processedData?.change || 0;
-      const electricityChange = electricityPrices?.processedData?.change || 0;
-      const foodChange = foodPrices?.processedData?.change || 0;
+        // Weight: gas 40%, electricity 30%, food 30%
+        const priceImpact = (gasChange * 0.4) + (electricityChange * 0.3) + (foodChange * 0.3);
 
-      // Weight: gas 40%, electricity 30%, food 30%
-      const priceImpact = (gasChange * 0.4) + (electricityChange * 0.3) + (foodChange * 0.3);
+        // Calculate Tariff Revenue (estimate based on GDP and trade exposure)
+        const gdpValue = gdp?.processedData?.value || 0;
+        const stateHash = stateName.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+        const tariffRate = 0.008 + ((stateHash % 100) / 100) * 0.012;
+        const tariffRevenue = gdpValue * tariffRate;
 
-      // Calculate Tariff Revenue (estimate based on GDP and trade exposure)
-      const gdpValue = gdp?.processedData?.value || 0;
-      // Use a deterministic rate based on state name hash for consistency
-      const stateHash = stateName.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-      const tariffRate = 0.008 + ((stateHash % 100) / 100) * 0.012; // 0.8% - 2% of GDP
-      const tariffRevenue = gdpValue * tariffRate;
+        // Calculate Cost of Living Index (100 = US national average)
+        const gasValue = gasPrices?.processedData?.value || 3.2;
+        const electricityValue = electricityPrices?.processedData?.value || 16;
+        const foodValue = foodPrices?.processedData?.value || 150;
+        const incomeValue = personalIncome?.processedData?.value || 65000;
+        const unemploymentValue = unemployment?.processedData?.value || 4;
 
-      // Calculate Cost of Living Index (100 = US national average)
-      // Based on actual data units from government APIs:
-      // - Gas: $/gallon (e.g., 2.50-3.80, US avg ~3.20)
-      // - Electricity: cents/kWh (e.g., 12-31, US avg ~16)
-      // - Food: $/person/month (e.g., 140-165, US avg ~150)
-      const gasValue = gasPrices?.processedData?.value || 3.2;
-      const electricityValue = electricityPrices?.processedData?.value || 16; // cents/kWh
-      const foodValue = foodPrices?.processedData?.value || 150;
-      const incomeValue = personalIncome?.processedData?.value || 65000;
-      const unemploymentValue = unemployment?.processedData?.value || 4;
+        const gasIndex = (gasValue / 3.2) * 33.33;
+        const electricityIndex = (electricityValue / 16) * 33.33;
+        const foodIndex = (foodValue / 150) * 33.34;
 
-      // Normalize each component relative to US average (each contributes 33.3 points at average = 100 total)
-      const gasIndex = (gasValue / 3.2) * 33.33;           // Gas at $3.20 = 33.3 points
-      const electricityIndex = (electricityValue / 16) * 33.33;  // Electricity at 16 cents = 33.3 points
-      const foodIndex = (foodValue / 150) * 33.34;         // Food at $150/mo = 33.3 points
+        const incomeAdjustment = Math.max(0.85, Math.min(1.15, 65000 / (incomeValue || 65000)));
+        const unemploymentPenalty = Math.max(0, Math.min(5, (unemploymentValue - 4) * 1));
 
-      // Income adjustment: higher income = lower effective cost of living burden
-      const incomeAdjustment = Math.max(0.85, Math.min(1.15, 65000 / (incomeValue || 65000)));
+        const costOfLiving = Math.max(50,
+          (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty
+        );
 
-      // Unemployment adds to economic burden (max +5 points)
-      const unemploymentPenalty = Math.max(0, Math.min(5, (unemploymentValue - 4) * 1));
+        const hasRealData = !!(gasPrices || electricityPrices || foodPrices || gdp);
 
-      // Index where 100 = national average
-      const costOfLiving = Math.max(50,
-        (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty
-      );
-
-      const hasRealData = !!(gasPrices || electricityPrices || foodPrices || gdp);
-
-      return {
-        name: stateName,
-        // Calculated metrics
-        priceImpact: Math.round(priceImpact * 10) / 10,
-        tariffRevenue: Math.round(tariffRevenue),
-        costOfLiving: Math.round(costOfLiving * 10) / 10,
-        // Use priceImpact as default intensity for backwards compatibility
-        intensity: Math.abs(Math.round(priceImpact * 10) / 10),
-        // Raw data for tooltips
-        metrics: {
-          gasPrices: {
-            value: gasPrices?.processedData?.value,
-            displayValue: gasPrices?.processedData?.displayValue,
-            change: gasPrices?.processedData?.change
+        return {
+          name: stateName,
+          priceImpact: Math.round(priceImpact * 10) / 10,
+          tariffRevenue: Math.round(tariffRevenue),
+          costOfLiving: Math.round(costOfLiving * 10) / 10,
+          intensity: Math.abs(Math.round(priceImpact * 10) / 10),
+          metrics: {
+            gasPrices: {
+              value: gasPrices?.processedData?.value,
+              displayValue: gasPrices?.processedData?.displayValue,
+              change: gasPrices?.processedData?.change
+            },
+            electricityPrices: {
+              value: electricityPrices?.processedData?.value,
+              displayValue: electricityPrices?.processedData?.displayValue,
+              change: electricityPrices?.processedData?.change
+            },
+            foodPrices: {
+              value: foodPrices?.processedData?.value,
+              displayValue: foodPrices?.processedData?.displayValue,
+              change: foodPrices?.processedData?.change
+            },
+            gdp: {
+              value: gdp?.processedData?.value,
+              displayValue: gdp?.processedData?.displayValue
+            },
+            unemployment: {
+              value: unemployment?.processedData?.value,
+              displayValue: unemployment?.processedData?.displayValue
+            },
+            personalIncome: {
+              value: personalIncome?.processedData?.value,
+              displayValue: personalIncome?.processedData?.displayValue
+            }
           },
-          electricityPrices: {
-            value: electricityPrices?.processedData?.value,
-            displayValue: electricityPrices?.processedData?.displayValue,
-            change: electricityPrices?.processedData?.change
-          },
-          foodPrices: {
-            value: foodPrices?.processedData?.value,
-            displayValue: foodPrices?.processedData?.displayValue,
-            change: foodPrices?.processedData?.change
-          },
-          gdp: {
-            value: gdp?.processedData?.value,
-            displayValue: gdp?.processedData?.displayValue
-          },
-          unemployment: {
-            value: unemployment?.processedData?.value,
-            displayValue: unemployment?.processedData?.displayValue
-          },
-          personalIncome: {
-            value: personalIncome?.processedData?.value,
-            displayValue: personalIncome?.processedData?.displayValue
-          }
-        },
-        hasRealData,
-        // Top shocks placeholder (can be populated from WalletShock collection)
-        topShocks: []
-      };
-    });
-
-    const regionsWithMetrics = (await Promise.all(stateDataPromises))
-      .filter(r => r !== null) // Remove null entries (DC)
-      .sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact)); // Sort by impact
+          hasRealData,
+          topShocks: []
+        };
+      })
+      .sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact));
 
     logger.info(`Returning ${regionsWithMetrics.length} states with metrics`);
 
-    res.json({
+    const responseBody = {
       success: true,
       regions: regionsWithMetrics
-    });
+    };
+
+    cache.set('map-data', responseBody, 10 * 60 * 1000); // 10 min TTL
+    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    res.json(responseBody);
 
   } catch (error) {
     logger.error('Error fetching map data', error);
@@ -1025,6 +1043,12 @@ router.post('/quick-questions/:id/click', async (req, res) => {
  */
 router.get('/featured-states', async (req, res) => {
   try {
+    const cached = cache.get('featured-states');
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=600');
+      return res.json(cached);
+    }
+
     logger.info('Fetching featured states');
 
     // Get states that have the most data
@@ -1037,10 +1061,10 @@ router.get('/featured-states', async (req, res) => {
 
     const featuredStates = statesWithData.map(s => s._id).filter(s => s !== 'nationwide');
 
-    res.json({
-      success: true,
-      states: featuredStates
-    });
+    const responseBody = { success: true, states: featuredStates };
+    cache.set('featured-states', responseBody, 30 * 60 * 1000); // 30 min
+    res.set('Cache-Control', 'public, max-age=600');
+    res.json(responseBody);
 
   } catch (error) {
     logger.error('Error fetching featured states', error);
@@ -1058,6 +1082,12 @@ router.get('/featured-states', async (req, res) => {
  */
 router.get('/timeline-config', async (req, res) => {
   try {
+    const cached = cache.get('timeline-config');
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=600');
+      return res.json(cached);
+    }
+
     logger.info('Fetching timeline config');
 
     // Get active configuration
@@ -1068,10 +1098,10 @@ router.get('/timeline-config', async (req, res) => {
       config = await TimelineConfig.findOne({ status: 'published' }).exec();
     }
 
-    res.json({
-      success: true,
-      config: config
-    });
+    const responseBody = { success: true, config };
+    cache.set('timeline-config', responseBody, 30 * 60 * 1000); // 30 min
+    res.set('Cache-Control', 'public, max-age=600');
+    res.json(responseBody);
 
   } catch (error) {
     logger.error('Error fetching timeline config', error);
@@ -1090,6 +1120,12 @@ router.get('/timeline-config', async (req, res) => {
  */
 router.get('/trending-products', async (req, res) => {
   try {
+    const cached = cache.get('trending-products');
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=600');
+      return res.json(cached);
+    }
+
     const limit = parseInt(req.query.limit) || 5;
 
     logger.info(`Fetching trending products, limit: ${limit}`);
@@ -1103,10 +1139,10 @@ router.get('/trending-products', async (req, res) => {
       .select('name category priceChange.percentDisplay')
       .exec();
 
-    res.json({
-      success: true,
-      products: products
-    });
+    const responseBody = { success: true, products };
+    cache.set('trending-products', responseBody, 30 * 60 * 1000); // 30 min
+    res.set('Cache-Control', 'public, max-age=600');
+    res.json(responseBody);
 
   } catch (error) {
     logger.error('Error fetching trending products', error);

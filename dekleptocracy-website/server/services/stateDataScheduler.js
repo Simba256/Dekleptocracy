@@ -8,6 +8,7 @@ import cron from 'node-cron';
 import StateDataCache from '../models/StateDataCache.js';
 import { executeMCPTool, checkMCPHealth } from './mcpClient.js';
 import { transformAllStates, transformStateData } from './walletShockTransformer.js';
+import cache from '../utils/memoryCache.js';
 import logger from '../utils/logger.js';
 
 // All US states for data refresh
@@ -394,6 +395,10 @@ async function refreshAllStates() {
 
   logger.info('Full state data refresh complete');
 
+  // Invalidate in-memory cache so next request gets fresh data
+  cache.clear();
+  logger.info('In-memory cache cleared after full refresh');
+
   // Transform cached data into wallet shocks for homepage
   logger.info('Starting wallet shock transformation...');
   try {
@@ -425,6 +430,10 @@ async function refreshGasPrices() {
   }
 
   logger.info('Gas price refresh complete');
+
+  // Invalidate map-data cache since gas prices changed
+  cache.delete('map-data');
+  logger.info('Map data cache cleared after gas price refresh');
 
   // Update fuel wallet shocks for priority states
   logger.info('Updating fuel wallet shocks for priority states...');

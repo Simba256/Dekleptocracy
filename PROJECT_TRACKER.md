@@ -1,6 +1,6 @@
 # Project Tracker
 
-> Last updated: 2026-03-20
+> Last updated: 2026-03-21
 
 ## Project Summary
 Dekleptocracy — a web app exposing how federal policies impact household costs, with AI chatbot, state reports, and data visualizations.
@@ -9,9 +9,21 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 **Status**: Active
 
 ## In Progress
-- [ ] Verify Phase 2 tests pass on Railway (mongodb-memory-server needs first-run binary download)
+- [ ] Verify Phase 3 tests pass in CI (local env lacks mongodb-memory-server binary)
 
 ## Recently Completed
+- [x] Phase 3: Performance & Caching — full implementation (2026-03-21)
+  - Fixed Vite config bug (misplaced `optimizeDeps` in `build.rollupOptions`)
+  - Added `charts` manual chunk separating d3/map libs (~160KB) for lazy loading
+  - N+1 fix on `/api/homepage/map-data`: single aggregation via `getAllMapData()` replaces 300+ queries
+  - Parallelized `getAllStateData()` with `Promise.all()` (7x latency reduction)
+  - In-memory TTL cache (`server/utils/memoryCache.js`) with 200-entry max + oldest eviction
+  - Cached 7 endpoints (map-data 10m, /all 5m, reports 15m, static endpoints 30m)
+  - HTTP Cache-Control headers on all cached endpoints
+  - `maxAge: '1d'` on `/uploads` static serving
+  - Cache invalidation in scheduler after data refresh
+  - LazySection component with IntersectionObserver for PriceMapSection
+  - Tests for memoryCache (set/get, TTL, eviction, clear) + map-data + Cache-Control headers
 - [x] Phase 2: Backend Reliability — full implementation (2026-03-20)
   - Refactored server/index.js → app.js + index.js (supertest-compatible)
   - Vitest + mongodb-memory-server + supertest test infrastructure
@@ -31,7 +43,6 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 - [x] Multi-phase improvement roadmap documented (2026-03-18)
 
 ## Upcoming / Planned
-- [ ] Phase 3: Performance — bundle splitting, caching, lazy loading
 - [ ] Phase 4: Developer Experience — linting, CI/CD, documentation
 - [ ] Install @sentry/node + @sentry/react and activate with real DSN
 - [ ] Rotate GNEWS_API_KEY and GEMINI_API_KEY (exposed in git history) — critical post-merge action
@@ -40,6 +51,7 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 - None
 
 ## Key Decisions
+- (2026-03-21) In-memory cache over Redis — single-process app on Railway, no external dependency needed; cache.clear() on scheduler refresh is sufficient invalidation
 - (2026-03-20) Vitest over Jest — client already uses Vitest, ESM works out of the box
 - (2026-03-20) mongodb-memory-server for isolated in-memory DB per test run
 - (2026-03-20) Zod v4 for request validation — additive middleware, no behavior changes for valid requests

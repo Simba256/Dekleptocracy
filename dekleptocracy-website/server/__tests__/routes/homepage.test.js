@@ -7,6 +7,8 @@ import StatsSummary from '../../models/StatsSummary.js';
 import StateComparison from '../../models/StateComparison.js';
 import QuickQuestion from '../../models/QuickQuestion.js';
 import ProductImpact from '../../models/ProductImpact.js';
+import StateDataCache from '../../models/StateDataCache.js';
+import cache from '../../utils/memoryCache.js';
 import { createTestUser, getAuthHeader } from '../helpers/auth.js';
 
 // Mock the report generator (PDF/CSV) to avoid pdfkit dependency issues in tests
@@ -64,6 +66,11 @@ async function seedStatsSummary(overrides = {}) {
     ...overrides,
   }).save();
 }
+
+// Clear in-memory cache between tests to prevent contamination
+afterEach(() => {
+  cache.clear();
+});
 
 describe('Homepage Routes', () => {
   describe('GET /api/homepage/wallet-shocks', () => {
@@ -324,6 +331,89 @@ describe('Homepage Routes', () => {
 
       expect(res.status).toBe(200);
       expect(res.headers['content-type']).toContain('text/csv');
+    });
+  });
+
+  describe('GET /api/homepage/map-data', () => {
+    it('should return correct structure with batch query', async () => {
+      // Seed some state data
+      await StateDataCache.upsertData('California', 'gas_prices', {
+        sourceApi: 'eia',
+        rawData: {},
+        processedData: { value: 4.5, displayValue: '$4.50/gal', change: 12 },
+      }, 24);
+      await StateDataCache.upsertData('California', 'electricity_prices', {
+        sourceApi: 'eia',
+        rawData: {},
+        processedData: { value: 25, displayValue: '25¢/kWh', change: 5 },
+      }, 24);
+
+      const res = await request(app).get('/api/homepage/map-data');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.regions).toBeDefined();
+      expect(Array.isArray(res.body.regions)).toBe(true);
+
+      // Should have California in results
+      const ca = res.body.regions.find(r => r.name === 'California');
+      expect(ca).toBeDefined();
+      expect(ca.metrics.gasPrices.value).toBe(4.5);
+      expect(ca.metrics.electricityPrices.value).toBe(25);
+      expect(ca.hasRealData).toBe(true);
+      expect(typeof ca.priceImpact).toBe('number');
+      expect(typeof ca.costOfLiving).toBe('number');
+    });
+
+    it('should include Cache-Control header', async () => {
+      const res = await request(app).get('/api/homepage/map-data');
+
+      expect(res.status).toBe(200);
+      expect(res.headers['cache-control']).toContain('public');
+      expect(res.headers['cache-control']).toContain('max-age=300');
+    });
+
+    it('should return cached response on second call', async () => {
+      const res1 = await request(app).get('/api/homepage/map-data');
+      expect(res1.status).toBe(200);
+
+      // Second call should return from cache
+      const res2 = await request(app).get('/api/homepage/map-data');
+      expect(res2.status).toBe(200);
+      expect(res2.body).toEqual(res1.body);
+    });
+  });
+
+  describe('Cache-Control headers', () => {
+    it('should set Cache-Control on /available-states', async () => {
+      const res = await request(app).get('/api/homepage/available-states');
+      expect(res.status).toBe(200);
+      expect(res.headers['cache-control']).toContain('public');
+    });
+
+    it('should set Cache-Control on /featured-states', async () => {
+      await seedWalletShock({ state: 'California' });
+      const res = await request(app).get('/api/homepage/featured-states');
+      expect(res.status).toBe(200);
+      expect(res.headers['cache-control']).toContain('public');
+    });
+
+    it('should set Cache-Control on /timeline-config', async () => {
+      const res = await request(app).get('/api/homepage/timeline-config');
+      expect(res.status).toBe(200);
+      expect(res.headers['cache-control']).toContain('public');
+    });
+
+    it('should set Cache-Control on /trending-products', async () => {
+      const res = await request(app).get('/api/homepage/trending-products');
+      expect(res.status).toBe(200);
+      expect(res.headers['cache-control']).toContain('public');
+    });
+
+    it('should set Cache-Control on /all for unauthenticated users', async () => {
+      const res = await request(app).get('/api/homepage/all?state=nationwide');
+      expect(res.status).toBe(200);
+      expect(res.headers['cache-control']).toContain('public');
     });
   });
 });

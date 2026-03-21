@@ -6,6 +6,7 @@ import ProductImpactModal from '../../components/modals/ProductImpactModal';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import SEO, { generateWebAppSchema, generateWebsiteSchema } from '../../components/common/SEO';
+import LazySection from '../../components/common/LazySection';
 import {
   HeroSkeleton,
   StatsSkeleton,
@@ -75,9 +76,11 @@ function HomeContent() {
         <BudgetImpactSection />
       </Suspense>
 
-      <Suspense fallback={<PriceMapSkeleton />}>
-        <PriceMapSection />
-      </Suspense>
+      <LazySection fallback={<PriceMapSkeleton />} rootMargin="300px">
+        <Suspense fallback={<PriceMapSkeleton />}>
+          <PriceMapSection />
+        </Suspense>
+      </LazySection>
 
       <Suspense fallback={<SocialPostsSkeleton />}>
         <SocialPostsSection />
