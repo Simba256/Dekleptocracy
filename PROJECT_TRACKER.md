@@ -12,6 +12,9 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 - None
 
 ## Recently Completed
+- [x] Bulk format codebase with Prettier (2026-03-22)
+  - Also fixed missing vitest `afterEach` import in server test
+  - Fixed ESLint override patterns to work from workspace root (lint-staged)
 - [x] Developer Experience: Prettier + pre-commit hooks (2026-03-22)
   - Prettier config, eslint-config-prettier integration, Husky + lint-staged
   - Pre-commit hook auto-formats + lints staged files
@@ -50,13 +53,12 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 
 ## Upcoming / Planned
 - [ ] Install @sentry/node + @sentry/react and activate with real DSN
-- [ ] Bulk format codebase with `npm run format` (optional, staged files auto-format on commit)
 
 ## Blockers
 - None
 
 ## Key Decisions
-- (2026-03-22) No bulk reformat — Prettier formats only staged files via pre-commit; codebase converges over time
+- (2026-03-22) Bulk reformat done — single atomic commit for clean git blame
 - (2026-03-21) In-memory cache over Redis — single-process app on Railway, no external dependency needed
 - (2026-03-20) Vitest over Jest — client already uses Vitest, ESM works out of the box
 - (2026-03-20) mongodb-memory-server for isolated in-memory DB per test run
