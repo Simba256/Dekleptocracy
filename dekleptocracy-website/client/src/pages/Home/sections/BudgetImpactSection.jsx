@@ -5,7 +5,7 @@ import ProductSearch from '../../../components/inputs/ProductSearch';
 
 export const BudgetImpactSection = memo(function BudgetImpactSection() {
   const { state, actions } = useHomepage();
-  const { timelineDate, timelineConfig, trendingProducts } = state;
+  const { timelineConfig, trendingProducts } = state;
   const [selectedDate, setSelectedDate] = useState('2025-01-20');
 
   // Use timeline config from API or fallback

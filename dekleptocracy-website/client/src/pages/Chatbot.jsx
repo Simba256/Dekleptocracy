@@ -133,7 +133,7 @@ const Chatbot = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [userLocation, setUserLocation] = useState(null); // null = uninitialized, only set when user selects
   const [showCopyNotification, setShowCopyNotification] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState('');
+  const [, setLoadingStatus] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const messagesEndRef = useRef(null);

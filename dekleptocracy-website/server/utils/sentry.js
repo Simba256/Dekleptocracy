@@ -19,7 +19,7 @@ export function initSentry() {
   // Sentry.init({ dsn: SENTRY_DSN });
 }
 
-export function setupSentryErrorHandler(app) {
+export function setupSentryErrorHandler(_app) {
   if (!SENTRY_DSN) return;
 
   // Uncomment after installing @sentry/node:

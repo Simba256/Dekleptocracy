@@ -21,7 +21,6 @@ const Dashboard = () => {
       }
 
       // Load from cache first for instant display
-      const cachedPrefs = localStorage.getItem(STORAGE_KEYS.USER_PREFERENCES);
       const cachedProfile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       if (cachedProfile) {
         try {

@@ -38,7 +38,7 @@ function generateChartData(baseValue, trend = 'up') {
     const date = new Date(currentDate);
     date.setMonth(date.getMonth() - i);
 
-    let value = baseValue;
+    let value;
     if (trend === 'up') {
       value = baseValue * (0.85 + (i * 0.03)); // Gradual increase
     } else if (trend === 'down') {
@@ -875,7 +875,7 @@ async function seedTimelineConfig() {
   };
 
   await TimelineConfig.deleteMany({});
-  const result = await TimelineConfig.create(config);
+  await TimelineConfig.create(config);
   console.log(`✅ Seeded 1 timeline config`);
 
   return 1;

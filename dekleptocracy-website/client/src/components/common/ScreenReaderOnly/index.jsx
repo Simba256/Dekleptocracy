@@ -8,10 +8,11 @@ import './ScreenReaderOnly.css';
  * @param {React.ElementType} [props.as='span'] - HTML element to render
  * @returns {JSX.Element}
  */
-export const ScreenReaderOnly = ({ children, as: Component = 'span' }) => (
-  <Component className="sr-only">
+// eslint-disable-next-line no-unused-vars
+export const ScreenReaderOnly = ({ children, as: Tag = 'span' }) => (
+  <Tag className="sr-only">
     {children}
-  </Component>
+  </Tag>
 );
 
 /**
@@ -28,16 +29,17 @@ export const LiveRegion = ({
   children,
   politeness = 'polite',
   atomic = true,
-  as: Component = 'div'
+  // eslint-disable-next-line no-unused-vars
+  as: Tag = 'div'
 }) => (
-  <Component
+  <Tag
     role="status"
     aria-live={politeness}
     aria-atomic={atomic}
     className="sr-only"
   >
     {children}
-  </Component>
+  </Tag>
 );
 
 /**

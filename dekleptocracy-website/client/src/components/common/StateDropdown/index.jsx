@@ -50,7 +50,7 @@ export function StateDropdown({
   }, [value]);
 
   // Find selected index for keyboard navigation
-  const selectedIndex = useMemo(() => {
+  const _selectedIndex = useMemo(() => {
     return filteredStates.findIndex(state => {
       if (value === 'nationwide') return state === 'All states';
       return state === value;

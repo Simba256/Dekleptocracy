@@ -47,7 +47,7 @@ export async function executeMCPTool(toolName, args = {}, timeout = DEFAULT_TOOL
     clearTimeout(timeoutId);
     if (error.name === 'AbortError') {
       logger.error(`MCP tool execution timed out after ${timeout}ms: ${toolName}`, null, { toolName, args });
-      throw new Error(`MCP tool execution timed out: ${toolName}`);
+      throw new Error(`MCP tool execution timed out: ${toolName}`, { cause: error });
     }
     logger.error(`Error executing MCP tool: ${toolName}`, error, { toolName, args });
     throw error;

@@ -50,7 +50,7 @@ router.get('/all', async (req, res) => {
           userPreferences = user.preferences || {};
         }
       }
-    } catch (authError) {
+    } catch (_authError) {
       // Invalid token - proceed with defaults
     }
 
@@ -641,7 +641,7 @@ router.get('/state-comparison', optionalAuth, async (req, res) => {
  */
 router.get('/product-impact', optionalAuth, async (req, res) => {
   try {
-    const { product, startDate } = req.query;
+    const { product } = req.query;
     let state = req.query.state;
 
     if (!state && req.userPreferences?.selectedState) {

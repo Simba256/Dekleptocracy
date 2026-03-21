@@ -202,7 +202,7 @@ const StateReport = () => {
                 setErrorCode('NO_DATA_AVAILABLE');
                 setTriggeringRefresh(false);
               }
-            } catch (e) {
+            } catch (_e) {
               // Continue polling
             }
           }, 10000);
@@ -319,7 +319,7 @@ const StateReport = () => {
     }
   };
 
-  const generateComparisonText = (comparisonData, stateName) => {
+  const _generateComparisonText = (comparisonData, stateName) => {
     if (!comparisonData || comparisonData.length === 0) {
       return `Living costs in ${stateName} vary from the national average.`;
     }

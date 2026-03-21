@@ -33,7 +33,7 @@ const CreateAccount = () => {
               await handleGoogleSignIn(
                 response,
                 API_URL,
-                (data) => {
+                () => {
                   clearPreferences();
                   setSuccess(true);
                   setTimeout(() => {

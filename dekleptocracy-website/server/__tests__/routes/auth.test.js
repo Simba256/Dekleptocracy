@@ -203,7 +203,7 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/refresh', () => {
     it('should issue new token pair with valid refresh token', async () => {
-      const { user, refreshToken } = await createTestUser();
+      const { refreshToken } = await createTestUser();
 
       const res = await request(app)
         .post('/api/auth/refresh')

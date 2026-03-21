@@ -110,7 +110,7 @@ const researchCategories = [
  * - Research conclusions
  * - Not news-focused, but analytical
  */
-function generateResearchPrompt(category, topic, researchYear = 2024) {
+function generateResearchPrompt(category, topic, _researchYear = 2024) {
   return `You are a senior economic researcher at an academic institution writing a comprehensive research report for Dekleptocracy, a policy impact tracking platform.
 
 CRITICAL FIRST STEP - USE TOOLS TO GATHER REAL DATA:

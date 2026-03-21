@@ -254,7 +254,7 @@ const InteractiveMap = ({
     return data.find(d => d.name === stateName);
   }, [data]);
 
-  const handleStateClick = (stateName, stateId) => {
+  const handleStateClick = (stateName, _stateId) => {
     if (stateName) {
       onStateSelect?.(stateName);
       onDrillDown?.(stateName);

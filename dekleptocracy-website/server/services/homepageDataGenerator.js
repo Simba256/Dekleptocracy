@@ -4,8 +4,6 @@
  */
 
 import WalletShock from '../models/WalletShock.js';
-import CostDriver from '../models/CostDriver.js';
-import StatsSummary from '../models/StatsSummary.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -14,7 +12,7 @@ import logger from '../utils/logger.js';
  * @param {string} conversationId - Optional conversation ID
  * @returns {Promise<string>} LLM response
  */
-async function callIntelligentChat(prompt, conversationId = null) {
+async function callIntelligentChat(prompt, _conversationId = null) {
   try {
     const mcpUrl = process.env.MCP_SERVER_URL || 'http://localhost:8000';
     logger.info(`Calling MCP server at: ${mcpUrl}`);
@@ -277,8 +275,8 @@ export async function generateHomepageData(options = {}) {
   const {
     states = ['California', 'Texas'],
     skipWalletShocks = false,
-    skipCostDrivers = true, // Skip for now, implement later
-    skipStats = true // Skip for now, implement later
+    skipCostDrivers: _skipCostDrivers = true, // Skip for now, implement later
+    skipStats: _skipStats = true // Skip for now, implement later
   } = options;
 
   logger.info('🚀 Starting homepage data generation', { states, options });

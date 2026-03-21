@@ -16,9 +16,6 @@ export const HeroSection = memo(function HeroSection() {
     navigate('/chatbot', { state: { initialQuery: questionText } });
   };
 
-  // Get display value for hero dropdown
-  const displayValue = selectedState === 'nationwide' || !selectedState ? 'All States' : selectedState;
-
   return (
     <section className="hero-section">
       <div className="hero-container">

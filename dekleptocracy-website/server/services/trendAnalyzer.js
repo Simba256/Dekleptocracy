@@ -261,7 +261,7 @@ function detectThresholdViolation(currentValue, metricType) {
  * @param {string} metricType - Type of metric (gas_prices, electricity_prices)
  * @returns {Object|null} Alert object or null
  */
-function detectRegionalPremium(stateValue, nationalValue, metricType) {
+function detectRegionalPremium(stateValue, nationalValue, _metricType) {
   if (stateValue == null || nationalValue == null || nationalValue === 0) return null;
 
   const premium = ((stateValue - nationalValue) / nationalValue) * 100;

@@ -9,7 +9,7 @@ import logger from '../utils/logger.js';
 import StateDataCache from '../models/StateDataCache.js';
 import { fetchNews, checkMCPHealth, executeMCPTool } from './mcpClient.js';
 import { refreshStateData } from './stateDataScheduler.js';
-import { analyzeTrends, analyzeHistoricalContext, getMetricTypeFromTitle } from './trendAnalyzer.js';
+import { analyzeTrends, analyzeHistoricalContext } from './trendAnalyzer.js';
 
 // Average household consumption estimates for impact calculations
 const HOUSEHOLD_CONSUMPTION = {
@@ -465,7 +465,7 @@ async function generateCrossMetricInsight(stateData, stateName, householdImpact)
   if (allMetrics.length < 2) return null;
 
   // Build squeeze description
-  let squeezeDesc = '';
+  let squeezeDesc;
   if (squeeze.status === 'high_squeeze') {
     squeezeDesc = `HIGH PRESSURE: ${squeeze.pressures} cost categories rising simultaneously`;
   } else if (squeeze.status === 'moderate_squeeze') {
@@ -544,7 +544,6 @@ async function generateForwardLookingInsight(stateData, stateName) {
   const electricity = stateData.electricity_prices;
   const gasoline = stateData.gas_prices;
   const unemployment = stateData.unemployment;
-  const food = stateData.food_prices;
 
   const trendAnalysis = [];
   const projections = [];
@@ -924,7 +923,7 @@ function buildComparisonCards(stateData, stateName) {
 /**
  * Build key metrics from real data with trend analysis and historical context
  */
-function buildKeyMetrics(stateData, stateName) {
+function buildKeyMetrics(stateData, _stateName) {
   const metrics = [];
 
   // Unemployment
@@ -1128,7 +1127,7 @@ async function fetchNationalAverages() {
 /**
  * Build state vs national comparison data
  */
-async function buildComparisonData(stateData, stateName) {
+async function buildComparisonData(stateData, _stateName) {
   const comparisons = [];
 
   // Fetch national averages for comparison
@@ -1292,7 +1291,6 @@ function generateFallbackOverview(stateData, stateName, squeeze, householdImpact
   const electricity = stateData.electricity_prices?.processedData;
   const gasoline = stateData.gas_prices?.processedData;
   const unemployment = stateData.unemployment?.processedData;
-  const food = stateData.food_prices?.processedData;
 
   if (electricity?.change) {
     const direction = electricity.change > 0 ? 'risen' : 'fallen';
@@ -1325,7 +1323,7 @@ function generateFallbackOverview(stateData, stateName, squeeze, householdImpact
 /**
  * Generate fallback comparison text when LLM is unavailable
  */
-function generateFallbackComparisonText(stateData, stateName, nationalAvgs) {
+function _generateFallbackComparisonText(stateData, stateName, nationalAvgs) {
   const comparisons = [];
 
   const electricity = stateData.electricity_prices?.processedData;

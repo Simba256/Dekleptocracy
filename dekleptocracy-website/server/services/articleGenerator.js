@@ -273,7 +273,7 @@ async function callLLM(prompt) {
         articleData = JSON.parse(jsonMatch[0]);
       } else {
         console.error('Could not parse JSON from MCP response');
-        throw new Error('Invalid JSON from MCP server');
+        throw new Error('Invalid JSON from MCP server', { cause: e });
       }
     }
     
@@ -301,7 +301,7 @@ async function callLLMWithContext(prompt, category, topic) {
 }
 
 // Mock data fallback - high-quality example article
-function getMockArticleData(category = 'groceries', topic = 'egg prices') {
+function getMockArticleData(category = 'groceries', _topic = 'egg prices') {
   // Generate different mock articles based on category
   const mockArticles = {
     groceries: {
@@ -602,7 +602,7 @@ function getMockArticleData(category = 'groceries', topic = 'egg prices') {
 }
 
 // Generate sources based on category
-function generateSources(category, topic) {
+function generateSources(category, _topic) {
   const sourcesMap = {
     groceries: [
       { title: 'USDA Weekly Market Report', url: 'https://www.ams.usda.gov/', publishedDate: new Date() },

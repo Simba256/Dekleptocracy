@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'coverage']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -15,7 +15,11 @@ export default defineConfig([
     ],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        process: 'readonly',
+        global: 'readonly',
+      },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
@@ -23,7 +27,40 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', {
+        varsIgnorePattern: '^[A-Z_]',
+        argsIgnorePattern: '^_',
+        destructuredArrayIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      }],
+    },
+  },
+  // Test files: add vitest globals
+  {
+    files: ['**/__tests__/**/*.{js,jsx}', 'src/test/**/*.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        test: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
+    },
+  },
+  // Files that legitimately export helpers alongside components
+  {
+    files: [
+      'src/components/common/SEO/index.jsx',
+      'src/context/HomepageContext.jsx',
+      'src/components/common/AnimatedSection/index.jsx',
+    ],
+    rules: {
+      'react-refresh/only-export-components': 'off',
     },
   },
 ])

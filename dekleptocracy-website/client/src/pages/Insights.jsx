@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../utils/apiUrl';
 import SEO, { generateArticleSchema } from '../components/common/SEO';

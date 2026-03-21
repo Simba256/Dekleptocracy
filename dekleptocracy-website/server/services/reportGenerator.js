@@ -86,7 +86,7 @@ export async function generateStateReport(state, timePeriod = 'YoY') {
     // Executive Summary Stats
     const avgChange = walletShocks.reduce((sum, s) => sum + s.changePercent, 0) / walletShocks.length || 0;
     const maxChange = Math.max(...walletShocks.map(s => s.changePercent));
-    const minChange = Math.min(...walletShocks.map(s => s.changePercent));
+    const _minChange = Math.min(...walletShocks.map(s => s.changePercent));
     const increasingCount = walletShocks.filter(s => s.changePercent > 0).length;
 
     doc.rect(60, 380, doc.page.width - 120, 200)
@@ -233,7 +233,7 @@ export async function generateStateReport(state, timePeriod = 'YoY') {
         .moveDown(2);
 
       // Cost drivers with improved bars
-      costDrivers.forEach((driver, index) => {
+      costDrivers.forEach((driver) => {
         const yPos = doc.y;
         const maxBarWidth = 350;
         const barWidth = (driver.percentage / 100) * maxBarWidth;

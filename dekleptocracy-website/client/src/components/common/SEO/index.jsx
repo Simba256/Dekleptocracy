@@ -29,8 +29,6 @@ const SEO = ({
   const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - Track Policy Impact on Your Wallet`;
 
   const defaultDescription = 'Discover how government decisions, tariffs, and lobbying affect your everyday prices. Compare costs across states and track policy impacts on your household budget.';
-  const defaultImage = `${BASE_URL}/og-image.jpg`;
-
   const metaDescription = description || defaultDescription;
   const metaImage = image?.startsWith('http') ? image : `${BASE_URL}${image || '/og-image.jpg'}`;
   const canonicalUrl = url ? `${BASE_URL}${url}` : BASE_URL;
@@ -165,7 +163,7 @@ export const generateFAQSchema = (faqs) => ({
   }))
 });
 
-export const generateStateReportSchema = (state, data) => ({
+export const generateStateReportSchema = (state, _data) => ({
   '@context': 'https://schema.org',
   '@type': 'Dataset',
   name: `${state} Economic Impact Data`,

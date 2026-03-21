@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDebounce } from '../../../hooks/useDebounce';
 import homepageApi from '../../../api/homepage';
 import './ProductSearch.css';

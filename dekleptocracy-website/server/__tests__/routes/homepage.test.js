@@ -9,7 +9,8 @@ import QuickQuestion from '../../models/QuickQuestion.js';
 import ProductImpact from '../../models/ProductImpact.js';
 import StateDataCache from '../../models/StateDataCache.js';
 import cache from '../../utils/memoryCache.js';
-import { createTestUser, getAuthHeader } from '../helpers/auth.js';
+// Auth helpers available if needed for authenticated route tests
+// import { createTestUser, getAuthHeader } from '../helpers/auth.js';
 
 // Mock the report generator (PDF/CSV) to avoid pdfkit dependency issues in tests
 vi.mock('../../services/reportGenerator.js', () => ({
