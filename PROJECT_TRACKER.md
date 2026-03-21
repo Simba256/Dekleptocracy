@@ -1,6 +1,6 @@
 # Project Tracker
 
-> Last updated: 2026-03-21
+> Last updated: 2026-03-21 (chatbot redesign)
 
 ## Project Summary
 Dekleptocracy — a web app exposing how federal policies impact household costs, with AI chatbot, state reports, and data visualizations.
@@ -10,8 +10,16 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 
 ## In Progress
 - [ ] Verify Phase 3 tests pass in CI (local env lacks mongodb-memory-server binary)
+- [ ] Chatbot visual redesign — verify at all breakpoints and test all functionality
 
 ## Recently Completed
+- [x] Chatbot visual redesign — CSS rewrite (1805→~600 lines), JSX restructure (2026-03-21)
+  - 768px centered message column matching modern chat UIs
+  - White minimal header, no gradients/glassmorphism
+  - Welcome state with pill buttons replacing emoji card grid
+  - Icon-only actions (copy/regenerate), coral text follow-ups
+  - 240px clean sidebar, light markdown theme, pulsing dot loader
+  - Removed 30+ `--chatbot-*` custom properties, using global tokens directly
 - [x] Phase 3: Performance & Caching — full implementation (2026-03-21)
   - Fixed Vite config bug (misplaced `optimizeDeps` in `build.rollupOptions`)
   - Added `charts` manual chunk separating d3/map libs (~160KB) for lazy loading

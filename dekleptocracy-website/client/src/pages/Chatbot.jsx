@@ -614,13 +614,6 @@ IMPORTANT GUIDELINES:
     }
   };
 
-  const suggestedPrompts = [
-    { icon: '📊', text: 'Show tariff impacts in my state' },
-    { icon: '💰', text: 'Compare prices with national average' },
-    { icon: '📈', text: 'What are the top price increases?' },
-    { icon: '🏘️', text: 'How do policies affect my budget?' }
-  ];
-
   const welcomeCards = [
     {
       icon: '📊',
@@ -686,31 +679,6 @@ IMPORTANT GUIDELINES:
     ];
   };
 
-  // Helper function to get icon based on chat content
-  const getChatIcon = (chat) => {
-    const firstUserMsg = chat.messages.find(msg => msg.role === 'user');
-    if (!firstUserMsg) return '💬';
-
-    const content = firstUserMsg.content.toLowerCase();
-
-    if (content.includes('tariff') || content.includes('tax')) return '📊';
-    if (content.includes('price') || content.includes('cost') || content.includes('$')) return '💰';
-    if (content.includes('stock') || content.includes('market')) return '📈';
-    if (content.includes('budget') || content.includes('impact')) return '🏘️';
-    if (content.includes('policy') || content.includes('government')) return '🏛️';
-
-    return '💬';
-  };
-
-  // Helper function to get message preview
-  const getMessagePreview = (chat) => {
-    const firstUserMsg = chat.messages.find(msg => msg.role === 'user');
-    if (!firstUserMsg) return '';
-
-    const preview = firstUserMsg.content.replace(/\n/g, ' ').trim();
-    return preview.length > 60 ? preview.substring(0, 60) + '...' : preview;
-  };
-
   // Memoized function to group chats by date
   const groupChatsByDate = useCallback((chats) => {
     const now = new Date();
@@ -770,30 +738,38 @@ IMPORTANT GUIDELINES:
         url="/chatbot"
         noindex={true}
       />
-      {/* Sidebar Toggle Button - Mobile only */}
+
+      {/* Sidebar Toggle — Mobile only, SVG hamburger */}
       <button
         className={`sidebar-toggle-mobile ${showHistory ? 'hidden' : ''}`}
         onClick={() => setShowHistory(true)}
         title="Open chat history"
       >
-        ☰
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
       </button>
 
-      {/* History Sidebar - Always visible on desktop */}
+      {/* History Sidebar */}
       <div className={`chat-history-sidebar ${showHistory ? 'show-mobile' : ''}`}>
         <div className="history-header">
-          <h2 className="history-title">📚 Chat History</h2>
+          <h2 className="history-title">History</h2>
           <button
             className="history-close-btn-mobile"
             onClick={() => setShowHistory(false)}
             title="Close sidebar"
           >
-            ✕
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
         <button className="new-chat-btn" onClick={startNewChat}>
-          ➕ New Chat
+          New Chat
         </button>
 
         <div className="history-list">
@@ -822,18 +798,8 @@ IMPORTANT GUIDELINES:
                         tabIndex={0}
                         aria-label={`Load chat: ${chat.title}`}
                       >
-                        <div className="history-item-icon" aria-hidden="true">
-                          {getChatIcon(chat)}
-                        </div>
                         <div className="history-item-content">
                           <div className="history-item-title">{chat.title}</div>
-                          <div className="history-item-preview">{getMessagePreview(chat)}</div>
-                          <div className="history-item-date">
-                            {new Date(chat.updatedAt).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </div>
                         </div>
                         <button
                           className="history-delete-btn"
@@ -841,7 +807,10 @@ IMPORTANT GUIDELINES:
                           title="Delete chat"
                           aria-label={`Delete chat: ${chat.title}`}
                         >
-                          🗑️
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
                         </button>
                       </div>
                     ))}
@@ -853,7 +822,7 @@ IMPORTANT GUIDELINES:
         </div>
       </div>
 
-      {/* Overlay when sidebar is open - Mobile only */}
+      {/* Overlay — Mobile only */}
       {showHistory && (
         <div
           className="history-overlay-mobile"
@@ -864,180 +833,152 @@ IMPORTANT GUIDELINES:
       {/* Copy Notification */}
       {showCopyNotification && (
         <div className="copy-notification">
-          ✓ Copied to clipboard
+          Copied to clipboard
         </div>
       )}
 
       {/* Main Chat Container */}
       <div className="chatbot-main">
-        {/* Header */}
+        {/* Header — minimal white strip */}
         <div className="chatbot-header">
-          <div className="header-content">
-            <div className="header-text">
-              <h1 className="chatbot-title">
-                AI Trade & Tariff Assistant
-                <div className="ai-status">
-                  <span className="status-dot"></span>
-                  <span>Online</span>
-                </div>
-              </h1>
-              <p className="chatbot-subtitle">
-                Powered by GPT-5 with real-time trade analysis tools
-              </p>
-            </div>
+          <div className="header-inner">
+            <h1 className="chatbot-title">AI Assistant</h1>
             {userLocation && (
-              <div className="header-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <span>{userLocation === 'nationwide' ? 'All States' : userLocation}</span>
-              </div>
+              <span className="header-badge">
+                {userLocation === 'nationwide' ? 'All States' : userLocation}
+              </span>
             )}
           </div>
-          {messages.length > 1 && (
-            <button className="new-chat-btn-header" onClick={startNewChat}>
-              ➕ New Chat
-            </button>
-          )}
         </div>
 
         {/* Messages Area */}
         <div className="chatbot-messages">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`message ${message.role === 'user' ? 'message-user' : 'message-assistant'}`}
-            >
-              <div className="message-avatar">
-                {message.role === 'user' ? '👤' : '🤖'}
-              </div>
-              <div className="message-content">
-                <div className="message-role">
-                  {message.role === 'user' ? 'You' : 'AI Assistant'}
-                </div>
-                <div className="message-text">
-                  {message.isLoading ? (
-                    <div className="loading-indicator">
-                      <div className="loading-dots">
-                        <span className="loading-dot"></span>
-                        <span className="loading-dot"></span>
-                        <span className="loading-dot"></span>
-                      </div>
-                      {loadingStatus && (
-                        <div className="loading-status">{loadingStatus}</div>
-                      )}
-                    </div>
-                  ) : message.id === '1' ? (
-                    // Enhanced welcome message with cards
-                    <div>
-                      <ReactMarkdown
-                        className="markdown-content"
-                        remarkPlugins={[remarkGfm]}
-                      >
-                        {message.content.split('\n\n')[0]}
-                      </ReactMarkdown>
-                      <div className="welcome-cards">
-                        {welcomeCards.map((card, index) => (
-                          <button
-                            key={index}
-                            className="welcome-card"
-                            type="button"
-                            onClick={() => {
-                              setInput(card.query);
-                              setTimeout(() => handleSubmit(new Event('submit')), 100);
-                            }}
-                          >
-                            <div className="welcome-card-icon">{card.icon}</div>
-                            <div className="welcome-card-title">{card.title}</div>
-                            <div className="welcome-card-description">{card.description}</div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <ReactMarkdown
-                      className="markdown-content"
-                      remarkPlugins={[remarkGfm]}
+          <div className="chatbot-messages-inner">
+            {messages.length <= 1 ? (
+              /* Welcome State */
+              <div className="welcome-state">
+                <h2 className="welcome-greeting">What can I help you with?</h2>
+                {userLocation && (
+                  <p className="welcome-subtitle">
+                    Analyzing data for {userLocation === 'nationwide' ? 'all states' : userLocation}
+                  </p>
+                )}
+                <div className="welcome-pills">
+                  {welcomeCards.map((card, index) => (
+                    <button
+                      key={index}
+                      className="welcome-pill"
+                      type="button"
+                      onClick={() => {
+                        setInput(card.query);
+                        setTimeout(() => handleSubmit(new Event('submit')), 100);
+                      }}
                     >
-                      {message.content}
-                    </ReactMarkdown>
-                  )}
+                      <span className="welcome-pill-icon">{card.icon}</span>
+                      {card.title}
+                    </button>
+                  ))}
                 </div>
-                <div className="message-time">
-                  {message.timestamp.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </div>
-                {!message.isLoading && message.id !== '1' && (
-                  <>
-                    <div className="message-actions">
-                      <button
-                        className="action-btn"
-                        onClick={() => copyMessageToClipboard(message.content)}
-                        title="Copy message"
-                        aria-label="Copy message"
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
-                        Copy
-                      </button>
-                      {message.role === 'assistant' && (
-                        <button
-                          className="action-btn"
-                          onClick={() => regenerateResponse(message.id)}
-                          title="Regenerate response"
-                          aria-label="Regenerate response"
-                          disabled={isLoading}
+              </div>
+            ) : (
+              /* Message List — filter out welcome message */
+              messages.filter(msg => msg.id !== '1').map((message) => (
+                <div
+                  key={message.id}
+                  className={`message ${message.role === 'user' ? 'message-user' : 'message-assistant'}`}
+                >
+                  <div className="message-avatar">
+                    {message.role === 'user' ? '👤' : '🤖'}
+                  </div>
+                  <div className="message-content">
+                    <div className="message-text">
+                      {message.isLoading ? (
+                        <div className="loading-indicator">
+                          <div className="loading-dots">
+                            <span className="loading-dot"></span>
+                            <span className="loading-dot"></span>
+                            <span className="loading-dot"></span>
+                          </div>
+                        </div>
+                      ) : (
+                        <ReactMarkdown
+                          className="markdown-content"
+                          remarkPlugins={[remarkGfm]}
                         >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <polyline points="1 20 1 14 7 14"></polyline>
-                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                          </svg>
-                          Regenerate
-                        </button>
+                          {message.content}
+                        </ReactMarkdown>
                       )}
                     </div>
-                    {/* Follow-up suggestions for assistant messages */}
-                    {message.role === 'assistant' && !isLoading && (
-                      <div className="follow-up-suggestions">
-                        <div className="follow-up-label">Suggested follow-ups</div>
-                        <div className="follow-up-chips">
-                          {generateFollowUps(message).slice(0, 3).map((followUp, idx) => (
+                    <div className="message-time">
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </div>
+                    {!message.isLoading && (
+                      <>
+                        <div className="message-actions">
+                          <button
+                            className="action-btn"
+                            onClick={() => copyMessageToClipboard(message.content)}
+                            title="Copy message"
+                            aria-label="Copy message"
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                          </button>
+                          {message.role === 'assistant' && (
                             <button
-                              key={idx}
-                              className="follow-up-chip"
-                              onClick={() => {
-                                setInput(followUp);
-                                setTimeout(() => handleSubmit(new Event('submit')), 100);
-                              }}
+                              className="action-btn"
+                              onClick={() => regenerateResponse(message.id)}
+                              title="Regenerate response"
+                              aria-label="Regenerate response"
+                              disabled={isLoading}
                             >
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="9 18 15 12 9 6" />
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                               </svg>
-                              {followUp}
                             </button>
-                          ))}
+                          )}
                         </div>
-                      </div>
+                        {/* Follow-up suggestions — coral text links */}
+                        {message.role === 'assistant' && !isLoading && (
+                          <div className="follow-up-suggestions">
+                            <div className="follow-up-chips">
+                              {generateFollowUps(message).slice(0, 3).map((followUp, idx) => (
+                                <button
+                                  key={idx}
+                                  className="follow-up-chip"
+                                  onClick={() => {
+                                    setInput(followUp);
+                                    setTimeout(() => handleSubmit(new Event('submit')), 100);
+                                  }}
+                                >
+                                  {followUp}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
+                  </div>
+                </div>
+              ))
+            )}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
 
         {/* Input Area */}
         <div className="chatbot-input-area">
           <form onSubmit={handleSubmit} className="chatbot-form">
             <div className="input-wrapper">
-              <div className="input-tools">
+              {speechSupported && (
                 <button
                   type="button"
                   className={`input-tool-btn ${isListening ? 'listening' : ''}`}
@@ -1051,105 +992,65 @@ IMPORTANT GUIDELINES:
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
                   </svg>
                 </button>
-              </div>
+              )}
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about trade, tariffs, stocks, or policy impacts..."
+                placeholder="Ask anything..."
                 className="chatbot-input"
                 rows={1}
                 disabled={isLoading}
               />
-              <button
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                className="chatbot-send-btn"
-              >
-                {isLoading ? (
-                  <>
-                    <svg className="animate-spin" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25"/>
-                      <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" opacity="0.75"/>
-                    </svg>
-                    Thinking...
-                  </>
-                ) : (
-                  <>
-                    Send
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="22" y1="2" x2="11" y2="13" />
-                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                    </svg>
-                  </>
-                )}
-              </button>
+              {isLoading ? (
+                <button
+                  type="button"
+                  onClick={stopRequest}
+                  className="chatbot-stop-btn"
+                  aria-label="Stop generating"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="6" width="12" height="12" rx="1" />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!input.trim()}
+                  className="chatbot-send-btn"
+                  aria-label="Send message"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" y1="19" x2="12" y2="5" />
+                    <polyline points="5 12 12 5 19 12" />
+                  </svg>
+                </button>
+              )}
             </div>
 
-            <div className="chatbot-actions-row">
-              <div className="quick-actions-row">
-                <button
-                  type="button"
-                  className="quick-action-btn danger"
-                  onClick={clearConversation}
-                  disabled={messages.length <= 1}
-                  aria-label="Clear conversation"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
-                  Clear
-                </button>
-                <button
-                  type="button"
-                  className="quick-action-btn"
-                  onClick={exportChat}
-                  disabled={messages.length <= 1}
-                  aria-label="Export chat"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Export
-                </button>
-                {isLoading && (
+            {messages.length > 1 && (
+              <div className="chatbot-actions-row">
+                <div className="quick-actions-row">
                   <button
                     type="button"
-                    onClick={stopRequest}
-                    className="chatbot-stop-btn"
-                    aria-label="Stop generating"
+                    className="quick-action-btn danger"
+                    onClick={clearConversation}
+                    aria-label="Clear conversation"
                   >
-                    Stop
+                    Clear
                   </button>
-                )}
+                  <button
+                    type="button"
+                    className="quick-action-btn"
+                    onClick={exportChat}
+                    aria-label="Export chat"
+                  >
+                    Export
+                  </button>
+                </div>
               </div>
-              <div className="chatbot-hint">
-                Press Enter to send, Shift+Enter for new line
-              </div>
-            </div>
+            )}
           </form>
-
-          {/* Suggested Prompts - Only show when chat is empty or just welcome message */}
-          {messages.length <= 1 && !input && (
-            <div className="suggested-prompts">
-              {suggestedPrompts.map((prompt, index) => (
-                <button
-                  key={index}
-                  className="prompt-chip"
-                  onClick={() => {
-                    setInput(prompt.text);
-                    setTimeout(() => handleSubmit(new Event('submit')), 100);
-                  }}
-                >
-                  <span>{prompt.icon}</span>
-                  <span>{prompt.text}</span>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>
