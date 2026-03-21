@@ -8,20 +8,20 @@ This document consolidates all remaining work needed before production launch.
 
 ## Completion Summary
 
-| Area | Status | Notes |
-|------|--------|-------|
-| Backend APIs & Data | ✅ 100% | 11 government APIs integrated |
-| Component Architecture | ✅ 100% | Modular, code-split |
-| Performance | ✅ 100% | 79KB initial bundle, TBT reduced 82% |
-| Accessibility/UX | ✅ 100% | Lighthouse 93/100 |
-| SEO | ✅ 100% | Meta tags, sitemap, structured data |
-| Real Data (Stats) | ✅ 100% | LDA/FEC APIs live |
-| Real Data (Wallet Shocks) | ✅ 100% | EIA/USDA APIs live |
-| Real Data (Cost Drivers) | ❌ 0% | Still seeded |
-| Interactive Features | 🟡 60% | Core done, WebSocket pending |
-| Analytics | ❌ 0% | Not started |
-| Admin CMS | ❌ 0% | Not started |
-| Testing | ❌ 0% | No test coverage |
+| Area                      | Status  | Notes                                |
+| ------------------------- | ------- | ------------------------------------ |
+| Backend APIs & Data       | ✅ 100% | 11 government APIs integrated        |
+| Component Architecture    | ✅ 100% | Modular, code-split                  |
+| Performance               | ✅ 100% | 79KB initial bundle, TBT reduced 82% |
+| Accessibility/UX          | ✅ 100% | Lighthouse 93/100                    |
+| SEO                       | ✅ 100% | Meta tags, sitemap, structured data  |
+| Real Data (Stats)         | ✅ 100% | LDA/FEC APIs live                    |
+| Real Data (Wallet Shocks) | ✅ 100% | EIA/USDA APIs live                   |
+| Real Data (Cost Drivers)  | ❌ 0%   | Still seeded                         |
+| Interactive Features      | 🟡 60%  | Core done, WebSocket pending         |
+| Analytics                 | ❌ 0%   | Not started                          |
+| Admin CMS                 | ❌ 0%   | Not started                          |
+| Testing                   | ❌ 0%   | No test coverage                     |
 
 ---
 
@@ -32,6 +32,7 @@ This document consolidates all remaining work needed before production launch.
 **Why**: Need metrics from day 1 to measure success.
 
 **Tasks:**
+
 - [ ] Install `react-ga4` package
 - [ ] Create `Analytics.jsx` provider component
 - [ ] Add to `App.jsx` wrapper
@@ -47,6 +48,7 @@ This document consolidates all remaining work needed before production launch.
 - [ ] Set up GA4 property (can use placeholder ID until domain ready)
 
 **Files to create:**
+
 ```
 client/src/components/Analytics/
 ├── AnalyticsProvider.jsx    # GA4 initialization
@@ -56,6 +58,7 @@ client/src/components/Analytics/
 ```
 
 **Environment variables needed:**
+
 ```
 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
@@ -67,6 +70,7 @@ VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 **Why**: Required for production launch.
 
 **Tasks:**
+
 - [ ] Purchase/finalize domain name
 - [ ] Update these files with production URL:
   - [ ] `client/src/components/common/SEO/index.jsx` - `BASE_URL`
@@ -88,6 +92,7 @@ VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ### 2.1 Cost Drivers - Real Data
 
 **Current State**: Hardcoded percentages with no real source
+
 ```
 Tariffs: 35%
 Labor: 21%
@@ -97,6 +102,7 @@ Other: 7%
 ```
 
 **What's Needed:**
+
 - [ ] Research authoritative data source for cost breakdown
   - Potential: BLS Producer Price Index (PPI)
   - Potential: Federal Reserve economic reports
@@ -107,6 +113,7 @@ Other: 7%
 - [ ] Add source attribution to UI
 
 **Files to modify:**
+
 ```
 mcp_server/apis/           # New API client if needed
 server/services/costDriverTransformer.js  # New transformer
@@ -124,12 +131,14 @@ server/scripts/seedHomepageData.js        # Remove hardcoded values
 **Current State**: UI exists but not functional
 
 **Tasks:**
+
 - [ ] Connect modal to real API data
 - [ ] Implement comparison logic (state vs state, state vs national)
 - [ ] Add charts/visualizations for comparison
 - [ ] Save comparison history (optional)
 
 **Files:**
+
 ```
 client/src/components/modals/StateComparison.jsx
 ```
@@ -139,6 +148,7 @@ client/src/components/modals/StateComparison.jsx
 **Current State**: Polling-based updates
 
 **Tasks:**
+
 - [ ] Set up Socket.io on Node server
 - [ ] Create WebSocket connection manager on client
 - [ ] Implement real-time price update events
@@ -158,11 +168,13 @@ client/src/components/modals/StateComparison.jsx
 **Current State**: 0% test coverage
 
 **Recommended Approach:**
+
 1. Start with critical API endpoint tests
 2. Add component tests for key interactions
 3. E2E tests for main user flows
 
 **Tasks:**
+
 - [ ] Set up Vitest for unit tests
 - [ ] Set up Playwright/Cypress for E2E
 - [ ] Write tests for:
@@ -177,6 +189,7 @@ client/src/components/modals/StateComparison.jsx
 ### 4.2 Security Hardening
 
 **Tasks:**
+
 - [ ] Audit rate limiting on all endpoints
 - [ ] Review and tighten CORS configuration
 - [ ] Add input validation on all user inputs
@@ -194,6 +207,7 @@ client/src/components/modals/StateComparison.jsx
 **Purpose**: Allow non-technical team to update content
 
 **Would Include:**
+
 - Dashboard for content management
 - Social post moderation
 - Data refresh controls
@@ -215,28 +229,31 @@ client/src/components/modals/StateComparison.jsx
 ## Quick Reference: Current Architecture
 
 ### Services (All Deployed)
-| Service | URL | Status |
-|---------|-----|--------|
-| Frontend | https://dekleptocracy.vercel.app | ✅ Live |
+
+| Service     | URL                                                | Status  |
+| ----------- | -------------------------------------------------- | ------- |
+| Frontend    | https://dekleptocracy.vercel.app                   | ✅ Live |
 | Node Server | https://node-server-production-7f39.up.railway.app | ✅ Live |
-| MCP Server | https://dekleptocracy-production.up.railway.app | ✅ Live |
+| MCP Server  | https://dekleptocracy-production.up.railway.app    | ✅ Live |
 
 ### Data Sources (11 APIs)
-| API | Data | Status |
-|-----|------|--------|
-| BLS | Unemployment, CPI, Wages | ✅ Active |
-| FRED | GDP, Personal Income | ✅ Active |
-| EIA | Gas, Electricity Prices | ✅ Active |
-| BEA | State GDP, Income | ✅ Active |
-| USDA | Food Prices | ✅ Active |
-| HUD | Housing/Rent | ✅ Active |
-| LDA | Lobbying Data | ✅ Active |
-| FEC | Campaign Finance | ✅ Active |
-| Census | Trade Data | ❌ Inactive |
-| DataWeb | USITC Data | ❌ Inactive |
-| Gemini | AI Text Generation | ✅ Active |
+
+| API     | Data                     | Status      |
+| ------- | ------------------------ | ----------- |
+| BLS     | Unemployment, CPI, Wages | ✅ Active   |
+| FRED    | GDP, Personal Income     | ✅ Active   |
+| EIA     | Gas, Electricity Prices  | ✅ Active   |
+| BEA     | State GDP, Income        | ✅ Active   |
+| USDA    | Food Prices              | ✅ Active   |
+| HUD     | Housing/Rent             | ✅ Active   |
+| LDA     | Lobbying Data            | ✅ Active   |
+| FEC     | Campaign Finance         | ✅ Active   |
+| Census  | Trade Data               | ❌ Inactive |
+| DataWeb | USITC Data               | ❌ Inactive |
+| Gemini  | AI Text Generation       | ✅ Active   |
 
 ### Key Files
+
 ```
 dekleptocracy-website/
 ├── client/src/
@@ -265,16 +282,16 @@ mcp_server/
 
 ## Estimated Effort
 
-| Task | Effort | Priority |
-|------|--------|----------|
-| Analytics Setup | 4-6 hours | P1 |
-| Domain Config | 2-3 hours | P1 |
-| Cost Drivers Research | 2-4 hours | P2 |
-| Cost Drivers Implementation | 4-6 hours | P2 |
-| State Comparison Modal | 4-6 hours | P3 |
-| Basic Test Coverage | 8-12 hours | P3 |
-| Security Audit | 4-6 hours | P3 |
-| WebSocket (Optional) | 12-16 hours | P4 |
+| Task                        | Effort      | Priority |
+| --------------------------- | ----------- | -------- |
+| Analytics Setup             | 4-6 hours   | P1       |
+| Domain Config               | 2-3 hours   | P1       |
+| Cost Drivers Research       | 2-4 hours   | P2       |
+| Cost Drivers Implementation | 4-6 hours   | P2       |
+| State Comparison Modal      | 4-6 hours   | P3       |
+| Basic Test Coverage         | 8-12 hours  | P3       |
+| Security Audit              | 4-6 hours   | P3       |
+| WebSocket (Optional)        | 12-16 hours | P4       |
 
 **Total to Production-Ready**: ~20-30 hours (excluding WebSocket and full test coverage)
 

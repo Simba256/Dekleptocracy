@@ -9,7 +9,8 @@ const ChatbotDebug = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. This is the DEBUG version - you\'ll see detailed information about tool calls, parameters, and results.\n\nHow can I help you today?',
+      content:
+        "Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. This is the DEBUG version - you'll see detailed information about tool calls, parameters, and results.\n\nHow can I help you today?",
       timestamp: new Date(),
     },
   ]);
@@ -78,9 +79,9 @@ const ChatbotDebug = () => {
           })),
           use_mcp_tools: true,
           // Context window management parameters (optional)
-          max_iterations: 10,          // Maximum tool calling iterations
-          max_total_tools: 8,           // Maximum total tools to call
-          preserve_recent_messages: 3,  // Number of recent messages to preserve when truncating
+          max_iterations: 10, // Maximum tool calling iterations
+          max_total_tools: 8, // Maximum total tools to call
+          preserve_recent_messages: 3, // Number of recent messages to preserve when truncating
           // max_context_tokens: 50000, // Uncomment to limit context window size
         }),
         signal: abortControllerRef.current.signal,
@@ -106,8 +107,8 @@ const ChatbotDebug = () => {
                 isLoading: false,
                 debugData: data,
               }
-            : msg
-        )
+            : msg,
+        ),
       );
 
       // Store debug information
@@ -132,7 +133,6 @@ const ChatbotDebug = () => {
         console.log('Tool calls:', data.tool_calls);
         console.log('Tool results:', data.tool_results);
       }
-
     } catch (error) {
       if (error.name === 'AbortError') {
         if (import.meta.env.DEV) {
@@ -150,8 +150,8 @@ const ChatbotDebug = () => {
                   content: `Error: ${error.message || 'Failed to get response. Make sure the MCP server is running on ' + MCP_SERVER_URL}`,
                   isLoading: false,
                 }
-              : msg
-          )
+              : msg,
+          ),
         );
       }
     } finally {
@@ -193,9 +193,7 @@ const ChatbotDebug = () => {
         <div className="chatbot-debug-container">
           {/* Header */}
           <div className="chatbot-debug-header">
-            <h1 className="chatbot-debug-title">
-              🛠️ AI Assistant - DEBUG MODE
-            </h1>
+            <h1 className="chatbot-debug-title">🛠️ AI Assistant - DEBUG MODE</h1>
             <p className="chatbot-debug-subtitle">
               Development & Testing Interface with Tool Call Debugging
             </p>
@@ -208,9 +206,7 @@ const ChatbotDebug = () => {
                 key={message.id}
                 className={`debug-message ${message.role === 'user' ? 'debug-message-user' : 'debug-message-assistant'}`}
               >
-                <div className="debug-message-avatar">
-                  {message.role === 'user' ? '👤' : '🤖'}
-                </div>
+                <div className="debug-message-avatar">{message.role === 'user' ? '👤' : '🤖'}</div>
                 <div className="debug-message-content">
                   <div className="debug-message-role">
                     {message.role === 'user' ? 'You' : 'AI Assistant'}
@@ -223,9 +219,7 @@ const ChatbotDebug = () => {
                         <span className="debug-loading-dot"></span>
                       </div>
                     ) : (
-                      <ReactMarkdown className="markdown-content">
-                        {message.content}
-                      </ReactMarkdown>
+                      <ReactMarkdown className="markdown-content">{message.content}</ReactMarkdown>
                     )}
                   </div>
                   <div className="debug-message-time">
@@ -262,19 +256,13 @@ const ChatbotDebug = () => {
                   {isLoading ? 'Thinking...' : 'Send'}
                 </button>
                 {isLoading && (
-                  <button
-                    type="button"
-                    onClick={stopRequest}
-                    className="chatbot-debug-stop-btn"
-                  >
+                  <button type="button" onClick={stopRequest} className="chatbot-debug-stop-btn">
                     Stop
                   </button>
                 )}
               </div>
             </form>
-            <div className="chatbot-debug-hint">
-              Press Enter to send, Shift+Enter for new line
-            </div>
+            <div className="chatbot-debug-hint">Press Enter to send, Shift+Enter for new line</div>
           </div>
         </div>
       </div>
@@ -293,165 +281,159 @@ const ChatbotDebug = () => {
             </div>
           ) : (
             <div className="debug-entries">
-              {debugInfo.slice().reverse().map((info, idx) => (
-                <div key={info.id} className="debug-entry">
-                  <div className="debug-entry-header">
-                    <h3 className="debug-entry-title">
-                      Query #{debugInfo.length - idx}
-                    </h3>
-                    <span className="debug-entry-time">
-                      {info.timestamp.toLocaleTimeString()}
-                    </span>
-                  </div>
-
-                  <div className="debug-section">
-                    <h4 className="debug-section-title">📝 User Query</h4>
-                    <div className="debug-code">
-                      {info.userQuery}
+              {debugInfo
+                .slice()
+                .reverse()
+                .map((info, idx) => (
+                  <div key={info.id} className="debug-entry">
+                    <div className="debug-entry-header">
+                      <h3 className="debug-entry-title">Query #{debugInfo.length - idx}</h3>
+                      <span className="debug-entry-time">
+                        {info.timestamp.toLocaleTimeString()}
+                      </span>
                     </div>
-                  </div>
 
-                  <div className="debug-section">
-                    <h4 className="debug-section-title">⏱️ Performance</h4>
-                    <div className="debug-stats">
-                      <div className="debug-stat">
-                        <span className="debug-stat-label">Total Time:</span>
-                        <span className="debug-stat-value">{info.totalTime}ms</span>
-                      </div>
-                      <div className="debug-stat">
-                        <span className="debug-stat-label">Iterations:</span>
-                        <span className="debug-stat-value">
-                          {info.metadata.iterations || 'N/A'}
-                        </span>
-                      </div>
-                      <div className="debug-stat">
-                        <span className="debug-stat-label">Tokens Used:</span>
-                        <span className="debug-stat-value">
-                          {info.metadata.tokens_used || 'N/A'}
-                        </span>
-                      </div>
-                      <div className="debug-stat">
-                        <span className="debug-stat-label">Tools Called:</span>
-                        <span className="debug-stat-value">
-                          {info.toolCalls.length}
-                        </span>
-                      </div>
-                      {info.metadata.max_iterations_reached && (
-                        <div className="debug-stat debug-stat-warning">
-                          <span className="debug-stat-label">⚠️ Max Iterations:</span>
-                          <span className="debug-stat-value">Reached</span>
-                        </div>
-                      )}
-                      {info.metadata.tool_limit_reached && (
-                        <div className="debug-stat debug-stat-warning">
-                          <span className="debug-stat-label">⚠️ Tool Limit:</span>
-                          <span className="debug-stat-value">Reached</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {info.metadata.token_metadata && (
                     <div className="debug-section">
-                      <h4 className="debug-section-title">🔢 Context Window</h4>
+                      <h4 className="debug-section-title">📝 User Query</h4>
+                      <div className="debug-code">{info.userQuery}</div>
+                    </div>
+
+                    <div className="debug-section">
+                      <h4 className="debug-section-title">⏱️ Performance</h4>
                       <div className="debug-stats">
                         <div className="debug-stat">
-                          <span className="debug-stat-label">Model:</span>
+                          <span className="debug-stat-label">Total Time:</span>
+                          <span className="debug-stat-value">{info.totalTime}ms</span>
+                        </div>
+                        <div className="debug-stat">
+                          <span className="debug-stat-label">Iterations:</span>
                           <span className="debug-stat-value">
-                            {info.metadata.token_metadata.model || 'N/A'}
+                            {info.metadata.iterations || 'N/A'}
                           </span>
                         </div>
                         <div className="debug-stat">
-                          <span className="debug-stat-label">Context Limit:</span>
+                          <span className="debug-stat-label">Tokens Used:</span>
                           <span className="debug-stat-value">
-                            {info.metadata.token_metadata.context_limit?.toLocaleString() || 'N/A'}
+                            {info.metadata.tokens_used || 'N/A'}
                           </span>
                         </div>
                         <div className="debug-stat">
-                          <span className="debug-stat-label">Initial Tokens:</span>
-                          <span className="debug-stat-value">
-                            {info.metadata.token_metadata.initial_messages_tokens?.toLocaleString() || 'N/A'}
-                          </span>
+                          <span className="debug-stat-label">Tools Called:</span>
+                          <span className="debug-stat-value">{info.toolCalls.length}</span>
                         </div>
-                        <div className="debug-stat">
-                          <span className="debug-stat-label">Utilization:</span>
-                          <span className="debug-stat-value">
-                            {info.metadata.token_metadata.initial_utilization_percent || 0}%
-                          </span>
-                        </div>
-                        {info.metadata.token_metadata.truncation_occurred && (
-                          <>
-                            <div className="debug-stat debug-stat-warning">
-                              <span className="debug-stat-label">⚠️ Truncation:</span>
-                              <span className="debug-stat-value">Occurred</span>
-                            </div>
-                            <div className="debug-stat debug-stat-warning">
-                              <span className="debug-stat-label">Messages Removed:</span>
-                              <span className="debug-stat-value">
-                                {info.metadata.token_metadata.messages_removed}
-                              </span>
-                            </div>
-                            <div className="debug-stat">
-                              <span className="debug-stat-label">Final Tokens:</span>
-                              <span className="debug-stat-value">
-                                {info.metadata.token_metadata.final_messages_tokens?.toLocaleString() || 'N/A'}
-                              </span>
-                            </div>
-                            <div className="debug-stat">
-                              <span className="debug-stat-label">Final Utilization:</span>
-                              <span className="debug-stat-value">
-                                {info.metadata.token_metadata.final_utilization_percent || 0}%
-                              </span>
-                            </div>
-                          </>
+                        {info.metadata.max_iterations_reached && (
+                          <div className="debug-stat debug-stat-warning">
+                            <span className="debug-stat-label">⚠️ Max Iterations:</span>
+                            <span className="debug-stat-value">Reached</span>
+                          </div>
+                        )}
+                        {info.metadata.tool_limit_reached && (
+                          <div className="debug-stat debug-stat-warning">
+                            <span className="debug-stat-label">⚠️ Tool Limit:</span>
+                            <span className="debug-stat-value">Reached</span>
+                          </div>
                         )}
                       </div>
                     </div>
-                  )}
 
-                  {info.toolCalls.length > 0 && (
-                    <div className="debug-section">
-                      <h4 className="debug-section-title">
-                        🔧 Tool Calls ({info.toolCalls.length})
-                      </h4>
-                      {info.toolCalls.map((call, callIdx) => (
-                        <div key={callIdx} className="debug-tool-call">
-                          <div className="debug-tool-header">
-                            <span className="debug-tool-name">
-                              {callIdx + 1}. {call.name}
+                    {info.metadata.token_metadata && (
+                      <div className="debug-section">
+                        <h4 className="debug-section-title">🔢 Context Window</h4>
+                        <div className="debug-stats">
+                          <div className="debug-stat">
+                            <span className="debug-stat-label">Model:</span>
+                            <span className="debug-stat-value">
+                              {info.metadata.token_metadata.model || 'N/A'}
                             </span>
                           </div>
-
-                          <div className="debug-tool-section">
-                            <h5 className="debug-tool-section-title">Parameters:</h5>
-                            <pre className="debug-code">
-                              {formatJSON(call.arguments)}
-                            </pre>
+                          <div className="debug-stat">
+                            <span className="debug-stat-label">Context Limit:</span>
+                            <span className="debug-stat-value">
+                              {info.metadata.token_metadata.context_limit?.toLocaleString() ||
+                                'N/A'}
+                            </span>
                           </div>
-
-                          {info.toolResults[call.name] && (
-                            <div className="debug-tool-section">
-                              <h5 className="debug-tool-section-title">Result:</h5>
-                              <pre className="debug-code debug-result">
-                                {formatJSON(info.toolResults[call.name])}
-                              </pre>
-                            </div>
+                          <div className="debug-stat">
+                            <span className="debug-stat-label">Initial Tokens:</span>
+                            <span className="debug-stat-value">
+                              {info.metadata.token_metadata.initial_messages_tokens?.toLocaleString() ||
+                                'N/A'}
+                            </span>
+                          </div>
+                          <div className="debug-stat">
+                            <span className="debug-stat-label">Utilization:</span>
+                            <span className="debug-stat-value">
+                              {info.metadata.token_metadata.initial_utilization_percent || 0}%
+                            </span>
+                          </div>
+                          {info.metadata.token_metadata.truncation_occurred && (
+                            <>
+                              <div className="debug-stat debug-stat-warning">
+                                <span className="debug-stat-label">⚠️ Truncation:</span>
+                                <span className="debug-stat-value">Occurred</span>
+                              </div>
+                              <div className="debug-stat debug-stat-warning">
+                                <span className="debug-stat-label">Messages Removed:</span>
+                                <span className="debug-stat-value">
+                                  {info.metadata.token_metadata.messages_removed}
+                                </span>
+                              </div>
+                              <div className="debug-stat">
+                                <span className="debug-stat-label">Final Tokens:</span>
+                                <span className="debug-stat-value">
+                                  {info.metadata.token_metadata.final_messages_tokens?.toLocaleString() ||
+                                    'N/A'}
+                                </span>
+                              </div>
+                              <div className="debug-stat">
+                                <span className="debug-stat-label">Final Utilization:</span>
+                                <span className="debug-stat-value">
+                                  {info.metadata.token_metadata.final_utilization_percent || 0}%
+                                </span>
+                              </div>
+                            </>
                           )}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      </div>
+                    )}
 
-                  <details className="debug-raw-details">
-                    <summary className="debug-raw-summary">
-                      View Raw Response Data
-                    </summary>
-                    <pre className="debug-code debug-raw">
-                      {formatJSON(info.rawResponse)}
-                    </pre>
-                  </details>
-                </div>
-              ))}
+                    {info.toolCalls.length > 0 && (
+                      <div className="debug-section">
+                        <h4 className="debug-section-title">
+                          🔧 Tool Calls ({info.toolCalls.length})
+                        </h4>
+                        {info.toolCalls.map((call, callIdx) => (
+                          <div key={callIdx} className="debug-tool-call">
+                            <div className="debug-tool-header">
+                              <span className="debug-tool-name">
+                                {callIdx + 1}. {call.name}
+                              </span>
+                            </div>
+
+                            <div className="debug-tool-section">
+                              <h5 className="debug-tool-section-title">Parameters:</h5>
+                              <pre className="debug-code">{formatJSON(call.arguments)}</pre>
+                            </div>
+
+                            {info.toolResults[call.name] && (
+                              <div className="debug-tool-section">
+                                <h5 className="debug-tool-section-title">Result:</h5>
+                                <pre className="debug-code debug-result">
+                                  {formatJSON(info.toolResults[call.name])}
+                                </pre>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <details className="debug-raw-details">
+                      <summary className="debug-raw-summary">View Raw Response Data</summary>
+                      <pre className="debug-code debug-raw">{formatJSON(info.rawResponse)}</pre>
+                    </details>
+                  </div>
+                ))}
             </div>
           )}
         </div>

@@ -1,14 +1,18 @@
 import './Skeleton.css';
 
 export const HeroSkeleton = () => (
-  <section className="hero-section skeleton-section" aria-busy="true" aria-label="Loading hero section">
+  <section
+    className="hero-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading hero section"
+  >
     <div className="hero-container">
       <div className="skeleton skeleton-capsule" aria-hidden="true" />
       <div className="skeleton skeleton-title" style={{ width: '70%' }} aria-hidden="true" />
       <div className="skeleton skeleton-title" style={{ width: '50%' }} aria-hidden="true" />
       <div className="skeleton skeleton-search" aria-hidden="true" />
       <div className="quick-questions-skeleton">
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <div key={i} className="skeleton skeleton-card" aria-hidden="true" />
         ))}
       </div>
@@ -17,7 +21,11 @@ export const HeroSkeleton = () => (
 );
 
 export const StatsSkeleton = () => (
-  <section className="stats-section skeleton-section" aria-busy="true" aria-label="Loading statistics">
+  <section
+    className="stats-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading statistics"
+  >
     <div className="stats-container">
       <div className="skeleton skeleton-stat-large" aria-hidden="true" />
       <div className="skeleton skeleton-stat-small" aria-hidden="true" />
@@ -48,16 +56,20 @@ const WalletCardSkeleton = () => (
 );
 
 export const WalletShocksSkeleton = () => (
-  <section className="wallet-shocks-section skeleton-section" aria-busy="true" aria-label="Loading wallet shocks">
+  <section
+    className="wallet-shocks-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading wallet shocks"
+  >
     <div className="wallet-shocks-container">
       <div className="skeleton skeleton-heading" aria-hidden="true" />
       <div className="state-tabs-skeleton">
-        {[1, 2, 3, 4, 5, 6].map(i => (
+        {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="skeleton skeleton-tab" aria-hidden="true" />
         ))}
       </div>
       <div className="wallet-cards-skeleton">
-        {[1, 2, 3, 4].map(i => (
+        {[1, 2, 3, 4].map((i) => (
           <WalletCardSkeleton key={i} />
         ))}
       </div>
@@ -66,11 +78,15 @@ export const WalletShocksSkeleton = () => (
 );
 
 export const CostDriversSkeleton = () => (
-  <section className="cost-drivers-section skeleton-section" aria-busy="true" aria-label="Loading cost drivers">
+  <section
+    className="cost-drivers-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading cost drivers"
+  >
     <div className="cost-drivers-container">
       <div className="skeleton skeleton-heading" aria-hidden="true" />
       <div className="drivers-skeleton">
-        {[1, 2, 3, 4, 5, 6].map(i => (
+        {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="driver-skeleton" aria-hidden="true">
             <div className="skeleton skeleton-label" />
             <div className="skeleton skeleton-bar" />
@@ -82,11 +98,15 @@ export const CostDriversSkeleton = () => (
 );
 
 export const BudgetImpactSkeleton = () => (
-  <section className="budget-impact-section skeleton-section" aria-busy="true" aria-label="Loading budget impact">
+  <section
+    className="budget-impact-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading budget impact"
+  >
     <div className="budget-impact-container">
       <div className="skeleton skeleton-heading" aria-hidden="true" />
       <div className="comparison-skeleton">
-        {[1, 2, 3, 4].map(i => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="comparison-card-skeleton" aria-hidden="true">
             <div className="skeleton skeleton-text" />
             <div className="skeleton skeleton-amount" />
@@ -98,7 +118,11 @@ export const BudgetImpactSkeleton = () => (
 );
 
 export const PriceMapSkeleton = () => (
-  <section className="price-map-section skeleton-section" aria-busy="true" aria-label="Loading price map">
+  <section
+    className="price-map-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading price map"
+  >
     <div className="price-map-container">
       <div className="skeleton skeleton-heading" aria-hidden="true" />
       <div className="map-skeleton" aria-hidden="true" />
@@ -107,11 +131,15 @@ export const PriceMapSkeleton = () => (
 );
 
 export const SocialPostsSkeleton = () => (
-  <section className="social-posts-section skeleton-section" aria-busy="true" aria-label="Loading social posts">
+  <section
+    className="social-posts-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading social posts"
+  >
     <div className="social-posts-container">
       <div className="skeleton skeleton-heading" aria-hidden="true" />
       <div className="posts-skeleton">
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <div key={i} className="post-skeleton" aria-hidden="true">
             <div className="post-header-skeleton">
               <div className="skeleton skeleton-circle" style={{ width: '40px', height: '40px' }} />
@@ -131,7 +159,11 @@ export const SocialPostsSkeleton = () => (
 );
 
 export const CTASkeleton = () => (
-  <section className="cta-section skeleton-section" aria-busy="true" aria-label="Loading call to action">
+  <section
+    className="cta-section skeleton-section"
+    aria-busy="true"
+    aria-label="Loading call to action"
+  >
     <div className="cta-container">
       <div className="skeleton skeleton-title" style={{ width: '60%' }} aria-hidden="true" />
       <div className="skeleton skeleton-text" style={{ width: '80%' }} aria-hidden="true" />
@@ -148,5 +180,5 @@ export default {
   BudgetImpactSkeleton,
   PriceMapSkeleton,
   SocialPostsSkeleton,
-  CTASkeleton
+  CTASkeleton,
 };

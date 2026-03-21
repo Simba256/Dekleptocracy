@@ -7,7 +7,15 @@
 @tailwind utilities;
 
 * {
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    'Poppins',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   letter-spacing: var(--letter-spacing-normal);
   margin: 0;
   padding: 0;
@@ -18,7 +26,15 @@
 body {
   cursor: default;
   user-select: none;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    'Poppins',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
@@ -33,15 +49,15 @@ html {
 }
 
 /* Text cursor and selection for text inputs */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="search"],
-input[type="url"],
-input[type="tel"],
-input[type="number"],
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='search'],
+input[type='url'],
+input[type='tel'],
+input[type='number'],
 textarea,
-[contenteditable="true"] {
+[contenteditable='true'] {
   cursor: text;
   user-select: text;
 }
@@ -49,10 +65,10 @@ textarea,
 /* Pointer cursor for interactive elements */
 a,
 button,
-[role="button"],
-[type="button"],
-[type="submit"],
-[type="reset"],
+[role='button'],
+[type='button'],
+[type='submit'],
+[type='reset'],
 select,
 label[for],
 .clickable,

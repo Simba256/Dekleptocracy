@@ -13,9 +13,9 @@ import { analyzeTrends, analyzeHistoricalContext } from './trendAnalyzer.js';
 
 // Average household consumption estimates for impact calculations
 const HOUSEHOLD_CONSUMPTION = {
-  electricityKwhPerMonth: 900,    // Average US household electricity usage
-  gasolineGallonsPerMonth: 50,    // Average US household fuel consumption
-  foodPersonsPerFamily: 3         // Average family size for food calculations
+  electricityKwhPerMonth: 900, // Average US household electricity usage
+  gasolineGallonsPerMonth: 50, // Average US household fuel consumption
+  foodPersonsPerFamily: 3, // Average family size for food calculations
 };
 
 /**
@@ -28,7 +28,7 @@ function calculateHouseholdImpact(stateData) {
     gasoline: null,
     food: null,
     total: 0,
-    breakdown: []
+    breakdown: [],
   };
 
   // Electricity impact: change in cents/kWh * 900 kWh/month / 100
@@ -42,7 +42,7 @@ function calculateHouseholdImpact(stateData) {
       impact.breakdown.push({
         category: 'Electricity',
         amount: impact.electricity,
-        description: `${changeInCents > 0 ? '+' : ''}${changeInCents.toFixed(1)}¢/kWh × ${HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth} kWh`
+        description: `${changeInCents > 0 ? '+' : ''}${changeInCents.toFixed(1)}¢/kWh × ${HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth} kWh`,
       });
     }
   }
@@ -58,7 +58,7 @@ function calculateHouseholdImpact(stateData) {
       impact.breakdown.push({
         category: 'Fuel',
         amount: impact.gasoline,
-        description: `${changeInDollars > 0 ? '+' : ''}$${changeInDollars.toFixed(2)}/gal × ${HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth} gal`
+        description: `${changeInDollars > 0 ? '+' : ''}$${changeInDollars.toFixed(2)}/gal × ${HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth} gal`,
       });
     }
   }
@@ -74,7 +74,7 @@ function calculateHouseholdImpact(stateData) {
       impact.breakdown.push({
         category: 'Food',
         amount: impact.food,
-        description: `${changePerPerson > 0 ? '+' : ''}$${changePerPerson.toFixed(0)}/person × ${HOUSEHOLD_CONSUMPTION.foodPersonsPerFamily} people`
+        description: `${changePerPerson > 0 ? '+' : ''}$${changePerPerson.toFixed(0)}/person × ${HOUSEHOLD_CONSUMPTION.foodPersonsPerFamily} people`,
       });
     }
   }
@@ -100,7 +100,7 @@ function buildTrendContext(timeSeries, metricType, currentValue) {
   }
 
   // Add streak info
-  const streakAlert = analysis.alerts?.find(a => a.type === 'streak');
+  const streakAlert = analysis.alerts?.find((a) => a.type === 'streak');
   if (streakAlert) {
     context.push(streakAlert.message);
   }
@@ -134,7 +134,11 @@ async function generateEnergyInsight(stateData, stateName) {
 
   if (electricity) {
     dataPoints.push(`Electricity: ${electricity.displayValue} (${electricity.changeDisplay} YoY)`);
-    const elecContext = buildTrendContext(elecTimeSeries, 'electricity_prices', parseFloat(electricity.value));
+    const elecContext = buildTrendContext(
+      elecTimeSeries,
+      'electricity_prices',
+      parseFloat(electricity.value),
+    );
     if (elecContext) trendContext.push(`Electricity: ${elecContext}`);
   }
   if (gasoline) {
@@ -151,7 +155,10 @@ async function generateEnergyInsight(stateData, stateName) {
   if (gasoline?.change) {
     monthlyImpact += gasoline.change * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth;
   }
-  const impactStr = monthlyImpact !== 0 ? `Monthly impact: ~$${Math.abs(Math.round(monthlyImpact))} ${monthlyImpact > 0 ? 'more' : 'savings'}` : '';
+  const impactStr =
+    monthlyImpact !== 0
+      ? `Monthly impact: ~$${Math.abs(Math.round(monthlyImpact))} ${monthlyImpact > 0 ? 'more' : 'savings'}`
+      : '';
 
   const prompt = `Write 2-3 sentences about energy costs in ${stateName}. Be specific and insightful.
 
@@ -170,7 +177,11 @@ Guidelines:
 - Use ONLY the data provided. No speculation.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', {
+      prompt,
+      max_tokens: 150,
+      temperature: 0.3,
+    });
     if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate energy insight', error);
@@ -179,13 +190,19 @@ Guidelines:
   // Fallback
   const parts = [];
   if (electricity) {
-    parts.push(`Electricity in ${stateName} is ${electricity.displayValue}, ${electricity.change > 0 ? 'up' : 'down'} ${electricity.changeDisplay} from last year.`);
+    parts.push(
+      `Electricity in ${stateName} is ${electricity.displayValue}, ${electricity.change > 0 ? 'up' : 'down'} ${electricity.changeDisplay} from last year.`,
+    );
   }
   if (gasoline) {
-    parts.push(`Gas prices are at ${gasoline.displayValue}, ${gasoline.change > 0 ? 'an increase' : 'a decrease'} of ${gasoline.changeDisplay}.`);
+    parts.push(
+      `Gas prices are at ${gasoline.displayValue}, ${gasoline.change > 0 ? 'an increase' : 'a decrease'} of ${gasoline.changeDisplay}.`,
+    );
   }
   if (monthlyImpact !== 0) {
-    parts.push(`This means about $${Math.abs(Math.round(monthlyImpact))} ${monthlyImpact > 0 ? 'more' : 'less'} per month for typical households.`);
+    parts.push(
+      `This means about $${Math.abs(Math.round(monthlyImpact))} ${monthlyImpact > 0 ? 'more' : 'less'} per month for typical households.`,
+    );
   }
   return parts.join(' ') || null;
 }
@@ -201,7 +218,9 @@ async function generateEmploymentInsight(stateData, stateName) {
 
   if (!unemployment) return null;
 
-  const dataPoints = [`Unemployment: ${unemployment.displayValue} (${unemployment.changeDisplay} YoY)`];
+  const dataPoints = [
+    `Unemployment: ${unemployment.displayValue} (${unemployment.changeDisplay} YoY)`,
+  ];
   if (income) {
     dataPoints.push(`Personal income: ${income.displayValue} (${income.changeDisplay} YoY)`);
   }
@@ -210,7 +229,11 @@ async function generateEmploymentInsight(stateData, stateName) {
   }
 
   // Get trend context for unemployment
-  const unempContext = buildTrendContext(unempTimeSeries, 'unemployment', parseFloat(unemployment.value));
+  const unempContext = buildTrendContext(
+    unempTimeSeries,
+    'unemployment',
+    parseFloat(unemployment.value),
+  );
 
   // Check for concerning combinations
   const concerns = [];
@@ -241,7 +264,11 @@ Guidelines:
 - Use ONLY the data provided. Be factual, not alarmist.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', {
+      prompt,
+      max_tokens: 150,
+      temperature: 0.3,
+    });
     if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate employment insight', error);
@@ -251,15 +278,23 @@ Guidelines:
   const parts = [];
   const rate = parseFloat(unemployment.value);
   if (rate < 4) {
-    parts.push(`${stateName}'s unemployment rate of ${unemployment.displayValue} indicates a strong job market.`);
+    parts.push(
+      `${stateName}'s unemployment rate of ${unemployment.displayValue} indicates a strong job market.`,
+    );
   } else if (rate < 5.5) {
-    parts.push(`${stateName}'s unemployment rate stands at ${unemployment.displayValue}, near healthy levels.`);
+    parts.push(
+      `${stateName}'s unemployment rate stands at ${unemployment.displayValue}, near healthy levels.`,
+    );
   } else {
-    parts.push(`${stateName}'s unemployment rate of ${unemployment.displayValue} suggests job market challenges.`);
+    parts.push(
+      `${stateName}'s unemployment rate of ${unemployment.displayValue} suggests job market challenges.`,
+    );
   }
 
   if (unemployment.change !== 0) {
-    parts.push(`The rate has ${unemployment.change > 0 ? 'increased' : 'decreased'} ${unemployment.changeDisplay} over the past year.`);
+    parts.push(
+      `The rate has ${unemployment.change > 0 ? 'increased' : 'decreased'} ${unemployment.changeDisplay} over the past year.`,
+    );
   }
 
   if (income) {
@@ -314,7 +349,11 @@ Guidelines:
 - Use ONLY the data provided. Be specific with dollar amounts.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 120, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', {
+      prompt,
+      max_tokens: 120,
+      temperature: 0.3,
+    });
     if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate food insight', error);
@@ -323,19 +362,29 @@ Guidelines:
   // Fallback
   const parts = [];
   if (food) {
-    parts.push(`Food costs in ${stateName} average ${food.displayValue} per person monthly, ${food.change > 0 ? 'up' : 'down'} ${food.changeDisplay} from last year.`);
+    parts.push(
+      `Food costs in ${stateName} average ${food.displayValue} per person monthly, ${food.change > 0 ? 'up' : 'down'} ${food.changeDisplay} from last year.`,
+    );
   }
   if (groceryBasket && stateData.grocery_basket?.nationalDisplayValue) {
     const stateVal = parseFloat(groceryBasket.value);
-    const natVal = parseFloat(stateData.grocery_basket.nationalDisplayValue.replace(/[^0-9.]/g, ''));
+    const natVal = parseFloat(
+      stateData.grocery_basket.nationalDisplayValue.replace(/[^0-9.]/g, ''),
+    );
     if (stateVal > natVal) {
-      parts.push(`Groceries cost about ${((stateVal - natVal) / natVal * 100).toFixed(0)}% more than the national average.`);
+      parts.push(
+        `Groceries cost about ${(((stateVal - natVal) / natVal) * 100).toFixed(0)}% more than the national average.`,
+      );
     } else if (stateVal < natVal) {
-      parts.push(`Groceries are about ${((natVal - stateVal) / natVal * 100).toFixed(0)}% cheaper than the national average.`);
+      parts.push(
+        `Groceries are about ${(((natVal - stateVal) / natVal) * 100).toFixed(0)}% cheaper than the national average.`,
+      );
     }
   }
   if (familyImpact && Math.abs(familyImpact) >= 5) {
-    parts.push(`A family of three is spending about $${Math.abs(familyImpact)} ${familyImpact > 0 ? 'more' : 'less'} per month on food.`);
+    parts.push(
+      `A family of three is spending about $${Math.abs(familyImpact)} ${familyImpact > 0 ? 'more' : 'less'} per month on food.`,
+    );
   }
   return parts.join(' ') || null;
 }
@@ -366,7 +415,11 @@ Data: ${dataPoints.join(', ')}
 Rules: Use ONLY these numbers. No qualifiers. Focus on economic trajectory.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 80, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', {
+      prompt,
+      max_tokens: 80,
+      temperature: 0.3,
+    });
     return result?.result?.text || null;
   } catch (error) {
     logger.warn('Failed to generate economic insight', error);
@@ -398,10 +451,10 @@ function calculateSqueezeIndex(stateData) {
     details.reliefs.push(`electricity ${electricity.changeDisplay}`);
   }
 
-  if (gasoline?.change > 0.10) {
+  if (gasoline?.change > 0.1) {
     pressures++;
     details.pressures.push(`gas ${gasoline.changeDisplay}`);
-  } else if (gasoline?.change < -0.10) {
+  } else if (gasoline?.change < -0.1) {
     reliefs++;
     details.reliefs.push(`gas ${gasoline.changeDisplay}`);
   }
@@ -456,11 +509,16 @@ async function generateCrossMetricInsight(stateData, stateName, householdImpact)
 
   // Build comprehensive data picture
   const allMetrics = [];
-  if (electricity) allMetrics.push(`Electricity: ${electricity.displayValue} (${electricity.changeDisplay} YoY)`);
+  if (electricity)
+    allMetrics.push(`Electricity: ${electricity.displayValue} (${electricity.changeDisplay} YoY)`);
   if (gasoline) allMetrics.push(`Gas: ${gasoline.displayValue} (${gasoline.changeDisplay} YoY)`);
   if (food) allMetrics.push(`Food: ${food.displayValue} (${food.changeDisplay} YoY)`);
-  if (unemployment) allMetrics.push(`Unemployment: ${unemployment.displayValue} (${unemployment.changeDisplay} YoY)`);
-  if (income) allMetrics.push(`Personal Income: ${income.displayValue} (${income.changeDisplay} YoY)`);
+  if (unemployment)
+    allMetrics.push(
+      `Unemployment: ${unemployment.displayValue} (${unemployment.changeDisplay} YoY)`,
+    );
+  if (income)
+    allMetrics.push(`Personal Income: ${income.displayValue} (${income.changeDisplay} YoY)`);
 
   if (allMetrics.length < 2) return null;
 
@@ -478,9 +536,10 @@ async function generateCrossMetricInsight(stateData, stateName, householdImpact)
     squeezeDesc = 'STABLE: Costs relatively balanced';
   }
 
-  const impactNote = householdImpact.total !== 0
-    ? `Net monthly impact: ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total}/month for typical household`
-    : '';
+  const impactNote =
+    householdImpact.total !== 0
+      ? `Net monthly impact: ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total}/month for typical household`
+      : '';
 
   const prompt = `Write 3-4 sentences analyzing how multiple economic factors combine to affect ${stateName} households.
 
@@ -493,7 +552,7 @@ ${squeeze.details.reliefs.length > 0 ? 'Falling costs: ' + squeeze.details.relie
 
 ${impactNote}
 
-${householdImpact.breakdown?.length > 0 ? 'Breakdown: ' + householdImpact.breakdown.map(b => `${b.category}: ${b.amount > 0 ? '+' : ''}$${b.amount}`).join(', ') : ''}
+${householdImpact.breakdown?.length > 0 ? 'Breakdown: ' + householdImpact.breakdown.map((b) => `${b.category}: ${b.amount > 0 ? '+' : ''}$${b.amount}`).join(', ') : ''}
 
 Guidelines:
 - First sentence: Summarize the overall situation (squeeze or relief)
@@ -503,7 +562,11 @@ Guidelines:
 - Be specific with numbers. Use phrases like "the combined effect" or "when taken together".`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 200, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', {
+      prompt,
+      max_tokens: 200,
+      temperature: 0.3,
+    });
     if (result?.result?.text) return result.result.text;
   } catch (error) {
     logger.warn('Failed to generate cross-metric insight', error);
@@ -513,17 +576,23 @@ Guidelines:
   const parts = [];
 
   if (squeeze.status === 'high_squeeze') {
-    parts.push(`${stateName} households face pressure from multiple directions with ${squeeze.pressures} cost categories rising.`);
+    parts.push(
+      `${stateName} households face pressure from multiple directions with ${squeeze.pressures} cost categories rising.`,
+    );
   } else if (squeeze.status === 'moderate_squeeze') {
     parts.push(`${stateName} residents are seeing some cost increases without offsetting relief.`);
   } else if (squeeze.status === 'relief' || squeeze.status === 'significant_relief') {
-    parts.push(`${stateName} households are catching a break with ${squeeze.reliefs} cost categories declining.`);
+    parts.push(
+      `${stateName} households are catching a break with ${squeeze.reliefs} cost categories declining.`,
+    );
   } else {
     parts.push(`${stateName}'s cost picture is mixed with some prices rising and others falling.`);
   }
 
   if (squeeze.details.pressures.length > 0 && squeeze.details.reliefs.length > 0) {
-    parts.push(`Rising costs in ${squeeze.details.pressures.join(' and ')} are partially offset by savings in ${squeeze.details.reliefs.join(' and ')}.`);
+    parts.push(
+      `Rising costs in ${squeeze.details.pressures.join(' and ')} are partially offset by savings in ${squeeze.details.reliefs.join(' and ')}.`,
+    );
   } else if (squeeze.details.pressures.length > 0) {
     parts.push(`The main pressures come from ${squeeze.details.pressures.join(' and ')}.`);
   } else if (squeeze.details.reliefs.length > 0) {
@@ -531,7 +600,9 @@ Guidelines:
   }
 
   if (householdImpact.total !== 0) {
-    parts.push(`The combined effect is approximately ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total} per month for a typical household.`);
+    parts.push(
+      `The combined effect is approximately ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total} per month for a typical household.`,
+    );
   }
 
   return parts.join(' ') || null;
@@ -550,34 +621,60 @@ async function generateForwardLookingInsight(stateData, stateName) {
 
   // Analyze electricity trend with momentum
   if (electricity?.timeSeries?.length >= 6) {
-    const analysis = analyzeTrends(electricity.timeSeries, 'electricity_prices', parseFloat(electricity.processedData?.value));
+    const analysis = analyzeTrends(
+      electricity.timeSeries,
+      'electricity_prices',
+      parseFloat(electricity.processedData?.value),
+    );
     const recent = electricity.timeSeries.slice(-3);
     const recentChange = recent[2]?.value - recent[0]?.value;
 
     if (analysis.momentum === 'steady_up' || analysis.momentum === 'up') {
-      trendAnalysis.push({ metric: 'electricity', direction: 'rising', momentum: analysis.momentum });
+      trendAnalysis.push({
+        metric: 'electricity',
+        direction: 'rising',
+        momentum: analysis.momentum,
+      });
       if (recentChange > 0) {
-        const monthlyProjection = Math.round((recentChange / 3) * 6 * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth / 100);
-        if (monthlyProjection > 5) projections.push(`electricity could add ~$${monthlyProjection} more over 6 months`);
+        const monthlyProjection = Math.round(
+          ((recentChange / 3) * 6 * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100,
+        );
+        if (monthlyProjection > 5)
+          projections.push(`electricity could add ~$${monthlyProjection} more over 6 months`);
       }
     } else if (analysis.momentum === 'steady_down' || analysis.momentum === 'down') {
-      trendAnalysis.push({ metric: 'electricity', direction: 'falling', momentum: analysis.momentum });
+      trendAnalysis.push({
+        metric: 'electricity',
+        direction: 'falling',
+        momentum: analysis.momentum,
+      });
     } else {
-      trendAnalysis.push({ metric: 'electricity', direction: 'stable', momentum: analysis.momentum });
+      trendAnalysis.push({
+        metric: 'electricity',
+        direction: 'stable',
+        momentum: analysis.momentum,
+      });
     }
   }
 
   // Analyze gas trend
   if (gasoline?.timeSeries?.length >= 6) {
-    const analysis = analyzeTrends(gasoline.timeSeries, 'gas_prices', parseFloat(gasoline.processedData?.value));
+    const analysis = analyzeTrends(
+      gasoline.timeSeries,
+      'gas_prices',
+      parseFloat(gasoline.processedData?.value),
+    );
     const recent = gasoline.timeSeries.slice(-3);
     const recentChange = recent[2]?.value - recent[0]?.value;
 
     if (analysis.momentum === 'steady_up' || analysis.momentum === 'up') {
       trendAnalysis.push({ metric: 'fuel', direction: 'rising', momentum: analysis.momentum });
       if (recentChange > 0) {
-        const monthlyProjection = Math.round((recentChange / 3) * 6 * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth);
-        if (monthlyProjection > 10) projections.push(`fuel could add ~$${monthlyProjection} more over 6 months`);
+        const monthlyProjection = Math.round(
+          (recentChange / 3) * 6 * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth,
+        );
+        if (monthlyProjection > 10)
+          projections.push(`fuel could add ~$${monthlyProjection} more over 6 months`);
       }
     } else if (analysis.momentum === 'steady_down' || analysis.momentum === 'down') {
       trendAnalysis.push({ metric: 'fuel', direction: 'falling', momentum: analysis.momentum });
@@ -588,25 +685,39 @@ async function generateForwardLookingInsight(stateData, stateName) {
 
   // Analyze unemployment trend
   if (unemployment?.timeSeries?.length >= 6) {
-    const analysis = analyzeTrends(unemployment.timeSeries, 'unemployment', parseFloat(unemployment.processedData?.value));
+    const analysis = analyzeTrends(
+      unemployment.timeSeries,
+      'unemployment',
+      parseFloat(unemployment.processedData?.value),
+    );
     if (analysis.momentum === 'steady_up' || analysis.momentum === 'up') {
-      trendAnalysis.push({ metric: 'unemployment', direction: 'rising', momentum: analysis.momentum });
+      trendAnalysis.push({
+        metric: 'unemployment',
+        direction: 'rising',
+        momentum: analysis.momentum,
+      });
     } else if (analysis.momentum === 'steady_down' || analysis.momentum === 'down') {
-      trendAnalysis.push({ metric: 'unemployment', direction: 'falling', momentum: analysis.momentum });
+      trendAnalysis.push({
+        metric: 'unemployment',
+        direction: 'falling',
+        momentum: analysis.momentum,
+      });
     }
   }
 
   if (trendAnalysis.length === 0) return null;
 
   // Build summary
-  const rising = trendAnalysis.filter(t => t.direction === 'rising').map(t => t.metric);
-  const falling = trendAnalysis.filter(t => t.direction === 'falling').map(t => t.metric);
-  const stable = trendAnalysis.filter(t => t.direction === 'stable').map(t => t.metric);
+  const rising = trendAnalysis.filter((t) => t.direction === 'rising').map((t) => t.metric);
+  const falling = trendAnalysis.filter((t) => t.direction === 'falling').map((t) => t.metric);
+  const stable = trendAnalysis.filter((t) => t.direction === 'stable').map((t) => t.metric);
 
   const currentValues = [];
-  if (electricity?.processedData) currentValues.push(`Electricity: ${electricity.processedData.displayValue}`);
+  if (electricity?.processedData)
+    currentValues.push(`Electricity: ${electricity.processedData.displayValue}`);
   if (gasoline?.processedData) currentValues.push(`Gas: ${gasoline.processedData.displayValue}`);
-  if (unemployment?.processedData) currentValues.push(`Unemployment: ${unemployment.processedData.displayValue}`);
+  if (unemployment?.processedData)
+    currentValues.push(`Unemployment: ${unemployment.processedData.displayValue}`);
 
   const prompt = `Write 2-3 forward-looking sentences for ${stateName} based on current trends.
 
@@ -629,11 +740,19 @@ Guidelines:
 - Use ONLY the data provided.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.4 });
+    const result = await executeMCPTool('generate_text', {
+      prompt,
+      max_tokens: 150,
+      temperature: 0.4,
+    });
     return {
       text: result?.result?.text || null,
-      basedOnTrends: [...rising.map(r => `${r} rising`), ...falling.map(f => `${f} falling`), ...stable.map(s => `${s} stable`)],
-      projections
+      basedOnTrends: [
+        ...rising.map((r) => `${r} rising`),
+        ...falling.map((f) => `${f} falling`),
+        ...stable.map((s) => `${s} stable`),
+      ],
+      projections,
     };
   } catch (error) {
     logger.warn('Failed to generate forward-looking insight', error);
@@ -653,22 +772,26 @@ async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
     const stateVal = parseFloat(electricity.value);
     const natVal = parseFloat(nationalAvgs.electricity.value);
     if (stateVal && natVal) {
-      const diff = ((stateVal - natVal) / natVal * 100);
+      const diff = ((stateVal - natVal) / natVal) * 100;
       const direction = diff > 0 ? 'above' : 'below';
       comparisons.push({
         metric: 'electricity',
         stateValue: electricity.displayValue,
         nationalValue: nationalAvgs.electricity.displayValue,
         diff: Math.abs(diff).toFixed(1),
-        direction
+        direction,
       });
 
       // Calculate monthly dollar difference
       const centsDiff = stateVal - natVal;
-      const monthlyDiff = Math.round((centsDiff * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100);
+      const monthlyDiff = Math.round(
+        (centsDiff * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100,
+      );
       if (Math.abs(monthlyDiff) >= 5) {
         const sign = monthlyDiff > 0 ? '+' : '-';
-        dollarImpacts.push(`Electricity: ${sign}$${Math.abs(monthlyDiff)}/month vs national average`);
+        dollarImpacts.push(
+          `Electricity: ${sign}$${Math.abs(monthlyDiff)}/month vs national average`,
+        );
       }
     }
   }
@@ -678,14 +801,14 @@ async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
     const stateVal = parseFloat(gasoline.value);
     const natVal = parseFloat(nationalAvgs.gasoline.value);
     if (stateVal && natVal) {
-      const diff = ((stateVal - natVal) / natVal * 100);
+      const diff = ((stateVal - natVal) / natVal) * 100;
       const direction = diff > 0 ? 'above' : 'below';
       comparisons.push({
         metric: 'gas',
         stateValue: gasoline.displayValue,
         nationalValue: nationalAvgs.gasoline.displayValue,
         diff: Math.abs(diff).toFixed(1),
-        direction
+        direction,
       });
 
       // Calculate monthly dollar difference
@@ -704,13 +827,13 @@ async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
     const stateVal = parseFloat(groceryBasket.processedData.value);
     const natVal = parseFloat(groceryBasket.nationalDisplayValue.replace(/[^0-9.]/g, ''));
     if (stateVal && natVal) {
-      const diff = ((stateVal - natVal) / natVal * 100);
+      const diff = ((stateVal - natVal) / natVal) * 100;
       comparisons.push({
         metric: 'groceries',
         stateValue: groceryBasket.processedData.displayValue,
         nationalValue: groceryBasket.nationalDisplayValue,
         diff: Math.abs(diff).toFixed(1),
-        direction: diff > 0 ? 'above' : 'below'
+        direction: diff > 0 ? 'above' : 'below',
       });
     }
   }
@@ -718,15 +841,17 @@ async function generateComparisonNarrative(stateData, stateName, nationalAvgs) {
   if (comparisons.length === 0) return null;
 
   // Determine overall standing
-  const aboveCount = comparisons.filter(c => c.direction === 'above').length;
-  const belowCount = comparisons.filter(c => c.direction === 'below').length;
+  const aboveCount = comparisons.filter((c) => c.direction === 'above').length;
+  const belowCount = comparisons.filter((c) => c.direction === 'below').length;
   let overallStanding = 'mixed';
   if (aboveCount > belowCount) overallStanding = 'more expensive';
   else if (belowCount > aboveCount) overallStanding = 'more affordable';
 
-  const comparisonText = comparisons.map(c =>
-    `${c.metric}: ${c.stateValue} (${c.diff}% ${c.direction} national ${c.nationalValue})`
-  ).join('\n');
+  const comparisonText = comparisons
+    .map(
+      (c) => `${c.metric}: ${c.stateValue} (${c.diff}% ${c.direction} national ${c.nationalValue})`,
+    )
+    .join('\n');
 
   const prompt = `Write 2-3 sentences comparing ${stateName}'s cost of living to national averages.
 
@@ -745,7 +870,11 @@ Guidelines:
 - Use ONLY the data provided.`;
 
   try {
-    const result = await executeMCPTool('generate_text', { prompt, max_tokens: 150, temperature: 0.3 });
+    const result = await executeMCPTool('generate_text', {
+      prompt,
+      max_tokens: 150,
+      temperature: 0.3,
+    });
     if (result?.result?.text) {
       return result.result.text;
     }
@@ -754,13 +883,23 @@ Guidelines:
   }
 
   // Fallback: Generate a readable comparison text without LLM
-  return generateFallbackComparisonNarrative(comparisons, dollarImpacts, stateName, overallStanding);
+  return generateFallbackComparisonNarrative(
+    comparisons,
+    dollarImpacts,
+    stateName,
+    overallStanding,
+  );
 }
 
 /**
  * Generate fallback comparison narrative when LLM is unavailable
  */
-function generateFallbackComparisonNarrative(comparisons, dollarImpacts, stateName, overallStanding) {
+function generateFallbackComparisonNarrative(
+  comparisons,
+  dollarImpacts,
+  stateName,
+  overallStanding,
+) {
   if (comparisons.length === 0) {
     return `${stateName}'s costs are generally in line with national averages across tracked categories.`;
   }
@@ -777,16 +916,16 @@ function generateFallbackComparisonNarrative(comparisons, dollarImpacts, stateNa
   }
 
   // Add specific comparisons
-  const above = comparisons.filter(c => c.direction === 'above');
-  const below = comparisons.filter(c => c.direction === 'below');
+  const above = comparisons.filter((c) => c.direction === 'above');
+  const below = comparisons.filter((c) => c.direction === 'below');
 
   if (above.length > 0) {
-    const aboveList = above.map(c => `${c.metric} (${c.diff}% higher)`).join(', ');
+    const aboveList = above.map((c) => `${c.metric} (${c.diff}% higher)`).join(', ');
     parts.push(`Higher costs: ${aboveList}.`);
   }
 
   if (below.length > 0) {
-    const belowList = below.map(c => `${c.metric} (${c.diff}% lower)`).join(', ');
+    const belowList = below.map((c) => `${c.metric} (${c.diff}% lower)`).join(', ');
     parts.push(`Lower costs: ${belowList}.`);
   }
 
@@ -818,7 +957,7 @@ async function generateAIInsights(stateData, stateName, nationalAvgs) {
       economicInsight,
       crossMetricInsight,
       forwardLookingResult,
-      comparisonNarrative
+      comparisonNarrative,
     ] = await Promise.all([
       generateEnergyInsight(stateData, stateName),
       generateEmploymentInsight(stateData, stateName),
@@ -826,7 +965,7 @@ async function generateAIInsights(stateData, stateName, nationalAvgs) {
       generateEconomicInsight(stateData, stateName),
       generateCrossMetricInsight(stateData, stateName, householdImpact),
       generateForwardLookingInsight(stateData, stateName),
-      generateComparisonNarrative(stateData, stateName, nationalAvgs)
+      generateComparisonNarrative(stateData, stateName, nationalAvgs),
     ]);
 
     return {
@@ -834,7 +973,7 @@ async function generateAIInsights(stateData, stateName, nationalAvgs) {
         energy: energyInsight,
         employment: employmentInsight,
         food: foodInsight,
-        economic: economicInsight
+        economic: economicInsight,
       },
       crossMetric: {
         text: crossMetricInsight,
@@ -843,13 +982,13 @@ async function generateAIInsights(stateData, stateName, nationalAvgs) {
           status: squeezeIndex.status,
           pressures: squeezeIndex.pressures,
           reliefs: squeezeIndex.reliefs,
-          details: squeezeIndex.details
-        }
+          details: squeezeIndex.details,
+        },
       },
       forwardLooking: forwardLookingResult,
       comparison: {
-        text: comparisonNarrative
-      }
+        text: comparisonNarrative,
+      },
     };
   } catch (error) {
     logger.error('Error generating AI insights', error);
@@ -885,7 +1024,7 @@ function buildComparisonCards(stateData, stateName) {
       description: `Electricity bills in ${stateName} are ${electricity.processedData.displayValue}, ${electricity.processedData.changeDisplay} from last year`,
       isRealData: true,
       source: 'EIA',
-      isStale: electricity.isStale
+      isStale: electricity.isStale,
     });
   }
 
@@ -898,7 +1037,7 @@ function buildComparisonCards(stateData, stateName) {
       description: `Gas prices in ${stateName} region: ${gasoline.processedData.displayValue}`,
       isRealData: true,
       source: 'EIA',
-      isStale: gasoline.isStale
+      isStale: gasoline.isStale,
     });
   }
 
@@ -912,7 +1051,7 @@ function buildComparisonCards(stateData, stateName) {
         description: `Food costs in ${stateName}: ${food.processedData.displayValue}`,
         isRealData: true,
         source: 'USDA',
-        isStale: food.isStale
+        isStale: food.isStale,
       });
     }
   }
@@ -932,7 +1071,11 @@ function buildKeyMetrics(stateData, _stateName) {
     const isNegative = unemployment.processedData.change > 0; // Higher unemployment is bad
     const currentValue = parseFloat(unemployment.processedData.value) || null;
     const analysis = analyzeTrends(unemployment.timeSeries, 'unemployment', currentValue);
-    const historicalContext = analyzeHistoricalContext(unemployment.timeSeries, 'unemployment', currentValue);
+    const historicalContext = analyzeHistoricalContext(
+      unemployment.timeSeries,
+      'unemployment',
+      currentValue,
+    );
     metrics.push({
       title: 'Unemployment Rate',
       value: unemployment.processedData.displayValue,
@@ -944,7 +1087,7 @@ function buildKeyMetrics(stateData, _stateName) {
       alerts: analysis.alerts,
       momentum: analysis.momentum,
       trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
+      historicalContext: historicalContext.available ? historicalContext : null,
     });
   }
 
@@ -956,7 +1099,11 @@ function buildKeyMetrics(stateData, _stateName) {
     const isNegative = gasoline.processedData.change > 0;
     const currentValue = parseFloat(gasoline.processedData.value) || null;
     const analysis = analyzeTrends(gasoline.timeSeries, 'gas_prices', currentValue);
-    const historicalContext = analyzeHistoricalContext(gasoline.timeSeries, 'gas_prices', currentValue);
+    const historicalContext = analyzeHistoricalContext(
+      gasoline.timeSeries,
+      'gas_prices',
+      currentValue,
+    );
     metrics.push({
       title: 'Gas Price (Regular)',
       value: gasoline.processedData.displayValue,
@@ -968,7 +1115,7 @@ function buildKeyMetrics(stateData, _stateName) {
       alerts: analysis.alerts,
       momentum: analysis.momentum,
       trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
+      historicalContext: historicalContext.available ? historicalContext : null,
     });
   }
 
@@ -978,7 +1125,11 @@ function buildKeyMetrics(stateData, _stateName) {
     const isNegative = electricity.processedData.change > 0;
     const currentValue = parseFloat(electricity.processedData.value) || null;
     const analysis = analyzeTrends(electricity.timeSeries, 'electricity_prices', currentValue);
-    const historicalContext = analyzeHistoricalContext(electricity.timeSeries, 'electricity_prices', currentValue);
+    const historicalContext = analyzeHistoricalContext(
+      electricity.timeSeries,
+      'electricity_prices',
+      currentValue,
+    );
     metrics.push({
       title: 'Electricity (cents/kWh)',
       value: electricity.processedData.displayValue,
@@ -990,7 +1141,7 @@ function buildKeyMetrics(stateData, _stateName) {
       alerts: analysis.alerts,
       momentum: analysis.momentum,
       trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
+      historicalContext: historicalContext.available ? historicalContext : null,
     });
   }
 
@@ -1000,7 +1151,11 @@ function buildKeyMetrics(stateData, _stateName) {
     const isNegative = food.processedData.change > 0;
     const currentValue = parseFloat(food.processedData.value) || null;
     const analysis = analyzeTrends(food.timeSeries, 'food_prices', currentValue);
-    const historicalContext = analyzeHistoricalContext(food.timeSeries, 'food_prices', currentValue);
+    const historicalContext = analyzeHistoricalContext(
+      food.timeSeries,
+      'food_prices',
+      currentValue,
+    );
     metrics.push({
       title: 'Food (per person/month)',
       value: food.processedData.displayValue,
@@ -1012,7 +1167,7 @@ function buildKeyMetrics(stateData, _stateName) {
       alerts: analysis.alerts,
       momentum: analysis.momentum,
       trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
+      historicalContext: historicalContext.available ? historicalContext : null,
     });
   }
 
@@ -1035,14 +1190,18 @@ function buildTrendData(stateData) {
     const firstValue = gasoline.timeSeries[0]?.value || 0;
     const currentValue = parseFloat(gasoline.processedData?.value) || null;
     const analysis = analyzeTrends(gasoline.timeSeries, 'gas_prices', currentValue);
-    const historicalContext = analyzeHistoricalContext(gasoline.timeSeries, 'gas_prices', currentValue);
+    const historicalContext = analyzeHistoricalContext(
+      gasoline.timeSeries,
+      'gas_prices',
+      currentValue,
+    );
     trends.push({
       title: 'Fuel Prices Over Time',
       currentValue: gasoline.processedData?.displayValue || 'N/A',
-      data: gasoline.timeSeries.map(point => ({
+      data: gasoline.timeSeries.map((point) => ({
         month: point.label,
         value: Math.round(point.value * 100), // Convert to cents for visualization
-        color: point.value > firstValue ? '#FF6B5A' : '#4A5D3F'
+        color: point.value > firstValue ? '#FF6B5A' : '#4A5D3F',
       })),
       source: 'EIA',
       isRealData: true,
@@ -1050,7 +1209,7 @@ function buildTrendData(stateData) {
       alerts: analysis.alerts,
       momentum: analysis.momentum,
       trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
+      historicalContext: historicalContext.available ? historicalContext : null,
     });
   }
 
@@ -1060,14 +1219,18 @@ function buildTrendData(stateData) {
     const firstValue = electricity.timeSeries[0]?.value || 0;
     const currentValue = parseFloat(electricity.processedData?.value) || null;
     const analysis = analyzeTrends(electricity.timeSeries, 'electricity_prices', currentValue);
-    const historicalContext = analyzeHistoricalContext(electricity.timeSeries, 'electricity_prices', currentValue);
+    const historicalContext = analyzeHistoricalContext(
+      electricity.timeSeries,
+      'electricity_prices',
+      currentValue,
+    );
     trends.push({
       title: 'Electricity Prices Over Time',
       currentValue: electricity.processedData?.displayValue || 'N/A',
-      data: electricity.timeSeries.map(point => ({
+      data: electricity.timeSeries.map((point) => ({
         month: point.label,
         value: Math.round(point.value * 10), // Scale for visualization
-        color: point.value > firstValue ? '#FF6B5A' : '#4A5D3F'
+        color: point.value > firstValue ? '#FF6B5A' : '#4A5D3F',
       })),
       source: 'EIA',
       isRealData: true,
@@ -1075,7 +1238,7 @@ function buildTrendData(stateData) {
       alerts: analysis.alerts,
       momentum: analysis.momentum,
       trendSummary: analysis.trendSummary,
-      historicalContext: historicalContext.available ? historicalContext : null
+      historicalContext: historicalContext.available ? historicalContext : null,
     });
   }
 
@@ -1089,7 +1252,7 @@ function buildTrendData(stateData) {
 let nationalAveragesCache = {
   electricity: null,
   gasoline: null,
-  lastFetched: null
+  lastFetched: null,
 };
 
 async function fetchNationalAverages() {
@@ -1107,7 +1270,7 @@ async function fetchNationalAverages() {
     // Fetch both national averages in parallel
     const [electricityResult, gasolineResult] = await Promise.all([
       executeMCPTool('get_national_electricity_price', {}),
-      executeMCPTool('get_national_gasoline_price', {})
+      executeMCPTool('get_national_gasoline_price', {}),
     ]);
 
     if (electricityResult?.result?.status === 'success') {
@@ -1143,7 +1306,7 @@ async function buildComparisonData(stateData, _stateName) {
       nationalValue: groceryBasket.nationalDisplayValue,
       source: 'USDA',
       isRealData: true,
-      isStale: groceryBasket.isStale
+      isStale: groceryBasket.isStale,
     });
   }
 
@@ -1158,7 +1321,7 @@ async function buildComparisonData(stateData, _stateName) {
       nationalValue: nationalGasValue,
       source: 'EIA',
       isRealData: true,
-      isStale: gasoline.isStale
+      isStale: gasoline.isStale,
     });
   }
 
@@ -1173,7 +1336,7 @@ async function buildComparisonData(stateData, _stateName) {
       nationalValue: nationalElecValue,
       source: 'EIA',
       isRealData: true,
-      isStale: electricity.isStale
+      isStale: electricity.isStale,
     });
   }
 
@@ -1193,7 +1356,11 @@ async function generateNarrativeOverview(stateData, stateName, newsHeadlines) {
     const unemp = stateData.unemployment.processedData;
     dataSummary.push(`Unemployment: ${unemp.displayValue} (${unemp.changeDisplay} YoY)`);
     if (stateData.unemployment.timeSeries?.length >= 3) {
-      const analysis = analyzeTrends(stateData.unemployment.timeSeries, 'unemployment', parseFloat(unemp.value));
+      const analysis = analyzeTrends(
+        stateData.unemployment.timeSeries,
+        'unemployment',
+        parseFloat(unemp.value),
+      );
       if (analysis.trendSummary !== 'Insufficient data') {
         trendSummary.push(`Unemployment: ${analysis.trendSummary}`);
       }
@@ -1227,9 +1394,10 @@ async function generateNarrativeOverview(stateData, stateName, newsHeadlines) {
       squeezeContext = `Overall pressure: LOW - more costs falling than rising`;
     }
 
-    const impactContext = householdImpact.total !== 0
-      ? `Net household impact: ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total}/month`
-      : '';
+    const impactContext =
+      householdImpact.total !== 0
+        ? `Net household impact: ${householdImpact.total > 0 ? '+' : ''}$${householdImpact.total}/month`
+        : '';
 
     const prompt = `Write a 2-3 sentence executive summary of ${stateName}'s economic situation for residents.
 
@@ -1252,7 +1420,11 @@ Guidelines:
 - Do NOT invent any numbers - only reference the data provided above.`;
 
     try {
-      const result = await executeMCPTool('generate_text', { prompt, max_tokens: 200, temperature: 0.3 });
+      const result = await executeMCPTool('generate_text', {
+        prompt,
+        max_tokens: 200,
+        temperature: 0.3,
+      });
       if (result?.result?.text) {
         return result.result.text;
       }
@@ -1277,7 +1449,9 @@ function generateFallbackOverview(stateData, stateName, squeeze, householdImpact
 
   // Opening sentence based on squeeze status
   if (squeeze.status === 'high_squeeze') {
-    parts.push(`${stateName} residents are facing significant cost pressures across multiple categories.`);
+    parts.push(
+      `${stateName} residents are facing significant cost pressures across multiple categories.`,
+    );
   } else if (squeeze.status === 'moderate_squeeze') {
     parts.push(`${stateName}'s economy shows some cost pressures for households.`);
   } else if (squeeze.status === 'relief' || squeeze.status === 'significant_relief') {
@@ -1311,9 +1485,13 @@ function generateFallbackOverview(stateData, stateName, squeeze, householdImpact
   // Impact statement
   if (householdImpact.total !== 0) {
     if (householdImpact.total > 0) {
-      parts.push(`Combined, these changes add approximately $${householdImpact.total} per month to typical household expenses.`);
+      parts.push(
+        `Combined, these changes add approximately $${householdImpact.total} per month to typical household expenses.`,
+      );
     } else {
-      parts.push(`On balance, households are seeing savings of approximately $${Math.abs(householdImpact.total)} per month.`);
+      parts.push(
+        `On balance, households are seeing savings of approximately $${Math.abs(householdImpact.total)} per month.`,
+      );
     }
   }
 
@@ -1331,15 +1509,17 @@ function _generateFallbackComparisonText(stateData, stateName, nationalAvgs) {
     const stateVal = parseFloat(electricity.value);
     const natVal = parseFloat(nationalAvgs.electricity.value);
     if (stateVal && natVal) {
-      const diff = ((stateVal - natVal) / natVal * 100);
+      const diff = ((stateVal - natVal) / natVal) * 100;
       if (Math.abs(diff) >= 5) {
         const direction = diff > 0 ? 'higher' : 'lower';
-        const monthlyDiff = Math.round(Math.abs((stateVal - natVal) * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth / 100));
+        const monthlyDiff = Math.round(
+          Math.abs(((stateVal - natVal) * HOUSEHOLD_CONSUMPTION.electricityKwhPerMonth) / 100),
+        );
         comparisons.push({
           metric: 'electricity',
           direction,
           percent: Math.abs(diff).toFixed(0),
-          monthly: monthlyDiff
+          monthly: monthlyDiff,
         });
       }
     }
@@ -1350,15 +1530,17 @@ function _generateFallbackComparisonText(stateData, stateName, nationalAvgs) {
     const stateVal = parseFloat(gasoline.value);
     const natVal = parseFloat(nationalAvgs.gasoline.value);
     if (stateVal && natVal) {
-      const diff = ((stateVal - natVal) / natVal * 100);
+      const diff = ((stateVal - natVal) / natVal) * 100;
       if (Math.abs(diff) >= 5) {
         const direction = diff > 0 ? 'higher' : 'lower';
-        const monthlyDiff = Math.round(Math.abs((stateVal - natVal) * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth));
+        const monthlyDiff = Math.round(
+          Math.abs((stateVal - natVal) * HOUSEHOLD_CONSUMPTION.gasolineGallonsPerMonth),
+        );
         comparisons.push({
           metric: 'fuel',
           direction,
           percent: Math.abs(diff).toFixed(0),
-          monthly: monthlyDiff
+          monthly: monthlyDiff,
         });
       }
     }
@@ -1371,11 +1553,13 @@ function _generateFallbackComparisonText(stateData, stateName, nationalAvgs) {
   const parts = [];
 
   // Count higher vs lower
-  const higher = comparisons.filter(c => c.direction === 'higher');
-  const lower = comparisons.filter(c => c.direction === 'lower');
+  const higher = comparisons.filter((c) => c.direction === 'higher');
+  const lower = comparisons.filter((c) => c.direction === 'lower');
 
   if (higher.length > lower.length) {
-    parts.push(`${stateName} residents pay more than the national average for most tracked expenses.`);
+    parts.push(
+      `${stateName} residents pay more than the national average for most tracked expenses.`,
+    );
   } else if (lower.length > higher.length) {
     parts.push(`${stateName} offers lower costs than the national average in key categories.`);
   } else {
@@ -1383,7 +1567,7 @@ function _generateFallbackComparisonText(stateData, stateName, nationalAvgs) {
   }
 
   // Add specifics
-  const specifics = comparisons.map(c => {
+  const specifics = comparisons.map((c) => {
     return `${c.metric} is ${c.percent}% ${c.direction} (about $${c.monthly}/month difference)`;
   });
 
@@ -1404,7 +1588,7 @@ async function fetchMultiCategoryNews(stateName) {
     { query: `gas prices energy ${stateName}`, category: 'energy' },
     { query: `grocery prices inflation ${stateName}`, category: 'food' },
     { query: `tariffs trade impact ${stateName}`, category: 'tariffs' },
-    { query: `federal policy ${stateName}`, category: 'policy' }
+    { query: `federal policy ${stateName}`, category: 'policy' },
   ];
 
   const allNews = [];
@@ -1413,7 +1597,7 @@ async function fetchMultiCategoryNews(stateName) {
     try {
       const news = await fetchNews(cat.query, stateName, 3);
       if (news && news.length > 0) {
-        allNews.push(...news.map(n => ({ ...n, category: cat.category })));
+        allNews.push(...news.map((n) => ({ ...n, category: cat.category })));
       }
     } catch (error) {
       logger.warn(`Failed to fetch ${cat.category} news for ${stateName}`, error);
@@ -1427,7 +1611,11 @@ async function fetchMultiCategoryNews(stateName) {
  * Main function: Generate state report using ONLY real cached data
  * Returns error if no real data is available - NEVER returns fake data
  */
-export async function generateStateReportData(stateName = 'California', role = 'VOTER', name = 'California Resident') {
+export async function generateStateReportData(
+  stateName = 'California',
+  role = 'VOTER',
+  name = 'California Resident',
+) {
   try {
     // Fetch cached data for the state
     let cachedData = await fetchStateDataFromCache(stateName);
@@ -1441,11 +1629,13 @@ export async function generateStateReportData(stateName = 'California', role = '
         // Start refresh in background - don't await
         refreshStateData(stateName)
           .then(() => logger.info(`Background refresh completed for ${stateName}`))
-          .catch(err => logger.error(`Background refresh failed for ${stateName}`, err));
+          .catch((err) => logger.error(`Background refresh failed for ${stateName}`, err));
       }
 
       // Return immediately with NO_DATA_AVAILABLE - don't block the request
-      const error = new Error(`No real data available for ${stateName}. Data collection has been started. Please try again in a minute.`);
+      const error = new Error(
+        `No real data available for ${stateName}. Data collection has been started. Please try again in a minute.`,
+      );
       error.code = 'NO_DATA_AVAILABLE';
       throw error;
     }
@@ -1454,7 +1644,7 @@ export async function generateStateReportData(stateName = 'California', role = '
 
     // Fetch news
     const news = await fetchMultiCategoryNews(stateName);
-    const headlines = news.map(n => n.title).filter(Boolean);
+    const headlines = news.map((n) => n.title).filter(Boolean);
 
     // Generate narrative (LLM only for text, not data)
     const overview = await generateNarrativeOverview(stateData, stateName, headlines);
@@ -1473,9 +1663,9 @@ export async function generateStateReportData(stateName = 'California', role = '
 
     // Collect all sources used
     const sourcesUsed = new Set();
-    keyMetrics.forEach(m => m.source && sourcesUsed.add(m.source));
-    comparisonCards.forEach(c => c.source && sourcesUsed.add(c.source));
-    trendData.forEach(t => t.source && sourcesUsed.add(t.source));
+    keyMetrics.forEach((m) => m.source && sourcesUsed.add(m.source));
+    comparisonCards.forEach((c) => c.source && sourcesUsed.add(c.source));
+    trendData.forEach((t) => t.source && sourcesUsed.add(t.source));
 
     return {
       name,
@@ -1494,11 +1684,10 @@ export async function generateStateReportData(stateName = 'California', role = '
         lastUpdated: new Date().toISOString(),
         sources: Array.from(sourcesUsed),
         availableMetrics: cachedData.availableDataCount,
-        isRealData: true
+        isRealData: true,
       },
-      isFallback: false
+      isFallback: false,
     };
-
   } catch (error) {
     logger.error('Error generating real data state report', error, { stateName });
 
@@ -1531,13 +1720,13 @@ export async function getStateDataStatus(stateName) {
       type,
       available: data !== null,
       isStale: data?.isStale || false,
-      fetchedAt: data?.fetchedAt
+      fetchedAt: data?.fetchedAt,
     })),
-    overallCacheHealth: cacheHealth
+    overallCacheHealth: cacheHealth,
   };
 }
 
 export default {
   generateStateReportData,
-  getStateDataStatus
+  getStateDataStatus,
 };

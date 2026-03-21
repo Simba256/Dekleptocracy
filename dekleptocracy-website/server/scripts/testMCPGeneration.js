@@ -44,7 +44,7 @@ async function test() {
       states: ['California', 'Texas'],
       skipWalletShocks: false,
       skipCostDrivers: true,
-      skipStats: true
+      skipStats: true,
     });
 
     console.log('\n📊 Generation Results:');
@@ -55,13 +55,12 @@ async function test() {
 
     if (results.errors.length > 0) {
       console.log('\n⚠️  Errors encountered:');
-      results.errors.forEach(err => {
+      results.errors.forEach((err) => {
         console.log(`  - ${err.type}: ${err.error}`);
       });
     }
 
     console.log('\n✅ Test complete!');
-
   } catch (error) {
     console.error('\n❌ Test failed:', error);
     console.error(error.stack);

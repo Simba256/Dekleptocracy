@@ -10,7 +10,7 @@ const TOPIC_OPTIONS = [
   'Lobbying & Influence',
   'Taxes & Tariffs',
   'Healthcare & Education',
-  'Environment & Climate'
+  'Environment & Climate',
 ];
 
 const STYLE_OPTIONS = [
@@ -18,7 +18,7 @@ const STYLE_OPTIONS = [
   'Professional And Formal',
   'Informative And Detailed',
   'Quick And To The Point',
-  'Creative And Engaging'
+  'Creative And Engaging',
 ];
 
 const HOUSEHOLD_OPTIONS = ['Groceries', 'Rent / Mortgage', 'Utilities', 'Healthcare', 'Others'];
@@ -43,7 +43,7 @@ const Profile = () => {
     profilePhoto: null,
     selectedTopics: [],
     selectedStyles: [],
-    householdExpenseFocus: ''
+    householdExpenseFocus: '',
   });
   const [preview, setPreview] = useState(null);
 
@@ -72,7 +72,7 @@ const Profile = () => {
             profilePhoto: null,
             selectedTopics: data.preferences?.topicsOfInterest || [],
             selectedStyles: data.preferences?.conversationStyles || [],
-            householdExpenseFocus: data.preferences?.householdExpenseFocus || ''
+            householdExpenseFocus: data.preferences?.householdExpenseFocus || '',
           });
 
           if (data.profilePhoto) {
@@ -89,8 +89,8 @@ const Profile = () => {
       // Fetch fresh data in background
       const response = await fetch(`${API_URL}/api/user/profile`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -111,7 +111,7 @@ const Profile = () => {
         profilePhoto: null,
         selectedTopics: data.user.preferences?.topicsOfInterest || [],
         selectedStyles: data.user.preferences?.conversationStyles || [],
-        householdExpenseFocus: data.user.preferences?.householdExpenseFocus || ''
+        householdExpenseFocus: data.user.preferences?.householdExpenseFocus || '',
       });
 
       // Set preview if profile photo exists
@@ -133,9 +133,9 @@ const Profile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     setError('');
     setSuccess('');
@@ -156,9 +156,9 @@ const Profile = () => {
         return;
       }
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        profilePhoto: file
+        profilePhoto: file,
       }));
 
       // Create preview
@@ -173,10 +173,10 @@ const Profile = () => {
   };
 
   const toggleSelection = (key, value) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const current = prev[key] || [];
       const exists = current.includes(value);
-      const next = exists ? current.filter(v => v !== value) : [...current, value];
+      const next = exists ? current.filter((v) => v !== value) : [...current, value];
       return { ...prev, [key]: next };
     });
     setError('');
@@ -192,7 +192,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
       const formDataToSend = new FormData();
-      
+
       if (formData.fullName) {
         formDataToSend.append('fullName', formData.fullName);
       }
@@ -200,7 +200,7 @@ const Profile = () => {
       const preferences = {
         topicsOfInterest: formData.selectedTopics,
         conversationStyles: formData.selectedStyles,
-        householdExpenseFocus: formData.householdExpenseFocus.trim()
+        householdExpenseFocus: formData.householdExpenseFocus.trim(),
       };
 
       formDataToSend.append('preferences', JSON.stringify(preferences));
@@ -212,9 +212,9 @@ const Profile = () => {
       const response = await fetch(`${API_URL}/api/user/profile`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formDataToSend
+        body: formDataToSend,
       });
 
       const data = await response.json();
@@ -225,28 +225,31 @@ const Profile = () => {
 
       setUser(data.user);
       setSuccess('Profile updated successfully!');
-      
+
       // Update preview if new photo was uploaded
       if (data.user.profilePhoto) {
-        const photoUrl = data.user.profilePhoto.startsWith('http') 
-          ? data.user.profilePhoto 
+        const photoUrl = data.user.profilePhoto.startsWith('http')
+          ? data.user.profilePhoto
           : `${API_URL}/${data.user.profilePhoto}`;
         setPreview(photoUrl);
       }
 
       // Clear file input
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        profilePhoto: null
+        profilePhoto: null,
       }));
 
       // Update localStorage user data
       const storedUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || '{}');
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify({
-        ...storedUser,
-        fullName: data.user.fullName,
-        profilePhoto: data.user.profilePhoto
-      }));
+      localStorage.setItem(
+        STORAGE_KEYS.USER,
+        JSON.stringify({
+          ...storedUser,
+          fullName: data.user.fullName,
+          profilePhoto: data.user.profilePhoto,
+        }),
+      );
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error('[DEV] Update profile error:', err);
@@ -311,7 +314,9 @@ const Profile = () => {
             {/* Form Fields */}
             <div className="form-fields">
               <div className="form-group">
-                <label htmlFor="fullName" className="form-label">Full Name</label>
+                <label htmlFor="fullName" className="form-label">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   id="fullName"
@@ -363,7 +368,9 @@ const Profile = () => {
                       type="button"
                       key={option}
                       className={`chip ${formData.householdExpenseFocus === option ? 'chip-selected' : ''}`}
-                      onClick={() => setFormData(prev => ({ ...prev, householdExpenseFocus: option }))}
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, householdExpenseFocus: option }))
+                      }
                     >
                       {option}
                     </button>
@@ -373,12 +380,7 @@ const Profile = () => {
 
               <div className="form-group">
                 <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  value={user?.email || ''}
-                  className="form-input"
-                  disabled
-                />
+                <input type="email" value={user?.email || ''} className="form-input" disabled />
                 <p className="form-hint">Email cannot be changed</p>
               </div>
 
@@ -386,18 +388,10 @@ const Profile = () => {
               {success && <div className="success-message">{success}</div>}
 
               <div className="form-actions">
-                <button
-                  type="submit"
-                  className="save-button"
-                  disabled={updating}
-                >
+                <button type="submit" className="save-button" disabled={updating}>
                   {updating ? 'Saving...' : 'Save Changes'}
                 </button>
-                <button
-                  type="button"
-                  className="logout-button"
-                  onClick={handleLogout}
-                >
+                <button type="button" className="logout-button" onClick={handleLogout}>
                   Logout
                 </button>
               </div>
@@ -410,4 +404,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

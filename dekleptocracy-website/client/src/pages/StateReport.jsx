@@ -32,7 +32,7 @@ const SqueezeIndexBadge = ({ squeezeIndex }) => {
     mild_squeeze: { label: 'Mild Pressure', color: '#ca8a04', icon: '📈' },
     stable: { label: 'Stable', color: '#059669', icon: '✓' },
     relief: { label: 'Some Relief', color: '#0891b2', icon: '📉' },
-    significant_relief: { label: 'Significant Relief', color: '#16a34a', icon: '💰' }
+    significant_relief: { label: 'Significant Relief', color: '#16a34a', icon: '💰' },
   };
 
   const config = statusConfig[squeezeIndex.status] || statusConfig.stable;
@@ -40,10 +40,16 @@ const SqueezeIndexBadge = ({ squeezeIndex }) => {
   return (
     <div className="squeeze-index-badge" style={{ borderColor: config.color }}>
       <span className="squeeze-index-icon">{config.icon}</span>
-      <span className="squeeze-index-label" style={{ color: config.color }}>{config.label}</span>
+      <span className="squeeze-index-label" style={{ color: config.color }}>
+        {config.label}
+      </span>
       <span className="squeeze-index-details">
-        {squeezeIndex.pressures > 0 && <span className="pressure-count">{squeezeIndex.pressures} rising</span>}
-        {squeezeIndex.reliefs > 0 && <span className="relief-count">{squeezeIndex.reliefs} falling</span>}
+        {squeezeIndex.pressures > 0 && (
+          <span className="pressure-count">{squeezeIndex.pressures} rising</span>
+        )}
+        {squeezeIndex.reliefs > 0 && (
+          <span className="relief-count">{squeezeIndex.reliefs} falling</span>
+        )}
       </span>
     </div>
   );
@@ -59,9 +65,16 @@ const HouseholdImpactCard = ({ impact, crossMetricText, squeezeIndex }) => {
     <div className="ai-insight-card ai-insight-card--highlight">
       <div className="ai-insight-header">
         <div className="ai-insight-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="12" y1="1" x2="12" y2="23"/>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
           </svg>
         </div>
         <h4 className="ai-insight-title">Household Budget Impact</h4>
@@ -70,14 +83,17 @@ const HouseholdImpactCard = ({ impact, crossMetricText, squeezeIndex }) => {
       {crossMetricText && <p className="ai-insight-text">{crossMetricText}</p>}
       <div className="household-impact">
         <div className="household-impact-total">
-          {isIncrease ? '+' : '-'}${Math.abs(impact.total)}<span>/month</span>
+          {isIncrease ? '+' : '-'}${Math.abs(impact.total)}
+          <span>/month</span>
         </div>
         {impact.breakdown?.length > 0 && (
           <div className="household-impact-breakdown">
             {impact.breakdown.map((item, index) => (
               <div key={index} className="household-impact-item">
                 <span className="household-impact-item-category">{item.category}: </span>
-                <span className={`household-impact-item-amount ${item.amount < 0 ? 'positive' : ''}`}>
+                <span
+                  className={`household-impact-item-amount ${item.amount < 0 ? 'positive' : ''}`}
+                >
                   {item.amount > 0 ? '+' : '-'}${Math.abs(item.amount)}
                 </span>
               </div>
@@ -97,9 +113,16 @@ const ForwardLookingCard = ({ insight }) => {
     <div className="ai-insight-card ai-insight-card--projection">
       <div className="ai-insight-header">
         <div className="ai-insight-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12,6 12,12 16,14"/>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12,6 12,12 16,14" />
           </svg>
         </div>
         <h4 className="ai-insight-title">Looking Ahead</h4>
@@ -108,7 +131,9 @@ const ForwardLookingCard = ({ insight }) => {
       {insight.basedOnTrends?.length > 0 && (
         <div className="forward-looking-trends">
           {insight.basedOnTrends.map((trend, index) => (
-            <span key={index} className="forward-looking-trend">{trend}</span>
+            <span key={index} className="forward-looking-trend">
+              {trend}
+            </span>
           ))}
         </div>
       )}
@@ -138,9 +163,12 @@ const StateReport = () => {
         setLoading(true);
         setError(null);
         setErrorCode(null);
-        const response = await fetch(`${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}`, {
-          signal: controller.signal
-        });
+        const response = await fetch(
+          `${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}`,
+          {
+            signal: controller.signal,
+          },
+        );
 
         const data = await response.json();
 
@@ -174,14 +202,16 @@ const StateReport = () => {
       const response = await fetch(`${API_URL}/api/reports/state/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ state: stateName })
+        body: JSON.stringify({ state: stateName }),
       });
       const data = await response.json();
 
       if (data.success) {
         if (data.status === 'in_progress') {
           // Data refresh started in background - poll for completion
-          setError(`Data collection started for ${stateName}. This usually takes 30-60 seconds. The page will reload automatically when data is ready.`);
+          setError(
+            `Data collection started for ${stateName}. This usually takes 30-60 seconds. The page will reload automatically when data is ready.`,
+          );
           setErrorCode('REFRESHING');
 
           // Poll for data availability every 10 seconds
@@ -191,14 +221,16 @@ const StateReport = () => {
             attempts++;
             try {
               const checkResponse = await fetch(
-                `${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}`
+                `${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}`,
               );
               if (checkResponse.ok) {
                 clearInterval(pollInterval);
                 window.location.reload();
               } else if (attempts >= maxAttempts) {
                 clearInterval(pollInterval);
-                setError('Data collection is taking longer than expected. Please try reloading the page manually.');
+                setError(
+                  'Data collection is taking longer than expected. Please try reloading the page manually.',
+                );
                 setErrorCode('NO_DATA_AVAILABLE');
                 setTriggeringRefresh(false);
               }
@@ -240,7 +272,7 @@ const StateReport = () => {
     setRefreshing(true);
     try {
       const response = await fetch(
-        `${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}&t=${Date.now()}`
+        `${API_URL}/api/reports/state?state=${encodeURIComponent(stateName)}&role=${encodeURIComponent(role)}&name=${encodeURIComponent(name)}&t=${Date.now()}`,
       );
 
       if (!response.ok) {
@@ -279,14 +311,14 @@ const StateReport = () => {
         scale: 2,
         useCORS: true,
         logging: false,
-        windowWidth: 1200
+        windowWidth: 1200,
       });
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
       });
 
       const imgWidth = 210;
@@ -324,19 +356,27 @@ const StateReport = () => {
       return `Living costs in ${stateName} vary from the national average.`;
     }
 
-    const higher = comparisonData.filter(i => i.change.includes('+'));
-    const lower = comparisonData.filter(i => i.change.includes('-'));
+    const higher = comparisonData.filter((i) => i.change.includes('+'));
+    const lower = comparisonData.filter((i) => i.change.includes('-'));
 
     let sentences = [];
 
     if (higher.length > 0) {
-      const higherItems = higher.map(i => `${i.category.toLowerCase()} (${i.change})`).join(' and ');
-      sentences.push(`${stateName} residents pay more for ${higherItems} compared to the national average.`);
+      const higherItems = higher
+        .map((i) => `${i.category.toLowerCase()} (${i.change})`)
+        .join(' and ');
+      sentences.push(
+        `${stateName} residents pay more for ${higherItems} compared to the national average.`,
+      );
     }
 
     if (lower.length > 0) {
-      const lowerItems = lower.map(i => `${i.category.toLowerCase()} (${i.change})`).join(' and ');
-      sentences.push(`On the plus side, ${lower.length > 1 ? 'costs are' : 'the cost is'} lower for ${lowerItems}.`);
+      const lowerItems = lower
+        .map((i) => `${i.category.toLowerCase()} (${i.change})`)
+        .join(' and ');
+      sentences.push(
+        `On the plus side, ${lower.length > 1 ? 'costs are' : 'the cost is'} lower for ${lowerItems}.`,
+      );
     }
 
     if (sentences.length === 0) {
@@ -368,17 +408,24 @@ const StateReport = () => {
           {isRefreshing ? (
             <div className="spinner"></div>
           ) : (
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               {isNoDataError ? (
                 <>
-                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
-                  <path d="M21 3v5h-5"/>
+                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
                 </>
               ) : (
                 <>
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="8" x2="12" y2="12"/>
-                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
                 </>
               )}
             </svg>
@@ -393,7 +440,8 @@ const StateReport = () => {
           <p>{error}</p>
           {isNoDataError && !isRefreshing && (
             <p className="error-subtext">
-              Government data needs to be fetched first. Click below to start collecting data for {stateName}.
+              Government data needs to be fetched first. Click below to start collecting data for{' '}
+              {stateName}.
             </p>
           )}
           <div className="error-actions">
@@ -408,10 +456,12 @@ const StateReport = () => {
               >
                 {triggeringRefresh ? 'Fetching Data...' : 'Fetch Data Now'}
               </button>
-            ) : !isRefreshing && (
-              <button onClick={() => window.location.reload()} className="primary-button">
-                Try Again
-              </button>
+            ) : (
+              !isRefreshing && (
+                <button onClick={() => window.location.reload()} className="primary-button">
+                  Try Again
+                </button>
+              )
             )}
           </div>
         </div>
@@ -434,7 +484,10 @@ const StateReport = () => {
       <Breadcrumbs
         items={[
           { label: 'Reports', path: '/reports' },
-          { label: stateName, path: `/reports/state-report?state=${encodeURIComponent(stateName)}` }
+          {
+            label: stateName,
+            path: `/reports/state-report?state=${encodeURIComponent(stateName)}`,
+          },
         ]}
       />
 
@@ -442,7 +495,10 @@ const StateReport = () => {
       <div className="district-report-header">
         <div className="district-report-header-content">
           <div className="district-report-avatar">
-            {name.split(' ').map(n => n[0]).join('')}
+            {name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')}
           </div>
           <div className="district-report-info">
             <h1 className="district-report-name">{data.name}</h1>
@@ -451,7 +507,7 @@ const StateReport = () => {
               <span className="district-report-tag">{data.role}</span>
             </div>
             <p className="district-report-description">
-              Generate personalized reports showing how federal policies impact your community. 
+              Generate personalized reports showing how federal policies impact your community.
               Perfect for voters, advocates, candidates, and anyone who wants data-driven insights.
             </p>
           </div>
@@ -461,26 +517,31 @@ const StateReport = () => {
       {/* Data Status and Actions */}
       <div className="district-report-actions">
         <div className="district-report-status">
-          <span className={`district-report-dot ${metadata?.dataFreshness === 'stale' ? 'dot-stale' : ''}`}></span>
+          <span
+            className={`district-report-dot ${metadata?.dataFreshness === 'stale' ? 'dot-stale' : ''}`}
+          ></span>
           {metadata?.source === 'real_data' ? (
             <span>
               {metadata?.dataFreshness === 'stale' ? (
                 <span className="status-warning">Cached Data</span>
               ) : (
                 <span className="status-fresh">Live Data</span>
-              )}
-              {' '} • Last updated {formatTimestamp(metadata?.generatedAt)}
+              )}{' '}
+              • Last updated {formatTimestamp(metadata?.generatedAt)}
               {metadata?.sources?.length > 0 && (
                 <span className="data-sources"> • Sources: {metadata.sources.join(', ')}</span>
-              )}
-              {' '} •
+              )}{' '}
+              •
               <button onClick={handleRefresh} className="retry-link" disabled={refreshing}>
                 {refreshing ? 'Refreshing...' : 'Refresh'}
               </button>
             </span>
           ) : (
             <span className="status-warning">
-              Sample Data • <button onClick={handleRefresh} className="retry-link">Retry</button>
+              Sample Data •{' '}
+              <button onClick={handleRefresh} className="retry-link">
+                Retry
+              </button>
             </span>
           )}
         </div>
@@ -490,10 +551,18 @@ const StateReport = () => {
             onClick={handleDownloadPDF}
             disabled={!reportData}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px' }}>
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              style={{ marginRight: '8px' }}
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
             Download Report
           </button>
@@ -504,13 +573,16 @@ const StateReport = () => {
       {metadata?.source === 'fallback' && (
         <div className="fallback-warning-banner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
           <span>
-            <strong>Sample Data:</strong> Live data generation is temporarily unavailable.
-            Showing generic sample data. <button onClick={handleRefresh} className="retry-link">Try again</button>
+            <strong>Sample Data:</strong> Live data generation is temporarily unavailable. Showing
+            generic sample data.{' '}
+            <button onClick={handleRefresh} className="retry-link">
+              Try again
+            </button>
           </span>
         </div>
       )}
@@ -519,7 +591,9 @@ const StateReport = () => {
       <div className="district-report-overview">
         <div className="district-report-overview-container">
           <div className="district-report-overview-header">
-            <h2 className="district-report-overview-title">{data.overviewTitle || 'State Impact Overview'}</h2>
+            <h2 className="district-report-overview-title">
+              {data.overviewTitle || 'State Impact Overview'}
+            </h2>
             {data.aiInsights?.crossMetric?.squeezeIndex && (
               <SqueezeIndexBadge squeezeIndex={data.aiInsights.crossMetric.squeezeIndex} />
             )}
@@ -528,7 +602,8 @@ const StateReport = () => {
           {/* AI-Generated Executive Summary */}
           <div className="overview-executive-summary">
             <p className="district-report-overview-statement">
-              {data.overviewStatement || 'Lobbyists and corporations profit while working families and schools lose'}
+              {data.overviewStatement ||
+                'Lobbyists and corporations profit while working families and schools lose'}
             </p>
           </div>
 
@@ -575,46 +650,70 @@ const StateReport = () => {
           )}
 
           <div className="district-report-comparison">
-          {data.comparisonCards?.[0] && (
-            <div className="district-report-comparison-card">
-              <div className="district-report-comparison-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
-                </svg>
+            {data.comparisonCards?.[0] && (
+              <div className="district-report-comparison-card">
+                <div className="district-report-comparison-icon">
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" />
+                  </svg>
+                </div>
+                <div className="district-report-comparison-value">
+                  {data.comparisonCards[0].value}
+                </div>
+                <div className="district-report-comparison-label">
+                  {data.comparisonCards[0].label}
+                </div>
+                <p className="district-report-comparison-description">
+                  {data.comparisonCards[0].description}
+                </p>
               </div>
-                <div className="district-report-comparison-value">{data.comparisonCards[0].value}</div>
-              <div className="district-report-comparison-label">{data.comparisonCards[0].label}</div>
-              <p className="district-report-comparison-description">
-                {data.comparisonCards[0].description}
-              </p>
-            </div>
-          )}
-          
-          <div className="district-report-vs">VS</div>
-          
-          {data.comparisonCards?.[1] && (
-            <div className="district-report-comparison-card">
-              <div className="district-report-comparison-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 9l-10-4-10 4 10 4 10-4z"/>
-                  <path d="M22 9v6l-10 4-10-4V9"/>
-                  <path d="M12 5v14"/>
-                </svg>
+            )}
+
+            <div className="district-report-vs">VS</div>
+
+            {data.comparisonCards?.[1] && (
+              <div className="district-report-comparison-card">
+                <div className="district-report-comparison-icon">
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M22 9l-10-4-10 4 10 4 10-4z" />
+                    <path d="M22 9v6l-10 4-10-4V9" />
+                    <path d="M12 5v14" />
+                  </svg>
+                </div>
+                <div className="district-report-comparison-value">
+                  {data.comparisonCards[1].value}
+                </div>
+                <div className="district-report-comparison-label">
+                  {data.comparisonCards[1].label}
+                </div>
+                <p className="district-report-comparison-description">
+                  {data.comparisonCards[1].description}
+                </p>
               </div>
-                <div className="district-report-comparison-value">{data.comparisonCards[1].value}</div>
-              <div className="district-report-comparison-label">{data.comparisonCards[1].label}</div>
-              <p className="district-report-comparison-description">
-                {data.comparisonCards[1].description}
-              </p>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Key Metrics */}
       <div className="district-report-metrics">
-        <h2 className="district-report-section-title">Real-time data showing how federal policies affect {data.stateName} residents.</h2>
+        <h2 className="district-report-section-title">
+          Real-time data showing how federal policies affect {data.stateName} residents.
+        </h2>
 
         {/* Section Insights Row */}
         {data.aiInsights?.sections && (
@@ -625,8 +724,15 @@ const StateReport = () => {
                 variant="compact"
                 title="Energy Insight"
                 icon={
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" />
                   </svg>
                 }
               />
@@ -637,9 +743,16 @@ const StateReport = () => {
                 variant="compact"
                 title="Employment Insight"
                 icon={
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
                   </svg>
                 }
               />
@@ -651,9 +764,16 @@ const StateReport = () => {
           {data.keyMetrics?.map((metric, index) => (
             <div key={index} className="district-report-metric-card">
               <div className="district-report-metric-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9,22 9,12 15,12 15,22"/>
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9,22 9,12 15,12 15,22" />
                 </svg>
               </div>
               <div className="district-report-metric-title">{metric.title}</div>
@@ -710,7 +830,7 @@ const StateReport = () => {
             if (!trend.data || trend.data.length === 0) return null;
 
             // Calculate dynamic scaling based on actual data values
-            const values = trend.data.map(p => p.value);
+            const values = trend.data.map((p) => p.value);
             const maxValue = Math.max(...values);
             const minValue = Math.min(...values);
             const range = maxValue - minValue || 1;
@@ -723,111 +843,121 @@ const StateReport = () => {
             const getY = (value) => 100 - ((value - adjustedMin) / adjustedRange) * 80;
 
             return (
-            <div key={index} className="district-report-trend-card">
-              <div className="district-report-trend-header">
-                <h3 className="district-report-trend-title">{trend.title}</h3>
-                {trend.trendSummary && (
-                  <span className={`trend-momentum trend-momentum--${trend.momentum || 'stable'}`}>
-                    {trend.trendSummary}
-                  </span>
-                )}
-              </div>
-              <div className="district-report-trend-value">{trend.currentValue}</div>
-              {trend.historicalContext && (
-                <div className="district-report-trend-context">
-                  {trend.historicalContext.summaryDescription && (
-                    <span className={`historical-badge historical-badge--${trend.historicalContext.historicalRank?.type || 'typical'}`}>
-                      {trend.historicalContext.summaryDescription}
-                    </span>
-                  )}
-                  {trend.historicalContext.yearOverYear?.description && (
-                    <span className="historical-yoy">
-                      {trend.historicalContext.yearOverYear.description}
-                    </span>
-                  )}
-                  {trend.historicalContext.peakTrough && trend.historicalContext.peakTrough.peak.fromPeak !== 0 && (
-                    <span className="historical-peak">
-                      {trend.historicalContext.peakTrough.peak.fromPeak < 0
-                        ? `${Math.abs(trend.historicalContext.peakTrough.peak.fromPeak)}% below peak (${trend.historicalContext.peakTrough.peak.label})`
-                        : `At or near peak`}
-                    </span>
-                  )}
-                </div>
-              )}
-              {trend.alerts?.length > 0 && (
-                <div className="district-report-trend-alerts">
-                  {trend.alerts.slice(0, 2).map((alert, alertIndex) => (
+              <div key={index} className="district-report-trend-card">
+                <div className="district-report-trend-header">
+                  <h3 className="district-report-trend-title">{trend.title}</h3>
+                  {trend.trendSummary && (
                     <span
-                      key={alertIndex}
-                      className={`metric-alert metric-alert--${alert.severity}`}
+                      className={`trend-momentum trend-momentum--${trend.momentum || 'stable'}`}
                     >
-                      {alert.message}
+                      {trend.trendSummary}
                     </span>
-                  ))}
+                  )}
                 </div>
-              )}
-              <div className="district-report-trend-chart">
-                <svg className="district-report-line-chart" viewBox="0 0 300 120">
-                  <defs>
-                    <linearGradient id={`gradient-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor={trend.data[0].color} stopOpacity="0.3"/>
-                      <stop offset="100%" stopColor={trend.data[trend.data.length-1].color} stopOpacity="0.1"/>
-                    </linearGradient>
-                  </defs>
+                <div className="district-report-trend-value">{trend.currentValue}</div>
+                {trend.historicalContext && (
+                  <div className="district-report-trend-context">
+                    {trend.historicalContext.summaryDescription && (
+                      <span
+                        className={`historical-badge historical-badge--${trend.historicalContext.historicalRank?.type || 'typical'}`}
+                      >
+                        {trend.historicalContext.summaryDescription}
+                      </span>
+                    )}
+                    {trend.historicalContext.yearOverYear?.description && (
+                      <span className="historical-yoy">
+                        {trend.historicalContext.yearOverYear.description}
+                      </span>
+                    )}
+                    {trend.historicalContext.peakTrough &&
+                      trend.historicalContext.peakTrough.peak.fromPeak !== 0 && (
+                        <span className="historical-peak">
+                          {trend.historicalContext.peakTrough.peak.fromPeak < 0
+                            ? `${Math.abs(trend.historicalContext.peakTrough.peak.fromPeak)}% below peak (${trend.historicalContext.peakTrough.peak.label})`
+                            : `At or near peak`}
+                        </span>
+                      )}
+                  </div>
+                )}
+                {trend.alerts?.length > 0 && (
+                  <div className="district-report-trend-alerts">
+                    {trend.alerts.slice(0, 2).map((alert, alertIndex) => (
+                      <span
+                        key={alertIndex}
+                        className={`metric-alert metric-alert--${alert.severity}`}
+                      >
+                        {alert.message}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="district-report-trend-chart">
+                  <svg className="district-report-line-chart" viewBox="0 0 300 120">
+                    <defs>
+                      <linearGradient id={`gradient-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor={trend.data[0].color} stopOpacity="0.3" />
+                        <stop
+                          offset="100%"
+                          stopColor={trend.data[trend.data.length - 1].color}
+                          stopOpacity="0.1"
+                        />
+                      </linearGradient>
+                    </defs>
 
-                  {/* Grid lines */}
-                  <line x1="0" y1="20" x2="300" y2="20" stroke="#e5e7eb" strokeWidth="1"/>
-                  <line x1="0" y1="40" x2="300" y2="40" stroke="#e5e7eb" strokeWidth="1"/>
-                  <line x1="0" y1="60" x2="300" y2="60" stroke="#e5e7eb" strokeWidth="1"/>
-                  <line x1="0" y1="80" x2="300" y2="80" stroke="#e5e7eb" strokeWidth="1"/>
-                  <line x1="0" y1="100" x2="300" y2="100" stroke="#e5e7eb" strokeWidth="1"/>
+                    {/* Grid lines */}
+                    <line x1="0" y1="20" x2="300" y2="20" stroke="#e5e7eb" strokeWidth="1" />
+                    <line x1="0" y1="40" x2="300" y2="40" stroke="#e5e7eb" strokeWidth="1" />
+                    <line x1="0" y1="60" x2="300" y2="60" stroke="#e5e7eb" strokeWidth="1" />
+                    <line x1="0" y1="80" x2="300" y2="80" stroke="#e5e7eb" strokeWidth="1" />
+                    <line x1="0" y1="100" x2="300" y2="100" stroke="#e5e7eb" strokeWidth="1" />
 
-                  {/* Area under the line */}
-                  <path
-                    d={`M 0,${getY(trend.data[0].value)} ${trend.data.map((point, i) => `L ${(i * 60) + 30},${getY(point.value)}`).join(' ')} L 270,100 L 0,100 Z`}
-                    fill={`url(#gradient-${index})`}
-                  />
-
-                  {/* Line path */}
-                  <path
-                    d={`M 0,${getY(trend.data[0].value)} ${trend.data.map((point, i) => `L ${(i * 60) + 30},${getY(point.value)}`).join(' ')}`}
-                    stroke={trend.data[trend.data.length-1].color}
-                    strokeWidth="3"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-
-                  {/* Data points */}
-                  {trend.data.map((point, i) => (
-                    <circle
-                      key={i}
-                      cx={(i * 60) + 30}
-                      cy={getY(point.value)}
-                      r="4"
-                      fill={point.color}
-                      stroke="white"
-                      strokeWidth="2"
+                    {/* Area under the line */}
+                    <path
+                      d={`M 0,${getY(trend.data[0].value)} ${trend.data.map((point, i) => `L ${i * 60 + 30},${getY(point.value)}`).join(' ')} L 270,100 L 0,100 Z`}
+                      fill={`url(#gradient-${index})`}
                     />
-                  ))}
 
-                  {/* Month labels */}
-                  {trend.data.map((point, i) => (
-                    <text
-                      key={i}
-                      x={(i * 60) + 30}
-                      y="115"
-                      textAnchor="middle"
-                      fontSize="10"
-                      fill="#6b7280"
-                    >
-                      {point.month}
-                    </text>
-                  ))}
-                </svg>
+                    {/* Line path */}
+                    <path
+                      d={`M 0,${getY(trend.data[0].value)} ${trend.data.map((point, i) => `L ${i * 60 + 30},${getY(point.value)}`).join(' ')}`}
+                      stroke={trend.data[trend.data.length - 1].color}
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+
+                    {/* Data points */}
+                    {trend.data.map((point, i) => (
+                      <circle
+                        key={i}
+                        cx={i * 60 + 30}
+                        cy={getY(point.value)}
+                        r="4"
+                        fill={point.color}
+                        stroke="white"
+                        strokeWidth="2"
+                      />
+                    ))}
+
+                    {/* Month labels */}
+                    {trend.data.map((point, i) => (
+                      <text
+                        key={i}
+                        x={i * 60 + 30}
+                        y="115"
+                        textAnchor="middle"
+                        fontSize="10"
+                        fill="#6b7280"
+                      >
+                        {point.month}
+                      </text>
+                    ))}
+                  </svg>
+                </div>
               </div>
-            </div>
-          )})}
+            );
+          })}
         </div>
       </div>
 
@@ -840,15 +970,26 @@ const StateReport = () => {
           <div className="ai-comparison-narrative ai-comparison-narrative--enhanced">
             <div className="ai-insight-header">
               <div className="ai-insight-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 20V10"/>
-                  <path d="M12 20V4"/>
-                  <path d="M6 20v-6"/>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M18 20V10" />
+                  <path d="M12 20V4" />
+                  <path d="M6 20v-6" />
                 </svg>
               </div>
-              <h4 className="ai-insight-title">How {data.stateName} Compares to National Averages</h4>
+              <h4 className="ai-insight-title">
+                How {data.stateName} Compares to National Averages
+              </h4>
             </div>
-            <p className="ai-insight-text ai-insight-text--large">{data.aiInsights.comparison.text}</p>
+            <p className="ai-insight-text ai-insight-text--large">
+              {data.aiInsights.comparison.text}
+            </p>
           </div>
         )}
 
@@ -863,14 +1004,21 @@ const StateReport = () => {
                 const stateVal = parseFloat(item.stateValue?.replace(/[^0-9.-]/g, '')) || 0;
                 const natVal = parseFloat(item.nationalValue?.replace(/[^0-9.-]/g, '')) || 0;
                 const isHigher = stateVal > natVal;
-                const diffPercent = natVal > 0 ? ((stateVal - natVal) / natVal * 100).toFixed(1) : 0;
+                const diffPercent =
+                  natVal > 0 ? (((stateVal - natVal) / natVal) * 100).toFixed(1) : 0;
 
                 return (
-                  <div key={index} className={`comparison-card ${isHigher ? 'comparison-card--higher' : 'comparison-card--lower'}`}>
+                  <div
+                    key={index}
+                    className={`comparison-card ${isHigher ? 'comparison-card--higher' : 'comparison-card--lower'}`}
+                  >
                     <div className="comparison-card-header">
                       <span className="comparison-card-category">{item.category}</span>
-                      <span className={`comparison-card-badge ${isHigher ? 'badge--higher' : 'badge--lower'}`}>
-                        {isHigher ? '↑' : '↓'} {Math.abs(diffPercent)}% {isHigher ? 'above' : 'below'}
+                      <span
+                        className={`comparison-card-badge ${isHigher ? 'badge--higher' : 'badge--lower'}`}
+                      >
+                        {isHigher ? '↑' : '↓'} {Math.abs(diffPercent)}%{' '}
+                        {isHigher ? 'above' : 'below'}
                       </span>
                     </div>
                     <div className="comparison-card-values">
@@ -905,7 +1053,9 @@ const StateReport = () => {
             {data.aiInsights.forwardLooking.projections?.length > 0 && (
               <div className="forward-projections">
                 {data.aiInsights.forwardLooking.projections.map((proj, idx) => (
-                  <span key={idx} className="projection-tag">{proj}</span>
+                  <span key={idx} className="projection-tag">
+                    {proj}
+                  </span>
                 ))}
               </div>
             )}

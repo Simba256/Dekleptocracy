@@ -12,7 +12,10 @@ import homepageRoutes from './routes/homepageRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import seoRoutes from './routes/seoRoutes.js';
 import { triggerArticleGeneration, getSchedulerStatus } from './services/articleScheduler.js';
-import { triggerResearchGeneration, getResearchSchedulerStatus } from './services/researchScheduler.js';
+import {
+  triggerResearchGeneration,
+  getResearchSchedulerStatus,
+} from './services/researchScheduler.js';
 import { removeDuplicateArticles } from './services/articleGenerator.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -44,24 +47,31 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 600
+  maxAge: 600,
 };
 
 app.use(cors(corsOptions));
 
 // Security and performance headers
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-      fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "https://accounts.google.com"],
-      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://i.pravatar.cc"],
-      connectSrc: ["'self'", "https://accounts.google.com", process.env.FRONTEND_URL],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://fonts.googleapis.com',
+          'https://fonts.gstatic.com',
+        ],
+        fontSrc: ["'self'", 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'],
+        scriptSrc: ["'self'", 'https://accounts.google.com'],
+        imgSrc: ["'self'", 'data:', 'https://images.unsplash.com', 'https://i.pravatar.cc'],
+        connectSrc: ["'self'", 'https://accounts.google.com', process.env.FRONTEND_URL],
+      },
     },
-  },
-}));
+  }),
+);
 
 app.use(compression());
 app.use(express.json());
@@ -128,13 +138,13 @@ app.post('/api/articles/cleanup-duplicates', async (req, res) => {
     res.json({
       success: true,
       message: `Removed ${count} duplicate articles`,
-      count: count
+      count: count,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Failed to clean up duplicates',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -146,7 +156,7 @@ app.use((err, req, res, next) => {
   }
   res.status(500).json({
     success: false,
-    message: 'Internal server error'
+    message: 'Internal server error',
   });
 });
 

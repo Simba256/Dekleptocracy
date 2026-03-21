@@ -52,8 +52,5 @@ export const isValidUrl = (url) => {
  */
 export const sanitizeSearchQuery = (query) => {
   if (!query || typeof query !== 'string') return '';
-  return query
-    .trim()
-    .slice(0, VALIDATION.MAX_SEARCH_LENGTH)
-    .replace(/[<>]/g, '');
+  return query.trim().slice(0, VALIDATION.MAX_SEARCH_LENGTH).replace(/[<>]/g, '');
 };

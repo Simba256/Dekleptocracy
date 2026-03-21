@@ -78,9 +78,7 @@ describe('Report Routes', () => {
 
   describe('POST /api/reports/state/refresh', () => {
     it('should return 400 when state is missing', async () => {
-      const res = await request(app)
-        .post('/api/reports/state/refresh')
-        .send({});
+      const res = await request(app).post('/api/reports/state/refresh').send({});
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);

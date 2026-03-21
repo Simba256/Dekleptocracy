@@ -20,7 +20,7 @@ const createToken = (payload, expiresInSeconds = 3600) => {
       ...payload,
       exp: now + expiresInSeconds,
       iat: now,
-    })
+    }),
   );
   const signature = btoa('fake-signature');
   return `${header}.${fullPayload}.${signature}`;
@@ -54,10 +54,7 @@ describe('auth utilities', () => {
       setAuth('test-token', user);
 
       expect(localStorage.setItem).toHaveBeenCalledWith('token', 'test-token');
-      expect(localStorage.setItem).toHaveBeenCalledWith(
-        'user',
-        JSON.stringify(user)
-      );
+      expect(localStorage.setItem).toHaveBeenCalledWith('user', JSON.stringify(user));
     });
   });
 

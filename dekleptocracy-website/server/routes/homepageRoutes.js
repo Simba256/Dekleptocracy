@@ -72,56 +72,44 @@ router.get('/all', async (req, res) => {
     logger.info(`Fetching aggregated homepage data for state: ${state}, period: ${period}`);
 
     // Parallel database queries - all at once
-    const [
-      shocks,
-      drivers,
-      stats,
-      comparisons,
-      socialPosts,
-      quickQuestions,
-      timelineConfig
-    ] = await Promise.all([
-      WalletShock.find({ state, status: 'published' })
-        .sort('-dataDate')
-        .limit(4)
-        .lean(),
-      CostDriver.find({ state, timePeriod: period, status: 'published' })
-        .sort('displayOrder')
-        .lean(),
-      StatsSummary.find({ state, status: 'published' })
-        .sort('-dataDate')
-        .lean(),
-      StateComparison.find({ state, status: 'published' })
-        .sort('displayOrder')
-        .lean(),
-      SocialPost.find({ status: 'published', 'moderation.status': 'approved' })
-        .sort({ featured: -1, postedAt: -1 })
-        .limit(3)
-        .lean(),
-      QuickQuestion.find({ status: 'published', featured: true })
-        .sort({ displayOrder: 1, clickCount: -1 })
-        .limit(3)
-        .lean(),
-      TimelineConfig.findOne({ status: 'published' }).lean()
-    ]);
+    const [shocks, drivers, stats, comparisons, socialPosts, quickQuestions, timelineConfig] =
+      await Promise.all([
+        WalletShock.find({ state, status: 'published' }).sort('-dataDate').limit(4).lean(),
+        CostDriver.find({ state, timePeriod: period, status: 'published' })
+          .sort('displayOrder')
+          .lean(),
+        StatsSummary.find({ state, status: 'published' }).sort('-dataDate').lean(),
+        StateComparison.find({ state, status: 'published' }).sort('displayOrder').lean(),
+        SocialPost.find({ status: 'published', 'moderation.status': 'approved' })
+          .sort({ featured: -1, postedAt: -1 })
+          .limit(3)
+          .lean(),
+        QuickQuestion.find({ status: 'published', featured: true })
+          .sort({ displayOrder: 1, clickCount: -1 })
+          .limit(3)
+          .lean(),
+        TimelineConfig.findOne({ status: 'published' }).lean(),
+      ]);
 
     // Group stats by type
     const statsGrouped = {
-      lobbying: stats.find(s => s.statType === 'lobbying'),
-      consumerCost: stats.find(s => s.statType === 'consumer-cost'),
-      contributions: stats.find(s => s.statType === 'contributions'),
-      tariffRevenue: stats.find(s => s.statType === 'tariff-revenue')
+      lobbying: stats.find((s) => s.statType === 'lobbying'),
+      consumerCost: stats.find((s) => s.statType === 'consumer-cost'),
+      contributions: stats.find((s) => s.statType === 'contributions'),
+      tariffRevenue: stats.find((s) => s.statType === 'tariff-revenue'),
     };
 
     // Personalize quick questions if state is provided
-    const personalizedQuestions = quickQuestions.map(q => ({
+    const personalizedQuestions = quickQuestions.map((q) => ({
       _id: q._id,
-      text: q.textTemplate ? q.textTemplate.replace('{state}', state !== 'nationwide' ? state : 'your state') : q.text,
+      text: q.textTemplate
+        ? q.textTemplate.replace('{state}', state !== 'nationwide' ? state : 'your state')
+        : q.text,
       category: q.category,
       icon: q.icon,
       iconType: q.iconType,
       iconPath: q.iconPath,
-      topics: q.topics
+      topics: q.topics,
     }));
 
     const responseBody = {
@@ -135,8 +123,8 @@ router.get('/all', async (req, res) => {
         stateComparisons: comparisons,
         socialPosts: socialPosts,
         quickQuestions: personalizedQuestions,
-        timelineConfig: timelineConfig
-      }
+        timelineConfig: timelineConfig,
+      },
     };
 
     if (!isAuthenticated) {
@@ -147,13 +135,12 @@ router.get('/all', async (req, res) => {
     }
 
     res.json(responseBody);
-
   } catch (error) {
     logger.error('Error fetching aggregated homepage data', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching homepage data',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -203,7 +190,7 @@ router.get('/wallet-shocks', optionalAuth, async (req, res) => {
     logger.info(`Fetching wallet shocks for state: ${state} (source: ${stateSource})`, {
       userId: req.userId,
       queryState: req.query.state,
-      preferenceState: req.userPreferences?.selectedState
+      preferenceState: req.userPreferences?.selectedState,
     });
 
     const limit = parseInt(req.query.limit) || 4;
@@ -212,7 +199,7 @@ router.get('/wallet-shocks', optionalAuth, async (req, res) => {
     // Query wallet shocks
     let query = WalletShock.find({
       state: state,
-      status: 'published'
+      status: 'published',
     });
 
     // Sort by biggest changes or most recent
@@ -232,18 +219,17 @@ router.get('/wallet-shocks', optionalAuth, async (req, res) => {
     res.json({
       success: true,
       state: state,
-      shocks: shocks
+      shocks: shocks,
     });
-
   } catch (error) {
     logger.error('Error fetching wallet shocks', error, {
       state: req.query.state,
-      userId: req.userId
+      userId: req.userId,
     });
     res.status(500).json({
       success: false,
       message: 'Error fetching wallet shocks',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -283,19 +269,22 @@ router.get('/cost-drivers', optionalAuth, async (req, res) => {
       periodSource = 'default';
     }
 
-    logger.info(`Fetching cost drivers for state: ${state} (${stateSource}), period: ${period} (${periodSource})`, {
-      userId: req.userId,
-      queryState: req.query.state,
-      queryPeriod: req.query.period,
-      preferenceState: req.userPreferences?.selectedState,
-      preferencePeriod: req.userPreferences?.defaultTimePeriod
-    });
+    logger.info(
+      `Fetching cost drivers for state: ${state} (${stateSource}), period: ${period} (${periodSource})`,
+      {
+        userId: req.userId,
+        queryState: req.query.state,
+        queryPeriod: req.query.period,
+        preferenceState: req.userPreferences?.selectedState,
+        preferencePeriod: req.userPreferences?.defaultTimePeriod,
+      },
+    );
 
     // Query cost drivers
     const drivers = await CostDriver.find({
       state: state,
       timePeriod: period,
-      status: 'published'
+      status: 'published',
     })
       .sort('displayOrder')
       .exec();
@@ -304,19 +293,18 @@ router.get('/cost-drivers', optionalAuth, async (req, res) => {
       success: true,
       state: state,
       period: period,
-      drivers: drivers
+      drivers: drivers,
     });
-
   } catch (error) {
     logger.error('Error fetching cost drivers', error, {
       state: req.query.state,
       period: req.query.period,
-      userId: req.userId
+      userId: req.userId,
     });
     res.status(500).json({
       success: false,
       message: 'Error fetching cost drivers',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -345,40 +333,39 @@ router.get('/stats', optionalAuth, async (req, res) => {
     logger.info(`Fetching stats for state: ${state} (source: ${stateSource})`, {
       userId: req.userId,
       queryState: req.query.state,
-      preferenceState: req.userPreferences?.selectedState
+      preferenceState: req.userPreferences?.selectedState,
     });
 
     // Query all stat types for this state
     const stats = await StatsSummary.find({
       state: state,
-      status: 'published'
+      status: 'published',
     })
       .sort('-dataDate')
       .exec();
 
     // Group stats by type
     const statsObj = {
-      lobbying: stats.find(s => s.statType === 'lobbying'),
-      consumerCost: stats.find(s => s.statType === 'consumer-cost'),
-      contributions: stats.find(s => s.statType === 'contributions'),
-      tariffRevenue: stats.find(s => s.statType === 'tariff-revenue')
+      lobbying: stats.find((s) => s.statType === 'lobbying'),
+      consumerCost: stats.find((s) => s.statType === 'consumer-cost'),
+      contributions: stats.find((s) => s.statType === 'contributions'),
+      tariffRevenue: stats.find((s) => s.statType === 'tariff-revenue'),
     };
 
     res.json({
       success: true,
       state: state,
-      stats: statsObj
+      stats: statsObj,
     });
-
   } catch (error) {
     logger.error('Error fetching stats', error, {
       state: req.query.state,
-      userId: req.userId
+      userId: req.userId,
     });
     res.status(500).json({
       success: false,
       message: 'Error fetching stats',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -397,7 +384,7 @@ router.post('/wallet-shocks/:id/react', async (req, res) => {
     if (!['shock', 'angry', 'sad'].includes(reactionType)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid reaction type. Must be: shock, angry, or sad'
+        message: 'Invalid reaction type. Must be: shock, angry, or sad',
       });
     }
 
@@ -407,7 +394,7 @@ router.post('/wallet-shocks/:id/react', async (req, res) => {
     if (!walletShock) {
       return res.status(404).json({
         success: false,
-        message: 'Wallet shock not found'
+        message: 'Wallet shock not found',
       });
     }
 
@@ -416,19 +403,18 @@ router.post('/wallet-shocks/:id/react', async (req, res) => {
 
     res.json({
       success: true,
-      reactions: walletShock.reactions
+      reactions: walletShock.reactions,
     });
-
   } catch (error) {
     logger.error('Error adding reaction', error, {
       shockId: req.params.id,
       reactionType: req.body.reactionType,
-      userId: req.userId
+      userId: req.userId,
     });
     res.status(500).json({
       success: false,
       message: 'Error adding reaction',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -444,8 +430,8 @@ router.get('/scheduler/status', (req, res) => {
       enabled: false,
       note: 'Using seed data. Scheduler not yet implemented.',
       lastRun: null,
-      nextRun: null
-    }
+      nextRun: null,
+    },
   });
 });
 
@@ -464,19 +450,18 @@ router.post('/seed', async (req, res) => {
     // Run seeding in background to avoid timeout
     seedAll()
       .then(() => console.log('✅ Manual seeding complete'))
-      .catch(err => console.error('❌ Manual seeding failed:', err));
+      .catch((err) => console.error('❌ Manual seeding failed:', err));
 
     res.json({
       success: true,
-      message: 'Seeding initiated. Check server logs for progress.'
+      message: 'Seeding initiated. Check server logs for progress.',
     });
-
   } catch (error) {
     logger.error('Error triggering seed', error);
     res.status(500).json({
       success: false,
       message: 'Error triggering seed',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -500,13 +485,12 @@ router.get('/available-states', async (req, res) => {
     cache.set('available-states', responseBody, 30 * 60 * 1000); // 30 min
     res.set('Cache-Control', 'public, max-age=600');
     res.json(responseBody);
-
   } catch (error) {
     logger.error('Error fetching available states', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching available states',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -535,21 +519,23 @@ router.get('/download/report', optionalAuth, async (req, res) => {
 
     // Set headers for download
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="dekleptocracy-report-${state}-${Date.now()}.pdf"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="dekleptocracy-report-${state}-${Date.now()}.pdf"`,
+    );
 
     // Pipe PDF to response
     pdfDoc.pipe(res);
     pdfDoc.end();
-
   } catch (error) {
     logger.error('Error generating PDF report', error, {
       state: req.query.state,
-      userId: req.userId
+      userId: req.userId,
     });
     res.status(500).json({
       success: false,
       message: 'Error generating report',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -576,19 +562,21 @@ router.get('/download/csv', optionalAuth, async (req, res) => {
 
     // Set headers for download
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="dekleptocracy-data-${state}-${Date.now()}.csv"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="dekleptocracy-data-${state}-${Date.now()}.csv"`,
+    );
 
     res.send(csv);
-
   } catch (error) {
     logger.error('Error generating CSV export', error, {
       state: req.query.state,
-      userId: req.userId
+      userId: req.userId,
     });
     res.status(500).json({
       success: false,
       message: 'Error generating CSV export',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -613,7 +601,7 @@ router.get('/state-comparison', optionalAuth, async (req, res) => {
 
     const comparisons = await StateComparison.find({
       state: state,
-      status: 'published'
+      status: 'published',
     })
       .sort('displayOrder')
       .exec();
@@ -621,15 +609,14 @@ router.get('/state-comparison', optionalAuth, async (req, res) => {
     res.json({
       success: true,
       state: state,
-      comparisons: comparisons
+      comparisons: comparisons,
     });
-
   } catch (error) {
     logger.error('Error fetching state comparison', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching state comparison',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -660,7 +647,7 @@ router.get('/product-impact', optionalAuth, async (req, res) => {
       // Search by name or keywords
       query.$or = [
         { name: { $regex: product, $options: 'i' } },
-        { keywords: { $regex: product, $options: 'i' } }
+        { keywords: { $regex: product, $options: 'i' } },
       ];
     }
 
@@ -676,24 +663,23 @@ router.get('/product-impact', optionalAuth, async (req, res) => {
 
     // Increment search count for the first result
     if (impacts.length > 0 && product) {
-      impacts[0].incrementSearchCount().catch(err =>
-        logger.error('Error incrementing search count', err)
-      );
+      impacts[0]
+        .incrementSearchCount()
+        .catch((err) => logger.error('Error incrementing search count', err));
     }
 
     res.json({
       success: true,
       product: product,
       state: state,
-      impacts: impacts
+      impacts: impacts,
     });
-
   } catch (error) {
     logger.error('Error fetching product impact', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching product impact',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -717,7 +703,7 @@ router.get('/social-posts', optionalAuth, async (req, res) => {
     // Build query for approved, published posts
     let query = {
       status: 'published',
-      'moderation.status': 'approved'
+      'moderation.status': 'approved',
     };
 
     // Optionally filter by state
@@ -732,15 +718,14 @@ router.get('/social-posts', optionalAuth, async (req, res) => {
 
     res.json({
       success: true,
-      posts: posts
+      posts: posts,
     });
-
   } catch (error) {
     logger.error('Error fetching social posts', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching social posts',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -767,16 +752,56 @@ router.get('/map-data', async (req, res) => {
 
     // US States list (fallback if no cached data)
     const allStates = [
-      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-      'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
-      'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-      'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-      'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
-      'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
-      'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon',
-      'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-      'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
-      'West Virginia', 'Wisconsin', 'Wyoming'
+      'Alabama',
+      'Alaska',
+      'Arizona',
+      'Arkansas',
+      'California',
+      'Colorado',
+      'Connecticut',
+      'Delaware',
+      'Florida',
+      'Georgia',
+      'Hawaii',
+      'Idaho',
+      'Illinois',
+      'Indiana',
+      'Iowa',
+      'Kansas',
+      'Kentucky',
+      'Louisiana',
+      'Maine',
+      'Maryland',
+      'Massachusetts',
+      'Michigan',
+      'Minnesota',
+      'Mississippi',
+      'Missouri',
+      'Montana',
+      'Nebraska',
+      'Nevada',
+      'New Hampshire',
+      'New Jersey',
+      'New Mexico',
+      'New York',
+      'North Carolina',
+      'North Dakota',
+      'Ohio',
+      'Oklahoma',
+      'Oregon',
+      'Pennsylvania',
+      'Rhode Island',
+      'South Carolina',
+      'South Dakota',
+      'Tennessee',
+      'Texas',
+      'Utah',
+      'Vermont',
+      'Virginia',
+      'Washington',
+      'West Virginia',
+      'Wisconsin',
+      'Wyoming',
     ];
 
     // Use states with data, or all states if cache is empty
@@ -784,8 +809,8 @@ router.get('/map-data', async (req, res) => {
 
     // Generate metrics for each state from the pre-fetched map
     const regionsWithMetrics = statesToProcess
-      .filter(stateName => stateName !== 'District of Columbia')
-      .map(stateName => {
+      .filter((stateName) => stateName !== 'District of Columbia')
+      .map((stateName) => {
         const stateData = stateMap.get(stateName) || {};
         const gasPrices = stateData.gas_prices;
         const electricityPrices = stateData.electricity_prices;
@@ -800,7 +825,7 @@ router.get('/map-data', async (req, res) => {
         const foodChange = foodPrices?.processedData?.change || 0;
 
         // Weight: gas 40%, electricity 30%, food 30%
-        const priceImpact = (gasChange * 0.4) + (electricityChange * 0.3) + (foodChange * 0.3);
+        const priceImpact = gasChange * 0.4 + electricityChange * 0.3 + foodChange * 0.3;
 
         // Calculate Tariff Revenue (estimate based on GDP and trade exposure)
         const gdpValue = gdp?.processedData?.value || 0;
@@ -822,8 +847,9 @@ router.get('/map-data', async (req, res) => {
         const incomeAdjustment = Math.max(0.85, Math.min(1.15, 65000 / (incomeValue || 65000)));
         const unemploymentPenalty = Math.max(0, Math.min(5, (unemploymentValue - 4) * 1));
 
-        const costOfLiving = Math.max(50,
-          (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty
+        const costOfLiving = Math.max(
+          50,
+          (gasIndex + electricityIndex + foodIndex) * incomeAdjustment + unemploymentPenalty,
         );
 
         const hasRealData = !!(gasPrices || electricityPrices || foodPrices || gdp);
@@ -838,33 +864,33 @@ router.get('/map-data', async (req, res) => {
             gasPrices: {
               value: gasPrices?.processedData?.value,
               displayValue: gasPrices?.processedData?.displayValue,
-              change: gasPrices?.processedData?.change
+              change: gasPrices?.processedData?.change,
             },
             electricityPrices: {
               value: electricityPrices?.processedData?.value,
               displayValue: electricityPrices?.processedData?.displayValue,
-              change: electricityPrices?.processedData?.change
+              change: electricityPrices?.processedData?.change,
             },
             foodPrices: {
               value: foodPrices?.processedData?.value,
               displayValue: foodPrices?.processedData?.displayValue,
-              change: foodPrices?.processedData?.change
+              change: foodPrices?.processedData?.change,
             },
             gdp: {
               value: gdp?.processedData?.value,
-              displayValue: gdp?.processedData?.displayValue
+              displayValue: gdp?.processedData?.displayValue,
             },
             unemployment: {
               value: unemployment?.processedData?.value,
-              displayValue: unemployment?.processedData?.displayValue
+              displayValue: unemployment?.processedData?.displayValue,
             },
             personalIncome: {
               value: personalIncome?.processedData?.value,
-              displayValue: personalIncome?.processedData?.displayValue
-            }
+              displayValue: personalIncome?.processedData?.displayValue,
+            },
           },
           hasRealData,
-          topShocks: []
+          topShocks: [],
         };
       })
       .sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact));
@@ -873,19 +899,18 @@ router.get('/map-data', async (req, res) => {
 
     const responseBody = {
       success: true,
-      regions: regionsWithMetrics
+      regions: regionsWithMetrics,
     };
 
     cache.set('map-data', responseBody, 10 * 60 * 1000); // 10 min TTL
     res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
     res.json(responseBody);
-
   } catch (error) {
     logger.error('Error fetching map data', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching map data',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -924,10 +949,12 @@ router.get('/nearby-shocks', optionalAuth, async (req, res) => {
     let nearbyShocks = [];
     for (const region of regions) {
       if (region.topShocks && region.topShocks.length > 0) {
-        nearbyShocks.push(...region.topShocks.map(shock => ({
-          ...shock.toObject(),
-          state: region.name
-        })));
+        nearbyShocks.push(
+          ...region.topShocks.map((shock) => ({
+            ...shock.toObject(),
+            state: region.name,
+          })),
+        );
       }
     }
 
@@ -938,15 +965,14 @@ router.get('/nearby-shocks', optionalAuth, async (req, res) => {
     res.json({
       success: true,
       state: state,
-      shocks: nearbyShocks
+      shocks: nearbyShocks,
     });
-
   } catch (error) {
     logger.error('Error fetching nearby shocks', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching nearby shocks',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -970,7 +996,7 @@ router.get('/quick-questions', optionalAuth, async (req, res) => {
     // Build query for featured, published questions
     let query = {
       status: 'published',
-      featured: true
+      featured: true,
     };
 
     const questions = await QuickQuestion.find(query)
@@ -979,27 +1005,26 @@ router.get('/quick-questions', optionalAuth, async (req, res) => {
       .exec();
 
     // Personalize questions if state is provided
-    const personalizedQuestions = questions.map(q => ({
+    const personalizedQuestions = questions.map((q) => ({
       _id: q._id,
       text: q.personalize({ state }),
       category: q.category,
       icon: q.icon,
       iconType: q.iconType,
       iconPath: q.iconPath,
-      topics: q.topics
+      topics: q.topics,
     }));
 
     res.json({
       success: true,
-      questions: personalizedQuestions
+      questions: personalizedQuestions,
     });
-
   } catch (error) {
     logger.error('Error fetching quick questions', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching quick questions',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -1016,7 +1041,7 @@ router.post('/quick-questions/:id/click', async (req, res) => {
     if (!question) {
       return res.status(404).json({
         success: false,
-        message: 'Question not found'
+        message: 'Question not found',
       });
     }
 
@@ -1024,15 +1049,14 @@ router.post('/quick-questions/:id/click', async (req, res) => {
 
     res.json({
       success: true,
-      clickCount: question.clickCount
+      clickCount: question.clickCount,
     });
-
   } catch (error) {
     logger.error('Error tracking question click', error);
     res.status(500).json({
       success: false,
       message: 'Error tracking question click',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -1056,22 +1080,21 @@ router.get('/featured-states', async (req, res) => {
       { $match: { status: 'published' } },
       { $group: { _id: '$state', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
-      { $limit: 10 }
+      { $limit: 10 },
     ]);
 
-    const featuredStates = statesWithData.map(s => s._id).filter(s => s !== 'nationwide');
+    const featuredStates = statesWithData.map((s) => s._id).filter((s) => s !== 'nationwide');
 
     const responseBody = { success: true, states: featuredStates };
     cache.set('featured-states', responseBody, 30 * 60 * 1000); // 30 min
     res.set('Cache-Control', 'public, max-age=600');
     res.json(responseBody);
-
   } catch (error) {
     logger.error('Error fetching featured states', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching featured states',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -1102,13 +1125,12 @@ router.get('/timeline-config', async (req, res) => {
     cache.set('timeline-config', responseBody, 30 * 60 * 1000); // 30 min
     res.set('Cache-Control', 'public, max-age=600');
     res.json(responseBody);
-
   } catch (error) {
     logger.error('Error fetching timeline config', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching timeline config',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -1132,7 +1154,7 @@ router.get('/trending-products', async (req, res) => {
 
     const products = await ProductImpact.find({
       status: 'published',
-      trending: true
+      trending: true,
     })
       .sort({ trendingScore: -1, searchCount: -1 })
       .limit(limit)
@@ -1143,13 +1165,12 @@ router.get('/trending-products', async (req, res) => {
     cache.set('trending-products', responseBody, 30 * 60 * 1000); // 30 min
     res.set('Cache-Control', 'public, max-age=600');
     res.json(responseBody);
-
   } catch (error) {
     logger.error('Error fetching trending products', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching trending products',
-      error: error.message
+      error: error.message,
     });
   }
 });

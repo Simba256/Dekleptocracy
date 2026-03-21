@@ -40,9 +40,9 @@ function generateChartData(baseValue, trend = 'up') {
 
     let value;
     if (trend === 'up') {
-      value = baseValue * (0.85 + (i * 0.03)); // Gradual increase
+      value = baseValue * (0.85 + i * 0.03); // Gradual increase
     } else if (trend === 'down') {
-      value = baseValue * (1.15 - (i * 0.03)); // Gradual decrease
+      value = baseValue * (1.15 - i * 0.03); // Gradual decrease
     } else {
       value = baseValue * (0.95 + Math.random() * 0.1); // Volatile
     }
@@ -65,14 +65,14 @@ async function seedWalletShocks() {
       icon: '🥚',
       iconBg: '#fef3c7',
       baseData: {
-        nationwide: { price: 5.90, unit: 'per dozen', trend: 'up' },
+        nationwide: { price: 5.9, unit: 'per dozen', trend: 'up' },
         California: { price: 7.25, unit: 'per dozen', trend: 'up' },
-        Texas: { price: 4.80, unit: 'per dozen', trend: 'up' },
+        Texas: { price: 4.8, unit: 'per dozen', trend: 'up' },
         Florida: { price: 5.45, unit: 'per dozen', trend: 'up' },
-        'New York': { price: 6.90, unit: 'per dozen', trend: 'up' },
-        Arizona: { price: 5.15, unit: 'per dozen', trend: 'up' }
+        'New York': { price: 6.9, unit: 'per dozen', trend: 'up' },
+        Arizona: { price: 5.15, unit: 'per dozen', trend: 'up' },
       },
-      titleTemplate: 'Egg prices hit $PRICE in STATE, up CHANGE% from last year'
+      titleTemplate: 'Egg prices hit $PRICE in STATE, up CHANGE% from last year',
     },
     {
       category: 'fuel',
@@ -84,23 +84,23 @@ async function seedWalletShocks() {
         Texas: { price: 2.65, unit: 'per gallon', trend: 'volatile' },
         Florida: { price: 3.15, unit: 'per gallon', trend: 'volatile' },
         'New York': { price: 3.85, unit: 'per gallon', trend: 'volatile' },
-        Arizona: { price: 3.25, unit: 'per gallon', trend: 'volatile' }
+        Arizona: { price: 3.25, unit: 'per gallon', trend: 'volatile' },
       },
-      titleTemplate: 'Gas prices reach $PRICE/gal in STATE, CHANGE% change in 2 weeks'
+      titleTemplate: 'Gas prices reach $PRICE/gal in STATE, CHANGE% change in 2 weeks',
     },
     {
       category: 'utilities',
       icon: '💡',
       iconBg: '#fef3c7',
       baseData: {
-        nationwide: { price: 0.180, unit: 'per kWh', trend: 'up' },
+        nationwide: { price: 0.18, unit: 'per kWh', trend: 'up' },
         California: { price: 0.365, unit: 'per kWh', trend: 'up' },
         Texas: { price: 0.135, unit: 'per kWh', trend: 'up' },
         Florida: { price: 0.195, unit: 'per kWh', trend: 'up' },
         'New York': { price: 0.285, unit: 'per kWh', trend: 'up' },
-        Arizona: { price: 0.145, unit: 'per kWh', trend: 'up' }
+        Arizona: { price: 0.145, unit: 'per kWh', trend: 'up' },
       },
-      titleTemplate: 'Electricity rates in STATE climb to $PRICE/kWh, up CHANGE% year-over-year'
+      titleTemplate: 'Electricity rates in STATE climb to $PRICE/kWh, up CHANGE% year-over-year',
     },
     {
       category: 'tech',
@@ -112,10 +112,10 @@ async function seedWalletShocks() {
         Texas: { price: 999, unit: 'base model', trend: 'up' },
         Florida: { price: 999, unit: 'base model', trend: 'up' },
         'New York': { price: 999, unit: 'base model', trend: 'up' },
-        Arizona: { price: 999, unit: 'base model', trend: 'up' }
+        Arizona: { price: 999, unit: 'base model', trend: 'up' },
       },
-      titleTemplate: 'New iPhone expected to cost $PRICE due to tariff increases of CHANGE%'
-    }
+      titleTemplate: 'New iPhone expected to cost $PRICE due to tariff increases of CHANGE%',
+    },
   ];
 
   const walletShocks = [];
@@ -124,7 +124,7 @@ async function seedWalletShocks() {
     for (const template of walletShockTemplates) {
       const stateData = template.baseData[state];
       const chartData = generateChartData(stateData.price, stateData.trend);
-      const values = chartData.map(d => d.value);
+      const values = chartData.map((d) => d.value);
 
       const oldValue = values[0];
       const newValue = values[values.length - 1];
@@ -153,10 +153,10 @@ async function seedWalletShocks() {
         reactions: {
           shock: Math.floor(Math.random() * 20),
           angry: Math.floor(Math.random() * 15),
-          sad: Math.floor(Math.random() * 18)
+          sad: Math.floor(Math.random() * 18),
         },
         featured: state === 'nationwide' && Math.random() > 0.5,
-        status: 'published'
+        status: 'published',
       });
     }
   }
@@ -180,7 +180,7 @@ async function seedCostDrivers() {
     { label: 'Labor', color: '#A8B89C', type: 'direct', basePercentage: 20 },
     { label: 'Supply Chain', color: '#A8B89C', type: 'indirect', basePercentage: 18 },
     { label: 'Currency', color: '#C5D4BC', type: 'indirect', basePercentage: 13 },
-    { label: 'Weather', color: '#9CA3AF', type: 'indirect', basePercentage: 5 }
+    { label: 'Weather', color: '#9CA3AF', type: 'indirect', basePercentage: 5 },
   ];
 
   const timePeriods = ['YoY', '3 months', '30 days'];
@@ -192,18 +192,20 @@ async function seedCostDrivers() {
         const template = driverTemplates[i];
 
         // Add state-specific variation
-        const stateVariation = state === 'California' ? 5 :
-                             state === 'Texas' ? -3 :
-                             state === 'New York' ? 3 : 0;
+        const stateVariation =
+          state === 'California' ? 5 : state === 'Texas' ? -3 : state === 'New York' ? 3 : 0;
 
         // Add period-specific variation
-        const periodMultiplier = period === 'YoY' ? 1 :
-                                period === '3 months' ? 0.8 : 0.6;
+        const periodMultiplier = period === 'YoY' ? 1 : period === '3 months' ? 0.8 : 0.6;
 
-        const percentage = Math.max(0, Math.min(100,
-          (template.basePercentage + stateVariation) * periodMultiplier +
-          (Math.random() - 0.5) * 5
-        ));
+        const percentage = Math.max(
+          0,
+          Math.min(
+            100,
+            (template.basePercentage + stateVariation) * periodMultiplier +
+              (Math.random() - 0.5) * 5,
+          ),
+        );
 
         costDrivers.push({
           label: template.label,
@@ -216,7 +218,7 @@ async function seedCostDrivers() {
           dataDate: new Date(),
           source: 'Bureau of Economic Analysis',
           displayOrder: i,
-          status: 'published'
+          status: 'published',
         });
       }
     }
@@ -238,32 +240,60 @@ async function seedStatsSummary() {
   const statTypes = [
     {
       type: 'lobbying',
-      baseValue: { nationwide: 276000, California: 45000, Texas: 38000, Florida: 22000, 'New York': 42000, Arizona: 18000 },
+      baseValue: {
+        nationwide: 276000,
+        California: 45000,
+        Texas: 38000,
+        Florida: 22000,
+        'New York': 42000,
+        Arizona: 18000,
+      },
       format: 'K',
       subtitle: 'tracked since 2020',
-      source: 'U.S. Senate Office of Public Records (LDA)'
+      source: 'U.S. Senate Office of Public Records (LDA)',
     },
     {
       type: 'consumer-cost',
-      baseValue: { nationwide: 4679, California: 5890, Texas: 4120, Florida: 4450, 'New York': 5670, Arizona: 4280 },
+      baseValue: {
+        nationwide: 4679,
+        California: 5890,
+        Texas: 4120,
+        Florida: 4450,
+        'New York': 5670,
+        Arizona: 4280,
+      },
       format: '$',
       subtitle: 'due to tariffs',
-      source: 'Bureau of Labor Statistics, EIA, USDA'
+      source: 'Bureau of Labor Statistics, EIA, USDA',
     },
     {
       type: 'contributions',
-      baseValue: { nationwide: 9200000, California: 1850000, Texas: 1420000, Florida: 890000, 'New York': 1680000, Arizona: 720000 },
+      baseValue: {
+        nationwide: 9200000,
+        California: 1850000,
+        Texas: 1420000,
+        Florida: 890000,
+        'New York': 1680000,
+        Arizona: 720000,
+      },
       format: '$M',
       subtitle: 'in lobbying spend',
-      source: 'Federal Election Commission'
+      source: 'Federal Election Commission',
     },
     {
       type: 'tariff-revenue',
-      baseValue: { nationwide: 6700000000, California: 1200000000, Texas: 980000000, Florida: 650000000, 'New York': 1100000000, Arizona: 520000000 },
+      baseValue: {
+        nationwide: 6700000000,
+        California: 1200000000,
+        Texas: 980000000,
+        Florida: 650000000,
+        'New York': 1100000000,
+        Arizona: 520000000,
+      },
       format: '$B',
       subtitle: 'weekly collection',
-      source: 'U.S. Department of the Treasury'
-    }
+      source: 'U.S. Department of the Treasury',
+    },
   ];
 
   const statsSummaries = [];
@@ -281,7 +311,7 @@ async function seedStatsSummary() {
         chartData.push({
           label: days[i],
           value: baseValue * (0.85 + Math.random() * 0.3),
-          date: date
+          date: date,
         });
       }
 
@@ -313,7 +343,7 @@ async function seedStatsSummary() {
         timePeriod: 'weekly',
         dataDate: new Date(),
         source: statType.source,
-        status: 'published'
+        status: 'published',
       });
     }
   }
@@ -336,27 +366,55 @@ async function seedStateComparisons() {
       category: 'groceries',
       label: 'Grocery basket',
       nationalValue: 395,
-      stateMultipliers: { California: 1.12, Texas: 0.95, Florida: 1.02, 'New York': 1.08, Arizona: 0.98, nationwide: 1.0 }
+      stateMultipliers: {
+        California: 1.12,
+        Texas: 0.95,
+        Florida: 1.02,
+        'New York': 1.08,
+        Arizona: 0.98,
+        nationwide: 1.0,
+      },
     },
     {
       category: 'fuel',
       label: 'Fuel Price',
-      nationalValue: 3.70,
-      stateMultipliers: { California: 1.47, Texas: 0.72, Florida: 0.85, 'New York': 1.04, Arizona: 0.88, nationwide: 1.0 }
+      nationalValue: 3.7,
+      stateMultipliers: {
+        California: 1.47,
+        Texas: 0.72,
+        Florida: 0.85,
+        'New York': 1.04,
+        Arizona: 0.88,
+        nationwide: 1.0,
+      },
     },
     {
       category: 'utilities',
       label: 'Electricity Bill',
       nationalValue: 187,
-      stateMultipliers: { California: 1.69, Texas: 0.72, Florida: 1.04, 'New York': 1.52, Arizona: 0.78, nationwide: 1.0 }
+      stateMultipliers: {
+        California: 1.69,
+        Texas: 0.72,
+        Florida: 1.04,
+        'New York': 1.52,
+        Arizona: 0.78,
+        nationwide: 1.0,
+      },
     },
     {
       category: 'books',
       label: 'Books & Printing',
       nationalValue: 4.1,
       unitType: 'percentage',
-      stateMultipliers: { California: 1.17, Texas: 0.95, Florida: 1.02, 'New York': 1.12, Arizona: 0.98, nationwide: 1.0 }
-    }
+      stateMultipliers: {
+        California: 1.17,
+        Texas: 0.95,
+        Florida: 1.02,
+        'New York': 1.12,
+        Arizona: 0.98,
+        nationwide: 1.0,
+      },
+    },
   ];
 
   const comparisons = [];
@@ -366,11 +424,16 @@ async function seedStateComparisons() {
       const template = comparisonTemplates[i];
       const multiplier = template.stateMultipliers[state] || 1.0;
       const stateNumericValue = template.nationalValue * multiplier;
-      const percentDiff = ((stateNumericValue - template.nationalValue) / template.nationalValue) * 100;
+      const percentDiff =
+        ((stateNumericValue - template.nationalValue) / template.nationalValue) * 100;
 
       const isPercent = template.unitType === 'percentage';
-      const stateValue = isPercent ? `${stateNumericValue.toFixed(1)}%` : `$${Math.round(stateNumericValue)}`;
-      const nationalValue = isPercent ? `${template.nationalValue.toFixed(1)}%` : `$${template.nationalValue}`;
+      const stateValue = isPercent
+        ? `${stateNumericValue.toFixed(1)}%`
+        : `$${Math.round(stateNumericValue)}`;
+      const nationalValue = isPercent
+        ? `${template.nationalValue.toFixed(1)}%`
+        : `$${template.nationalValue}`;
 
       comparisons.push({
         category: template.category,
@@ -387,7 +450,7 @@ async function seedStateComparisons() {
         source: 'Bureau of Labor Statistics',
         dataDate: new Date(),
         displayOrder: i,
-        status: 'published'
+        status: 'published',
       });
     }
   }
@@ -416,7 +479,7 @@ async function seedSocialPosts() {
       topics: ['gas', 'inflation'],
       state: 'California',
       featured: true,
-      displayOrder: 0
+      displayOrder: 0,
     },
     {
       username: '@markfoodie',
@@ -431,7 +494,7 @@ async function seedSocialPosts() {
       topics: ['groceries', 'inflation'],
       state: 'nationwide',
       featured: true,
-      displayOrder: 1
+      displayOrder: 1,
     },
     {
       username: '@janedee',
@@ -446,7 +509,7 @@ async function seedSocialPosts() {
       topics: ['utilities', 'inflation'],
       state: 'nationwide',
       featured: true,
-      displayOrder: 2
+      displayOrder: 2,
     },
     {
       username: '@texasmom2024',
@@ -461,7 +524,7 @@ async function seedSocialPosts() {
       topics: ['tariffs', 'economy'],
       state: 'Texas',
       featured: false,
-      displayOrder: 3
+      displayOrder: 3,
     },
     {
       username: '@nycrent',
@@ -476,15 +539,15 @@ async function seedSocialPosts() {
       topics: ['housing', 'economy'],
       state: 'New York',
       featured: false,
-      displayOrder: 4
-    }
+      displayOrder: 4,
+    },
   ];
 
   // Add moderation status
-  const postsWithModeration = posts.map(post => ({
+  const postsWithModeration = posts.map((post) => ({
     ...post,
     moderation: { status: 'approved', reviewedAt: new Date() },
-    status: 'published'
+    status: 'published',
   }));
 
   await SocialPost.deleteMany({});
@@ -509,22 +572,23 @@ async function seedProductImpacts() {
           name: 'Tariffs on Building materials',
           type: 'tariff',
           impact: 'Steel: 25%, Aluminum: 10%, Lumber duties: -14.5%',
-          description: 'Import duties on steel, aluminum, lumber, gypsum, windows, roofing raise input costs. NAHB notes sizeable share of building materials are imported.',
-          sources: ['National Association of Home Builders']
-        }
+          description:
+            'Import duties on steel, aluminum, lumber, gypsum, windows, roofing raise input costs. NAHB notes sizeable share of building materials are imported.',
+          sources: ['National Association of Home Builders'],
+        },
       ],
       lobbyingData: {
         totalSpent: 2300000000,
         totalSpentDisplay: '$2.3B',
-        description: 'Real estate lobbying spending in DC'
+        description: 'Real estate lobbying spending in DC',
       },
-      keywords: ['housing', 'home', 'rent', 'real estate', 'apartment', 'mortgage']
+      keywords: ['housing', 'home', 'rent', 'real estate', 'apartment', 'mortgage'],
     },
     {
       name: 'Eggs',
       category: 'groceries',
-      startingPrice: 3.50,
-      currentPrice: 5.90,
+      startingPrice: 3.5,
+      currentPrice: 5.9,
       startingDate: new Date('2024-01-01'),
       drivers: [
         {
@@ -532,24 +596,24 @@ async function seedProductImpacts() {
           type: 'supply-chain',
           impact: '+40%',
           description: 'Avian flu outbreaks have reduced egg-laying hen populations significantly.',
-          sources: ['USDA']
+          sources: ['USDA'],
         },
         {
           name: 'Feed Costs',
           type: 'supply-chain',
           impact: '+15%',
           description: 'Rising corn and soy prices increase production costs.',
-          sources: ['Agricultural Department']
-        }
+          sources: ['Agricultural Department'],
+        },
       ],
       lobbyingData: {
         totalSpent: 45000000,
         totalSpentDisplay: '$45M',
-        description: 'Poultry industry lobbying'
+        description: 'Poultry industry lobbying',
       },
       keywords: ['eggs', 'poultry', 'breakfast', 'groceries'],
       trending: true,
-      trendingScore: 95
+      trendingScore: 95,
     },
     {
       name: 'Gasoline',
@@ -563,20 +627,20 @@ async function seedProductImpacts() {
           type: 'supply-chain',
           impact: '+12%',
           description: 'Global crude oil price increases due to OPEC production cuts.',
-          sources: ['EIA']
+          sources: ['EIA'],
         },
         {
           name: 'Refinery Capacity',
           type: 'supply-chain',
           impact: '+8%',
           description: 'Limited refinery capacity and maintenance downtime.',
-          sources: ['American Petroleum Institute']
-        }
+          sources: ['American Petroleum Institute'],
+        },
       ],
       keywords: ['gas', 'gasoline', 'fuel', 'petrol'],
       trending: true,
-      trendingScore: 88
-    }
+      trendingScore: 88,
+    },
   ];
 
   const productImpacts = [];
@@ -592,12 +656,12 @@ async function seedProductImpacts() {
       const date = new Date(product.startingDate);
       date.setMonth(date.getMonth() + i);
       const progress = i / monthsDiff;
-      const price = product.startingPrice + (priceChange * progress) + (Math.random() - 0.5) * 0.2;
+      const price = product.startingPrice + priceChange * progress + (Math.random() - 0.5) * 0.2;
 
       priceHistory.push({
         date,
         price: parseFloat(price.toFixed(2)),
-        priceDisplay: `$${price.toFixed(2)}`
+        priceDisplay: `$${price.toFixed(2)}`,
       });
     }
 
@@ -612,7 +676,7 @@ async function seedProductImpacts() {
         amount: parseFloat(priceChange.toFixed(2)),
         amountDisplay: `$${priceChange.toFixed(2)}`,
         percent: parseFloat(percentChange.toFixed(1)),
-        percentDisplay: `+${percentChange.toFixed(1)}%`
+        percentDisplay: `+${percentChange.toFixed(1)}%`,
       },
       startingDate: product.startingDate,
       currentDate: new Date(),
@@ -624,7 +688,7 @@ async function seedProductImpacts() {
       keywords: product.keywords,
       trending: product.trending || false,
       trendingScore: product.trendingScore || 0,
-      status: 'published'
+      status: 'published',
     });
   }
 
@@ -653,25 +717,52 @@ async function seedMapRegions() {
     { name: 'Kansas', abbreviation: 'KS', cx: 350, cy: 300, rx: 60, ry: 45, intensity: 58 },
     { name: 'Illinois', abbreviation: 'IL', cx: 500, cy: 280, rx: 40, ry: 70, intensity: 58 },
     { name: 'New York', abbreviation: 'NY', cx: 755, cy: 195, rx: 65, ry: 55, intensity: 68 },
-    { name: 'Florida', abbreviation: 'FL', cx: 700, cy: 485, rx: 60, ry: 100, intensity: 52, rotation: 15 },
+    {
+      name: 'Florida',
+      abbreviation: 'FL',
+      cx: 700,
+      cy: 485,
+      rx: 60,
+      ry: 100,
+      intensity: 52,
+      rotation: 15,
+    },
     { name: 'Georgia', abbreviation: 'GA', cx: 630, cy: 380, rx: 50, ry: 60, intensity: 55 },
     { name: 'Michigan', abbreviation: 'MI', cx: 540, cy: 215, rx: 55, ry: 70, intensity: 58 },
-    { name: 'Ohio', abbreviation: 'OH', cx: 590, cy: 275, rx: 50, ry: 55, intensity: 55 }
+    { name: 'Ohio', abbreviation: 'OH', cx: 590, cy: 275, rx: 50, ry: 55, intensity: 55 },
   ];
 
   const topShocksData = {
     'New York': [
-      { item: 'Eggs +15%', location: 'New York, NY', icon: '🥚', bgColor: '#fef3c7', changePercent: 15 }
+      {
+        item: 'Eggs +15%',
+        location: 'New York, NY',
+        icon: '🥚',
+        bgColor: '#fef3c7',
+        changePercent: 15,
+      },
     ],
-    'Texas': [
-      { item: 'Fuel +8%', location: 'Houston, TX', icon: '⛽', bgColor: '#dbeafe', changePercent: 8 }
+    Texas: [
+      {
+        item: 'Fuel +8%',
+        location: 'Houston, TX',
+        icon: '⛽',
+        bgColor: '#dbeafe',
+        changePercent: 8,
+      },
     ],
-    'California': [
-      { item: 'Gas +22%', location: 'Los Angeles, CA', icon: '⛽', bgColor: '#fed7d7', changePercent: 22 }
-    ]
+    California: [
+      {
+        item: 'Gas +22%',
+        location: 'Los Angeles, CA',
+        icon: '⛽',
+        bgColor: '#fed7d7',
+        changePercent: 22,
+      },
+    ],
   };
 
-  const regions = regionData.map(region => ({
+  const regions = regionData.map((region) => ({
     name: region.name,
     abbreviation: region.abbreviation,
     coordinates: {
@@ -679,20 +770,20 @@ async function seedMapRegions() {
       cy: region.cy,
       rx: region.rx,
       ry: region.ry,
-      rotation: region.rotation || 0
+      rotation: region.rotation || 0,
     },
     intensity: region.intensity,
     intensityCategory: MapRegion.getIntensityCategory(region.intensity),
     color: MapRegion.getIntensityColor(region.intensity),
-    opacity: 0.5 + (region.intensity / 200), // 0.5 - 1.0 based on intensity
+    opacity: 0.5 + region.intensity / 200, // 0.5 - 1.0 based on intensity
     topShocks: topShocksData[region.name] || [],
     overallChange: {
       percent: region.intensity * 0.2,
       percentDisplay: `+${(region.intensity * 0.2).toFixed(1)}%`,
-      direction: 'up'
+      direction: 'up',
     },
     dataDate: new Date(),
-    status: 'published'
+    status: 'published',
   }));
 
   await MapRegion.deleteMany({});
@@ -716,7 +807,7 @@ async function seedQuickQuestions() {
       topics: ['groceries', 'taxes'],
       personalization: { useLocation: true, useState: true, useCity: true },
       displayOrder: 0,
-      featured: true
+      featured: true,
     },
     {
       text: 'Why is gas more expensive in my city than last year?',
@@ -728,7 +819,7 @@ async function seedQuickQuestions() {
       topics: ['gas', 'inflation'],
       personalization: { useLocation: true, useState: true, useCity: true },
       displayOrder: 1,
-      featured: true
+      featured: true,
     },
     {
       text: 'Compare eggs and milk prices in my city than others?',
@@ -736,11 +827,12 @@ async function seedQuickQuestions() {
       category: 'comparison',
       icon: 'globe',
       iconType: 'svg',
-      iconPath: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
+      iconPath:
+        'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
       topics: ['groceries', 'inflation'],
       personalization: { useLocation: true, useState: true, useCity: true },
       displayOrder: 2,
-      featured: true
+      featured: true,
     },
     {
       text: 'What policies are driving up housing costs?',
@@ -751,7 +843,7 @@ async function seedQuickQuestions() {
       topics: ['housing', 'economy'],
       personalization: { useLocation: false, useState: false, useCity: false },
       displayOrder: 3,
-      featured: false
+      featured: false,
     },
     {
       text: 'How much are tariffs adding to my annual bills?',
@@ -762,13 +854,13 @@ async function seedQuickQuestions() {
       topics: ['tariffs', 'inflation'],
       personalization: { useLocation: false, useState: true, useCity: false },
       displayOrder: 4,
-      featured: false
-    }
+      featured: false,
+    },
   ];
 
-  const questionsWithStatus = questions.map(q => ({
+  const questionsWithStatus = questions.map((q) => ({
     ...q,
-    status: 'published'
+    status: 'published',
   }));
 
   await QuickQuestion.deleteMany({});
@@ -792,7 +884,7 @@ async function seedTimelineConfig() {
         label: 'Before Policy',
         description: 'Baseline before major policy changes',
         isDefault: false,
-        highlighted: false
+        highlighted: false,
       },
       {
         position: 20,
@@ -801,7 +893,7 @@ async function seedTimelineConfig() {
         label: 'Pre-Election',
         description: 'Period leading up to election',
         isDefault: false,
-        highlighted: false
+        highlighted: false,
       },
       {
         position: 50,
@@ -814,8 +906,8 @@ async function seedTimelineConfig() {
         event: {
           name: 'Presidential Inauguration',
           type: 'policy',
-          impact: 'Major policy shifts announced'
-        }
+          impact: 'Major policy shifts announced',
+        },
       },
       {
         position: 70,
@@ -824,7 +916,7 @@ async function seedTimelineConfig() {
         label: 'Early Months',
         description: 'First 100 days impact',
         isDefault: false,
-        highlighted: false
+        highlighted: false,
       },
       {
         position: 85,
@@ -833,7 +925,7 @@ async function seedTimelineConfig() {
         label: 'Mid-Year',
         description: 'Mid-year assessment',
         isDefault: false,
-        highlighted: false
+        highlighted: false,
       },
       {
         position: 100,
@@ -842,23 +934,23 @@ async function seedTimelineConfig() {
         label: 'Current Snapshot',
         description: 'Current state of prices',
         isDefault: false,
-        highlighted: false
-      }
+        highlighted: false,
+      },
     ],
     slider: {
       min: 0,
       max: 100,
       step: 1,
-      defaultValue: 50
+      defaultValue: 50,
     },
     dateRange: {
       start: new Date('2024-07-01'),
-      end: new Date('2025-10-01')
+      end: new Date('2025-10-01'),
     },
     suggestedSearches: [
       { term: 'eggs', category: 'groceries' },
       { term: 'housing', category: 'housing' },
-      { term: 'gasoline', category: 'fuel' }
+      { term: 'gasoline', category: 'fuel' },
     ],
     display: {
       showLabels: true,
@@ -867,11 +959,11 @@ async function seedTimelineConfig() {
       colorScheme: {
         track: '#e5e7eb',
         progress: '#FF6B5A',
-        thumb: '#FF6B5A'
-      }
+        thumb: '#FF6B5A',
+      },
     },
     active: true,
-    status: 'published'
+    status: 'published',
   };
 
   await TimelineConfig.deleteMany({});
@@ -905,8 +997,16 @@ async function seedAll() {
     const questionCount = await seedQuickQuestions();
     const timelineCount = await seedTimelineConfig();
 
-    const total = walletShockCount + costDriverCount + statsCount + comparisonCount +
-                  socialPostCount + productImpactCount + mapRegionCount + questionCount + timelineCount;
+    const total =
+      walletShockCount +
+      costDriverCount +
+      statsCount +
+      comparisonCount +
+      socialPostCount +
+      productImpactCount +
+      mapRegionCount +
+      questionCount +
+      timelineCount;
 
     console.log('\n✅ Seeding Complete!');
     console.log(`   - Wallet Shocks: ${walletShockCount}`);
@@ -922,7 +1022,6 @@ async function seedAll() {
 
     await mongoose.disconnect();
     console.log('✅ Disconnected from MongoDB\n');
-
   } catch (error) {
     console.error('❌ Error during seeding:', error);
     process.exit(1);
@@ -934,4 +1033,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   seedAll();
 }
 
-export { seedAll, seedWalletShocks, seedCostDrivers, seedStatsSummary, seedStateComparisons, seedSocialPosts, seedProductImpacts, seedMapRegions, seedQuickQuestions, seedTimelineConfig };
+export {
+  seedAll,
+  seedWalletShocks,
+  seedCostDrivers,
+  seedStatsSummary,
+  seedStateComparisons,
+  seedSocialPosts,
+  seedProductImpacts,
+  seedMapRegions,
+  seedQuickQuestions,
+  seedTimelineConfig,
+};

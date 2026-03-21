@@ -5,7 +5,10 @@
 export const getApiUrl = () => {
   // If we're on a non-localhost domain (production/preview), use the production backend URL
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-    return import.meta.env.VITE_API_URL_PRODUCTION || 'https://node-server-production-7f39.up.railway.app';
+    return (
+      import.meta.env.VITE_API_URL_PRODUCTION ||
+      'https://node-server-production-7f39.up.railway.app'
+    );
   }
   // For local development
   return import.meta.env.VITE_API_URL || 'http://localhost:5000';

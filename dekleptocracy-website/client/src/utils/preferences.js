@@ -15,9 +15,12 @@ const safeParse = (raw) => {
 };
 
 const normalizePreferences = (prefs = {}) => {
-  const ensureArray = (value) => Array.isArray(value)
-    ? value.map(item => (typeof item === 'string' ? item.trim() : String(item || ''))).filter(Boolean)
-    : [];
+  const ensureArray = (value) =>
+    Array.isArray(value)
+      ? value
+          .map((item) => (typeof item === 'string' ? item.trim() : String(item || '')))
+          .filter(Boolean)
+      : [];
   const ensureString = (value) => (typeof value === 'string' ? value.trim() : '');
 
   return {

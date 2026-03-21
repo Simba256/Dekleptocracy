@@ -122,21 +122,19 @@ describe('Article Routes', () => {
 
   describe('POST /api/articles', () => {
     it('should create a new article with auto-generated slug', async () => {
-      const res = await request(app)
-        .post('/api/articles')
-        .send({
-          title: 'New Article Title',
-          contentType: 'article',
-          category: 'tech',
-          heroImage: 'https://example.com/img.jpg',
-          description: 'Desc',
-          mainText: 'Main content here.',
-          price: '$100',
-          priceUnit: 'per unit',
-          priceChange: '+5%',
-          impactScore: 50,
-          impactLevel: 'medium',
-        });
+      const res = await request(app).post('/api/articles').send({
+        title: 'New Article Title',
+        contentType: 'article',
+        category: 'tech',
+        heroImage: 'https://example.com/img.jpg',
+        description: 'Desc',
+        mainText: 'Main content here.',
+        price: '$100',
+        priceUnit: 'per unit',
+        priceChange: '+5%',
+        impactScore: 50,
+        impactLevel: 'medium',
+      });
 
       expect(res.status).toBe(201);
       expect(res.body.article.slug).toBe('new-article-title');
@@ -158,9 +156,7 @@ describe('Article Routes', () => {
     it('should return 404 for nonexistent article', async () => {
       const fakeId = '507f1f77bcf86cd799439011';
 
-      const res = await request(app)
-        .put(`/api/articles/${fakeId}`)
-        .send({ title: 'Updated' });
+      const res = await request(app).put(`/api/articles/${fakeId}`).send({ title: 'Updated' });
 
       expect(res.status).toBe(404);
     });

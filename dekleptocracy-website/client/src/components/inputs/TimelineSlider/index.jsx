@@ -16,17 +16,12 @@ import './TimelineSlider.css';
  * @param {Function} [props.onMilestoneClick] - Callback when milestone is clicked (milestone: Object) => void
  * @returns {JSX.Element}
  */
-const TimelineSlider = ({
-  config,
-  value,
-  onChange,
-  onMilestoneClick
-}) => {
+const TimelineSlider = ({ config, value, onChange, onMilestoneClick }) => {
   const {
     minDate = '2024-01-01',
     maxDate = '2024-12-31',
     milestones = [],
-    defaultDate
+    defaultDate,
   } = config || {};
 
   const [isDragging, setIsDragging] = useState(false);
@@ -39,26 +34,32 @@ const TimelineSlider = ({
     }
   }, [value, isDragging]);
 
-  const dateToPosition = useCallback((date) => {
-    const min = parseISO(minDate);
-    const max = parseISO(maxDate);
-    const current = parseISO(date);
+  const dateToPosition = useCallback(
+    (date) => {
+      const min = parseISO(minDate);
+      const max = parseISO(maxDate);
+      const current = parseISO(date);
 
-    const totalDays = differenceInDays(max, min);
-    const currentDays = differenceInDays(current, min);
+      const totalDays = differenceInDays(max, min);
+      const currentDays = differenceInDays(current, min);
 
-    return (currentDays / totalDays) * 100;
-  }, [minDate, maxDate]);
+      return (currentDays / totalDays) * 100;
+    },
+    [minDate, maxDate],
+  );
 
-  const positionToDate = useCallback((position) => {
-    const min = parseISO(minDate);
-    const max = parseISO(maxDate);
+  const positionToDate = useCallback(
+    (position) => {
+      const min = parseISO(minDate);
+      const max = parseISO(maxDate);
 
-    const totalDays = differenceInDays(max, min);
-    const days = Math.round((position / 100) * totalDays);
+      const totalDays = differenceInDays(max, min);
+      const days = Math.round((position / 100) * totalDays);
 
-    return format(addDays(min, days), 'yyyy-MM-dd');
-  }, [minDate, maxDate]);
+      return format(addDays(min, days), 'yyyy-MM-dd');
+    },
+    [minDate, maxDate],
+  );
 
   const position = useMemo(() => {
     return value ? dateToPosition(value) : dateToPosition(defaultDate || minDate);
@@ -80,10 +81,9 @@ const TimelineSlider = ({
   const currentPos = localPosition !== null ? localPosition : position;
   const passedMilestones = milestones
     .map((m, i) => ({ ...m, index: i, pos: dateToPosition(m.date) }))
-    .filter(m => m.pos <= currentPos);
-  const activeMilestoneIndex = passedMilestones.length > 0
-    ? passedMilestones[passedMilestones.length - 1].index
-    : -1;
+    .filter((m) => m.pos <= currentPos);
+  const activeMilestoneIndex =
+    passedMilestones.length > 0 ? passedMilestones[passedMilestones.length - 1].index : -1;
 
   return (
     <div className="timeline-slider-container">
@@ -165,7 +165,9 @@ const TimelineSlider = ({
       <div className="current-date-display">
         <span className="label">Viewing data from:</span>
         <span className="date">
-          {value ? format(parseISO(value), 'MMMM d, yyyy') : format(parseISO(defaultDate || minDate), 'MMMM d, yyyy')}
+          {value
+            ? format(parseISO(value), 'MMMM d, yyyy')
+            : format(parseISO(defaultDate || minDate), 'MMMM d, yyyy')}
         </span>
       </div>
     </div>

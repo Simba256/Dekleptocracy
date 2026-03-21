@@ -23,12 +23,15 @@ const SEO = ({
   type = 'website',
   structuredData,
   keywords,
-  noindex = false
+  noindex = false,
 }) => {
   const siteName = 'Dekleptocracy';
-  const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - Track Policy Impact on Your Wallet`;
+  const fullTitle = title
+    ? `${title} | ${siteName}`
+    : `${siteName} - Track Policy Impact on Your Wallet`;
 
-  const defaultDescription = 'Discover how government decisions, tariffs, and lobbying affect your everyday prices. Compare costs across states and track policy impacts on your household budget.';
+  const defaultDescription =
+    'Discover how government decisions, tariffs, and lobbying affect your everyday prices. Compare costs across states and track policy impacts on your household budget.';
   const metaDescription = description || defaultDescription;
   const metaImage = image?.startsWith('http') ? image : `${BASE_URL}${image || '/og-image.jpg'}`;
   const canonicalUrl = url ? `${BASE_URL}${url}` : BASE_URL;
@@ -64,9 +67,7 @@ const SEO = ({
 
       {/* Structured Data */}
       {structuredData && (
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       )}
     </Helmet>
   );
@@ -82,8 +83,8 @@ export const generateWebsiteSchema = () => ({
   potentialAction: {
     '@type': 'SearchAction',
     target: `${BASE_URL}/insights?q={search_term_string}`,
-    'query-input': 'required name=search_term_string'
-  }
+    'query-input': 'required name=search_term_string',
+  },
 });
 
 export const generateOrganizationSchema = () => ({
@@ -92,7 +93,7 @@ export const generateOrganizationSchema = () => ({
   name: 'Dekleptocracy',
   url: BASE_URL,
   logo: `${BASE_URL}/logo.png`,
-  sameAs: []
+  sameAs: [],
 });
 
 export const generateWebAppSchema = () => ({
@@ -100,17 +101,18 @@ export const generateWebAppSchema = () => ({
   '@type': 'WebApplication',
   name: 'Dekleptocracy',
   applicationCategory: 'FinanceApplication',
-  description: 'Track how government policies and tariffs impact consumer prices across all 50 US states',
+  description:
+    'Track how government policies and tariffs impact consumer prices across all 50 US states',
   offers: {
     '@type': 'Offer',
     price: '0',
-    priceCurrency: 'USD'
+    priceCurrency: 'USD',
   },
   operatingSystem: 'Web Browser',
   author: {
     '@type': 'Organization',
-    name: 'Dekleptocracy'
-  }
+    name: 'Dekleptocracy',
+  },
 });
 
 export const generateBreadcrumbSchema = (items) => ({
@@ -120,8 +122,8 @@ export const generateBreadcrumbSchema = (items) => ({
     '@type': 'ListItem',
     position: index + 1,
     name: item.name,
-    item: `${BASE_URL}${item.path}`
-  }))
+    item: `${BASE_URL}${item.path}`,
+  })),
 });
 
 export const generateArticleSchema = (article) => ({
@@ -134,33 +136,33 @@ export const generateArticleSchema = (article) => ({
   dateModified: article.updatedAt || article.publishedAt,
   author: {
     '@type': 'Organization',
-    name: 'Dekleptocracy'
+    name: 'Dekleptocracy',
   },
   publisher: {
     '@type': 'Organization',
     name: 'Dekleptocracy',
     logo: {
       '@type': 'ImageObject',
-      url: `${BASE_URL}/logo.png`
-    }
+      url: `${BASE_URL}/logo.png`,
+    },
   },
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': `${BASE_URL}${article.url}`
-  }
+    '@id': `${BASE_URL}${article.url}`,
+  },
 });
 
 export const generateFAQSchema = (faqs) => ({
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: faqs.map(faq => ({
+  mainEntity: faqs.map((faq) => ({
     '@type': 'Question',
     name: faq.question,
     acceptedAnswer: {
       '@type': 'Answer',
-      text: faq.answer
-    }
-  }))
+      text: faq.answer,
+    },
+  })),
 });
 
 export const generateStateReportSchema = (state, _data) => ({
@@ -170,7 +172,7 @@ export const generateStateReportSchema = (state, _data) => ({
   description: `Consumer price and policy impact data for ${state}`,
   creator: {
     '@type': 'Organization',
-    name: 'Dekleptocracy'
+    name: 'Dekleptocracy',
   },
   dateModified: new Date().toISOString(),
   spatialCoverage: {
@@ -178,16 +180,16 @@ export const generateStateReportSchema = (state, _data) => ({
     name: state,
     geo: {
       '@type': 'GeoCoordinates',
-      addressCountry: 'US'
-    }
+      addressCountry: 'US',
+    },
   },
   variableMeasured: [
     'Consumer Price Index',
     'Gas Prices',
     'Electricity Prices',
     'Food Prices',
-    'Tariff Impact'
-  ]
+    'Tariff Impact',
+  ],
 });
 
 export default SEO;

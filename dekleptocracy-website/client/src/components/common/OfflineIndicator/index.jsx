@@ -13,10 +13,10 @@ export const OfflineIndicator = () => {
 
   return (
     <div className="offline-indicator" role="alert" aria-live="assertive">
-      <span className="offline-icon" aria-hidden="true">📡</span>
-      <span className="offline-text">
-        You're offline. Some features may not work.
+      <span className="offline-icon" aria-hidden="true">
+        📡
       </span>
+      <span className="offline-text">You're offline. Some features may not work.</span>
     </div>
   );
 };
@@ -37,7 +37,9 @@ export const OfflineFallback = ({ cachedData, children, onRetry }) => {
     return (
       <div className="offline-fallback" role="alert" aria-live="polite">
         <div className="offline-fallback-content">
-          <div className="offline-icon-large" aria-hidden="true">📡</div>
+          <div className="offline-icon-large" aria-hidden="true">
+            📡
+          </div>
           <h2 className="offline-fallback-title">You're offline</h2>
           <p className="offline-fallback-message">
             Connect to the internet to see the latest data.
@@ -58,7 +60,9 @@ export const OfflineFallback = ({ cachedData, children, onRetry }) => {
     return (
       <div className="cached-data-notice">
         <div className="offline-indicator" role="status" aria-live="polite">
-          <span className="offline-icon" aria-hidden="true">📡</span>
+          <span className="offline-icon" aria-hidden="true">
+            📡
+          </span>
           <span className="offline-text">
             Showing cached data from {new Date(cachedData.timestamp).toLocaleString()}
           </span>

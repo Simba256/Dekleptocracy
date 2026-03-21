@@ -147,10 +147,7 @@ describe('Breadcrumbs', () => {
     it('has navigation landmark with aria-label', () => {
       renderWithRouter(<Breadcrumbs />, { route: '/about' });
 
-      expect(screen.getByRole('navigation')).toHaveAttribute(
-        'aria-label',
-        'Breadcrumb'
-      );
+      expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'Breadcrumb');
     });
 
     it('uses ordered list for breadcrumbs', () => {

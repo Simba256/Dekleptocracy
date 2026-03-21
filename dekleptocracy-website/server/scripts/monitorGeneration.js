@@ -26,13 +26,13 @@ async function monitor() {
     const byState = await WalletShock.aggregate([
       { $match: { status: 'published' } },
       { $group: { _id: '$state', count: { $sum: 1 } } },
-      { $sort: { count: -1 } }
+      { $sort: { count: -1 } },
     ]);
 
     const byCategory = await WalletShock.aggregate([
       { $match: { status: 'published' } },
       { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $sort: { count: -1 } }
+      { $sort: { count: -1 } },
     ]);
 
     const recentShocks = await WalletShock.find({ status: 'published' })
@@ -46,21 +46,24 @@ async function monitor() {
     console.log(`📊 Progress: ${((totalShocks / 204) * 100).toFixed(1)}%\n`);
 
     console.log('📍 By State:');
-    byState.forEach(s => {
+    byState.forEach((s) => {
       const progress = (s.count / 4) * 100;
-      const bar = '█'.repeat(Math.floor(progress / 10)) + '░'.repeat(10 - Math.floor(progress / 10));
+      const bar =
+        '█'.repeat(Math.floor(progress / 10)) + '░'.repeat(10 - Math.floor(progress / 10));
       console.log(`   ${s._id.padEnd(20)} [${bar}] ${s.count}/4`);
     });
 
     console.log('\n📦 By Category:');
-    byCategory.forEach(c => {
+    byCategory.forEach((c) => {
       console.log(`   ${c._id.padEnd(15)} ${c.count}`);
     });
 
     console.log('\n🆕 Recent Shocks:');
     recentShocks.forEach((shock, i) => {
       const time = new Date(shock.dataDate).toLocaleTimeString();
-      console.log(`   ${i + 1}. [${time}] ${shock.state} - ${shock.category}: ${shock.changePercent > 0 ? '+' : ''}${shock.changePercent}%`);
+      console.log(
+        `   ${i + 1}. [${time}] ${shock.state} - ${shock.category}: ${shock.changePercent > 0 ? '+' : ''}${shock.changePercent}%`,
+      );
     });
 
     console.log('\n═══════════════════════════════════════════════════');
@@ -72,7 +75,6 @@ async function monitor() {
     setTimeout(() => {
       monitor();
     }, 10000);
-
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

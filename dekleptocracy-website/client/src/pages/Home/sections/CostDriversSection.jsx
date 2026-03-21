@@ -4,25 +4,52 @@ import StateDropdown from '../../../components/common/StateDropdown';
 
 export const CostDriversSection = memo(function CostDriversSection() {
   const { state, actions } = useHomepage();
-  const { costDrivers, stateComparisons, timePeriod, selectedState, dropdownStates, searchStates } = state;
+  const { costDrivers, stateComparisons, timePeriod, selectedState, dropdownStates, searchStates } =
+    state;
 
   // Fallback comparison data if API data not available
-  const comparisonData = stateComparisons.length > 0 ? stateComparisons : [
-    { label: 'Grocery basket', percentDisplay: '+4%', stateValue: '$412', nationalValue: '$395' },
-    { label: 'Fuel Price', percentDisplay: '+3.8%', stateValue: '$3.84', nationalValue: '$3.70' },
-    { label: 'Electricity Bill', percentDisplay: '+69%', stateValue: '$282', nationalValue: '$187' },
-    { label: 'Books & Printing', percentDisplay: '+12%', stateValue: '4.8%', nationalValue: '4.1%' }
-  ];
+  const comparisonData =
+    stateComparisons.length > 0
+      ? stateComparisons
+      : [
+          {
+            label: 'Grocery basket',
+            percentDisplay: '+4%',
+            stateValue: '$412',
+            nationalValue: '$395',
+          },
+          {
+            label: 'Fuel Price',
+            percentDisplay: '+3.8%',
+            stateValue: '$3.84',
+            nationalValue: '$3.70',
+          },
+          {
+            label: 'Electricity Bill',
+            percentDisplay: '+69%',
+            stateValue: '$282',
+            nationalValue: '$187',
+          },
+          {
+            label: 'Books & Printing',
+            percentDisplay: '+12%',
+            stateValue: '4.8%',
+            nationalValue: '4.1%',
+          },
+        ];
 
   // Fallback cost drivers
-  const drivers = costDrivers.length > 0 ? costDrivers : [
-    { label: 'Tariffs', percentage: 34, color: '#3E5132', type: 'direct' },
-    { label: 'Fuels', percentage: 22, color: '#6B7F5F', type: 'direct' },
-    { label: 'Labor', percentage: 20, color: '#A8B89C', type: 'direct' },
-    { label: 'Supply Chain', percentage: 18, color: '#A8B89C', type: 'indirect' },
-    { label: 'Currency', percentage: 13, color: '#C5D4BC', type: 'indirect' },
-    { label: 'Weather', percentage: 5, color: '#9CA3AF', type: 'indirect' }
-  ];
+  const drivers =
+    costDrivers.length > 0
+      ? costDrivers
+      : [
+          { label: 'Tariffs', percentage: 34, color: '#3E5132', type: 'direct' },
+          { label: 'Fuels', percentage: 22, color: '#6B7F5F', type: 'direct' },
+          { label: 'Labor', percentage: 20, color: '#A8B89C', type: 'direct' },
+          { label: 'Supply Chain', percentage: 18, color: '#A8B89C', type: 'indirect' },
+          { label: 'Currency', percentage: 13, color: '#C5D4BC', type: 'indirect' },
+          { label: 'Weather', percentage: 5, color: '#9CA3AF', type: 'indirect' },
+        ];
 
   return (
     <section className="cost-impact-section">
@@ -32,7 +59,8 @@ export const CostDriversSection = memo(function CostDriversSection() {
           <div className="cost-impact-text">
             <h2 className="cost-impact-title">Cost Drivers & Household Impact</h2>
             <p className="cost-impact-subtitle">
-              Lean, authoritative data views. Explore what&apos;s driving prices and how it hits your bills.
+              Lean, authoritative data views. Explore what&apos;s driving prices and how it hits
+              your bills.
             </p>
           </div>
           <div className="cost-impact-controls">
@@ -67,7 +95,9 @@ export const CostDriversSection = memo(function CostDriversSection() {
           {/* Left: What's pushing prices up */}
           <div className="price-drivers-panel">
             <h3 className="panel-title">What&apos;s pushing prices up</h3>
-            <p className="panel-subtitle">Share of contribution to overall increase (illustrative)</p>
+            <p className="panel-subtitle">
+              Share of contribution to overall increase (illustrative)
+            </p>
 
             <div className="drivers-chart">
               {drivers.map((driver, index) => (
@@ -78,7 +108,7 @@ export const CostDriversSection = memo(function CostDriversSection() {
                       className="driver-bar"
                       style={{
                         width: `${driver.percentage}%`,
-                        backgroundColor: driver.color
+                        backgroundColor: driver.color,
                       }}
                     />
                   </div>
@@ -88,7 +118,8 @@ export const CostDriversSection = memo(function CostDriversSection() {
             </div>
 
             <p className="drivers-note">
-              Red shades = direct price pressure<br />
+              Red shades = direct price pressure
+              <br />
               Blue = indirect/systemic factors
             </p>
           </div>
@@ -113,7 +144,9 @@ export const CostDriversSection = memo(function CostDriversSection() {
 
         {/* Action Buttons */}
         <div className="cost-impact-actions">
-          <button className="action-btn primary" onClick={actions.downloadReport}>Download report (PDF)</button>
+          <button className="action-btn primary" onClick={actions.downloadReport}>
+            Download report (PDF)
+          </button>
           <button className="action-btn secondary">Compare states</button>
         </div>
       </div>

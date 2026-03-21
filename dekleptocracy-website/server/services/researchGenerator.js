@@ -12,8 +12,8 @@ const researchCategories = [
       'Agricultural subsidy impact on consumer price transmission mechanisms',
       'Cross-border trade policy effects on food inflation volatility',
       'Regional price disparity drivers in grocery markets',
-      'Supply chain resilience and consumer cost implications'
-    ]
+      'Supply chain resilience and consumer cost implications',
+    ],
   },
   {
     category: 'fuel',
@@ -24,8 +24,8 @@ const researchCategories = [
       'Crude oil futures market transmission to consumer prices',
       'Renewable energy infrastructure investment impact on traditional fuel markets',
       'Geographic price variation determinants in fuel markets',
-      'Environmental regulation compliance costs and price pass-through analysis'
-    ]
+      'Environmental regulation compliance costs and price pass-through analysis',
+    ],
   },
   {
     category: 'utilities',
@@ -36,8 +36,8 @@ const researchCategories = [
       'Decentralized energy generation impact on utility pricing models',
       'Water infrastructure aging and replacement cost allocation',
       'Energy efficiency mandates and consumer cost-benefit analysis',
-      'Regulatory rate-setting mechanisms and consumer welfare'
-    ]
+      'Regulatory rate-setting mechanisms and consumer welfare',
+    ],
   },
   {
     category: 'tech',
@@ -48,8 +48,8 @@ const researchCategories = [
       'Technology sector tariff cascading impacts on consumer electronics',
       'Digital infrastructure investment public-private partnership models',
       'Consumer electronics obsolescence cycles and replacement costs',
-      'Technology adoption barriers and affordability constraints'
-    ]
+      'Technology adoption barriers and affordability constraints',
+    ],
   },
   {
     category: 'housing',
@@ -60,8 +60,8 @@ const researchCategories = [
       'Monetary policy transmission to mortgage rates and housing costs',
       'Rental market dynamics and tenant cost burden analysis',
       'Property tax policy variation and housing cost implications',
-      'Housing supply elasticity constraints and price dynamics'
-    ]
+      'Housing supply elasticity constraints and price dynamics',
+    ],
   },
   {
     category: 'healthcare',
@@ -72,8 +72,8 @@ const researchCategories = [
       'Health insurance market concentration and premium determinants',
       'Medical cost inflation decomposition by service category',
       'Healthcare access disparities and financial barrier analysis',
-      'Regulatory framework impacts on prescription drug affordability'
-    ]
+      'Regulatory framework impacts on prescription drug affordability',
+    ],
   },
   {
     category: 'education',
@@ -84,8 +84,8 @@ const researchCategories = [
       'Public education funding formula impacts on household costs',
       'Textbook market structure and pricing behavior analysis',
       'Educational attainment gaps and economic mobility',
-      'Education policy reform and long-term cost implications'
-    ]
+      'Education policy reform and long-term cost implications',
+    ],
   },
   {
     category: 'transportation',
@@ -96,9 +96,9 @@ const researchCategories = [
       'Public transit investment returns and rider cost savings',
       'Automotive market structure and pricing power analysis',
       'Transportation infrastructure investment allocation and efficiency',
-      'Electric vehicle adoption economics and consumer cost factors'
-    ]
-  }
+      'Electric vehicle adoption economics and consumer cost factors',
+    ],
+  },
 ];
 
 /**
@@ -286,7 +286,7 @@ CRITICAL: This is a RESEARCH REPORT, not a news article. Maintain academic rigor
  */
 async function callLLM(prompt, category = 'unknown', topic = 'unknown') {
   const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'http://localhost:8000';
-  
+
   const academicSystemPrompt = `
 You are an academic economic researcher writing comprehensive research reports for Dekleptocracy.
 
@@ -345,84 +345,88 @@ REMEMBER: Use tools first to gather real data, then write the research report, t
     console.log(`   Category: ${category}`);
     console.log(`   Topic: ${topic.substring(0, 60)}...`);
     console.log(`   Prompt length: ${prompt.length} chars`);
-    
+
     const requestBody = {
       messages: [
         {
-          role: "system",
+          role: 'system',
           content: [
-            "You are a senior economic researcher writing academic research reports for Dekleptocracy.",
-            "CRITICAL: Generate RESEARCH REPORTS, not news articles.",
-            "",
-            "WORKFLOW (IMPORTANT):",
-            "1. FIRST: Use available tools (search_web, get_trade_policy_news, get_bea_data, etc.) to gather REAL economic data",
-            "2. THEN: Synthesize the gathered data into a comprehensive research report",
-            "3. FINALLY: Output the completed report as valid JSON",
-            "",
-            "TOOL USAGE:",
-            "- You MUST use tools to gather real data before writing the report",
-            "- Call 2-4 tools in parallel to gather comprehensive information efficiently",
-            "- Search for academic papers, government reports, and economic statistics",
-            "- Gather actual sources, data points, and references",
-            "",
-            "RESEARCH STYLE:",
-            "- Write in formal academic style with methodology, analysis, and conclusions",
-            "- Include hedging language, ranges, and statistical analysis",
-            "- Maintain 1000-1400 words in mainText across 8 academic sections",
-            "- Reference the real data and sources you gathered from tools",
-            "- Include 10-15 real sources with actual URLs from your tool searches",
-            "",
-            "OUTPUT:",
-            "- After gathering data and writing the report, output ONLY valid JSON",
-            "- No markdown, backticks, or prose outside JSON",
-            "- The JSON must contain the complete research report"
-          ].join(" ")
+            'You are a senior economic researcher writing academic research reports for Dekleptocracy.',
+            'CRITICAL: Generate RESEARCH REPORTS, not news articles.',
+            '',
+            'WORKFLOW (IMPORTANT):',
+            '1. FIRST: Use available tools (search_web, get_trade_policy_news, get_bea_data, etc.) to gather REAL economic data',
+            '2. THEN: Synthesize the gathered data into a comprehensive research report',
+            '3. FINALLY: Output the completed report as valid JSON',
+            '',
+            'TOOL USAGE:',
+            '- You MUST use tools to gather real data before writing the report',
+            '- Call 2-4 tools in parallel to gather comprehensive information efficiently',
+            '- Search for academic papers, government reports, and economic statistics',
+            '- Gather actual sources, data points, and references',
+            '',
+            'RESEARCH STYLE:',
+            '- Write in formal academic style with methodology, analysis, and conclusions',
+            '- Include hedging language, ranges, and statistical analysis',
+            '- Maintain 1000-1400 words in mainText across 8 academic sections',
+            '- Reference the real data and sources you gathered from tools',
+            '- Include 10-15 real sources with actual URLs from your tool searches',
+            '',
+            'OUTPUT:',
+            '- After gathering data and writing the report, output ONLY valid JSON',
+            '- No markdown, backticks, or prose outside JSON',
+            '- The JSON must contain the complete research report',
+          ].join(' '),
         },
         {
-          role: "user",
-          content: prompt
-        }
+          role: 'user',
+          content: prompt,
+        },
       ],
       system_prompt: academicSystemPrompt,
       use_mcp_tools: true,
       stream: false,
       max_iterations: 5,
       max_total_tools: 8,
-      max_context_tokens: 16000
+      max_context_tokens: 16000,
     };
-    
-    console.log(`   Request config:`, JSON.stringify({
-      use_mcp_tools: requestBody.use_mcp_tools,
-      max_iterations: requestBody.max_iterations,
-      max_total_tools: requestBody.max_total_tools,
-      max_context_tokens: requestBody.max_context_tokens
-    }));
-    
+
+    console.log(
+      `   Request config:`,
+      JSON.stringify({
+        use_mcp_tools: requestBody.use_mcp_tools,
+        max_iterations: requestBody.max_iterations,
+        max_total_tools: requestBody.max_total_tools,
+        max_context_tokens: requestBody.max_context_tokens,
+      }),
+    );
+
     const response = await fetch(`${MCP_SERVER_URL}/chat/intelligent/v2`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     });
-    
+
     console.log(`   Response status: ${response.status} ${response.statusText}`);
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`❌ MCP Server error: ${response.status} ${response.statusText}`);
       console.error(`   Error response:`, errorText.substring(0, 500));
       throw new Error(`MCP Server request failed: ${response.status} ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     console.log(`   ✅ Response received`);
     console.log(`   Content length: ${data.content?.length || 0} chars`);
     console.log(`   Tools called: ${data.tool_calls?.length || 0}`);
-    
+
     const rawContent = data.content;
-    const contentStr = typeof rawContent === 'string' ? rawContent.trim() : JSON.stringify(rawContent);
-    
+    const contentStr =
+      typeof rawContent === 'string' ? rawContent.trim() : JSON.stringify(rawContent);
+
     // Parse JSON from response with multiple fallbacks
     let researchData;
     const tryParses = [
@@ -451,9 +455,9 @@ REMEMBER: Use tools first to gather real data, then write the research report, t
           return JSON.parse(match[0]);
         }
         throw new Error('No JSON object found');
-      }
+      },
     ];
-    
+
     for (const attempt of tryParses) {
       try {
         researchData = attempt();
@@ -463,31 +467,42 @@ REMEMBER: Use tools first to gather real data, then write the research report, t
         // Continue to next attempt
       }
     }
-    
+
     if (!researchData) {
-      throw new Error(`Failed to extract valid JSON from LLM response for category='${category}' topic='${topic}'`);
+      throw new Error(
+        `Failed to extract valid JSON from LLM response for category='${category}' topic='${topic}'`,
+      );
     }
-    
+
     // Validate required fields
     const requiredFields = [
-      'title', 'description', 'mainText', 'price', 'priceUnit', 'priceChange',
-      'impactScore', 'impactLevel', 'location', 'whyItHappened', 'chartData', 'references'
+      'title',
+      'description',
+      'mainText',
+      'price',
+      'priceUnit',
+      'priceChange',
+      'impactScore',
+      'impactLevel',
+      'location',
+      'whyItHappened',
+      'chartData',
+      'references',
     ];
-    const missingFields = requiredFields.filter(field => 
-      !researchData[field] || 
-      (Array.isArray(researchData[field]) && !researchData[field].length)
+    const missingFields = requiredFields.filter(
+      (field) =>
+        !researchData[field] || (Array.isArray(researchData[field]) && !researchData[field].length),
     );
-    
+
     if (missingFields.length > 0) {
       throw new Error(`Invalid research data: missing fields ${missingFields.join(', ')}`);
     }
-    
+
     console.log(`   ✅ All required fields present`);
     console.log(`   Title: ${researchData.title?.substring(0, 70)}...`);
     console.log(`   Word count: ~${researchData.mainText.split(' ').length} words`);
-    
+
     return researchData;
-    
   } catch (error) {
     console.error(`\n❌ ERROR calling MCP Server:`);
     console.error(`   Error: ${error.message}`);
@@ -524,23 +539,30 @@ IMPORTANT RETRY INSTRUCTIONS:
   }
 }
 
-
 /**
  * Select hero image for research category
  */
 function selectResearchHeroImage(category) {
   const imageMap = {
-    'groceries': 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&h=600&fit=crop&q=80',
-    'fuel': 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&h=600&fit=crop&q=80',
-    'utilities': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&h=600&fit=crop&q=80',
-    'tech': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=600&fit=crop&q=80',
-    'housing': 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop&q=80',
-    'healthcare': 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=600&fit=crop&q=80',
-    'education': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&h=600&fit=crop&q=80',
-    'transportation': 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&h=600&fit=crop&q=80'
+    groceries:
+      'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&h=600&fit=crop&q=80',
+    fuel: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&h=600&fit=crop&q=80',
+    utilities:
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&h=600&fit=crop&q=80',
+    tech: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=600&fit=crop&q=80',
+    housing: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop&q=80',
+    healthcare:
+      'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=600&fit=crop&q=80',
+    education:
+      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&h=600&fit=crop&q=80',
+    transportation:
+      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&h=600&fit=crop&q=80',
   };
 
-  return imageMap[category] || 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop&q=80';
+  return (
+    imageMap[category] ||
+    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop&q=80'
+  );
 }
 
 /**
@@ -549,14 +571,14 @@ function selectResearchHeroImage(category) {
 async function removeDuplicateResearch() {
   try {
     console.log('🧹 Checking for duplicate research reports...');
-    
+
     const allResearch = await Article.find({ contentType: 'research' }).sort({ createdAt: -1 });
     const titleMap = new Map();
     const duplicateIds = [];
-    
+
     for (const research of allResearch) {
       const normalizedTitle = research.title.trim().toLowerCase();
-      
+
       if (titleMap.has(normalizedTitle)) {
         duplicateIds.push(research._id);
         console.log(`   ❌ Found duplicate: "${research.title}"`);
@@ -564,7 +586,7 @@ async function removeDuplicateResearch() {
         titleMap.set(normalizedTitle, research._id);
       }
     }
-    
+
     if (duplicateIds.length > 0) {
       const result = await Article.deleteMany({ _id: { $in: duplicateIds } });
       console.log(`🧹 Removed ${result.deletedCount} duplicate research reports`);
@@ -584,7 +606,7 @@ async function removeDuplicateResearch() {
  */
 async function generateResearch(count = 5) {
   const generatedResearch = [];
-  
+
   try {
     console.log(`\n${'='.repeat(80)}`);
     console.log(`🔬 RESEARCH REPORT GENERATION STARTED`);
@@ -593,104 +615,107 @@ async function generateResearch(count = 5) {
     console.log(`📡 MCP Server: ${process.env.MCP_SERVER_URL || 'http://localhost:8000'}`);
     console.log(`⏰ Time: ${new Date().toLocaleString()}`);
     console.log(`${'='.repeat(80)}\n`);
-    
+
     // Clean up duplicates
     await removeDuplicateResearch();
-    
+
     // Select research topics
     const selectedTopics = [];
     const usedCombinations = new Set();
     const shuffledCategories = [...researchCategories].sort(() => Math.random() - 0.5);
-    
+
     for (const category of shuffledCategories) {
       if (selectedTopics.length >= count) break;
-      
+
       const topic = category.topics[Math.floor(Math.random() * category.topics.length)];
       const combination = `${category.category}-${topic}`;
-      
+
       if (!usedCombinations.has(combination)) {
         usedCombinations.add(combination);
         selectedTopics.push({ ...category, selectedTopic: topic });
       }
     }
-    
+
     // Fill remaining slots if needed
     while (selectedTopics.length < count && usedCombinations.size < researchCategories.length * 5) {
       const category = researchCategories[Math.floor(Math.random() * researchCategories.length)];
       const topic = category.topics[Math.floor(Math.random() * category.topics.length)];
       const combination = `${category.category}-${topic}`;
-      
+
       if (!usedCombinations.has(combination)) {
         usedCombinations.add(combination);
         selectedTopics.push({ ...category, selectedTopic: topic });
       }
     }
-    
+
     console.log(`📋 Selected ${selectedTopics.length} research topics:`);
     selectedTopics.forEach((t, i) => {
       console.log(`   ${i + 1}. ${t.category} - ${t.selectedTopic.substring(0, 70)}...`);
     });
     console.log('');
-    
+
     // Generate each research report
     let successCount = 0;
     let failCount = 0;
-    
+
     for (let i = 0; i < selectedTopics.length; i++) {
       const topic = selectedTopics[i];
       try {
         console.log(`\n${'─'.repeat(80)}`);
-        console.log(`📊 [${i + 1}/${selectedTopics.length}] Generating Research: ${topic.category}`);
+        console.log(
+          `📊 [${i + 1}/${selectedTopics.length}] Generating Research: ${topic.category}`,
+        );
         console.log(`   Topic: ${topic.selectedTopic}`);
         console.log(`${'─'.repeat(80)}`);
-        
+
         // Create research prompt
         const researchYear = new Date().getFullYear();
         const prompt = generateResearchPrompt(topic.category, topic.selectedTopic, researchYear);
         console.log(`📝 Research prompt created (${prompt.length} chars)`);
-        
+
         // Call LLM to generate research
         console.log('🤖 Calling MCP server for research generation...');
         const llmResponse = await callLLMWithContext(prompt, topic.category, topic.selectedTopic);
         console.log('✅ Research content generated');
-        
+
         // Create unique title with research identifier
         const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { 
-          month: 'short', 
-          year: 'numeric' 
+        const dateStr = now.toLocaleDateString('en-US', {
+          month: 'short',
+          year: 'numeric',
         });
         const uniqueTitle = `${llmResponse.title} (${dateStr})`;
-        
+
         // Generate slug
-        let baseSlug = uniqueTitle.toLowerCase()
+        let baseSlug = uniqueTitle
+          .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/(^-|-$)/g, '')
           .substring(0, 100);
-        
+
         let slug = baseSlug;
         let slugExists = await Article.findOne({ slug });
         let slugCounter = 1;
-        
+
         while (slugExists) {
           slug = `${baseSlug}-${slugCounter}`;
           slugExists = await Article.findOne({ slug });
           slugCounter++;
-          
+
           if (slugCounter > 10) {
             console.log(`  ❌ Too many duplicates for slug, skipping...`);
             failCount++;
             break;
           }
         }
-        
+
         if (slugCounter > 10) continue;
-        
+
         console.log(`✅ Slug: ${slug}`);
-        
+
         // Get hero image
         const heroImage = selectResearchHeroImage(topic.category);
-        
+
         // Build research data object
         const researchData = {
           title: uniqueTitle,
@@ -712,20 +737,26 @@ async function generateResearch(count = 5) {
           chartData: llmResponse.chartData,
           references: llmResponse.references,
           sources: [], // No mock sources - only use real references from LLM
-          tags: [topic.category, 'research', 'economic-analysis', 'academic-study', 'policy-research'],
+          tags: [
+            topic.category,
+            'research',
+            'economic-analysis',
+            'academic-study',
+            'policy-research',
+          ],
           generatedBy: 'llm',
           llmModel: 'mcp-server-academic-research',
           status: 'published',
-          publishedAt: new Date()
+          publishedAt: new Date(),
         };
-        
+
         // Save to database
         console.log('💾 Saving research report to database...');
         const research = new Article(researchData);
         await research.save();
         generatedResearch.push(research);
         successCount++;
-        
+
         console.log(`\n✅ SUCCESS: Research report created`);
         console.log(`   Title: ${research.title.substring(0, 70)}...`);
         console.log(`   Category: ${research.category}`);
@@ -734,7 +765,6 @@ async function generateResearch(count = 5) {
         console.log(`   Word count: ~${research.mainText.split(' ').length} words`);
         console.log(`   References: ${research.references?.length || 0}`);
         console.log(`   Chart data points: ${research.chartData.length}`);
-        
       } catch (error) {
         failCount++;
         console.error(`\n❌ GENERATION ERROR:`);
@@ -746,24 +776,23 @@ async function generateResearch(count = 5) {
         }
       }
     }
-    
+
     console.log(`\n${'='.repeat(80)}`);
     console.log(`📊 RESEARCH GENERATION COMPLETE`);
     console.log(`${'='.repeat(80)}`);
     console.log(`✅ Successfully generated: ${successCount}/${selectedTopics.length} reports`);
     console.log(`❌ Failed: ${failCount}/${selectedTopics.length} reports`);
     console.log(`📝 Total saved: ${generatedResearch.length}`);
-    
+
     if (generatedResearch.length > 0) {
       console.log(`\n📋 Generated Research Reports:`);
       generatedResearch.forEach((r, i) => {
         console.log(`   ${i + 1}. ${r.title.substring(0, 70)}...`);
       });
     }
-    
+
     console.log(`${'='.repeat(80)}\n`);
     return generatedResearch;
-    
   } catch (error) {
     console.error(`\n${'='.repeat(80)}`);
     console.error('❌ FATAL ERROR in research generation');
@@ -775,7 +804,4 @@ async function generateResearch(count = 5) {
   }
 }
 
-export {
-  generateResearch
-};
-
+export { generateResearch };

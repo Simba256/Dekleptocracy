@@ -35,11 +35,11 @@
 }
 
 /* Input with error state */
-.form-input[aria-invalid="true"] {
+.form-input[aria-invalid='true'] {
   border-color: var(--color-error);
 }
 
-.form-input[aria-invalid="true"]:focus {
+.form-input[aria-invalid='true']:focus {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 

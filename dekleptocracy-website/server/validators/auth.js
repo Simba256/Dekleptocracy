@@ -6,11 +6,13 @@ export const signupSchema = z.object({
     email: z.email('Please enter a valid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     agreeToTerms: z.literal(true, { error: 'You must agree to terms and conditions' }),
-    preferences: z.object({
-      conversationStyles: z.array(z.string()).optional(),
-      topicsOfInterest: z.array(z.string()).optional(),
-      householdExpenseFocus: z.string().optional(),
-    }).optional(),
+    preferences: z
+      .object({
+        conversationStyles: z.array(z.string()).optional(),
+        topicsOfInterest: z.array(z.string()).optional(),
+        householdExpenseFocus: z.string().optional(),
+      })
+      .optional(),
   }),
   query: z.object({}).passthrough(),
   params: z.object({}).passthrough(),

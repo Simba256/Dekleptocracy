@@ -7,6 +7,7 @@ All endpoints support optional JWT authentication via `Authorization: Bearer <to
 ---
 
 ## Rate Limiting
+
 - **Limit**: 100 requests per 15 minutes per IP address
 - **Headers**: `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`
 
@@ -15,15 +16,18 @@ All endpoints support optional JWT authentication via `Authorization: Bearer <to
 ## Endpoints
 
 ### 1. Get Wallet Shocks
+
 **GET** `/api/homepage/wallet-shocks`
 
 Returns price shock data for specific categories (groceries, fuel, utilities, tech).
 
 **Query Parameters:**
+
 - `state` (optional, string): State name (e.g., "California", "Texas"). Defaults to user preference or "nationwide"
 - `limit` (optional, number): Number of results. Default: 4
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -57,15 +61,18 @@ Returns price shock data for specific categories (groceries, fuel, utilities, te
 ---
 
 ### 2. Get Cost Drivers
+
 **GET** `/api/homepage/cost-drivers`
 
 Returns breakdown of factors contributing to price increases.
 
 **Query Parameters:**
+
 - `state` (optional, string): State name. Defaults to user preference or "nationwide"
 - `period` (optional, string): Time period - "YoY", "3 months", "30 days". Default: "YoY"
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -94,14 +101,17 @@ Returns breakdown of factors contributing to price increases.
 ---
 
 ### 3. Get Stats Summary
+
 **GET** `/api/homepage/stats`
 
 Returns summary statistics (lobbying cases, consumer costs, contributions, tariff revenue).
 
 **Query Parameters:**
+
 - `state` (optional, string): State name. Defaults to user preference or "nationwide"
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -130,36 +140,34 @@ Returns summary statistics (lobbying cases, consumer costs, contributions, tarif
 ---
 
 ### 4. Get Available States
+
 **GET** `/api/homepage/available-states`
 
 Returns list of states with published data.
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "states": [
-    "Arizona",
-    "California",
-    "Florida",
-    "New York",
-    "Texas",
-    "nationwide"
-  ]
+  "states": ["Arizona", "California", "Florida", "New York", "Texas", "nationwide"]
 }
 ```
 
 ---
 
 ### 5. Add Reaction to Wallet Shock
+
 **POST** `/api/homepage/wallet-shocks/:id/react`
 
 Increment reaction count for a wallet shock.
 
 **URL Parameters:**
+
 - `id` (required, string): Wallet shock MongoDB ObjectId
 
 **Request Body:**
+
 ```json
 {
   "reactionType": "shock" | "angry" | "sad"
@@ -167,6 +175,7 @@ Increment reaction count for a wallet shock.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -182,11 +191,13 @@ Increment reaction count for a wallet shock.
 ---
 
 ### 6. Get Scheduler Status
+
 **GET** `/api/homepage/scheduler/status`
 
 Returns status of the data generation scheduler.
 
 **Response:**
+
 ```json
 {
   "isRunning": false,
@@ -199,11 +210,13 @@ Returns status of the data generation scheduler.
 ---
 
 ### 7. Trigger Manual Seed (Development Only)
+
 **POST** `/api/homepage/seed`
 
 Manually triggers seed data generation. Useful for development/testing.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -228,6 +241,7 @@ All endpoints return consistent error format:
 ```
 
 **HTTP Status Codes:**
+
 - `200` - Success
 - `400` - Bad request (invalid parameters)
 - `404` - Resource not found
@@ -239,17 +253,20 @@ All endpoints return consistent error format:
 ## Authentication (Optional)
 
 Endpoints support optional JWT authentication. When authenticated:
+
 - User preferences (selected state, time period) are automatically applied
 - Reactions are attributed to the user
 - Future features may require authentication
 
 **Header Format:**
+
 ```
 Authorization: Bearer <your-jwt-token>
 ```
 
 **Getting a token:**
 Use the existing auth endpoints:
+
 - `POST /api/auth/register` - Create account
 - `POST /api/auth/login` - Login and receive token
 
@@ -287,17 +304,17 @@ const data = await response.json();
 const token = localStorage.getItem('token');
 const response = await fetch('http://localhost:5000/api/homepage/cost-drivers', {
   headers: {
-    'Authorization': `Bearer ${token}`
-  }
+    Authorization: `Bearer ${token}`,
+  },
 });
 
 // Add reaction
 await fetch(`http://localhost:5000/api/homepage/wallet-shocks/${shockId}/react`, {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
-  body: JSON.stringify({ reactionType: 'shock' })
+  body: JSON.stringify({ reactionType: 'shock' }),
 });
 ```
 
@@ -306,14 +323,17 @@ await fetch(`http://localhost:5000/api/homepage/wallet-shocks/${shockId}/react`,
 ## Database Models
 
 ### WalletShock
+
 - Indexed on: `{state, category, status, dataDate}`
 - Unique constraint: One entry per state + category combination
 
 ### CostDriver
+
 - Indexed on: `{state, timePeriod, category, status}`
 - Ordered by: `displayOrder` field
 
 ### StatsSummary
+
 - Indexed on: `{statType, state, status, dataDate}`
 - Types: lobbying, consumer-cost, contributions, tariff-revenue
 

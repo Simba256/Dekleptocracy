@@ -55,7 +55,7 @@ const initialState = {
     hero: false,
     map: false,
     walletShocks: false,
-    costImpact: false
+    costImpact: false,
   },
 
   // Search states for dropdowns
@@ -63,7 +63,7 @@ const initialState = {
     hero: '',
     map: '',
     walletShocks: '',
-    costImpact: ''
+    costImpact: '',
   },
 
   // Modal states
@@ -75,7 +75,7 @@ const initialState = {
 
   // Search query
   searchQuery: '',
-  productQuery: ''
+  productQuery: '',
 };
 
 // Action types
@@ -103,7 +103,7 @@ const ActionTypes = {
   SET_SHOW_IMPACT_MODAL: 'SET_SHOW_IMPACT_MODAL',
   SET_TIMELINE_DATE: 'SET_TIMELINE_DATE',
   SET_SEARCH_QUERY: 'SET_SEARCH_QUERY',
-  SET_PRODUCT_QUERY: 'SET_PRODUCT_QUERY'
+  SET_PRODUCT_QUERY: 'SET_PRODUCT_QUERY',
 };
 
 // Reducer
@@ -161,20 +161,22 @@ function homepageReducer(state, action) {
       return {
         ...state,
         dropdownStates: {
-          ...Object.fromEntries(Object.keys(state.dropdownStates).map(k => [k, false])), // Close all
-          [action.payload]: !state.dropdownStates[action.payload]
+          ...Object.fromEntries(Object.keys(state.dropdownStates).map((k) => [k, false])), // Close all
+          [action.payload]: !state.dropdownStates[action.payload],
         },
         searchStates: {
           ...state.searchStates,
-          [action.payload]: '' // Reset search when toggling
-        }
+          [action.payload]: '', // Reset search when toggling
+        },
       };
 
     case ActionTypes.CLOSE_ALL_DROPDOWNS:
       return {
         ...state,
-        dropdownStates: Object.fromEntries(Object.keys(state.dropdownStates).map(k => [k, false])),
-        searchStates: Object.fromEntries(Object.keys(state.searchStates).map(k => [k, '']))
+        dropdownStates: Object.fromEntries(
+          Object.keys(state.dropdownStates).map((k) => [k, false]),
+        ),
+        searchStates: Object.fromEntries(Object.keys(state.searchStates).map((k) => [k, ''])),
       };
 
     case ActionTypes.SET_DROPDOWN_SEARCH:
@@ -182,25 +184,25 @@ function homepageReducer(state, action) {
         ...state,
         searchStates: {
           ...state.searchStates,
-          [action.payload.dropdown]: action.payload.value
-        }
+          [action.payload.dropdown]: action.payload.value,
+        },
       };
 
     case ActionTypes.UPDATE_REACTION:
       return {
         ...state,
-        walletShocks: state.walletShocks.map(shock =>
+        walletShocks: state.walletShocks.map((shock) =>
           shock._id === action.payload.shockId
             ? { ...shock, reactions: action.payload.reactions }
-            : shock
-        )
+            : shock,
+        ),
       };
 
     case ActionTypes.SET_SHOW_IMPACT_MODAL:
       return {
         ...state,
         showImpactModal: action.payload.show,
-        impactModalProduct: action.payload.product || state.impactModalProduct
+        impactModalProduct: action.payload.product || state.impactModalProduct,
       };
 
     case ActionTypes.SET_TIMELINE_DATE:
@@ -230,60 +232,63 @@ export function HomepageProvider({ children }) {
   }, [state.selectedState]);
 
   // Fetch homepage data with caching
-  const fetchData = useCallback(async (isRefresh = false) => {
-    const effectiveState = state.selectedState || 'nationwide';
-    const cacheKey = `homepage-${effectiveState}-${state.timePeriod}`;
+  const fetchData = useCallback(
+    async (isRefresh = false) => {
+      const effectiveState = state.selectedState || 'nationwide';
+      const cacheKey = `homepage-${effectiveState}-${state.timePeriod}`;
 
-    // Check cache first (unless forcing refresh)
-    if (!isRefresh) {
-      const cached = getCachedData(cacheKey);
-      if (cached) {
+      // Check cache first (unless forcing refresh)
+      if (!isRefresh) {
+        const cached = getCachedData(cacheKey);
+        if (cached) {
+          dispatch({
+            type: ActionTypes.SET_ALL_DATA,
+            payload: cached,
+          });
+          dispatch({ type: ActionTypes.SET_LOADING, payload: false });
+          return;
+        }
+      }
+
+      if (isRefresh) {
+        dispatch({ type: ActionTypes.SET_REFRESHING, payload: true });
+      } else {
+        dispatch({ type: ActionTypes.SET_LOADING, payload: true });
+      }
+      dispatch({ type: ActionTypes.SET_ERROR, payload: null });
+
+      try {
+        const data = await homepageApi.fetchAllHomepageData(effectiveState, state.timePeriod);
+
+        const payload = {
+          walletShocks: data.walletShocks,
+          costDrivers: data.costDrivers,
+          stats: data.stats,
+          stateComparisons: data.stateComparisons,
+          socialPosts: data.socialPosts,
+          quickQuestions: data.quickQuestions,
+          timelineConfig: data.timelineConfig,
+        };
+
+        // Cache the response
+        setCachedData(cacheKey, payload);
+
         dispatch({
           type: ActionTypes.SET_ALL_DATA,
-          payload: cached
+          payload,
         });
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          console.error('[DEV] Error fetching homepage data:', err);
+        }
+        dispatch({ type: ActionTypes.SET_ERROR, payload: err.message });
+      } finally {
         dispatch({ type: ActionTypes.SET_LOADING, payload: false });
-        return;
+        dispatch({ type: ActionTypes.SET_REFRESHING, payload: false });
       }
-    }
-
-    if (isRefresh) {
-      dispatch({ type: ActionTypes.SET_REFRESHING, payload: true });
-    } else {
-      dispatch({ type: ActionTypes.SET_LOADING, payload: true });
-    }
-    dispatch({ type: ActionTypes.SET_ERROR, payload: null });
-
-    try {
-      const data = await homepageApi.fetchAllHomepageData(effectiveState, state.timePeriod);
-
-      const payload = {
-        walletShocks: data.walletShocks,
-        costDrivers: data.costDrivers,
-        stats: data.stats,
-        stateComparisons: data.stateComparisons,
-        socialPosts: data.socialPosts,
-        quickQuestions: data.quickQuestions,
-        timelineConfig: data.timelineConfig
-      };
-
-      // Cache the response
-      setCachedData(cacheKey, payload);
-
-      dispatch({
-        type: ActionTypes.SET_ALL_DATA,
-        payload
-      });
-    } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error('[DEV] Error fetching homepage data:', err);
-      }
-      dispatch({ type: ActionTypes.SET_ERROR, payload: err.message });
-    } finally {
-      dispatch({ type: ActionTypes.SET_LOADING, payload: false });
-      dispatch({ type: ActionTypes.SET_REFRESHING, payload: false });
-    }
-  }, [state.selectedState, state.timePeriod]);
+    },
+    [state.selectedState, state.timePeriod],
+  );
 
   // Load user preferences on mount
   useEffect(() => {
@@ -310,18 +315,27 @@ export function HomepageProvider({ children }) {
         // If logged in, fetch fresh preferences
         if (token) {
           const response = await fetch(`${API_URL}/api/user/profile`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           });
 
           if (response.ok) {
             const data = await response.json();
             if (data.success && data.user.preferences) {
-              localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(data.user.preferences));
+              localStorage.setItem(
+                STORAGE_KEYS.USER_PREFERENCES,
+                JSON.stringify(data.user.preferences),
+              );
               if (data.user.preferences.selectedState) {
-                dispatch({ type: ActionTypes.SET_SELECTED_STATE, payload: data.user.preferences.selectedState });
+                dispatch({
+                  type: ActionTypes.SET_SELECTED_STATE,
+                  payload: data.user.preferences.selectedState,
+                });
               }
               if (data.user.preferences.defaultTimePeriod) {
-                dispatch({ type: ActionTypes.SET_TIME_PERIOD, payload: data.user.preferences.defaultTimePeriod });
+                dispatch({
+                  type: ActionTypes.SET_TIME_PERIOD,
+                  payload: data.user.preferences.defaultTimePeriod,
+                });
               }
             }
           }
@@ -375,9 +389,9 @@ export function HomepageProvider({ children }) {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(updates)
+          body: JSON.stringify(updates),
         });
       }
     } catch {
@@ -403,7 +417,7 @@ export function HomepageProvider({ children }) {
         const data = await homepageApi.addReaction(shockId, reactionType);
         dispatch({
           type: ActionTypes.UPDATE_REACTION,
-          payload: { shockId, reactions: data.reactions }
+          payload: { shockId, reactions: data.reactions },
         });
       } catch {
         // Silent fail for reaction adding
@@ -455,27 +469,23 @@ export function HomepageProvider({ children }) {
 
     downloadCSV: () => {
       homepageApi.downloadCSV(getEffectiveState());
-    }
+    },
   };
 
   // Memoize the actions object to prevent unnecessary re-renders
-  const memoizedActions = useMemo(() => actions, [
-    savePreferences,
-    fetchData
-  ]);
+  const memoizedActions = useMemo(() => actions, [savePreferences, fetchData]);
 
   // Memoize the context value to prevent unnecessary re-renders
-  const value = useMemo(() => ({
-    state,
-    actions: memoizedActions,
-    getEffectiveState
-  }), [state, memoizedActions, getEffectiveState]);
-
-  return (
-    <HomepageContext.Provider value={value}>
-      {children}
-    </HomepageContext.Provider>
+  const value = useMemo(
+    () => ({
+      state,
+      actions: memoizedActions,
+      getEffectiveState,
+    }),
+    [state, memoizedActions, getEffectiveState],
   );
+
+  return <HomepageContext.Provider value={value}>{children}</HomepageContext.Provider>;
 }
 
 // Custom hook to use the homepage context
@@ -489,17 +499,67 @@ export function useHomepage() {
 
 // Export all states list for dropdowns
 export const ALL_STATES = [
-  'All states', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-  'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois',
-  'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-  'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana',
-  'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
-  'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
-  'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah',
-  'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+  'All states',
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+  'Massachusetts',
+  'Michigan',
+  'Minnesota',
+  'Mississippi',
+  'Missouri',
+  'Montana',
+  'Nebraska',
+  'Nevada',
+  'New Hampshire',
+  'New Jersey',
+  'New Mexico',
+  'New York',
+  'North Carolina',
+  'North Dakota',
+  'Ohio',
+  'Oklahoma',
+  'Oregon',
+  'Pennsylvania',
+  'Rhode Island',
+  'South Carolina',
+  'South Dakota',
+  'Tennessee',
+  'Texas',
+  'Utah',
+  'Vermont',
+  'Virginia',
+  'Washington',
+  'West Virginia',
+  'Wisconsin',
+  'Wyoming',
 ];
 
 // Featured states for quick access
-export const FEATURED_STATES = ['CALIFORNIA', 'TEXAS', 'FLORIDA', 'ARIZONA', 'NEW YORK', 'WASHINGTON'];
+export const FEATURED_STATES = [
+  'CALIFORNIA',
+  'TEXAS',
+  'FLORIDA',
+  'ARIZONA',
+  'NEW YORK',
+  'WASHINGTON',
+];
 
 export default HomepageContext;

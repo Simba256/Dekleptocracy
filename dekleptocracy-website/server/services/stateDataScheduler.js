@@ -13,21 +13,71 @@ import logger from '../utils/logger.js';
 
 // All US states for data refresh
 const US_STATES = [
-  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-  'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
-  'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi',
-  'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-  'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma',
-  'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
-  'West Virginia', 'Wisconsin', 'Wyoming', 'District of Columbia'
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+  'Massachusetts',
+  'Michigan',
+  'Minnesota',
+  'Mississippi',
+  'Missouri',
+  'Montana',
+  'Nebraska',
+  'Nevada',
+  'New Hampshire',
+  'New Jersey',
+  'New Mexico',
+  'New York',
+  'North Carolina',
+  'North Dakota',
+  'Ohio',
+  'Oklahoma',
+  'Oregon',
+  'Pennsylvania',
+  'Rhode Island',
+  'South Carolina',
+  'South Dakota',
+  'Tennessee',
+  'Texas',
+  'Utah',
+  'Vermont',
+  'Virginia',
+  'Washington',
+  'West Virginia',
+  'Wisconsin',
+  'Wyoming',
+  'District of Columbia',
 ];
 
 // Priority states to refresh more frequently
 const PRIORITY_STATES = [
-  'California', 'Texas', 'Florida', 'New York', 'Pennsylvania',
-  'Illinois', 'Ohio', 'Georgia', 'North Carolina', 'Michigan'
+  'California',
+  'Texas',
+  'Florida',
+  'New York',
+  'Pennsylvania',
+  'Illinois',
+  'Ohio',
+  'Georgia',
+  'North Carolina',
+  'Michigan',
 ];
 
 // Data types with their MCP tool mappings, TTL, and optional fallbacks
@@ -47,14 +97,15 @@ const DATA_TYPES = [
         changeDisplay: result.changeDisplay,
         changeDirection: result.changeDirection,
         unit: 'percent',
-        period: result.data?.[result.data.length - 1]?.periodName
+        period: result.data?.[result.data.length - 1]?.periodName,
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { seriesId: result.series_id }
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { seriesId: result.series_id },
     }),
     processFallbackResult: (result) => ({
       sourceApi: 'fred',
@@ -66,15 +117,16 @@ const DATA_TYPES = [
         changeDisplay: result.changeDisplay,
         changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
         unit: 'percent',
-        period: result.latest_date
+        period: result.latest_date,
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { seriesId: result.series_id, source: 'FRED (fallback)' }
-    })
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { seriesId: result.series_id, source: 'FRED (fallback)' },
+    }),
   },
   {
     type: 'electricity_prices',
@@ -91,15 +143,16 @@ const DATA_TYPES = [
         changeDisplay: result.changeDisplay,
         changeDirection: result.changeDirection,
         unit: 'cents/kWh',
-        period: result.data?.[result.data.length - 1]?.period
+        period: result.data?.[result.data.length - 1]?.period,
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { sector: 'RES' }
-    })
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { sector: 'RES' },
+    }),
   },
   {
     type: 'gas_prices',
@@ -115,15 +168,16 @@ const DATA_TYPES = [
         changeDisplay: result.changeDisplay,
         changeDirection: result.changeDirection,
         unit: '$/gallon',
-        period: result.data?.[result.data.length - 1]?.period
+        period: result.data?.[result.data.length - 1]?.period,
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { region: result.region, padd: result.padd }
-    })
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { region: result.region, padd: result.padd },
+    }),
   },
   // HUD rent data removed - API access issues (403 Forbidden)
   // {
@@ -144,11 +198,11 @@ const DATA_TYPES = [
         change: result.change,
         changeDisplay: result.changeDisplay,
         changeDirection: result.changeDirection,
-        unit: '$/person/month'
+        unit: '$/person/month',
       },
       timeSeries: [],
-      metadata: { region: result.region, costFactor: result.cost_factor }
-    })
+      metadata: { region: result.region, costFactor: result.cost_factor },
+    }),
   },
   {
     type: 'grocery_basket',
@@ -163,13 +217,13 @@ const DATA_TYPES = [
         change: result.change,
         changeDisplay: result.changeDisplay,
         changeDirection: result.changeDirection,
-        unit: '$/month'
+        unit: '$/month',
       },
       nationalValue: result.nationalValue,
       nationalDisplayValue: result.comparison?.nationalValue,
       timeSeries: [],
-      metadata: {}
-    })
+      metadata: {},
+    }),
   },
   {
     type: 'gdp',
@@ -185,14 +239,15 @@ const DATA_TYPES = [
         change: result.change,
         changeDisplay: result.changeDisplay,
         changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
-        unit: 'billions USD'
+        unit: 'billions USD',
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { source: result.source }
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { source: result.source },
     }),
     processFallbackResult: (result) => ({
       sourceApi: 'fred',
@@ -203,15 +258,16 @@ const DATA_TYPES = [
         change: result.change,
         changeDisplay: result.changeDisplay,
         changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
-        unit: 'billions USD'
+        unit: 'billions USD',
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { source: 'FRED (fallback)' }
-    })
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { source: 'FRED (fallback)' },
+    }),
   },
   {
     type: 'personal_income',
@@ -227,14 +283,15 @@ const DATA_TYPES = [
         change: result.change,
         changeDisplay: result.changeDisplay,
         changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
-        unit: 'USD/year'
+        unit: 'USD/year',
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { source: result.source }
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { source: result.source },
     }),
     processFallbackResult: (result) => ({
       sourceApi: 'fred',
@@ -245,15 +302,16 @@ const DATA_TYPES = [
         change: result.change,
         changeDisplay: result.changeDisplay,
         changeDirection: result.change > 0 ? 'up' : result.change < 0 ? 'down' : 'neutral',
-        unit: 'USD/year'
+        unit: 'USD/year',
       },
-      timeSeries: result.time_series?.map(ts => ({
-        date: new Date(ts.date),
-        value: ts.value,
-        label: ts.label
-      })) || [],
-      metadata: { source: 'FRED (fallback)' }
-    })
+      timeSeries:
+        result.time_series?.map((ts) => ({
+          date: new Date(ts.date),
+          value: ts.value,
+          label: ts.label,
+        })) || [],
+      metadata: { source: 'FRED (fallback)' },
+    }),
   },
   // HUD income_limits removed - API access issues (403 Forbidden)
   // HUD affordability removed - API access issues (403 Forbidden)
@@ -297,20 +355,26 @@ async function refreshDataType(stateName, dataConfig) {
         stateName,
         dataConfig.type,
         processedResult,
-        dataConfig.ttlHours
+        dataConfig.ttlHours,
       );
-      logger.info(`Refreshed ${dataConfig.type} data for ${stateName} (primary: ${dataConfig.tool})`);
+      logger.info(
+        `Refreshed ${dataConfig.type} data for ${stateName} (primary: ${dataConfig.tool})`,
+      );
       return true;
     } catch (error) {
       logger.error(`Error processing ${dataConfig.type} for ${stateName}`, error);
     }
   } else {
-    logger.warn(`Primary API failed for ${dataConfig.type} in ${stateName}: ${primaryResult.error}`);
+    logger.warn(
+      `Primary API failed for ${dataConfig.type} in ${stateName}: ${primaryResult.error}`,
+    );
   }
 
   // Try fallback API if available
   if (dataConfig.fallbackTool && dataConfig.processFallbackResult) {
-    logger.info(`Trying fallback ${dataConfig.fallbackTool} for ${dataConfig.type} in ${stateName}`);
+    logger.info(
+      `Trying fallback ${dataConfig.fallbackTool} for ${dataConfig.type} in ${stateName}`,
+    );
 
     const fallbackResult = await tryFetchFromTool(stateName, dataConfig.fallbackTool, args);
 
@@ -321,15 +385,19 @@ async function refreshDataType(stateName, dataConfig) {
           stateName,
           dataConfig.type,
           processedResult,
-          dataConfig.ttlHours
+          dataConfig.ttlHours,
         );
-        logger.info(`Refreshed ${dataConfig.type} data for ${stateName} (fallback: ${dataConfig.fallbackTool})`);
+        logger.info(
+          `Refreshed ${dataConfig.type} data for ${stateName} (fallback: ${dataConfig.fallbackTool})`,
+        );
         return true;
       } catch (error) {
         logger.error(`Error processing fallback ${dataConfig.type} for ${stateName}`, error);
       }
     } else {
-      logger.warn(`Fallback API also failed for ${dataConfig.type} in ${stateName}: ${fallbackResult.error}`);
+      logger.warn(
+        `Fallback API also failed for ${dataConfig.type} in ${stateName}: ${fallbackResult.error}`,
+      );
     }
   }
 
@@ -348,7 +416,7 @@ export async function refreshStateData(stateName) {
   const results = {
     state: stateName,
     success: [],
-    failed: []
+    failed: [],
   };
 
   for (const dataConfig of DATA_TYPES) {
@@ -360,10 +428,12 @@ export async function refreshStateData(stateName) {
     }
 
     // Rate limiting - wait between API calls
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  logger.info(`Completed refresh for ${stateName}: ${results.success.length} success, ${results.failed.length} failed`);
+  logger.info(
+    `Completed refresh for ${stateName}: ${results.success.length} success, ${results.failed.length} failed`,
+  );
   return results;
 }
 
@@ -383,14 +453,14 @@ async function refreshAllStates() {
   for (const state of PRIORITY_STATES) {
     await refreshStateData(state);
     // Wait 2 seconds between states to avoid rate limiting
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
   // Then process remaining states
-  const remainingStates = US_STATES.filter(s => !PRIORITY_STATES.includes(s));
+  const remainingStates = US_STATES.filter((s) => !PRIORITY_STATES.includes(s));
   for (const state of remainingStates) {
     await refreshStateData(state);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
   logger.info('Full state data refresh complete');
@@ -403,7 +473,9 @@ async function refreshAllStates() {
   logger.info('Starting wallet shock transformation...');
   try {
     const transformResult = await transformAllStates({ priorityStates: PRIORITY_STATES });
-    logger.info(`Wallet shock transformation complete: ${transformResult.successfulStates} states updated`);
+    logger.info(
+      `Wallet shock transformation complete: ${transformResult.successfulStates} states updated`,
+    );
   } catch (error) {
     logger.error('Wallet shock transformation failed', error);
   }
@@ -421,12 +493,12 @@ async function refreshGasPrices() {
     return;
   }
 
-  const gasConfig = DATA_TYPES.find(d => d.type === 'gas_prices');
+  const gasConfig = DATA_TYPES.find((d) => d.type === 'gas_prices');
   if (!gasConfig) return;
 
   for (const state of PRIORITY_STATES) {
     await refreshDataType(state, gasConfig);
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
   logger.info('Gas price refresh complete');
@@ -452,28 +524,36 @@ async function refreshGasPrices() {
  */
 export function initializeScheduler() {
   // Daily full refresh at 2 AM EST
-  cron.schedule('0 2 * * *', async () => {
-    logger.info('Running daily state data refresh (scheduled)');
-    try {
-      await refreshAllStates();
-    } catch (error) {
-      logger.error('Daily refresh failed', error);
-    }
-  }, {
-    timezone: 'America/New_York'
-  });
+  cron.schedule(
+    '0 2 * * *',
+    async () => {
+      logger.info('Running daily state data refresh (scheduled)');
+      try {
+        await refreshAllStates();
+      } catch (error) {
+        logger.error('Daily refresh failed', error);
+      }
+    },
+    {
+      timezone: 'America/New_York',
+    },
+  );
 
   // Gas prices every 6 hours
-  cron.schedule('0 */6 * * *', async () => {
-    logger.info('Running gas price refresh (scheduled)');
-    try {
-      await refreshGasPrices();
-    } catch (error) {
-      logger.error('Gas price refresh failed', error);
-    }
-  }, {
-    timezone: 'America/New_York'
-  });
+  cron.schedule(
+    '0 */6 * * *',
+    async () => {
+      logger.info('Running gas price refresh (scheduled)');
+      try {
+        await refreshGasPrices();
+      } catch (error) {
+        logger.error('Gas price refresh failed', error);
+      }
+    },
+    {
+      timezone: 'America/New_York',
+    },
+  );
 
   logger.info('State data scheduler initialized');
   logger.info('  - Full refresh: Daily at 2 AM EST');
@@ -488,16 +568,16 @@ export function getSchedulerStatus() {
     status: 'active',
     schedules: [
       { name: 'Full state data refresh', schedule: 'Daily at 2 AM EST' },
-      { name: 'Gas price refresh', schedule: 'Every 6 hours' }
+      { name: 'Gas price refresh', schedule: 'Every 6 hours' },
     ],
-    dataTypes: DATA_TYPES.map(d => ({
+    dataTypes: DATA_TYPES.map((d) => ({
       type: d.type,
       tool: d.tool,
       fallbackTool: d.fallbackTool || null,
-      ttlHours: d.ttlHours
+      ttlHours: d.ttlHours,
     })),
     stateCount: US_STATES.length,
-    priorityStates: PRIORITY_STATES
+    priorityStates: PRIORITY_STATES,
   };
 }
 
@@ -531,7 +611,7 @@ export async function triggerStateRefresh(stateName, includeTransform = true) {
  * Trigger manual refresh for specific data type across all states
  */
 export async function triggerDataTypeRefresh(dataType) {
-  const dataConfig = DATA_TYPES.find(d => d.type === dataType);
+  const dataConfig = DATA_TYPES.find((d) => d.type === dataType);
   if (!dataConfig) {
     throw new Error(`Unknown data type: ${dataType}`);
   }
@@ -547,7 +627,7 @@ export async function triggerDataTypeRefresh(dataType) {
     } else {
       results.failed.push(state);
     }
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
   return results;
@@ -562,5 +642,5 @@ export default {
   triggerDataTypeRefresh,
   getSchedulerStatus,
   PRIORITY_STATES,
-  US_STATES
+  US_STATES,
 };

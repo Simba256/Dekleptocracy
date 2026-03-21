@@ -9,18 +9,20 @@ import { signupSchema, loginSchema, refreshSchema } from '../validators/auth.js'
 const router = express.Router();
 
 const normalizePreferences = (preferences = {}) => {
-  const toArray = (value) => Array.isArray(value)
-    ? value.map(item => (typeof item === 'string' ? item.trim() : String(item || '')))
-        .filter(Boolean)
-        .slice(0, 12)
-    : [];
+  const toArray = (value) =>
+    Array.isArray(value)
+      ? value
+          .map((item) => (typeof item === 'string' ? item.trim() : String(item || '')))
+          .filter(Boolean)
+          .slice(0, 12)
+      : [];
 
   const toString = (value) => (typeof value === 'string' ? value.trim() : '');
 
   return {
     conversationStyles: toArray(preferences.conversationStyles),
     topicsOfInterest: toArray(preferences.topicsOfInterest),
-    householdExpenseFocus: toString(preferences.householdExpenseFocus)
+    householdExpenseFocus: toString(preferences.householdExpenseFocus),
   };
 };
 
@@ -31,7 +33,7 @@ const mergePreferences = (existing = {}, incoming = {}) => ({
   topicsOfInterest: incoming.topicsOfInterest?.length
     ? incoming.topicsOfInterest
     : existing.topicsOfInterest || [],
-  householdExpenseFocus: incoming.householdExpenseFocus || existing.householdExpenseFocus || ''
+  householdExpenseFocus: incoming.householdExpenseFocus || existing.householdExpenseFocus || '',
 });
 
 // Signup route
@@ -43,14 +45,14 @@ router.post('/signup', validate(signupSchema), async (req, res) => {
     if (!fullName || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields'
+        message: 'Please provide all required fields',
       });
     }
 
     if (!agreeToTerms) {
       return res.status(400).json({
         success: false,
-        message: 'You must agree to terms and conditions'
+        message: 'You must agree to terms and conditions',
       });
     }
 
@@ -59,7 +61,7 @@ router.post('/signup', validate(signupSchema), async (req, res) => {
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: 'User with this email already exists'
+        message: 'User with this email already exists',
       });
     }
 
@@ -69,7 +71,7 @@ router.post('/signup', validate(signupSchema), async (req, res) => {
       email: email.toLowerCase(),
       password,
       agreeToTerms,
-      preferences: normalizePreferences(preferences)
+      preferences: normalizePreferences(preferences),
     });
 
     await user.save();
@@ -88,19 +90,19 @@ router.post('/signup', validate(signupSchema), async (req, res) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        preferences: user.preferences
-      }
+        preferences: user.preferences,
+      },
     });
   } catch (error) {
     console.error('Signup error:', error);
 
     // Handle validation errors
     if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
         message: errors[0] || 'Validation error',
-        errors
+        errors,
       });
     }
 
@@ -108,14 +110,14 @@ router.post('/signup', validate(signupSchema), async (req, res) => {
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
-        message: 'User with this email already exists'
+        message: 'User with this email already exists',
       });
     }
 
     // Generic error
     res.status(500).json({
       success: false,
-      message: 'Server error. Please try again later.'
+      message: 'Server error. Please try again later.',
     });
   }
 });
@@ -129,7 +131,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password'
+        message: 'Please provide email and password',
       });
     }
 
@@ -138,7 +140,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
       });
     }
 
@@ -147,7 +149,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
       });
     }
 
@@ -167,14 +169,14 @@ router.post('/login', validate(loginSchema), async (req, res) => {
         email: user.email,
         profilePhoto: user.profilePhoto,
         isGoogleUser: user.isGoogleUser,
-        preferences: user.preferences
-      }
+        preferences: user.preferences,
+      },
     });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error. Please try again later.'
+      message: 'Server error. Please try again later.',
     });
   }
 });
@@ -188,7 +190,7 @@ router.post('/google', async (req, res) => {
     if (!credential) {
       return res.status(400).json({
         success: false,
-        message: 'Google credential is required'
+        message: 'Google credential is required',
       });
     }
 
@@ -198,7 +200,7 @@ router.post('/google', async (req, res) => {
     if (!process.env.GOOGLE_CLIENT_ID) {
       return res.status(500).json({
         success: false,
-        message: 'Google OAuth is not configured on the server'
+        message: 'Google OAuth is not configured on the server',
       });
     }
 
@@ -214,7 +216,7 @@ router.post('/google', async (req, res) => {
       return res.status(401).json({
         success: false,
         message: 'Invalid Google token',
-        error: error.message
+        error: error.message,
       });
     }
 
@@ -252,7 +254,7 @@ router.post('/google', async (req, res) => {
           agreeToTerms: true,
           preferences: normalizedPreferences,
           password: undefined,
-          profilePhoto: picture || null
+          profilePhoto: picture || null,
         });
         await user.save();
         isNewUser = true;
@@ -265,7 +267,8 @@ router.post('/google', async (req, res) => {
       }
     }
 
-    const hasIncomingPreferences = normalizedPreferences.conversationStyles.length ||
+    const hasIncomingPreferences =
+      normalizedPreferences.conversationStyles.length ||
       normalizedPreferences.topicsOfInterest.length ||
       normalizedPreferences.householdExpenseFocus;
 
@@ -300,16 +303,16 @@ router.post('/google', async (req, res) => {
         email: user.email,
         profilePhoto: user.profilePhoto || picture || null,
         isGoogleUser: true,
-        preferences: user.preferences
+        preferences: user.preferences,
       },
-      isNewUser
+      isNewUser,
     });
   } catch (error) {
     console.error('Google OAuth error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error. Please try again later.',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -322,7 +325,7 @@ router.post('/refresh', validate(refreshSchema), async (req, res) => {
     if (!refreshToken) {
       return res.status(400).json({
         success: false,
-        message: 'Refresh token is required'
+        message: 'Refresh token is required',
       });
     }
 
@@ -332,14 +335,14 @@ router.post('/refresh', validate(refreshSchema), async (req, res) => {
     } catch (error) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid or expired refresh token'
+        message: 'Invalid or expired refresh token',
       });
     }
 
     if (decoded.type !== 'refresh') {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token type'
+        message: 'Invalid token type',
       });
     }
 
@@ -347,7 +350,7 @@ router.post('/refresh', validate(refreshSchema), async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -355,7 +358,7 @@ router.post('/refresh', validate(refreshSchema), async (req, res) => {
     if (decoded.version !== user.tokenVersion) {
       return res.status(401).json({
         success: false,
-        message: 'Token has been revoked'
+        message: 'Token has been revoked',
       });
     }
 
@@ -366,13 +369,13 @@ router.post('/refresh', validate(refreshSchema), async (req, res) => {
     res.status(200).json({
       success: true,
       token: newToken,
-      refreshToken: newRefreshToken
+      refreshToken: newRefreshToken,
     });
   } catch (error) {
     console.error('Token refresh error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error during token refresh'
+      message: 'Server error during token refresh',
     });
   }
 });
@@ -384,7 +387,7 @@ router.post('/revoke', verifyToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -393,13 +396,13 @@ router.post('/revoke', verifyToken, async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'All refresh tokens revoked'
+      message: 'All refresh tokens revoked',
     });
   } catch (error) {
     console.error('Token revocation error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error during token revocation'
+      message: 'Server error during token revocation',
     });
   }
 });
@@ -413,7 +416,7 @@ router.get('/verify', verifyToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -424,14 +427,14 @@ router.get('/verify', verifyToken, async (req, res) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        preferences: user.preferences
-      }
+        preferences: user.preferences,
+      },
     });
   } catch (error) {
     console.error('Token verification error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error during token verification'
+      message: 'Server error during token verification',
     });
   }
 });

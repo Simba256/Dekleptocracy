@@ -47,7 +47,10 @@ const Dashboard = () => {
         // Cache profile data
         localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(data.user));
         if (data.user.preferences) {
-          localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(data.user.preferences));
+          localStorage.setItem(
+            STORAGE_KEYS.USER_PREFERENCES,
+            JSON.stringify(data.user.preferences),
+          );
         }
 
         setProfile(data.user);
@@ -67,29 +70,37 @@ const Dashboard = () => {
 
   const stats = [
     { label: 'Household focus', value: prefs.householdExpenseFocus || 'Not set', trend: '' },
-    { label: 'Member since', value: profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : '—', trend: '' }
+    {
+      label: 'Member since',
+      value: profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : '—',
+      trend: '',
+    },
   ];
 
   const watchlist = topics.length
     ? topics.map((topic, idx) => ({
         title: topic,
         detail: 'Tracking latest policy moves and news for this topic',
-        badge: idx === 0 ? 'Priority' : 'Watch'
+        badge: idx === 0 ? 'Priority' : 'Watch',
       }))
     : [
-        { title: 'No topics selected', detail: 'Update your preferences to see a personalized watchlist.', badge: 'Info' }
+        {
+          title: 'No topics selected',
+          detail: 'Update your preferences to see a personalized watchlist.',
+          badge: 'Info',
+        },
       ];
 
   const tasks = [
     { title: 'Sync preferences', detail: 'Make sure survey choices are saved', badge: 'Ready' },
     { title: 'Try a guided prompt', detail: 'Ask for a weekly budget summary', badge: '1 min' },
-    { title: 'Review latest chat', detail: 'Pick up where you left off', badge: 'Resume' }
+    { title: 'Review latest chat', detail: 'Pick up where you left off', badge: 'Resume' },
   ];
 
   const quickPrompts = [
     'How did tariffs change my grocery bill?',
     'Show me fuel price trends this week',
-    'What taxes impact my take-home pay?'
+    'What taxes impact my take-home pay?',
   ];
 
   const handlePromptSubmit = () => {
@@ -118,8 +129,12 @@ const Dashboard = () => {
               <p>{error}</p>
             </div>
             <div className="hero-actions">
-              <button className="pill primary" onClick={() => navigate('/chatbot/login')}>Login</button>
-              <button className="pill" onClick={() => navigate('/chatbot/create-account')}>Create Account</button>
+              <button className="pill primary" onClick={() => navigate('/chatbot/login')}>
+                Login
+              </button>
+              <button className="pill" onClick={() => navigate('/chatbot/create-account')}>
+                Create Account
+              </button>
             </div>
           </div>
         </div>
@@ -136,9 +151,15 @@ const Dashboard = () => {
             <p>Snapshot of your policy signals, topics, and next actions.</p>
           </div>
           <div className="hero-actions">
-            <button className="pill primary" onClick={() => navigate('/chatbot')}>Open Chatbot</button>
-            <button className="pill" onClick={() => navigate('/profile')}>View Profile</button>
-            <button className="pill" onClick={() => navigate('/survey')}>Update Preferences</button>
+            <button className="pill primary" onClick={() => navigate('/chatbot')}>
+              Open Chatbot
+            </button>
+            <button className="pill" onClick={() => navigate('/profile')}>
+              View Profile
+            </button>
+            <button className="pill" onClick={() => navigate('/survey')}>
+              Update Preferences
+            </button>
           </div>
         </div>
 
@@ -201,7 +222,9 @@ const Dashboard = () => {
               {topics.length ? (
                 <div className="pill-row">
                   {topics.map((topic) => (
-                    <span key={topic} className="pill">{topic}</span>
+                    <span key={topic} className="pill">
+                      {topic}
+                    </span>
                   ))}
                 </div>
               ) : (
@@ -213,7 +236,9 @@ const Dashboard = () => {
               {styles.length ? (
                 <div className="pill-row">
                   {styles.map((style) => (
-                    <span key={style} className="pill">{style}</span>
+                    <span key={style} className="pill">
+                      {style}
+                    </span>
                   ))}
                 </div>
               ) : (

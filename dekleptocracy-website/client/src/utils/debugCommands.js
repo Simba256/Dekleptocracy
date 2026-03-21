@@ -45,7 +45,7 @@ export const initDebugCommands = () => {
       const vitals = ['CLS', 'FCP', 'LCP', 'TTFB', 'INP'];
       const latest = {};
 
-      metrics.forEach(m => {
+      metrics.forEach((m) => {
         if (vitals.includes(m.name)) {
           latest[m.name] = { value: m.value, rating: m.rating };
         }
@@ -60,7 +60,7 @@ export const initDebugCommands = () => {
      */
     showAPIHealth: () => {
       const metrics = getMetrics();
-      const apiMetrics = metrics.filter(m => m.name === 'api_health' || m.name === 'api_request');
+      const apiMetrics = metrics.filter((m) => m.name === 'api_health' || m.name === 'api_request');
       console.table(apiMetrics);
       return `${apiMetrics.length} API metrics`;
     },
@@ -72,7 +72,7 @@ export const initDebugCommands = () => {
       clearMetrics();
       clearErrors();
       return 'All debug data cleared';
-    }
+    },
   };
 
   console.log('[Dev] Debug commands available: window.__DEKLEPTOCRACY_DEBUG__');

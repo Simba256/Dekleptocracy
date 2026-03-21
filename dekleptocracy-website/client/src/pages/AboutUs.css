@@ -100,15 +100,15 @@
   .about-us-page {
     padding: 90px 0 0;
   }
-  
+
   .about-us-content {
     gap: 40px;
   }
-  
+
   .about-title {
     font-size: 40px;
   }
-  
+
   .about-image-container {
     height: 400px;
   }
@@ -118,20 +118,20 @@
   .about-us-page {
     padding: 85px 0 0;
   }
-  
+
   .about-us-content {
     grid-template-columns: 1fr;
     gap: 32px;
   }
-  
+
   .about-title {
     font-size: 36px;
   }
-  
+
   .about-paragraph {
     font-size: 15px;
   }
-  
+
   .about-image-container {
     height: 350px;
     order: -1; /* Image first on mobile */
@@ -142,20 +142,20 @@
   .about-us-page {
     padding: 75px 0 0;
   }
-  
+
   .about-title {
     font-size: 32px;
   }
-  
+
   .about-paragraph {
     font-size: 14px;
   }
-  
+
   .ask-ai-button {
     padding: 14px 28px;
     font-size: 15px;
   }
-  
+
   .about-image-container {
     height: 300px;
   }
@@ -268,35 +268,35 @@
   .mission-vision-section {
     padding: 60px 0;
   }
-  
+
   .mission-vision-title {
     font-size: 40px;
   }
-  
+
   .mission-vision-subtitle {
     margin-bottom: 35px;
   }
-  
+
   .mission-vision-grid {
     gap: 32px;
   }
-  
+
   .card-image-wrapper {
     height: 240px;
     margin-bottom: 25px;
   }
-  
+
   .card-icon-circle {
     width: 70px;
     height: 70px;
     bottom: -35px;
   }
-  
+
   .card-icon-circle svg {
     width: 32px;
     height: 32px;
   }
-  
+
   .card-text-content {
     padding: 28px 28px 28px;
   }
@@ -306,50 +306,50 @@
   .mission-vision-section {
     padding: 40px 0;
   }
-  
+
   .mission-vision-container {
     padding: 0 16px;
   }
-  
+
   .mission-vision-title {
     font-size: 36px;
     margin-bottom: 12px;
   }
-  
+
   .mission-vision-subtitle {
     font-size: 15px;
     margin-bottom: 30px;
   }
-  
+
   .mission-vision-grid {
     grid-template-columns: 1fr;
     gap: 60px;
   }
-  
+
   .card-image-wrapper {
     height: 220px;
     margin-bottom: 25px;
   }
-  
+
   .card-icon-circle {
     width: 70px;
     height: 70px;
     bottom: -35px;
   }
-  
+
   .card-icon-circle svg {
     width: 32px;
     height: 32px;
   }
-  
+
   .card-text-content {
     padding: 24px 24px 24px;
   }
-  
+
   .card-title-text {
     font-size: 22px;
   }
-  
+
   .card-description-text {
     font-size: 14px;
   }
@@ -359,36 +359,36 @@
   .mission-vision-title {
     font-size: 32px;
   }
-  
+
   .mission-vision-subtitle {
     font-size: 14px;
     margin-bottom: 25px;
   }
-  
+
   .card-image-wrapper {
     height: 180px;
     margin-bottom: 22px;
   }
-  
+
   .card-icon-circle {
     width: 65px;
     height: 65px;
     bottom: -32px;
   }
-  
+
   .card-icon-circle svg {
     width: 30px;
     height: 30px;
   }
-  
+
   .card-text-content {
     padding: 20px 20px 20px;
   }
-  
+
   .card-title-text {
     font-size: 20px;
   }
-  
+
   .card-description-text {
     font-size: 13px;
   }
@@ -781,12 +781,12 @@
 }
 
 /* What Sets Us Apart Section */
-  .what-sets-us-apart-section {
-    padding: 80px 0;
-    background-color: var(--color-coral-light);
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-  }
+.what-sets-us-apart-section {
+  padding: 80px 0;
+  background-color: var(--color-coral-light);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
 
 .what-sets-us-apart-container {
   max-width: 1200px;
@@ -897,7 +897,6 @@
     font-size: 14px;
   }
 }
-
 
 /* About Us CTA Section */
 .about-cta-section {

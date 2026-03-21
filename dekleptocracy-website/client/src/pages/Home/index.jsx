@@ -15,17 +15,29 @@ import {
   BudgetImpactSkeleton,
   PriceMapSkeleton,
   SocialPostsSkeleton,
-  CTASkeleton
+  CTASkeleton,
 } from '../../components/skeletons/HomepageSkeleton';
 import './styles/index.css';
 
 // Lazy load below-fold sections for better initial load performance
-const WalletShocksSection = lazy(() => import('./sections/WalletShocksSection').then(m => ({ default: m.WalletShocksSection })));
-const CostDriversSection = lazy(() => import('./sections/CostDriversSection').then(m => ({ default: m.CostDriversSection })));
-const BudgetImpactSection = lazy(() => import('./sections/BudgetImpactSection').then(m => ({ default: m.BudgetImpactSection })));
-const PriceMapSection = lazy(() => import('./sections/PriceMapSection').then(m => ({ default: m.PriceMapSection })));
-const SocialPostsSection = lazy(() => import('./sections/SocialPostsSection').then(m => ({ default: m.SocialPostsSection })));
-const CTASection = lazy(() => import('./sections/CTASection').then(m => ({ default: m.CTASection })));
+const WalletShocksSection = lazy(() =>
+  import('./sections/WalletShocksSection').then((m) => ({ default: m.WalletShocksSection })),
+);
+const CostDriversSection = lazy(() =>
+  import('./sections/CostDriversSection').then((m) => ({ default: m.CostDriversSection })),
+);
+const BudgetImpactSection = lazy(() =>
+  import('./sections/BudgetImpactSection').then((m) => ({ default: m.BudgetImpactSection })),
+);
+const PriceMapSection = lazy(() =>
+  import('./sections/PriceMapSection').then((m) => ({ default: m.PriceMapSection })),
+);
+const SocialPostsSection = lazy(() =>
+  import('./sections/SocialPostsSection').then((m) => ({ default: m.SocialPostsSection })),
+);
+const CTASection = lazy(() =>
+  import('./sections/CTASection').then((m) => ({ default: m.CTASection })),
+);
 
 function HomeContent() {
   const { state, actions } = useHomepage();
@@ -45,10 +57,7 @@ function HomeContent() {
     );
   }
 
-  const structuredData = [
-    generateWebsiteSchema(),
-    generateWebAppSchema()
-  ];
+  const structuredData = [generateWebsiteSchema(), generateWebAppSchema()];
 
   return (
     <div className="home-page">

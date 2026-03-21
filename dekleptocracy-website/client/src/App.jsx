@@ -32,7 +32,7 @@ const Services = lazy(() => import('./pages/Services'));
 function AppContent() {
   const location = useLocation();
   const hiddenFooterRoutes = ['/chatbot', '/chatbot/debug'];
-  const shouldHideFooter = hiddenFooterRoutes.some(route => location.pathname.startsWith(route));
+  const shouldHideFooter = hiddenFooterRoutes.some((route) => location.pathname.startsWith(route));
 
   return (
     <>

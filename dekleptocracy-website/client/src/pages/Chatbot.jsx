@@ -29,38 +29,78 @@ const saveChatHistory = (history) => {
 
 // Fallback title generation using keyword extraction (used if LLM fails)
 const generateChatTitleFallback = (messages) => {
-  const firstUserMessage = messages.find(msg => msg.role === 'user');
+  const firstUserMessage = messages.find((msg) => msg.role === 'user');
   if (!firstUserMessage) return 'New Chat';
 
   const content = firstUserMessage.content;
 
   // Remove common question words and filler words
-  const fillerWords = ['what', 'how', 'why', 'when', 'where', 'who', 'which', 'is', 'are', 'was', 'were',
-                       'the', 'a', 'an', 'can', 'could', 'would', 'should', 'do', 'does', 'did',
-                       'have', 'has', 'had', 'be', 'been', 'being', 'me', 'you', 'please', 'tell',
-                       'show', 'give', 'explain', 'about', 'for', 'of', 'to', 'in', 'on', 'at'];
+  const fillerWords = [
+    'what',
+    'how',
+    'why',
+    'when',
+    'where',
+    'who',
+    'which',
+    'is',
+    'are',
+    'was',
+    'were',
+    'the',
+    'a',
+    'an',
+    'can',
+    'could',
+    'would',
+    'should',
+    'do',
+    'does',
+    'did',
+    'have',
+    'has',
+    'had',
+    'be',
+    'been',
+    'being',
+    'me',
+    'you',
+    'please',
+    'tell',
+    'show',
+    'give',
+    'explain',
+    'about',
+    'for',
+    'of',
+    'to',
+    'in',
+    'on',
+    'at',
+  ];
 
   // Extract sentences (split by question marks or periods)
-  const sentences = content.split(/[.?!]+/).filter(s => s.trim().length > 0);
+  const sentences = content.split(/[.?!]+/).filter((s) => s.trim().length > 0);
   const firstSentence = sentences[0].trim();
 
   // Split into words and filter
-  const words = firstSentence.toLowerCase()
+  const words = firstSentence
+    .toLowerCase()
     .split(/\s+/)
-    .filter(word => {
+    .filter((word) => {
       // Remove punctuation
       const cleanWord = word.replace(/[^\w\s]/g, '');
       // Keep words that are not filler words and are at least 3 chars
       return cleanWord.length >= 3 && !fillerWords.includes(cleanWord);
     })
-    .map(word => word.replace(/[^\w\s]/g, '')); // Clean punctuation
+    .map((word) => word.replace(/[^\w\s]/g, '')); // Clean punctuation
 
   // If we extracted meaningful words, create a title from them
   if (words.length > 0) {
     // Capitalize first letter of each word
-    const titleWords = words.slice(0, 6).map(word =>
-      word.charAt(0).toUpperCase() + word.slice(1)
-    );
+    const titleWords = words
+      .slice(0, 6)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
 
     const generatedTitle = titleWords.join(' ');
 
@@ -79,7 +119,7 @@ const generateChatTitleFallback = (messages) => {
 
 // LLM-powered title generation using gpt-3.5-turbo
 const generateChatTitle = async (messages, mcpServerUrl) => {
-  const firstUserMessage = messages.find(msg => msg.role === 'user');
+  const firstUserMessage = messages.find((msg) => msg.role === 'user');
   if (!firstUserMessage) return 'New Chat';
 
   try {
@@ -90,9 +130,9 @@ const generateChatTitle = async (messages, mcpServerUrl) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: firstUserMessage.content
+        message: firstUserMessage.content,
       }),
-      signal: AbortSignal.timeout(5000) // 5 second timeout
+      signal: AbortSignal.timeout(5000), // 5 second timeout
     });
 
     if (!response.ok) {
@@ -121,7 +161,8 @@ const Chatbot = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?',
+      content:
+        "Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?",
       timestamp: new Date(),
     },
   ]);
@@ -144,9 +185,11 @@ const Chatbot = () => {
   // MCP Server URL - uses environment variable in production, localhost in development
   const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8000';
   // Import API_URL from shared utility for consistent production/development handling
-  const API_URL = (typeof window !== 'undefined' && window.location.hostname !== 'localhost')
-    ? (import.meta.env.VITE_API_URL_PRODUCTION || 'https://node-server-production-7f39.up.railway.app')
-    : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
+  const API_URL =
+    typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+      ? import.meta.env.VITE_API_URL_PRODUCTION ||
+        'https://node-server-production-7f39.up.railway.app'
+      : import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   // Check authentication on mount - optimized for speed
   useEffect(() => {
@@ -199,8 +242,8 @@ const Chatbot = () => {
         // Fetch fresh data in background
         const response = await fetch(`${API_URL}/api/user/profile`, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -227,7 +270,8 @@ const Chatbot = () => {
     if (userLocation && messages.length === 1 && messages[0].id === '1') {
       // Update the initial welcome message with location context
       const locationDisplay = userLocation === 'nationwide' ? 'All States' : userLocation;
-      const locationContext = userLocation === 'nationwide' ? 'nationwide' : `${userLocation}-specific`;
+      const locationContext =
+        userLocation === 'nationwide' ? 'nationwide' : `${userLocation}-specific`;
 
       const updatedWelcomeMessage = `Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:
 
@@ -241,10 +285,12 @@ I see you're looking at **${locationDisplay}** data. When you ask about prices o
 
 How can I help you today?`;
 
-      setMessages([{
-        ...messages[0],
-        content: updatedWelcomeMessage
-      }]);
+      setMessages([
+        {
+          ...messages[0],
+          content: updatedWelcomeMessage,
+        },
+      ]);
     }
   }, [userLocation]); // Only run when userLocation changes
 
@@ -260,7 +306,7 @@ How can I help you today?`;
 
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        setInput(prev => prev + (prev ? ' ' : '') + transcript);
+        setInput((prev) => prev + (prev ? ' ' : '') + transcript);
         setIsListening(false);
       };
 
@@ -294,7 +340,8 @@ How can I help you today?`;
 
   // Save current chat to history after messages change
   useEffect(() => {
-    if (messages.length > 1) { // More than just the welcome message
+    if (messages.length > 1) {
+      // More than just the welcome message
       saveCurrentChat();
     }
   }, [messages]);
@@ -306,12 +353,15 @@ How can I help you today?`;
     // Generate title using LLM (with fallback to keyword extraction)
     const title = await generateChatTitle(messages, MCP_SERVER_URL);
 
-    const existingChatIndex = history.chats.findIndex(chat => chat.id === chatId);
+    const existingChatIndex = history.chats.findIndex((chat) => chat.id === chatId);
     const chatData = {
       id: chatId,
       title: title,
       messages: messages,
-      createdAt: existingChatIndex >= 0 ? history.chats[existingChatIndex].createdAt : new Date().toISOString(),
+      createdAt:
+        existingChatIndex >= 0
+          ? history.chats[existingChatIndex].createdAt
+          : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
@@ -332,13 +382,15 @@ How can I help you today?`;
 
   const loadChat = (chatId) => {
     const history = getChatHistory();
-    const chat = history.chats.find(c => c.id === chatId);
+    const chat = history.chats.find((c) => c.id === chatId);
 
     if (chat) {
-      setMessages(chat.messages.map(msg => ({
-        ...msg,
-        timestamp: new Date(msg.timestamp)
-      })));
+      setMessages(
+        chat.messages.map((msg) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        })),
+      );
       setCurrentChatId(chatId);
       setShowHistory(false);
     }
@@ -346,7 +398,8 @@ How can I help you today?`;
 
   const startNewChat = () => {
     const locationDisplay = userLocation === 'nationwide' ? 'All States' : userLocation;
-    const locationContext = userLocation === 'nationwide' ? 'nationwide' : `${userLocation}-specific`;
+    const locationContext =
+      userLocation === 'nationwide' ? 'nationwide' : `${userLocation}-specific`;
 
     const welcomeMessage = userLocation
       ? `Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:
@@ -360,7 +413,7 @@ How can I help you today?`;
 I see you're looking at **${locationDisplay}** data. When you ask about prices or impacts without specifying a location, I'll provide ${locationContext} information by default.
 
 How can I help you today?`
-      : 'Hello! I\'m your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?';
+      : "Hello! I'm your AI assistant with access to comprehensive trade and tariff analysis tools. I can help you with:\n\n• Trade statistics and economic data\n• Tariff rates and policy impacts\n• Stock market and financial information\n• News and trade policy updates\n• General questions about policy impacts on your budget\n\nHow can I help you today?";
 
     setMessages([
       {
@@ -379,7 +432,7 @@ How can I help you today?`
     event.stopPropagation();
 
     const history = getChatHistory();
-    history.chats = history.chats.filter(chat => chat.id !== chatId);
+    history.chats = history.chats.filter((chat) => chat.id !== chatId);
 
     if (history.currentChatId === chatId) {
       history.currentChatId = null;
@@ -423,7 +476,7 @@ How can I help you today?`
       'Analyzing your question...',
       'Searching trade data...',
       'Processing information...',
-      'Generating response...'
+      'Generating response...',
     ];
     let statusIndex = 0;
     setLoadingStatus(statusMessages[0]);
@@ -450,23 +503,25 @@ How can I help you today?`
         content: `You are an AI assistant helping users understand how government policies, tariffs, and economic decisions impact their budget and daily expenses.
 
 LOCATION CONTEXT HANDLING:
-${userLocation
-  ? `- User's selected location: ${userLocation}
+${
+  userLocation
+    ? `- User's selected location: ${userLocation}
 - When the user asks about prices, costs, or impacts WITHOUT specifying a location, use ${userLocation} as the default context
 - PRIORITY ORDER for location context:
   1. HIGHEST: Locations explicitly mentioned in the user's question (e.g., "in Texas", "California prices")
   2. SECOND: User's saved location (${userLocation}) when no location is mentioned
   3. Use nationwide/general data only when appropriate or when comparing multiple states`
-  : `- User has not selected a specific location yet
+    : `- User has not selected a specific location yet
 - When asked about prices or impacts, provide nationwide/general information
 - If specific location data would be helpful, politely suggest that they can set their location in their profile for more personalized insights
-- PRIORITY: Always use locations explicitly mentioned in the user's question first`}
+- PRIORITY: Always use locations explicitly mentioned in the user's question first`
+}
 
 IMPORTANT GUIDELINES:
 - When analyzing prices, tariffs, or policy impacts, always consider the location context
 - If you find state-specific data that's relevant to the user's location, prioritize showing it
 - Be clear about which location your data refers to in your responses
-- If data for the user's location is not available, mention this and provide the closest relevant data`
+- If data for the user's location is not available, mention this and provide the closest relevant data`,
       };
 
       const messagesWithContext = [systemMessage, ...conversationMessages];
@@ -480,9 +535,9 @@ IMPORTANT GUIDELINES:
           messages: messagesWithContext,
           use_mcp_tools: true,
           // Context window management parameters (optional)
-          max_iterations: 10,          // Maximum tool calling iterations
-          max_total_tools: 8,           // Maximum total tools to call
-          preserve_recent_messages: 3,  // Number of recent messages to preserve when truncating
+          max_iterations: 10, // Maximum tool calling iterations
+          max_total_tools: 8, // Maximum total tools to call
+          preserve_recent_messages: 3, // Number of recent messages to preserve when truncating
           // max_context_tokens can be set to limit context size (uncomment to use)
           // max_context_tokens: 50000,
         }),
@@ -505,10 +560,9 @@ IMPORTANT GUIDELINES:
                 content: data.content || data.response || 'No response generated',
                 isLoading: false,
               }
-            : msg
-        )
+            : msg,
+        ),
       );
-
     } catch (error) {
       clearInterval(statusInterval);
       if (error.name !== 'AbortError') {
@@ -520,8 +574,8 @@ IMPORTANT GUIDELINES:
                   content: `Error: ${error.message || 'Failed to get response. Make sure the MCP server is running on ' + MCP_SERVER_URL}`,
                   isLoading: false,
                 }
-              : msg
-          )
+              : msg,
+          ),
         );
       }
     } finally {
@@ -555,24 +609,27 @@ IMPORTANT GUIDELINES:
   };
 
   const copyMessageToClipboard = (content) => {
-    navigator.clipboard.writeText(content).then(() => {
-      setShowCopyNotification(true);
-      setTimeout(() => setShowCopyNotification(false), 3000);
-    }).catch(() => {
-      // Silent fail for clipboard errors
-    });
+    navigator.clipboard
+      .writeText(content)
+      .then(() => {
+        setShowCopyNotification(true);
+        setTimeout(() => setShowCopyNotification(false), 3000);
+      })
+      .catch(() => {
+        // Silent fail for clipboard errors
+      });
   };
 
   const regenerateResponse = async (messageId) => {
     // Find the user message that triggered this response
-    const messageIndex = messages.findIndex(msg => msg.id === messageId);
+    const messageIndex = messages.findIndex((msg) => msg.id === messageId);
     if (messageIndex <= 0) return;
 
     const userMessage = messages[messageIndex - 1];
     if (userMessage.role !== 'user') return;
 
     // Remove the assistant message and regenerate
-    setMessages(prev => prev.slice(0, messageIndex));
+    setMessages((prev) => prev.slice(0, messageIndex));
     await submitMessage(userMessage.content);
   };
 
@@ -584,8 +641,8 @@ IMPORTANT GUIDELINES:
 
   const exportChat = () => {
     const chatContent = messages
-      .filter(msg => msg.id !== '1') // Exclude welcome message
-      .map(msg => `${msg.role === 'user' ? 'You' : 'AI Assistant'}: ${msg.content}`)
+      .filter((msg) => msg.id !== '1') // Exclude welcome message
+      .map((msg) => `${msg.role === 'user' ? 'You' : 'AI Assistant'}: ${msg.content}`)
       .join('\n\n');
 
     const blob = new Blob([chatContent], { type: 'text/plain' });
@@ -619,26 +676,26 @@ IMPORTANT GUIDELINES:
       icon: '📊',
       title: 'Tariff Analysis',
       description: 'Understand how tariffs affect prices in your state',
-      query: 'How do tariffs impact prices in my state?'
+      query: 'How do tariffs impact prices in my state?',
     },
     {
       icon: '💰',
       title: 'Price Comparisons',
       description: 'Compare local vs national average costs',
-      query: 'Compare prices in my state with national average'
+      query: 'Compare prices in my state with national average',
     },
     {
       icon: '📈',
       title: 'Market Trends',
       description: 'Track stock market and economic indicators',
-      query: 'What are the current market trends?'
+      query: 'What are the current market trends?',
     },
     {
       icon: '🏛️',
       title: 'Policy Impact',
       description: 'See how government decisions affect your budget',
-      query: 'How do recent policies affect my household budget?'
-    }
+      query: 'How do recent policies affect my household budget?',
+    },
   ];
 
   // Generate contextual follow-up questions based on the conversation
@@ -648,35 +705,31 @@ IMPORTANT GUIDELINES:
     if (content.includes('tariff') || content.includes('tax')) {
       return [
         'How will this affect grocery prices?',
-        'Compare with last year\'s data',
-        'Show me state-by-state differences'
+        "Compare with last year's data",
+        'Show me state-by-state differences',
       ];
     } else if (content.includes('price') || content.includes('cost')) {
       return [
-        'What\'s driving these price changes?',
+        "What's driving these price changes?",
         'Show me historical trends',
-        'How does this compare nationally?'
+        'How does this compare nationally?',
       ];
     } else if (content.includes('stock') || content.includes('market')) {
       return [
         'What sectors are most affected?',
         'Show me related companies',
-        'What\'s the outlook for next quarter?'
+        "What's the outlook for next quarter?",
       ];
     } else if (content.includes('budget') || content.includes('impact')) {
       return [
         'Break down the cost increases',
         'What can I do to reduce impact?',
-        'Show me similar cases'
+        'Show me similar cases',
       ];
     }
 
     // Default follow-ups
-    return [
-      'Tell me more about this',
-      'Show me related data',
-      'How does this affect my state?'
-    ];
+    return ['Tell me more about this', 'Show me related data', 'How does this affect my state?'];
   };
 
   // Memoized function to group chats by date
@@ -689,13 +742,13 @@ IMPORTANT GUIDELINES:
     lastWeek.setDate(lastWeek.getDate() - 7);
 
     const groups = {
-      'Today': [],
-      'Yesterday': [],
+      Today: [],
+      Yesterday: [],
       'Last 7 Days': [],
-      'Older': []
+      Older: [],
     };
 
-    chats.forEach(chat => {
+    chats.forEach((chat) => {
       const chatDate = new Date(chat.updatedAt);
       const chatDay = new Date(chatDate.getFullYear(), chatDate.getMonth(), chatDate.getDate());
 
@@ -807,7 +860,12 @@ IMPORTANT GUIDELINES:
                           title="Delete chat"
                           aria-label={`Delete chat: ${chat.title}`}
                         >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
                             <polyline points="3 6 5 6 21 6" />
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                           </svg>
@@ -824,18 +882,11 @@ IMPORTANT GUIDELINES:
 
       {/* Overlay — Mobile only */}
       {showHistory && (
-        <div
-          className="history-overlay-mobile"
-          onClick={() => setShowHistory(false)}
-        />
+        <div className="history-overlay-mobile" onClick={() => setShowHistory(false)} />
       )}
 
       {/* Copy Notification */}
-      {showCopyNotification && (
-        <div className="copy-notification">
-          Copied to clipboard
-        </div>
-      )}
+      {showCopyNotification && <div className="copy-notification">Copied to clipboard</div>}
 
       {/* Main Chat Container */}
       <div className="chatbot-main">
@@ -844,7 +895,14 @@ IMPORTANT GUIDELINES:
           <div className="chatbot-header">
             <div className="header-inner">
               <span className="header-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  width="14"
+                  height="14"
+                >
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
@@ -885,93 +943,102 @@ IMPORTANT GUIDELINES:
               </div>
             ) : (
               /* Message List — filter out welcome message */
-              messages.filter(msg => msg.id !== '1').map((message) => (
-                <div
-                  key={message.id}
-                  className={`message ${message.role === 'user' ? 'message-user' : 'message-assistant'}`}
-                >
-                  <div className="message-avatar">
-                    {message.role === 'user' ? '👤' : '🤖'}
-                  </div>
-                  <div className="message-content">
-                    <div className="message-text">
-                      {message.isLoading ? (
-                        <div className="loading-indicator">
-                          <div className="loading-dots">
-                            <span className="loading-dot"></span>
-                            <span className="loading-dot"></span>
-                            <span className="loading-dot"></span>
-                          </div>
-                        </div>
-                      ) : (
-                        <ReactMarkdown
-                          className="markdown-content"
-                          remarkPlugins={[remarkGfm]}
-                        >
-                          {message.content}
-                        </ReactMarkdown>
-                      )}
-                    </div>
-                    <div className="message-time">
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </div>
-                    {!message.isLoading && (
-                      <>
-                        <div className="message-actions">
-                          <button
-                            className="action-btn"
-                            onClick={() => copyMessageToClipboard(message.content)}
-                            title="Copy message"
-                            aria-label="Copy message"
-                          >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                          </button>
-                          {message.role === 'assistant' && (
-                            <button
-                              className="action-btn"
-                              onClick={() => regenerateResponse(message.id)}
-                              title="Regenerate response"
-                              aria-label="Regenerate response"
-                              disabled={isLoading}
-                            >
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="23 4 23 10 17 10"></polyline>
-                                <polyline points="1 20 1 14 7 14"></polyline>
-                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                        {/* Follow-up suggestions — coral text links */}
-                        {message.role === 'assistant' && !isLoading && (
-                          <div className="follow-up-suggestions">
-                            <div className="follow-up-chips">
-                              {generateFollowUps(message).slice(0, 3).map((followUp, idx) => (
-                                <button
-                                  key={idx}
-                                  className="follow-up-chip"
-                                  onClick={() => {
-                                    setInput(followUp);
-                                    setTimeout(() => handleSubmit(new Event('submit')), 100);
-                                  }}
-                                >
-                                  {followUp}
-                                </button>
-                              ))}
+              messages
+                .filter((msg) => msg.id !== '1')
+                .map((message) => (
+                  <div
+                    key={message.id}
+                    className={`message ${message.role === 'user' ? 'message-user' : 'message-assistant'}`}
+                  >
+                    <div className="message-avatar">{message.role === 'user' ? '👤' : '🤖'}</div>
+                    <div className="message-content">
+                      <div className="message-text">
+                        {message.isLoading ? (
+                          <div className="loading-indicator">
+                            <div className="loading-dots">
+                              <span className="loading-dot"></span>
+                              <span className="loading-dot"></span>
+                              <span className="loading-dot"></span>
                             </div>
                           </div>
+                        ) : (
+                          <ReactMarkdown className="markdown-content" remarkPlugins={[remarkGfm]}>
+                            {message.content}
+                          </ReactMarkdown>
                         )}
-                      </>
-                    )}
+                      </div>
+                      <div className="message-time">
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
+                      {!message.isLoading && (
+                        <>
+                          <div className="message-actions">
+                            <button
+                              className="action-btn"
+                              onClick={() => copyMessageToClipboard(message.content)}
+                              title="Copy message"
+                              aria-label="Copy message"
+                            >
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                              </svg>
+                            </button>
+                            {message.role === 'assistant' && (
+                              <button
+                                className="action-btn"
+                                onClick={() => regenerateResponse(message.id)}
+                                title="Regenerate response"
+                                aria-label="Regenerate response"
+                                disabled={isLoading}
+                              >
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
+                                  <polyline points="23 4 23 10 17 10"></polyline>
+                                  <polyline points="1 20 1 14 7 14"></polyline>
+                                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                          {/* Follow-up suggestions — coral text links */}
+                          {message.role === 'assistant' && !isLoading && (
+                            <div className="follow-up-suggestions">
+                              <div className="follow-up-chips">
+                                {generateFollowUps(message)
+                                  .slice(0, 3)
+                                  .map((followUp, idx) => (
+                                    <button
+                                      key={idx}
+                                      className="follow-up-chip"
+                                      onClick={() => {
+                                        setInput(followUp);
+                                        setTimeout(() => handleSubmit(new Event('submit')), 100);
+                                      }}
+                                    >
+                                      {followUp}
+                                    </button>
+                                  ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
             )}
             <div ref={messagesEndRef} />
           </div>

@@ -9,13 +9,16 @@ export const PriceMapSection = memo(function PriceMapSection() {
   const [mapState, setMapState] = useState(null);
 
   // Fallback data for nearby shocks
-  const shocksNearYou = nearbyShocks.length > 0 ? nearbyShocks : [
-    { item: 'Milk +10%', location: 'Chicago, IL', icon: '🥛', bgColor: '#fef3c7' },
-    { item: 'iPhone tax $45', location: 'San Jose, CA', icon: '📱', bgColor: '#dbeafe' },
-    { item: 'Coffee +12%', location: 'Seattle, WA', icon: '☕', bgColor: '#fed7d7' },
-    { item: 'School funding -8.7%', location: 'Seattle, WA', icon: '📚', bgColor: '#d1f4dd' },
-    { item: 'Energy costs +68%', location: 'Seattle, WA', icon: '💡', bgColor: '#fed7d7' }
-  ];
+  const shocksNearYou =
+    nearbyShocks.length > 0
+      ? nearbyShocks
+      : [
+          { item: 'Milk +10%', location: 'Chicago, IL', icon: '🥛', bgColor: '#fef3c7' },
+          { item: 'iPhone tax $45', location: 'San Jose, CA', icon: '📱', bgColor: '#dbeafe' },
+          { item: 'Coffee +12%', location: 'Seattle, WA', icon: '☕', bgColor: '#fed7d7' },
+          { item: 'School funding -8.7%', location: 'Seattle, WA', icon: '📚', bgColor: '#d1f4dd' },
+          { item: 'Energy costs +68%', location: 'Seattle, WA', icon: '💡', bgColor: '#fed7d7' },
+        ];
 
   return (
     <section className="price-map-section">
@@ -70,9 +73,7 @@ export const PriceMapSection = memo(function PriceMapSection() {
                 onSearchChange={(v) => actions.setDropdownSearch('map', v)}
                 variant="map"
               />
-              <button className="explore-btn">
-                Explore {String.fromCharCode(9654)}
-              </button>
+              <button className="explore-btn">Explore {String.fromCharCode(9654)}</button>
             </div>
           </div>
         </div>

@@ -25,12 +25,14 @@ GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ```
 
 **Important Notes:**
+
 1. Replace `<db_password>` in the `MONGODB_URI` with your actual MongoDB Atlas database password.
 2. Generate a secure JWT secret using: `npm run generate-secret` (see JWT Setup below)
 
 #### Google OAuth Setup (Optional)
 
 To enable Google Sign-In:
+
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create OAuth 2.0 credentials (see `GOOGLE_OAUTH_SETUP.md` for detailed instructions)
 3. Add `GOOGLE_CLIENT_ID` to your backend `.env` file
@@ -43,6 +45,7 @@ See `GOOGLE_OAUTH_SETUP.md` in the root directory for complete setup instruction
 Generate a secure JWT secret for authentication:
 
 1. Run the generator script:
+
    ```bash
    npm run generate-secret
    ```
@@ -58,11 +61,13 @@ See `JWT_SETUP.md` for detailed JWT token setup and configuration.
 #### Using MongoDB Atlas (Recommended - Already Configured)
 
 Your MongoDB Atlas connection string is already configured:
+
 - Cluster: `cluster0.fink5ub.mongodb.net`
 - Database User: `hasankamal839_db_user`
 - Database Name: `dekleptocracy`
 
 **Setup Steps:**
+
 1. Get your database password from MongoDB Atlas
 2. Replace `<db_password>` in the `MONGODB_URI` in your `.env` file with your actual password
 3. The connection string format should be:
@@ -71,6 +76,7 @@ Your MongoDB Atlas connection string is already configured:
    ```
 
 **To get your password:**
+
 1. Go to [MongoDB Atlas](https://cloud.mongodb.com/)
 2. Navigate to "Database Access"
 3. Find the user `hasankamal839_db_user`
@@ -79,6 +85,7 @@ Your MongoDB Atlas connection string is already configured:
 
 **Network Access:**
 Make sure your IP address is whitelisted in MongoDB Atlas:
+
 1. Go to "Network Access" in MongoDB Atlas
 2. Click "Add IP Address"
 3. Add your current IP or `0.0.0.0/0` for development (not recommended for production)
@@ -102,9 +109,11 @@ The server will start on `http://localhost:5000` (or the port specified in `.env
 ### Authentication
 
 #### POST `/api/auth/signup`
+
 Create a new user account.
 
 **Request Body:**
+
 ```json
 {
   "fullName": "John Doe",
@@ -115,6 +124,7 @@ Create a new user account.
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "success": true,
@@ -129,6 +139,7 @@ Create a new user account.
 ```
 
 **Error Response (400/409/500):**
+
 ```json
 {
   "success": false,
@@ -137,9 +148,11 @@ Create a new user account.
 ```
 
 #### POST `/api/auth/google`
+
 Login or signup with Google OAuth.
 
 **Request Body:**
+
 ```json
 {
   "credential": "google-id-token"
@@ -147,6 +160,7 @@ Login or signup with Google OAuth.
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -162,9 +176,11 @@ Login or signup with Google OAuth.
 ```
 
 #### POST `/api/auth/login`
+
 Login with email and password.
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -173,6 +189,7 @@ Login with email and password.
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -189,9 +206,11 @@ Login with email and password.
 ### Health Check
 
 #### GET `/api/health`
+
 Check server status.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -232,4 +251,3 @@ Check server status.
 - MongoDB with Mongoose ODM
 - JWT for authentication
 - bcryptjs for password hashing
-

@@ -27,7 +27,7 @@ export function StateDropdown({
   onSearchChange,
   variant = 'default',
   label,
-  sublabel
+  sublabel,
 }) {
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
@@ -36,9 +36,7 @@ export function StateDropdown({
   // Filter states based on search
   const filteredStates = useMemo(() => {
     if (!searchValue) return ALL_STATES;
-    return ALL_STATES.filter(state =>
-      state.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    return ALL_STATES.filter((state) => state.toLowerCase().includes(searchValue.toLowerCase()));
   }, [searchValue]);
 
   // Get display value
@@ -51,81 +49,90 @@ export function StateDropdown({
 
   // Find selected index for keyboard navigation
   const _selectedIndex = useMemo(() => {
-    return filteredStates.findIndex(state => {
+    return filteredStates.findIndex((state) => {
       if (value === 'nationwide') return state === 'All states';
       return state === value;
     });
   }, [filteredStates, value]);
 
-  const handleSelect = useCallback((state) => {
-    const stateValue = state === 'All states' ? 'nationwide' : state;
-    onChange(stateValue);
-    focusedIndexRef.current = -1;
-    if (onClose) onClose();
-    buttonRef.current?.focus();
-  }, [onChange, onClose]);
-
-  const handleSearchChange = useCallback((e) => {
-    if (onSearchChange) {
-      onSearchChange(e.target.value);
+  const handleSelect = useCallback(
+    (state) => {
+      const stateValue = state === 'All states' ? 'nationwide' : state;
+      onChange(stateValue);
       focusedIndexRef.current = -1;
-    }
-  }, [onSearchChange]);
+      if (onClose) onClose();
+      buttonRef.current?.focus();
+    },
+    [onChange, onClose],
+  );
+
+  const handleSearchChange = useCallback(
+    (e) => {
+      if (onSearchChange) {
+        onSearchChange(e.target.value);
+        focusedIndexRef.current = -1;
+      }
+    },
+    [onSearchChange],
+  );
 
   const handleOverlayClick = useCallback(() => {
     if (onClose) onClose();
   }, [onClose]);
 
   // Keyboard navigation
-  const handleKeyDown = useCallback((e) => {
-    if (!isOpen) {
-      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        onToggle();
-      }
-      return;
-    }
-
-    const itemsCount = filteredStates.length;
-    const currentIndex = focusedIndexRef.current;
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        focusedIndexRef.current = currentIndex < itemsCount - 1 ? currentIndex + 1 : 0;
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        focusedIndexRef.current = currentIndex > 0 ? currentIndex - 1 : itemsCount - 1;
-        break;
-      case 'Home':
-        e.preventDefault();
-        focusedIndexRef.current = 0;
-        break;
-      case 'End':
-        e.preventDefault();
-        focusedIndexRef.current = itemsCount - 1;
-        break;
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        if (focusedIndexRef.current >= 0 && focusedIndexRef.current < itemsCount) {
-          handleSelect(filteredStates[focusedIndexRef.current]);
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (!isOpen) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          onToggle();
         }
-        break;
-      case 'Escape':
-        e.preventDefault();
-        onClose();
-        buttonRef.current?.focus();
-        break;
-      case 'Tab':
-        e.preventDefault();
-        onClose();
-        break;
-      default:
         return;
-    }
-  }, [isOpen, filteredStates, onToggle, onClose, handleSelect]);
+      }
+
+      const itemsCount = filteredStates.length;
+      const currentIndex = focusedIndexRef.current;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          focusedIndexRef.current = currentIndex < itemsCount - 1 ? currentIndex + 1 : 0;
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          focusedIndexRef.current = currentIndex > 0 ? currentIndex - 1 : itemsCount - 1;
+          break;
+        case 'Home':
+          e.preventDefault();
+          focusedIndexRef.current = 0;
+          break;
+        case 'End':
+          e.preventDefault();
+          focusedIndexRef.current = itemsCount - 1;
+          break;
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          if (focusedIndexRef.current >= 0 && focusedIndexRef.current < itemsCount) {
+            handleSelect(filteredStates[focusedIndexRef.current]);
+          }
+          break;
+        case 'Escape':
+          e.preventDefault();
+          onClose();
+          buttonRef.current?.focus();
+          break;
+        case 'Tab':
+          e.preventDefault();
+          onClose();
+          break;
+        default:
+          return;
+      }
+    },
+    [isOpen, filteredStates, onToggle, onClose, handleSelect],
+  );
 
   // Focus management for menu items
   useEffect(() => {
@@ -207,7 +214,11 @@ export function StateDropdown({
               className="state-dropdown-menu"
               role="listbox"
               aria-labelledby={dropdownId}
-              aria-activedescendant={focusedIndexRef.current >= 0 ? `${menuId}-item-${focusedIndexRef.current}` : undefined}
+              aria-activedescendant={
+                focusedIndexRef.current >= 0
+                  ? `${menuId}-item-${focusedIndexRef.current}`
+                  : undefined
+              }
             >
               <div className="state-dropdown-search">
                 <input
@@ -226,7 +237,8 @@ export function StateDropdown({
               </div>
               <div className="state-dropdown-items" role="presentation">
                 {filteredStates.map((state, index) => {
-                  const isSelected = value === state || (value === 'nationwide' && state === 'All states');
+                  const isSelected =
+                    value === state || (value === 'nationwide' && state === 'All states');
                   return (
                     <div
                       key={state}
@@ -244,18 +256,12 @@ export function StateDropdown({
                       tabIndex={-1}
                     >
                       {state}
-                      {isSelected && (
-                        <ScreenReaderOnly> (selected)</ScreenReaderOnly>
-                      )}
+                      {isSelected && <ScreenReaderOnly> (selected)</ScreenReaderOnly>}
                     </div>
                   );
                 })}
                 {filteredStates.length === 0 && (
-                  <div
-                    className="state-dropdown-no-results"
-                    role="status"
-                    aria-live="polite"
-                  >
+                  <div className="state-dropdown-no-results" role="status" aria-live="polite">
                     No states found
                   </div>
                 )}

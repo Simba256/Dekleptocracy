@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import request from 'supertest';
 import app from '../../app.js';
 import WalletShock from '../../models/WalletShock.js';
@@ -111,9 +111,16 @@ describe('Homepage Routes', () => {
 
     it('should respect period query param', async () => {
       await seedCostDriver({ state: 'nationwide', timePeriod: 'YoY' });
-      await seedCostDriver({ state: 'nationwide', timePeriod: '30 days', name: 'Electric', category: 'utilities' });
+      await seedCostDriver({
+        state: 'nationwide',
+        timePeriod: '30 days',
+        name: 'Electric',
+        category: 'utilities',
+      });
 
-      const res = await request(app).get('/api/homepage/cost-drivers?state=nationwide&period=30 days');
+      const res = await request(app).get(
+        '/api/homepage/cost-drivers?state=nationwide&period=30 days',
+      );
 
       expect(res.status).toBe(200);
       expect(res.body.drivers).toHaveLength(1);
@@ -228,8 +235,7 @@ describe('Homepage Routes', () => {
         clickCount: 0,
       }).save();
 
-      const res = await request(app)
-        .post(`/api/homepage/quick-questions/${question._id}/click`);
+      const res = await request(app).post(`/api/homepage/quick-questions/${question._id}/click`);
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -239,8 +245,7 @@ describe('Homepage Routes', () => {
     it('should return 404 for nonexistent question', async () => {
       const fakeId = '507f1f77bcf86cd799439011';
 
-      const res = await request(app)
-        .post(`/api/homepage/quick-questions/${fakeId}/click`);
+      const res = await request(app).post(`/api/homepage/quick-questions/${fakeId}/click`);
 
       expect(res.status).toBe(404);
     });
@@ -338,16 +343,26 @@ describe('Homepage Routes', () => {
   describe('GET /api/homepage/map-data', () => {
     it('should return correct structure with batch query', async () => {
       // Seed some state data
-      await StateDataCache.upsertData('California', 'gas_prices', {
-        sourceApi: 'eia',
-        rawData: {},
-        processedData: { value: 4.5, displayValue: '$4.50/gal', change: 12 },
-      }, 24);
-      await StateDataCache.upsertData('California', 'electricity_prices', {
-        sourceApi: 'eia',
-        rawData: {},
-        processedData: { value: 25, displayValue: '25¢/kWh', change: 5 },
-      }, 24);
+      await StateDataCache.upsertData(
+        'California',
+        'gas_prices',
+        {
+          sourceApi: 'eia',
+          rawData: {},
+          processedData: { value: 4.5, displayValue: '$4.50/gal', change: 12 },
+        },
+        24,
+      );
+      await StateDataCache.upsertData(
+        'California',
+        'electricity_prices',
+        {
+          sourceApi: 'eia',
+          rawData: {},
+          processedData: { value: 25, displayValue: '25¢/kWh', change: 5 },
+        },
+        24,
+      );
 
       const res = await request(app).get('/api/homepage/map-data');
 
@@ -357,7 +372,7 @@ describe('Homepage Routes', () => {
       expect(Array.isArray(res.body.regions)).toBe(true);
 
       // Should have California in results
-      const ca = res.body.regions.find(r => r.name === 'California');
+      const ca = res.body.regions.find((r) => r.name === 'California');
       expect(ca).toBeDefined();
       expect(ca.metrics.gasPrices.value).toBe(4.5);
       expect(ca.metrics.electricityPrices.value).toBe(25);

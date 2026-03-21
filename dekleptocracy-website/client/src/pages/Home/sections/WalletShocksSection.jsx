@@ -22,9 +22,10 @@ export const WalletShocksSection = memo(function WalletShocksSection() {
             <button
               key={state}
               onClick={() => {
-                const properCase = state.split(' ').map(word =>
-                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                ).join(' ');
+                const properCase = state
+                  .split(' ')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                  .join(' ');
                 actions.setSelectedState(properCase);
               }}
               className={`state-tab ${selectedFeaturedState === state ? 'active' : ''}`}
@@ -51,7 +52,10 @@ export const WalletShocksSection = memo(function WalletShocksSection() {
         </div>
 
         {/* Wallet Shock Cards */}
-        <div className="wallet-cards" style={{ opacity: isRefreshing ? 0.6 : 1, transition: 'opacity 0.3s' }}>
+        <div
+          className="wallet-cards"
+          style={{ opacity: isRefreshing ? 0.6 : 1, transition: 'opacity 0.3s' }}
+        >
           {walletShocks.map((shock, index) => (
             <div key={shock._id || index} className="wallet-card">
               <div className="wallet-card-header">
@@ -85,7 +89,11 @@ export const WalletShocksSection = memo(function WalletShocksSection() {
 
               <div className="wallet-card-footer">
                 <button
-                  onClick={() => navigate(`/insights?category=${shock.category.toLowerCase()}&state=${getEffectiveState()}`)}
+                  onClick={() =>
+                    navigate(
+                      `/insights?category=${shock.category.toLowerCase()}&state=${getEffectiveState()}`,
+                    )
+                  }
                   className="see-details"
                 >
                   See details {String.fromCharCode(8594)}
@@ -123,7 +131,8 @@ export const WalletShocksSection = memo(function WalletShocksSection() {
 
         {/* Footer Note */}
         <p className="wallet-note">
-          Red {String.fromCharCode(8599)} indicates price increases; blue lines indicate neutral to declining trends. Values are illustrative for layout only.
+          Red {String.fromCharCode(8599)} indicates price increases; blue lines indicate neutral to
+          declining trends. Values are illustrative for layout only.
         </p>
       </div>
     </section>

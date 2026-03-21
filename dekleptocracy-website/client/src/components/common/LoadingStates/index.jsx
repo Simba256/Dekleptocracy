@@ -10,14 +10,7 @@ export const PageLoader = ({ message = 'Loading...' }) => (
   <div className="page-loader" role="status" aria-label="Loading page">
     <div className="page-loader-content">
       <svg className="loader-spinner" viewBox="0 0 50 50" aria-hidden="true">
-        <circle
-          className="path"
-          cx="25"
-          cy="25"
-          r="20"
-          fill="none"
-          strokeWidth="5"
-        />
+        <circle className="path" cx="25" cy="25" r="20" fill="none" strokeWidth="5" />
       </svg>
       <p className="loader-text">{message}</p>
     </div>
@@ -93,17 +86,16 @@ export const InlineLoader = ({ size = 'small', message }) => {
  * @returns {JSX.Element}
  */
 export const ProgressBar = ({ progress, label, showPercentage = true }) => (
-  <div className="progress-bar" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" aria-label={label}>
-    <div
-      className="progress-bar-fill"
-      style={{ width: `${progress}%` }}
-      aria-hidden="true"
-    >
-      {showPercentage && (
-        <span className="progress-percentage">
-          {Math.round(progress)}%
-        </span>
-      )}
+  <div
+    className="progress-bar"
+    role="progressbar"
+    aria-valuenow={progress}
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-label={label}
+  >
+    <div className="progress-bar-fill" style={{ width: `${progress}%` }} aria-hidden="true">
+      {showPercentage && <span className="progress-percentage">{Math.round(progress)}%</span>}
     </div>
   </div>
 );

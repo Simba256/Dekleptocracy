@@ -13,7 +13,7 @@ const CHANGE_THRESHOLDS = {
   electricity_prices: { notable: 8, critical: 15, unit: 'percent' },
   rent: { notable: 5, critical: 10, unit: 'percent' },
   food_prices: { notable: 5, critical: 10, unit: 'percent' },
-  affordability: { notable: 30, critical: 50, unit: 'absolute %' }
+  affordability: { notable: 30, critical: 50, unit: 'absolute %' },
 };
 
 /**
@@ -22,15 +22,13 @@ const CHANGE_THRESHOLDS = {
 const DOMAIN_THRESHOLDS = {
   unemployment: [
     { threshold: 7, severity: 'critical', message: 'High unemployment' },
-    { threshold: 5, severity: 'warning', message: 'Elevated unemployment' }
+    { threshold: 5, severity: 'warning', message: 'Elevated unemployment' },
   ],
   affordability: [
     { threshold: 50, severity: 'critical', message: 'Severely cost-burdened' },
-    { threshold: 30, severity: 'warning', message: 'Cost-burdened (HUD definition)' }
+    { threshold: 30, severity: 'warning', message: 'Cost-burdened (HUD definition)' },
   ],
-  gas_vs_national: [
-    { threshold: 15, severity: 'warning', message: 'Regional premium' }
-  ]
+  gas_vs_national: [{ threshold: 15, severity: 'warning', message: 'Regional premium' }],
 };
 
 /**
@@ -58,7 +56,7 @@ function detectSignificantChange(timeSeries, thresholds) {
         type: 'change',
         severity: 'critical',
         message: `Changed ${pointChange.toFixed(1)} ${thresholds.unit} over period`,
-        value: pointChange
+        value: pointChange,
       };
     }
     if (pointChange >= thresholds.notable) {
@@ -66,7 +64,7 @@ function detectSignificantChange(timeSeries, thresholds) {
         type: 'change',
         severity: 'warning',
         message: `Changed ${pointChange.toFixed(1)} ${thresholds.unit} over period`,
-        value: pointChange
+        value: pointChange,
       };
     }
     return null;
@@ -84,7 +82,7 @@ function detectSignificantChange(timeSeries, thresholds) {
       type: 'change',
       severity: 'critical',
       message: `${direction === 'up' ? 'Up' : 'Down'} ${absChange.toFixed(1)}% over period`,
-      value: changePercent
+      value: changePercent,
     };
   }
   if (absChange >= thresholds.notable) {
@@ -93,7 +91,7 @@ function detectSignificantChange(timeSeries, thresholds) {
       type: 'change',
       severity: 'warning',
       message: `${direction === 'up' ? 'Up' : 'Down'} ${absChange.toFixed(1)}% over period`,
-      value: changePercent
+      value: changePercent,
     };
   }
 
@@ -139,7 +137,7 @@ function detectStreak(timeSeries) {
       severity: risingStreak >= 5 ? 'warning' : 'info',
       message: `Rising for ${risingStreak} consecutive periods`,
       value: risingStreak,
-      direction: 'up'
+      direction: 'up',
     };
   }
   if (fallingStreak >= 3) {
@@ -148,7 +146,7 @@ function detectStreak(timeSeries) {
       severity: 'info',
       message: `Falling for ${fallingStreak} consecutive periods`,
       value: fallingStreak,
-      direction: 'down'
+      direction: 'down',
     };
   }
 
@@ -165,7 +163,7 @@ function detectMomentum(timeSeries) {
     return { momentum: 'stable', trendSummary: 'Insufficient data' };
   }
 
-  const values = timeSeries.map(p => p?.value).filter(v => v != null);
+  const values = timeSeries.map((p) => p?.value).filter((v) => v != null);
   if (values.length < 2) {
     return { momentum: 'stable', trendSummary: 'Insufficient data' };
   }
@@ -188,14 +186,14 @@ function detectMomentum(timeSeries) {
   const first = values[0];
   const last = values[values.length - 1];
   const overallChange = last - first;
-  const changePercent = first !== 0 ? ((overallChange / first) * 100) : 0;
+  const changePercent = first !== 0 ? (overallChange / first) * 100 : 0;
 
   // Calculate volatility (how often direction changes)
   let directionChanges = 0;
   let prevDirection = null;
   for (let i = 1; i < values.length; i++) {
-    const currDirection = values[i] > values[i - 1] ? 'up' :
-                          values[i] < values[i - 1] ? 'down' : prevDirection;
+    const currDirection =
+      values[i] > values[i - 1] ? 'up' : values[i] < values[i - 1] ? 'down' : prevDirection;
     if (prevDirection && currDirection && currDirection !== prevDirection) {
       directionChanges++;
     }
@@ -246,7 +244,7 @@ function detectThresholdViolation(currentValue, metricType) {
         severity: threshold.severity,
         message: threshold.message,
         value: currentValue,
-        threshold: threshold.threshold
+        threshold: threshold.threshold,
       };
     }
   }
@@ -271,7 +269,7 @@ function detectRegionalPremium(stateValue, nationalValue, _metricType) {
       type: 'regional',
       severity: 'warning',
       message: `${premium.toFixed(0)}% above national average`,
-      value: premium
+      value: premium,
     };
   }
 
@@ -319,7 +317,7 @@ export function analyzeTrends(timeSeries, metricType, currentValue, options = {}
     metric: metricType,
     alerts,
     momentum,
-    trendSummary
+    trendSummary,
   };
 }
 
@@ -334,7 +332,8 @@ export function getMetricTypeFromTitle(title) {
   if (titleLower.includes('electricity')) return 'electricity_prices';
   if (titleLower.includes('rent')) return 'rent';
   if (titleLower.includes('food') || titleLower.includes('grocery')) return 'food_prices';
-  if (titleLower.includes('affordability') || titleLower.includes('% of income')) return 'affordability';
+  if (titleLower.includes('affordability') || titleLower.includes('% of income'))
+    return 'affordability';
 
   return null;
 }
@@ -354,8 +353,8 @@ function calculatePercentile(values, currentValue) {
   if (!values || values.length < MIN_HISTORICAL_MONTHS || currentValue == null) return null;
 
   const sorted = [...values].sort((a, b) => a - b);
-  const belowCount = sorted.filter(v => v < currentValue).length;
-  const equalCount = sorted.filter(v => v === currentValue).length;
+  const belowCount = sorted.filter((v) => v < currentValue).length;
+  const equalCount = sorted.filter((v) => v === currentValue).length;
 
   // Use midpoint method for ties
   const percentile = Math.round(((belowCount + equalCount / 2) / sorted.length) * 100);
@@ -376,7 +375,7 @@ function calculatePercentile(values, currentValue) {
   return {
     percentile,
     description,
-    type: percentile >= 75 ? 'high' : percentile <= 25 ? 'low' : 'typical'
+    type: percentile >= 75 ? 'high' : percentile <= 25 ? 'low' : 'typical',
   };
 }
 
@@ -412,13 +411,13 @@ function findPeakTrough(timeSeries, currentValue) {
     peak: {
       value: peak.value,
       label: peak.label,
-      fromPeak: Math.round(fromPeak)
+      fromPeak: Math.round(fromPeak),
     },
     trough: {
       value: trough.value,
       label: trough.label,
-      fromTrough: Math.round(fromTrough)
-    }
+      fromTrough: Math.round(fromTrough),
+    },
   };
 }
 
@@ -446,7 +445,7 @@ function compareYearOverYear(timeSeries, currentValue) {
     yearAgoValue: yearAgoPoint.value,
     yearAgoLabel: yearAgoPoint.label,
     change: roundedChange,
-    description: `${roundedChange >= 0 ? '+' : ''}${roundedChange}% vs ${yearAgoPoint.label}`
+    description: `${roundedChange >= 0 ? '+' : ''}${roundedChange}% vs ${yearAgoPoint.label}`,
   };
 }
 
@@ -478,8 +477,10 @@ function findHistoricalRank(timeSeries, currentValue) {
   }
 
   const totalMonths = timeSeries.length;
-  const monthsSinceHigher = lastHigherIndex === -1 ? totalMonths : (timeSeries.length - 1 - lastHigherIndex);
-  const monthsSinceLower = lastLowerIndex === -1 ? totalMonths : (timeSeries.length - 1 - lastLowerIndex);
+  const monthsSinceHigher =
+    lastHigherIndex === -1 ? totalMonths : timeSeries.length - 1 - lastHigherIndex;
+  const monthsSinceLower =
+    lastLowerIndex === -1 ? totalMonths : timeSeries.length - 1 - lastLowerIndex;
 
   // Determine if current value is notably high or low
   const yearsOfData = Math.floor(totalMonths / 12);
@@ -516,7 +517,7 @@ function findHistoricalRank(timeSeries, currentValue) {
     type,
     description,
     monthsSinceHigher,
-    monthsSinceLower
+    monthsSinceLower,
   };
 }
 
@@ -532,16 +533,16 @@ export function analyzeHistoricalContext(timeSeries, metricType, currentValue) {
   if (!timeSeries || timeSeries.length < MIN_HISTORICAL_MONTHS) {
     return {
       available: false,
-      reason: 'Insufficient historical data'
+      reason: 'Insufficient historical data',
     };
   }
 
-  const values = timeSeries.map(p => p?.value).filter(v => v != null);
+  const values = timeSeries.map((p) => p?.value).filter((v) => v != null);
 
   if (values.length < MIN_HISTORICAL_MONTHS) {
     return {
       available: false,
-      reason: 'Insufficient valid data points'
+      reason: 'Insufficient valid data points',
     };
   }
 
@@ -566,7 +567,7 @@ export function analyzeHistoricalContext(timeSeries, metricType, currentValue) {
     peakTrough,
     yearOverYear,
     historicalRank,
-    summaryDescription
+    summaryDescription,
   };
 }
 
@@ -578,5 +579,5 @@ export default {
   detectStreak,
   detectMomentum,
   detectThresholdViolation,
-  detectRegionalPremium
+  detectRegionalPremium,
 };

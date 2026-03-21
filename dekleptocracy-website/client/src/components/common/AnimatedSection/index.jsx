@@ -17,15 +17,18 @@ export const useInView = (options = {}) => {
     const element = ref.current;
     if (!element) return;
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setInView(true);
-        observer.unobserve(element);
-      }
-    }, {
-      threshold: options.threshold || 0.1,
-      rootMargin: options.rootMargin || '0px'
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.unobserve(element);
+        }
+      },
+      {
+        threshold: options.threshold || 0.1,
+        rootMargin: options.rootMargin || '0px',
+      },
+    );
 
     observer.observe(element);
 
@@ -55,7 +58,7 @@ export const AnimatedSection = ({
   delay = 0,
   duration = 600,
   threshold = 0.1,
-  className = ''
+  className = '',
 }) => {
   const [ref, inView] = useInView({ threshold });
   const [isVisible, setIsVisible] = useState(false);
@@ -71,15 +74,11 @@ export const AnimatedSection = ({
 
   const style = {
     '--animation-duration': `${duration}ms`,
-    '--animation-delay': `${delay}ms`
+    '--animation-delay': `${delay}ms`,
   };
 
   return (
-    <div
-      ref={ref}
-      className={animationClasses}
-      style={style}
-    >
+    <div ref={ref} className={animationClasses} style={style}>
       {children}
     </div>
   );

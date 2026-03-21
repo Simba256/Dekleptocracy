@@ -4,103 +4,107 @@ import mongoose from 'mongoose';
  * StateDataCache - Caches real economic data from government APIs
  * Used to provide real data for state reports with fallback to stale data
  */
-const stateDataCacheSchema = new mongoose.Schema({
-  // Identification
-  state: {
-    type: String,
-    required: [true, 'State is required'],
-    index: true
-  },
-  dataType: {
-    type: String,
-    required: [true, 'Data type is required'],
-    enum: [
-      'unemployment',      // BLS unemployment rate
-      'cpi',               // BLS Consumer Price Index
-      'wages',             // BLS average wages
-      'gdp',               // FRED state GDP
-      'personal_income',   // FRED personal income
-      'electricity_prices', // EIA electricity
-      'gas_prices',        // EIA gasoline
-      'natural_gas_prices', // EIA natural gas
-      'rent',              // HUD Fair Market Rent
-      'income_limits',     // HUD Income Limits (median income thresholds)
-      'affordability',     // HUD Affordability Analysis (rent as % of income)
-      'chas',              // HUD CHAS (cost-burdened households)
-      'food_prices',       // USDA food prices
-      'grocery_basket'     // USDA grocery basket comparison
-    ],
-    index: true
-  },
-
-  // Source API identification
-  sourceApi: {
-    type: String,
-    required: true,
-    enum: ['bls', 'fred', 'eia', 'hud', 'usda', 'gnews', 'bea']
-  },
-
-  // Raw API response for debugging/reprocessing
-  rawData: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true
-  },
-
-  // Processed data ready for display
-  processedData: {
-    value: mongoose.Schema.Types.Mixed,           // Numeric or complex value
-    displayValue: String,                          // Formatted for display (e.g., "$3.45/gallon")
-    change: Number,                                // Numeric change value
-    changeDisplay: String,                         // Formatted change (e.g., "+12%")
-    changeDirection: {
+const stateDataCacheSchema = new mongoose.Schema(
+  {
+    // Identification
+    state: {
       type: String,
-      enum: ['up', 'down', 'neutral']
+      required: [true, 'State is required'],
+      index: true,
     },
-    unit: String,                                  // Unit of measurement
-    period: String,                                // Data period (e.g., "2024-01")
-    comparisonPeriod: String                       // Period compared against
+    dataType: {
+      type: String,
+      required: [true, 'Data type is required'],
+      enum: [
+        'unemployment', // BLS unemployment rate
+        'cpi', // BLS Consumer Price Index
+        'wages', // BLS average wages
+        'gdp', // FRED state GDP
+        'personal_income', // FRED personal income
+        'electricity_prices', // EIA electricity
+        'gas_prices', // EIA gasoline
+        'natural_gas_prices', // EIA natural gas
+        'rent', // HUD Fair Market Rent
+        'income_limits', // HUD Income Limits (median income thresholds)
+        'affordability', // HUD Affordability Analysis (rent as % of income)
+        'chas', // HUD CHAS (cost-burdened households)
+        'food_prices', // USDA food prices
+        'grocery_basket', // USDA grocery basket comparison
+      ],
+      index: true,
+    },
+
+    // Source API identification
+    sourceApi: {
+      type: String,
+      required: true,
+      enum: ['bls', 'fred', 'eia', 'hud', 'usda', 'gnews', 'bea'],
+    },
+
+    // Raw API response for debugging/reprocessing
+    rawData: {
+      type: mongoose.Schema.Types.Mixed,
+      required: true,
+    },
+
+    // Processed data ready for display
+    processedData: {
+      value: mongoose.Schema.Types.Mixed, // Numeric or complex value
+      displayValue: String, // Formatted for display (e.g., "$3.45/gallon")
+      change: Number, // Numeric change value
+      changeDisplay: String, // Formatted change (e.g., "+12%")
+      changeDirection: {
+        type: String,
+        enum: ['up', 'down', 'neutral'],
+      },
+      unit: String, // Unit of measurement
+      period: String, // Data period (e.g., "2024-01")
+      comparisonPeriod: String, // Period compared against
+    },
+
+    // Time series data for trend charts
+    timeSeries: [
+      {
+        date: Date,
+        value: Number,
+        label: String, // Display label (e.g., "Jan 2024")
+      },
+    ],
+
+    // National comparison data
+    nationalValue: mongoose.Schema.Types.Mixed,
+    nationalDisplayValue: String,
+
+    // Cache metadata
+    fetchedAt: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+      index: true,
+    },
+
+    // Data freshness status
+    status: {
+      type: String,
+      enum: ['fresh', 'stale', 'error'],
+      default: 'fresh',
+    },
+    errorMessage: String,
+
+    // Additional metadata
+    metadata: {
+      seriesId: String, // API series ID used
+      region: String, // Regional grouping
+      sector: String, // Economic sector
+      notes: [String], // Any notes from the API
+    },
   },
-
-  // Time series data for trend charts
-  timeSeries: [{
-    date: Date,
-    value: Number,
-    label: String                                  // Display label (e.g., "Jan 2024")
-  }],
-
-  // National comparison data
-  nationalValue: mongoose.Schema.Types.Mixed,
-  nationalDisplayValue: String,
-
-  // Cache metadata
-  fetchedAt: {
-    type: Date,
-    required: true,
-    default: Date.now
-  },
-  expiresAt: {
-    type: Date,
-    required: true,
-    index: true
-  },
-
-  // Data freshness status
-  status: {
-    type: String,
-    enum: ['fresh', 'stale', 'error'],
-    default: 'fresh'
-  },
-  errorMessage: String,
-
-  // Additional metadata
-  metadata: {
-    seriesId: String,                              // API series ID used
-    region: String,                                // Regional grouping
-    sector: String,                                // Economic sector
-    notes: [String]                                // Any notes from the API
-  }
-
-}, { timestamps: true });
+  { timestamps: true },
+);
 
 // Compound indexes for efficient queries
 stateDataCacheSchema.index({ state: 1, dataType: 1, expiresAt: 1 });
@@ -114,13 +118,13 @@ stateDataCacheSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 2592000 });
  * Returns fresh data if available, otherwise falls back to stale data
  * Never returns fake data - returns null if no real data exists
  */
-stateDataCacheSchema.statics.getLatestData = async function(state, dataType) {
+stateDataCacheSchema.statics.getLatestData = async function (state, dataType) {
   // First try to get fresh data
   let data = await this.findOne({
     state,
     dataType,
     expiresAt: { $gt: new Date() },
-    status: { $ne: 'error' }
+    status: { $ne: 'error' },
   }).sort({ fetchedAt: -1 });
 
   if (data) {
@@ -131,7 +135,7 @@ stateDataCacheSchema.statics.getLatestData = async function(state, dataType) {
   data = await this.findOne({
     state,
     dataType,
-    status: { $ne: 'error' }
+    status: { $ne: 'error' },
   }).sort({ fetchedAt: -1 });
 
   if (data) {
@@ -145,19 +149,26 @@ stateDataCacheSchema.statics.getLatestData = async function(state, dataType) {
 /**
  * Static method to get all cached data for a state
  */
-stateDataCacheSchema.statics.getAllStateData = async function(state) {
+stateDataCacheSchema.statics.getAllStateData = async function (state) {
   // These data types match what stateDataScheduler actually fetches
   // Note: HUD data (rent, income_limits, affordability) removed due to API access issues
   const dataTypes = [
-    'unemployment', 'electricity_prices', 'gas_prices',
-    'food_prices', 'grocery_basket', 'gdp', 'personal_income'
+    'unemployment',
+    'electricity_prices',
+    'gas_prices',
+    'food_prices',
+    'grocery_basket',
+    'gdp',
+    'personal_income',
   ];
 
   const results = {};
   const staleData = [];
 
   const dataEntries = await Promise.all(
-    dataTypes.map(dataType => this.getLatestData(state, dataType).then(data => ({ dataType, data })))
+    dataTypes.map((dataType) =>
+      this.getLatestData(state, dataType).then((data) => ({ dataType, data })),
+    ),
   );
 
   for (const { dataType, data } of dataEntries) {
@@ -168,7 +179,7 @@ stateDataCacheSchema.statics.getAllStateData = async function(state) {
         nationalValue: data.nationalValue,
         nationalDisplayValue: data.nationalDisplayValue,
         fetchedAt: data.fetchedAt,
-        isStale: data.status === 'stale'
+        isStale: data.status === 'stale',
       };
       if (data.status === 'stale') {
         staleData.push(dataType);
@@ -183,7 +194,7 @@ stateDataCacheSchema.statics.getAllStateData = async function(state) {
     data: results,
     hasStaleData: staleData.length > 0,
     staleDataTypes: staleData,
-    availableDataCount: Object.values(results).filter(v => v !== null).length
+    availableDataCount: Object.values(results).filter((v) => v !== null).length,
   };
 };
 
@@ -191,20 +202,26 @@ stateDataCacheSchema.statics.getAllStateData = async function(state) {
  * Static method to get all map data in a single aggregation (replaces N+1 per-state queries)
  * Returns Map<state, { gas_prices, electricity_prices, food_prices, gdp, personal_income, unemployment }>
  */
-stateDataCacheSchema.statics.getAllMapData = async function() {
+stateDataCacheSchema.statics.getAllMapData = async function () {
   const mapDataTypes = [
-    'gas_prices', 'electricity_prices', 'food_prices',
-    'gdp', 'personal_income', 'unemployment'
+    'gas_prices',
+    'electricity_prices',
+    'food_prices',
+    'gdp',
+    'personal_income',
+    'unemployment',
   ];
 
   const docs = await this.aggregate([
     { $match: { dataType: { $in: mapDataTypes }, status: { $ne: 'error' } } },
     { $sort: { fetchedAt: -1 } },
-    { $group: {
-      _id: { state: '$state', dataType: '$dataType' },
-      doc: { $first: '$$ROOT' }
-    }},
-    { $replaceRoot: { newRoot: '$doc' } }
+    {
+      $group: {
+        _id: { state: '$state', dataType: '$dataType' },
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    { $replaceRoot: { newRoot: '$doc' } },
   ]);
 
   // Restructure into Map<state, { dataType: doc }>
@@ -222,7 +239,7 @@ stateDataCacheSchema.statics.getAllMapData = async function() {
 /**
  * Static method to upsert cache entry
  */
-stateDataCacheSchema.statics.upsertData = async function(state, dataType, data, ttlHours = 24) {
+stateDataCacheSchema.statics.upsertData = async function (state, dataType, data, ttlHours = 24) {
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + ttlHours);
 
@@ -241,39 +258,36 @@ stateDataCacheSchema.statics.upsertData = async function(state, dataType, data, 
       expiresAt,
       status: 'fresh',
       errorMessage: null,
-      metadata: data.metadata || {}
+      metadata: data.metadata || {},
     },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   );
 };
 
 /**
  * Static method to mark data as error
  */
-stateDataCacheSchema.statics.markError = async function(state, dataType, errorMessage) {
+stateDataCacheSchema.statics.markError = async function (state, dataType, errorMessage) {
   return this.findOneAndUpdate(
     { state, dataType },
     {
       status: 'error',
-      errorMessage
+      errorMessage,
     },
-    { new: true }
+    { new: true },
   );
 };
 
 /**
  * Static method to get cache health status
  */
-stateDataCacheSchema.statics.getCacheHealth = async function() {
+stateDataCacheSchema.statics.getCacheHealth = async function () {
   const now = new Date();
 
   const totalEntries = await this.countDocuments();
   const freshEntries = await this.countDocuments({ expiresAt: { $gt: now }, status: 'fresh' });
   const staleEntries = await this.countDocuments({
-    $or: [
-      { expiresAt: { $lte: now } },
-      { status: 'stale' }
-    ]
+    $or: [{ expiresAt: { $lte: now } }, { status: 'stale' }],
   });
   const errorEntries = await this.countDocuments({ status: 'error' });
 
@@ -288,15 +302,11 @@ stateDataCacheSchema.statics.getCacheHealth = async function() {
         totalCount: { $sum: 1 },
         freshCount: {
           $sum: {
-            $cond: [
-              { $and: [{ $gt: ['$expiresAt', now] }, { $eq: ['$status', 'fresh'] }] },
-              1,
-              0
-            ]
-          }
-        }
-      }
-    }
+            $cond: [{ $and: [{ $gt: ['$expiresAt', now] }, { $eq: ['$status', 'fresh'] }] }, 1, 0],
+          },
+        },
+      },
+    },
   ]);
 
   return {
@@ -311,10 +321,10 @@ stateDataCacheSchema.statics.getCacheHealth = async function() {
       acc[item._id] = {
         total: item.totalCount,
         fresh: item.freshCount,
-        percentage: item.totalCount > 0 ? Math.round((item.freshCount / item.totalCount) * 100) : 0
+        percentage: item.totalCount > 0 ? Math.round((item.freshCount / item.totalCount) * 100) : 0,
       };
       return acc;
-    }, {})
+    }, {}),
   };
 };
 

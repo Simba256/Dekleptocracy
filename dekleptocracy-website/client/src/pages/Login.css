@@ -66,7 +66,6 @@
   color: var(--color-gray-700);
 }
 
-
 .form-content {
   display: flex;
   flex-direction: column;
@@ -360,7 +359,9 @@
 }
 
 @keyframes dotPulse {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     opacity: 0.3;
   }
   30% {
@@ -405,7 +406,7 @@
     min-height: 100vh;
     padding: 20px 0;
   }
-  
+
   .login-container {
     flex-direction: column;
     height: auto;
@@ -413,58 +414,58 @@
     box-shadow: none;
     max-width: 100%;
   }
-  
+
   .form-section {
     padding: 40px 20px;
     min-height: auto;
     order: 1;
   }
-  
+
   .illustration-section {
     min-height: 300px;
     order: 2;
     padding: 20px;
   }
-  
+
   .form-content {
     max-width: 100%;
   }
-  
+
   .form-title {
     font-size: 24px;
     text-align: center;
   }
-  
+
   .form-description {
     text-align: center;
     font-size: 13px;
   }
-  
+
   .robot-image {
     max-width: 120%;
     max-height: 120%;
   }
-  
+
   .speech-bubbles {
     top: 15%;
     left: 10%;
   }
-  
+
   .speech-bubble {
     width: 45px;
     height: 30px;
     margin-bottom: 15px;
   }
-  
+
   .login-form {
     gap: 14px;
   }
-  
+
   .form-input {
     padding: 12px 14px;
     font-size: 16px;
   }
-  
+
   .login-button,
   .google-button {
     padding: 14px 20px;
@@ -476,51 +477,51 @@
   .login-page {
     padding: 10px 0;
   }
-  
+
   .form-section {
     padding: 30px 16px;
   }
-  
+
   .illustration-section {
     min-height: 250px;
     padding: 15px;
   }
-  
+
   .form-title {
     font-size: 22px;
   }
-  
+
   .form-description {
     font-size: 12px;
   }
-  
+
   .robot-image {
     max-width: 110%;
     max-height: 110%;
   }
-  
+
   .speech-bubbles {
     top: 20%;
     left: 15%;
   }
-  
+
   .speech-bubble {
     width: 40px;
     height: 25px;
     margin-bottom: 12px;
   }
-  
+
   .form-input {
     padding: 10px 12px;
     font-size: 15px;
   }
-  
+
   .login-button,
   .google-button {
     padding: 12px 18px;
     font-size: 14px;
   }
-  
+
   .signup-link {
     font-size: 13px;
   }

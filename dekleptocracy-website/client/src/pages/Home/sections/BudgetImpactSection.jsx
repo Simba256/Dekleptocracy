@@ -15,27 +15,35 @@ export const BudgetImpactSection = memo(function BudgetImpactSection() {
     { date: '2025-01-20', label: 'Inauguration Day', highlighted: true },
     { date: '2025-04-01', label: 'Early Months' },
     { date: '2025-07-01', label: 'Mid-Year' },
-    { date: '2025-10-01', label: 'Current Snapshot' }
+    { date: '2025-10-01', label: 'Current Snapshot' },
   ];
 
-  const timelineConfigData = useMemo(() => ({
-    minDate: '2024-01-01',
-    maxDate: '2025-12-31',
-    milestones,
-    defaultDate: '2025-01-20'
-  }), [milestones]);
+  const timelineConfigData = useMemo(
+    () => ({
+      minDate: '2024-01-01',
+      maxDate: '2025-12-31',
+      milestones,
+      defaultDate: '2025-01-20',
+    }),
+    [milestones],
+  );
 
   return (
     <section className="budget-impact-section">
       <div className="budget-impact-container">
-        <h2 className="budget-impact-title">Discover How Government Decisions Impact Your Budget</h2>
+        <h2 className="budget-impact-title">
+          Discover How Government Decisions Impact Your Budget
+        </h2>
         <p className="budget-impact-subtitle">
-          Pick a date, enter a product, and discover how inflation, tariffs, and lobbying dollars shape the cost you pay.
+          Pick a date, enter a product, and discover how inflation, tariffs, and lobbying dollars
+          shape the cost you pay.
         </p>
 
         <div className="timeline-card">
           <div className="timeline-header">
-            <h3 id="timeline-slider-label" className="timeline-title">Slide to Select Your Starting Point:</h3>
+            <h3 id="timeline-slider-label" className="timeline-title">
+              Slide to Select Your Starting Point:
+            </h3>
           </div>
 
           <TimelineSlider
@@ -54,11 +62,13 @@ export const BudgetImpactSection = memo(function BudgetImpactSection() {
             onSearch={(product) => actions.showImpactModal(product)}
             onSelect={(product) => actions.showImpactModal(product.name || product)}
             placeholder="housing"
-            trendingProducts={trendingProducts || [
-              { name: 'Housing', changePercent: 80.9, trending: true },
-              { name: 'Groceries', changePercent: 15.2, trending: true },
-              { name: 'Gasoline', changePercent: 12.5, trending: true }
-            ]}
+            trendingProducts={
+              trendingProducts || [
+                { name: 'Housing', changePercent: 80.9, trending: true },
+                { name: 'Groceries', changePercent: 15.2, trending: true },
+                { name: 'Gasoline', changePercent: 12.5, trending: true },
+              ]
+            }
           />
         </div>
       </div>

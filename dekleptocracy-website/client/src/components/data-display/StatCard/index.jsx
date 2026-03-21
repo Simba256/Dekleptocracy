@@ -14,7 +14,7 @@ export const StatCard = memo(function StatCard({
   icon,
   variant = 'default',
   chartData,
-  children
+  children,
 }) {
   const cardClass = `stat-card stat-card--${variant}`;
   const changeClass = `stat-card__change stat-card__change--${changeDirection}`;
@@ -33,7 +33,8 @@ export const StatCard = memo(function StatCard({
 
       {change && (
         <div className={changeClass}>
-          {changeDirection === 'up' ? String.fromCharCode(8593) : String.fromCharCode(8595)} {change}
+          {changeDirection === 'up' ? String.fromCharCode(8593) : String.fromCharCode(8595)}{' '}
+          {change}
         </div>
       )}
 
@@ -45,7 +46,9 @@ export const StatCard = memo(function StatCard({
             <div key={index} className="stat-card__bar-group">
               <div
                 className={`stat-card__bar ${index === chartData.length - 2 ? 'stat-card__bar--active' : ''}`}
-                style={{ height: `${(item.value / Math.max(...chartData.map(d => d.value))) * 100}%` }}
+                style={{
+                  height: `${(item.value / Math.max(...chartData.map((d) => d.value))) * 100}%`,
+                }}
               ></div>
               <span className="stat-card__bar-label">{item.label}</span>
             </div>
@@ -68,7 +71,7 @@ StatCard.propTypes = {
     PropTypes.shape({
       value: PropTypes.number.isRequired,
       label: PropTypes.string.isRequired,
-    })
+    }),
   ),
   children: PropTypes.node,
 };

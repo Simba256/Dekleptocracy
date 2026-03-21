@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,11 +19,11 @@ export default defineConfig({
           // Core React libraries - always needed
           'react-vendor': ['react', 'react-dom'],
           // Router - loaded with first navigation
-          'router': ['react-router-dom'],
+          router: ['react-router-dom'],
           // Charts/map libs - lazy loaded with PriceMapSection
-          'charts': ['d3-scale', 'react-simple-maps', 'topojson-client', 'react-tooltip'],
-        }
-      }
+          charts: ['d3-scale', 'react-simple-maps', 'topojson-client', 'react-tooltip'],
+        },
+      },
     },
     // Warn if chunks exceed 500KB
     chunkSizeWarningLimit: 500,
@@ -36,6 +36,6 @@ export default defineConfig({
   },
   // Optimize dependency pre-bundling
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
-  }
-})
+    include: ['react', 'react-dom', 'react-router-dom'],
+  },
+});

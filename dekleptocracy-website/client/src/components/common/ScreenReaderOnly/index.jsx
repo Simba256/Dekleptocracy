@@ -10,9 +10,7 @@ import './ScreenReaderOnly.css';
  */
 // eslint-disable-next-line no-unused-vars
 export const ScreenReaderOnly = ({ children, as: Tag = 'span' }) => (
-  <Tag className="sr-only">
-    {children}
-  </Tag>
+  <Tag className="sr-only">{children}</Tag>
 );
 
 /**
@@ -30,14 +28,9 @@ export const LiveRegion = ({
   politeness = 'polite',
   atomic = true,
   // eslint-disable-next-line no-unused-vars
-  as: Tag = 'div'
+  as: Tag = 'div',
 }) => (
-  <Tag
-    role="status"
-    aria-live={politeness}
-    aria-atomic={atomic}
-    className="sr-only"
-  >
+  <Tag role="status" aria-live={politeness} aria-atomic={atomic} className="sr-only">
     {children}
   </Tag>
 );
@@ -51,10 +44,7 @@ export const LiveRegion = ({
  * @returns {JSX.Element}
  */
 export const SkipLink = ({ href, children = 'Skip to main content' }) => (
-  <a
-    href={href}
-    className="skip-link"
-  >
+  <a href={href} className="skip-link">
     {children}
   </a>
 );
@@ -66,8 +56,6 @@ export const SkipLink = ({ href, children = 'Skip to main content' }) => (
  * @param {React.ReactNode} props.children - Text content
  * @returns {JSX.Element}
  */
-export const HiddenText = ({ children }) => (
-  <span className="sr-only">{children}</span>
-);
+export const HiddenText = ({ children }) => <span className="sr-only">{children}</span>;
 
 export default ScreenReaderOnly;

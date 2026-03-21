@@ -20,16 +20,56 @@ dotenv.config({ path: join(__dirname, '../.env') });
 // All 50 US states + nationwide
 const ALL_STATES = [
   'nationwide',
-  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-  'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
-  'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
-  'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
-  'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon',
-  'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
-  'West Virginia', 'Wisconsin', 'Wyoming'
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+  'Massachusetts',
+  'Michigan',
+  'Minnesota',
+  'Mississippi',
+  'Missouri',
+  'Montana',
+  'Nebraska',
+  'Nevada',
+  'New Hampshire',
+  'New Jersey',
+  'New Mexico',
+  'New York',
+  'North Carolina',
+  'North Dakota',
+  'Ohio',
+  'Oklahoma',
+  'Oregon',
+  'Pennsylvania',
+  'Rhode Island',
+  'South Carolina',
+  'South Dakota',
+  'Tennessee',
+  'Texas',
+  'Utah',
+  'Vermont',
+  'Virginia',
+  'Washington',
+  'West Virginia',
+  'Wisconsin',
+  'Wyoming',
 ];
 
 // Priority states (generate these first for testing)
@@ -44,7 +84,7 @@ const PRIORITY_STATES = [
   'Ohio',
   'Georgia',
   'North Carolina',
-  'Michigan'
+  'Michigan',
 ];
 
 async function generateAll() {
@@ -75,7 +115,9 @@ async function generateAll() {
     }
 
     console.log(`📝 States: ${statesToGenerate.join(', ')}\n`);
-    console.log(`⏱️  Estimated time: ~${statesToGenerate.length * 4 * 2} minutes (2 min per category)\n`);
+    console.log(
+      `⏱️  Estimated time: ~${statesToGenerate.length * 4 * 2} minutes (2 min per category)\n`,
+    );
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     // Generate data
@@ -84,7 +126,7 @@ async function generateAll() {
       states: statesToGenerate,
       skipWalletShocks: false,
       skipCostDrivers: true, // TODO: Implement later
-      skipStats: true // TODO: Implement later
+      skipStats: true, // TODO: Implement later
     });
 
     const endTime = Date.now();
@@ -109,7 +151,7 @@ async function generateAll() {
 
     // Show sample data
     if (results.walletShocks.length > 0) {
-      const sample = results.walletShocks.filter(s => !s.error)[0];
+      const sample = results.walletShocks.filter((s) => !s.error)[0];
       if (sample) {
         console.log('📦 Sample Generated Data:');
         console.log(`   State: ${sample.state}`);
@@ -125,7 +167,6 @@ async function generateAll() {
     console.log('   2. Test API: curl http://localhost:5000/api/homepage/wallet-shocks');
     console.log('   3. View in browser: http://localhost:5173');
     console.log();
-
   } catch (error) {
     console.error('\n❌ Generation failed:', error);
     console.error(error.stack);

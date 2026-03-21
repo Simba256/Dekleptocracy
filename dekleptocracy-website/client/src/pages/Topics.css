@@ -164,51 +164,51 @@
     height: auto;
     min-height: 100vh;
   }
-  
+
   .topics-container {
     max-width: 100%;
     height: auto;
   }
-  
+
   .topics-content {
     gap: 16px;
   }
-  
+
   .topics-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     max-width: 100%;
   }
-  
+
   .topics-question {
     font-size: 24px;
     max-width: 100%;
   }
-  
+
   .topics-instruction {
     font-size: 14px;
     max-width: 100%;
   }
-  
+
   .topic-card {
     min-height: 160px;
     padding: 12px;
   }
-  
+
   .topic-title {
     font-size: 14px;
   }
-  
+
   .topic-image {
     height: 100px;
   }
-  
+
   .navigation-buttons {
     flex-direction: column;
     gap: 12px;
     max-width: 100%;
   }
-  
+
   .skip-button,
   .next-button {
     width: 100%;
@@ -222,42 +222,42 @@
   .topics-page {
     padding: 20px 12px;
   }
-  
+
   .topics-content {
     gap: 14px;
   }
-  
+
   .topics-grid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
+
   .topics-question {
     font-size: 20px;
     line-height: 1.4;
   }
-  
+
   .topics-instruction {
     font-size: 13px;
   }
-  
+
   .topic-card {
     min-height: 140px;
     padding: 10px;
   }
-  
+
   .topic-title {
     font-size: 13px;
   }
-  
+
   .topic-image {
     height: 80px;
   }
-  
+
   .navigation-buttons {
     gap: 10px;
   }
-  
+
   .skip-button,
   .next-button {
     padding: 10px 16px;
@@ -269,28 +269,28 @@
   .topics-page {
     padding: 16px 10px;
   }
-  
+
   .topics-question {
     font-size: 18px;
   }
-  
+
   .topics-instruction {
     font-size: 12px;
   }
-  
+
   .topic-card {
     min-height: 120px;
     padding: 8px;
   }
-  
+
   .topic-title {
     font-size: 12px;
   }
-  
+
   .topic-image {
     height: 70px;
   }
-  
+
   .skip-button,
   .next-button {
     padding: 8px 14px;

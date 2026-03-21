@@ -4,12 +4,13 @@ This document describes the backend API endpoints used by the Dekleptocracy clie
 
 ## Base URL
 
-| Environment | URL |
-|-------------|-----|
-| Development | `http://localhost:5000` |
-| Production | `https://node-server-production-7f39.up.railway.app` |
+| Environment | URL                                                  |
+| ----------- | ---------------------------------------------------- |
+| Development | `http://localhost:5000`                              |
+| Production  | `https://node-server-production-7f39.up.railway.app` |
 
 The base URL is configured via environment variables:
+
 - `VITE_API_URL` for development
 - `VITE_API_URL_PRODUCTION` for production
 
@@ -27,6 +28,7 @@ Content-Type: application/json
 ### Token Storage
 
 Tokens are stored in `localStorage`:
+
 - `token` - JWT access token
 - `user` - Serialized user object
 
@@ -39,6 +41,7 @@ Tokens are stored in `localStorage`:
 Authenticate user with email and password.
 
 **Request:**
+
 ```json
 {
   "email": "user@example.com",
@@ -47,6 +50,7 @@ Authenticate user with email and password.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -65,6 +69,7 @@ Authenticate user with email and password.
 Create a new user account.
 
 **Request:**
+
 ```json
 {
   "email": "user@example.com",
@@ -74,6 +79,7 @@ Create a new user account.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -91,6 +97,7 @@ Create a new user account.
 Authenticate using Google OAuth credential.
 
 **Request:**
+
 ```json
 {
   "credential": "google_id_token_here"
@@ -98,6 +105,7 @@ Authenticate using Google OAuth credential.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -118,6 +126,7 @@ Verify if current token is valid.
 **Headers:** Requires `Authorization: Bearer <token>`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -139,6 +148,7 @@ Get current user's profile.
 **Headers:** Requires `Authorization: Bearer <token>`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -162,6 +172,7 @@ Update user preferences.
 **Headers:** Requires `Authorization: Bearer <token>`
 
 **Request:**
+
 ```json
 {
   "state": "Texas",
@@ -171,6 +182,7 @@ Update user preferences.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -197,6 +209,7 @@ Fetch all homepage data in a single request (recommended for initial load).
 | `period` | string | `YoY` | Time period: "YoY", "3 months", "30 days" |
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -224,6 +237,7 @@ Get price shock notifications.
 | `sortBy` | string | `date` | Sort: "date", "change", "abs-change" |
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -256,6 +270,7 @@ Get cost driver breakdown by category.
 | `period` | string | `YoY` | Time period |
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -286,6 +301,7 @@ Get summary statistics.
 | `state` | string | `nationwide` | State filter |
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -303,6 +319,7 @@ Get summary statistics.
 Get choropleth map data for all states.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -336,6 +353,7 @@ Send a message to the AI chatbot.
 **Headers:** Optionally accepts `Authorization: Bearer <token>` for personalized responses.
 
 **Request:**
+
 ```json
 {
   "message": "Why are eggs so expensive?",
@@ -347,6 +365,7 @@ Send a message to the AI chatbot.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -380,13 +399,13 @@ All endpoints return consistent error responses:
 
 ### Common Error Codes
 
-| Code | Status | Description |
-|------|--------|-------------|
-| `UNAUTHORIZED` | 401 | Missing or invalid token |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `VALIDATION_ERROR` | 400 | Invalid request parameters |
-| `SERVER_ERROR` | 500 | Internal server error |
+| Code               | Status | Description                |
+| ------------------ | ------ | -------------------------- |
+| `UNAUTHORIZED`     | 401    | Missing or invalid token   |
+| `FORBIDDEN`        | 403    | Insufficient permissions   |
+| `NOT_FOUND`        | 404    | Resource not found         |
+| `VALIDATION_ERROR` | 400    | Invalid request parameters |
+| `SERVER_ERROR`     | 500    | Internal server error      |
 
 ---
 
@@ -400,22 +419,24 @@ The client implements a caching strategy for API responses:
 
 ### Cache Durations
 
-| Endpoint | Duration |
-|----------|----------|
-| `/api/homepage/all` | 5 minutes |
+| Endpoint                 | Duration   |
+| ------------------------ | ---------- |
+| `/api/homepage/all`      | 5 minutes  |
 | `/api/homepage/map-data` | 15 minutes |
-| `/api/user/profile` | Session |
-| `/api/auth/*` | No cache |
+| `/api/user/profile`      | Session    |
+| `/api/auth/*`            | No cache   |
 
 ---
 
 ## Rate Limiting
 
 API requests are rate-limited:
+
 - **Anonymous**: 100 requests/minute
 - **Authenticated**: 300 requests/minute
 
 Rate limit headers:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95

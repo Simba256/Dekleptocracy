@@ -8,9 +8,7 @@ describe('User Routes', () => {
     it('should return user profile without password', async () => {
       const { accessToken, user } = await createTestUser();
 
-      const res = await request(app)
-        .get('/api/user/profile')
-        .set(getAuthHeader(accessToken));
+      const res = await request(app).get('/api/user/profile').set(getAuthHeader(accessToken));
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -62,9 +60,7 @@ describe('User Routes', () => {
     });
 
     it('should return 401 without auth token', async () => {
-      const res = await request(app)
-        .put('/api/user/profile')
-        .send({ fullName: 'No Auth' });
+      const res = await request(app).put('/api/user/profile').send({ fullName: 'No Auth' });
 
       expect(res.status).toBe(401);
     });
@@ -97,9 +93,7 @@ describe('User Routes', () => {
     });
 
     it('should return 401 without auth token', async () => {
-      const res = await request(app)
-        .put('/api/user/preferences')
-        .send({ selectedState: 'Texas' });
+      const res = await request(app).put('/api/user/preferences').send({ selectedState: 'Texas' });
 
       expect(res.status).toBe(401);
     });

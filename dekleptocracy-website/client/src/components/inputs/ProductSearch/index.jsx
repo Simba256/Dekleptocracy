@@ -18,7 +18,7 @@ const ProductSearch = ({
   onSearch,
   onSelect,
   placeholder = 'Search for a product...',
-  trendingProducts = []
+  trendingProducts = [],
 }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -40,11 +40,11 @@ const ProductSearch = ({
     try {
       const response = await homepageApi.fetchProductImpact(searchQuery);
       const products = response.impacts || [];
-      const suggestionsList = products.map(p => ({
+      const suggestionsList = products.map((p) => ({
         name: p.name,
         changePercent: p.priceChange?.percent || 0,
         trending: p.trending || false,
-        category: p.category
+        category: p.category,
       }));
       setSuggestions(suggestionsList);
     } catch (error) {
@@ -67,9 +67,7 @@ const ProductSearch = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < items.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < items.length - 1 ? prev + 1 : prev));
         break;
 
       case 'ArrowUp':
@@ -159,12 +157,7 @@ const ProductSearch = ({
       </div>
 
       {isOpen && displayItems.length > 0 && (
-        <ul
-          ref={listRef}
-          id="product-suggestions"
-          className="suggestions-list"
-          role="listbox"
-        >
+        <ul ref={listRef} id="product-suggestions" className="suggestions-list" role="listbox">
           {showTrending && (
             <li className="suggestions-header">
               <span className="trending-icon">🔥</span> Trending searches
@@ -181,12 +174,11 @@ const ProductSearch = ({
               onMouseEnter={() => setSelectedIndex(index)}
             >
               <span className="product-name">{product.name || product}</span>
-              {product.trending && (
-                <span className="trending-badge">Trending</span>
-              )}
+              {product.trending && <span className="trending-badge">Trending</span>}
               {product.changePercent !== undefined && (
                 <span className={`change ${product.changePercent > 0 ? 'up' : 'down'}`}>
-                  {product.changePercent > 0 ? '+' : ''}{product.changePercent.toFixed(1)}%
+                  {product.changePercent > 0 ? '+' : ''}
+                  {product.changePercent.toFixed(1)}%
                 </span>
               )}
             </li>

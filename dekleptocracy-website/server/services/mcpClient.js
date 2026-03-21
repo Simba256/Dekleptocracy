@@ -29,9 +29,9 @@ export async function executeMCPTool(toolName, args = {}, timeout = DEFAULT_TOOL
       },
       body: JSON.stringify({
         tool_name: toolName,
-        arguments: args
+        arguments: args,
       }),
-      signal: controller.signal
+      signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
@@ -42,11 +42,13 @@ export async function executeMCPTool(toolName, args = {}, timeout = DEFAULT_TOOL
 
     const data = await response.json();
     return data;
-
   } catch (error) {
     clearTimeout(timeoutId);
     if (error.name === 'AbortError') {
-      logger.error(`MCP tool execution timed out after ${timeout}ms: ${toolName}`, null, { toolName, args });
+      logger.error(`MCP tool execution timed out after ${timeout}ms: ${toolName}`, null, {
+        toolName,
+        args,
+      });
       throw new Error(`MCP tool execution timed out: ${toolName}`, { cause: error });
     }
     logger.error(`Error executing MCP tool: ${toolName}`, error, { toolName, args });
@@ -75,11 +77,10 @@ export async function fetchNews(category, state = 'nationwide', maxResults = 5) 
 
     const result = await executeMCPTool('get_trade_news', {
       query,
-      max_results: maxResults
+      max_results: maxResults,
     });
 
     return result.articles || [];
-
   } catch (error) {
     logger.warn(`Failed to fetch news for ${category} in ${state}`, error);
     return [];
@@ -97,11 +98,10 @@ export async function fetchCensusTradeData(htsCode, tradeFlow = 'imports') {
     const result = await executeMCPTool('get_census_trade_data', {
       hts_code: htsCode,
       trade_flow: tradeFlow,
-      year: new Date().getFullYear()
+      year: new Date().getFullYear(),
     });
 
     return result.data || null;
-
   } catch (error) {
     logger.warn(`Failed to fetch Census data for HTS ${htsCode}`, error);
     return null;
@@ -118,11 +118,10 @@ export async function fetchBEAData(datasetName, parameters = {}) {
   try {
     const result = await executeMCPTool('get_bea_data', {
       dataset_name: datasetName,
-      ...parameters
+      ...parameters,
     });
 
     return result.data || null;
-
   } catch (error) {
     logger.warn(`Failed to fetch BEA data for ${datasetName}`, error);
     return null;
@@ -137,11 +136,10 @@ export async function fetchBEAData(datasetName, parameters = {}) {
 export async function fetchTariffAnnouncements(days = 30) {
   try {
     const result = await executeMCPTool('get_recent_tariff_announcements', {
-      days
+      days,
     });
 
     return result.announcements || [];
-
   } catch (error) {
     logger.warn(`Failed to fetch tariff announcements`, error);
     return [];
@@ -156,7 +154,7 @@ export async function checkMCPHealth() {
   try {
     const response = await fetch(`${MCP_SERVER_URL}/health`, {
       method: 'GET',
-      timeout: 5000
+      timeout: 5000,
     });
 
     return response.ok;
@@ -195,7 +193,7 @@ export async function fetchUnemploymentData(stateName) {
     return await executeMCPTool('get_bls_unemployment_by_state', {
       state_name: stateName,
       start_year: '2023',
-      end_year: '2024'
+      end_year: '2024',
     });
   } catch (error) {
     logger.warn(`Failed to fetch unemployment for ${stateName}`, error);
@@ -212,7 +210,7 @@ export async function fetchElectricityPrices(stateName) {
   try {
     return await executeMCPTool('get_electricity_prices_by_state', {
       state_name: stateName,
-      sector: 'RES'
+      sector: 'RES',
     });
   } catch (error) {
     logger.warn(`Failed to fetch electricity prices for ${stateName}`, error);
@@ -228,7 +226,7 @@ export async function fetchElectricityPrices(stateName) {
 export async function fetchGasolinePrices(stateName) {
   try {
     return await executeMCPTool('get_gasoline_prices_by_state', {
-      state_name: stateName
+      state_name: stateName,
     });
   } catch (error) {
     logger.warn(`Failed to fetch gas prices for ${stateName}`, error);
@@ -245,7 +243,7 @@ export async function fetchRentData(stateName) {
   try {
     return await executeMCPTool('get_hud_rent_history', {
       state_name: stateName,
-      years: 5
+      years: 5,
     });
   } catch (error) {
     logger.warn(`Failed to fetch rent data for ${stateName}`, error);
@@ -261,7 +259,7 @@ export async function fetchRentData(stateName) {
 export async function fetchFoodPrices(stateName) {
   try {
     return await executeMCPTool('get_usda_food_prices', {
-      state_name: stateName
+      state_name: stateName,
     });
   } catch (error) {
     logger.warn(`Failed to fetch food prices for ${stateName}`, error);
@@ -277,7 +275,7 @@ export async function fetchFoodPrices(stateName) {
 export async function fetchGroceryBasket(stateName) {
   try {
     return await executeMCPTool('get_usda_grocery_basket', {
-      state_name: stateName
+      state_name: stateName,
     });
   } catch (error) {
     logger.warn(`Failed to fetch grocery basket for ${stateName}`, error);
@@ -293,7 +291,7 @@ export async function fetchGroceryBasket(stateName) {
 export async function fetchStateGDP(stateName) {
   try {
     return await executeMCPTool('get_fred_state_gdp', {
-      state_name: stateName
+      state_name: stateName,
     });
   } catch (error) {
     logger.warn(`Failed to fetch GDP for ${stateName}`, error);
@@ -309,7 +307,7 @@ export async function fetchStateGDP(stateName) {
 export async function fetchAllStateData(stateName) {
   try {
     return await executeMCPTool('get_state_economic_data', {
-      state_name: stateName
+      state_name: stateName,
     });
   } catch (error) {
     logger.warn(`Failed to fetch comprehensive data for ${stateName}`, error);
@@ -333,5 +331,5 @@ export default {
   fetchFoodPrices,
   fetchGroceryBasket,
   fetchStateGDP,
-  fetchAllStateData
+  fetchAllStateData,
 };

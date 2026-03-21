@@ -5,6 +5,7 @@ This guide will help you configure MongoDB Atlas for the Dekleptocracy applicati
 ## Connection String
 
 Your MongoDB Atlas connection string is:
+
 ```
 mongodb+srv://hasankamal839_db_user:<db_password>@cluster0.fink5ub.mongodb.net/dekleptocracy?retryWrites=true&w=majority&appName=Cluster0
 ```
@@ -52,12 +53,14 @@ Your IP address must be whitelisted in MongoDB Atlas:
 ### 4. Test the Connection
 
 1. Start your server:
+
    ```bash
    cd server
    npm run dev
    ```
 
 2. You should see:
+
    ```
    ✅ Connected to MongoDB Atlas
    🚀 API listening on http://localhost:5000
@@ -72,20 +75,24 @@ Your IP address must be whitelisted in MongoDB Atlas:
 ## Troubleshooting
 
 ### Error: "Authentication failed"
+
 - **Solution**: Check that your password is correct in the `.env` file
 - Make sure there are no extra spaces in the connection string
 - Verify the username is correct: `hasankamal839_db_user`
 
 ### Error: "IP not whitelisted"
+
 - **Solution**: Add your IP address to the Network Access list in MongoDB Atlas
 - For development, you can temporarily use `0.0.0.0/0` to allow all IPs
 
 ### Error: "Server selection timed out"
+
 - **Solution**: Check your internet connection
 - Verify the cluster is running in MongoDB Atlas
 - Check that the connection string is correct
 
 ### Error: "Database name not found"
+
 - **Solution**: The database `dekleptocracy` will be created automatically when you first connect
 - Make sure the connection string includes `/dekleptocracy` at the end
 
@@ -125,4 +132,3 @@ When deploying to production:
 - [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
 - [Connection String Documentation](https://docs.mongodb.com/manual/reference/connection-string/)
 - [MongoDB Security Checklist](https://docs.mongodb.com/manual/administration/security-checklist/)
-

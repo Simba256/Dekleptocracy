@@ -20,7 +20,7 @@ export const logError = (error, context = {}) => {
     timestamp: Date.now(),
     path: window.location.pathname,
     userAgent: navigator.userAgent?.slice(0, 100),
-    ...context
+    ...context,
   };
 
   // Always log in dev

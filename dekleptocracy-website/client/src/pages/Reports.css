@@ -260,7 +260,7 @@
     font-size: 16px;
     white-space: normal;
   }
-  
+
   .reports-subtitle {
     margin-bottom: 40px;
   }
@@ -290,12 +290,12 @@
     text-align: left;
     gap: 16px;
   }
-  
+
   .reports-role-card .reports-role-icon {
     margin-bottom: 0;
     flex-shrink: 0;
   }
-  
+
   .reports-role-card .reports-role-short-label,
   .reports-role-card .reports-role-label {
     text-align: left;
@@ -345,7 +345,7 @@
     font-size: 15px;
     white-space: normal;
   }
-  
+
   .reports-subtitle {
     margin-bottom: 32px;
   }
@@ -369,12 +369,12 @@
     text-align: left;
     gap: 12px;
   }
-  
+
   .reports-role-card .reports-role-icon {
     margin-bottom: 0;
     flex-shrink: 0;
   }
-  
+
   .reports-role-card .reports-role-short-label,
   .reports-role-card .reports-role-label {
     text-align: left;

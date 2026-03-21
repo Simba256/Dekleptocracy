@@ -22,14 +22,12 @@ vi.mock('google-auth-library', () => {
 describe('Auth Routes', () => {
   describe('POST /api/auth/signup', () => {
     it('should create a new user and return tokens (201)', async () => {
-      const res = await request(app)
-        .post('/api/auth/signup')
-        .send({
-          fullName: 'John Doe',
-          email: 'john@example.com',
-          password: 'password123',
-          agreeToTerms: true,
-        });
+      const res = await request(app).post('/api/auth/signup').send({
+        fullName: 'John Doe',
+        email: 'john@example.com',
+        password: 'password123',
+        agreeToTerms: true,
+      });
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
@@ -40,23 +38,19 @@ describe('Auth Routes', () => {
     });
 
     it('should return 400 for missing fields', async () => {
-      const res = await request(app)
-        .post('/api/auth/signup')
-        .send({ email: 'john@example.com' });
+      const res = await request(app).post('/api/auth/signup').send({ email: 'john@example.com' });
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });
 
     it('should return 400 when agreeToTerms is false', async () => {
-      const res = await request(app)
-        .post('/api/auth/signup')
-        .send({
-          fullName: 'John Doe',
-          email: 'john@example.com',
-          password: 'password123',
-          agreeToTerms: false,
-        });
+      const res = await request(app).post('/api/auth/signup').send({
+        fullName: 'John Doe',
+        email: 'john@example.com',
+        password: 'password123',
+        agreeToTerms: false,
+      });
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
@@ -65,14 +59,12 @@ describe('Auth Routes', () => {
     it('should return 409 for duplicate email', async () => {
       await createTestUser({ email: 'dupe@example.com' });
 
-      const res = await request(app)
-        .post('/api/auth/signup')
-        .send({
-          fullName: 'Another User',
-          email: 'dupe@example.com',
-          password: 'password123',
-          agreeToTerms: true,
-        });
+      const res = await request(app).post('/api/auth/signup').send({
+        fullName: 'Another User',
+        email: 'dupe@example.com',
+        password: 'password123',
+        agreeToTerms: true,
+      });
 
       expect(res.status).toBe(409);
       expect(res.body.success).toBe(false);
@@ -115,9 +107,7 @@ describe('Auth Routes', () => {
     });
 
     it('should return 400 for missing fields', async () => {
-      const res = await request(app)
-        .post('/api/auth/login')
-        .send({ email: 'login@example.com' });
+      const res = await request(app).post('/api/auth/login').send({ email: 'login@example.com' });
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
@@ -181,9 +171,7 @@ describe('Auth Routes', () => {
     });
 
     it('should return 400 for missing credential', async () => {
-      const res = await request(app)
-        .post('/api/auth/google')
-        .send({});
+      const res = await request(app).post('/api/auth/google').send({});
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
@@ -192,9 +180,7 @@ describe('Auth Routes', () => {
     it('should return 401 for invalid Google token', async () => {
       mockVerifyIdToken.mockRejectedValue(new Error('Invalid token'));
 
-      const res = await request(app)
-        .post('/api/auth/google')
-        .send({ credential: 'invalid-token' });
+      const res = await request(app).post('/api/auth/google').send({ credential: 'invalid-token' });
 
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
@@ -205,9 +191,7 @@ describe('Auth Routes', () => {
     it('should issue new token pair with valid refresh token', async () => {
       const { refreshToken } = await createTestUser();
 
-      const res = await request(app)
-        .post('/api/auth/refresh')
-        .send({ refreshToken });
+      const res = await request(app).post('/api/auth/refresh').send({ refreshToken });
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -216,9 +200,7 @@ describe('Auth Routes', () => {
     });
 
     it('should return 400 for missing refresh token', async () => {
-      const res = await request(app)
-        .post('/api/auth/refresh')
-        .send({});
+      const res = await request(app).post('/api/auth/refresh').send({});
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
@@ -227,9 +209,7 @@ describe('Auth Routes', () => {
     it('should return 401 for access token used as refresh token', async () => {
       const { accessToken } = await createTestUser();
 
-      const res = await request(app)
-        .post('/api/auth/refresh')
-        .send({ refreshToken: accessToken });
+      const res = await request(app).post('/api/auth/refresh').send({ refreshToken: accessToken });
 
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
@@ -258,9 +238,7 @@ describe('Auth Routes', () => {
     it('should increment tokenVersion and revoke tokens', async () => {
       const { user, accessToken } = await createTestUser();
 
-      const res = await request(app)
-        .post('/api/auth/revoke')
-        .set(getAuthHeader(accessToken));
+      const res = await request(app).post('/api/auth/revoke').set(getAuthHeader(accessToken));
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -271,8 +249,7 @@ describe('Auth Routes', () => {
     });
 
     it('should return 401 without auth token', async () => {
-      const res = await request(app)
-        .post('/api/auth/revoke');
+      const res = await request(app).post('/api/auth/revoke');
 
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
@@ -283,9 +260,7 @@ describe('Auth Routes', () => {
     it('should verify valid access token (200)', async () => {
       const { accessToken, user } = await createTestUser();
 
-      const res = await request(app)
-        .get('/api/auth/verify')
-        .set(getAuthHeader(accessToken));
+      const res = await request(app).get('/api/auth/verify').set(getAuthHeader(accessToken));
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -293,15 +268,11 @@ describe('Auth Routes', () => {
     });
 
     it('should return 401 for expired token', async () => {
-      const expiredToken = jwt.sign(
-        { userId: 'someid', type: 'access' },
-        JWT_SECRET,
-        { expiresIn: '0s' }
-      );
+      const expiredToken = jwt.sign({ userId: 'someid', type: 'access' }, JWT_SECRET, {
+        expiresIn: '0s',
+      });
 
-      const res = await request(app)
-        .get('/api/auth/verify')
-        .set(getAuthHeader(expiredToken));
+      const res = await request(app).get('/api/auth/verify').set(getAuthHeader(expiredToken));
 
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
@@ -310,9 +281,7 @@ describe('Auth Routes', () => {
     it('should reject refresh token used as access token', async () => {
       const { refreshToken } = await createTestUser();
 
-      const res = await request(app)
-        .get('/api/auth/verify')
-        .set(getAuthHeader(refreshToken));
+      const res = await request(app).get('/api/auth/verify').set(getAuthHeader(refreshToken));
 
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
@@ -320,8 +289,7 @@ describe('Auth Routes', () => {
     });
 
     it('should return 401 with no token', async () => {
-      const res = await request(app)
-        .get('/api/auth/verify');
+      const res = await request(app).get('/api/auth/verify');
 
       expect(res.status).toBe(401);
     });

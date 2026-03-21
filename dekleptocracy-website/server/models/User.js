@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Full name is required'],
     trim: true,
-    maxlength: [100, 'Full name cannot exceed 100 characters']
+    maxlength: [100, 'Full name cannot exceed 100 characters'],
   },
   email: {
     type: String,
@@ -14,82 +14,127 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email address']
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email address'],
   },
   password: {
     type: String,
-    required: function() {
+    required: function () {
       return !this.googleId; // Password not required if user signs in with Google
     },
-    minlength: [6, 'Password must be at least 6 characters long']
+    minlength: [6, 'Password must be at least 6 characters long'],
   },
   googleId: {
     type: String,
     unique: true,
-    sparse: true // Allows multiple null values
+    sparse: true, // Allows multiple null values
   },
   isGoogleUser: {
     type: Boolean,
-    default: false
+    default: false,
   },
   agreeToTerms: {
     type: Boolean,
-    required: function() {
+    required: function () {
       return !this.googleId; // Not required for Google OAuth users
     },
-    default: false
+    default: false,
   },
   preferences: {
     conversationStyles: {
       type: [String],
-      default: []
+      default: [],
     },
     topicsOfInterest: {
       type: [String],
-      default: []
+      default: [],
     },
     householdExpenseFocus: {
       type: String,
-      default: ''
+      default: '',
     },
     selectedState: {
       type: String,
       default: 'California',
-      enum: ['nationwide', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-        'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois',
-        'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-        'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana',
-        'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
-        'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
-        'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah',
-        'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+      enum: [
+        'nationwide',
+        'Alabama',
+        'Alaska',
+        'Arizona',
+        'Arkansas',
+        'California',
+        'Colorado',
+        'Connecticut',
+        'Delaware',
+        'Florida',
+        'Georgia',
+        'Hawaii',
+        'Idaho',
+        'Illinois',
+        'Indiana',
+        'Iowa',
+        'Kansas',
+        'Kentucky',
+        'Louisiana',
+        'Maine',
+        'Maryland',
+        'Massachusetts',
+        'Michigan',
+        'Minnesota',
+        'Mississippi',
+        'Missouri',
+        'Montana',
+        'Nebraska',
+        'Nevada',
+        'New Hampshire',
+        'New Jersey',
+        'New Mexico',
+        'New York',
+        'North Carolina',
+        'North Dakota',
+        'Ohio',
+        'Oklahoma',
+        'Oregon',
+        'Pennsylvania',
+        'Rhode Island',
+        'South Carolina',
+        'South Dakota',
+        'Tennessee',
+        'Texas',
+        'Utah',
+        'Vermont',
+        'Virginia',
+        'Washington',
+        'West Virginia',
+        'Wisconsin',
+        'Wyoming',
+      ],
     },
     defaultTimePeriod: {
       type: String,
       default: 'YoY',
-      enum: ['YoY', '3 months', '30 days']
-    }
+      enum: ['YoY', '3 months', '30 days'],
+    },
   },
   tokenVersion: {
     type: Number,
-    default: 0
+    default: 0,
   },
   profilePhoto: {
     type: String,
-    default: null
+    default: null,
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   updatedAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   // Skip password hashing if user is signing in with Google and has no password
   if (this.isGoogleUser && !this.password) {
     return next();
@@ -111,18 +156,18 @@ userSchema.pre('save', async function(next) {
 });
 
 // Update updatedAt field before saving
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
 // Method to compare password for login
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // Remove password from JSON output
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
   return userObject;
@@ -131,4 +176,3 @@ userSchema.methods.toJSON = function() {
 const User = mongoose.model('User', userSchema);
 
 export default User;
-

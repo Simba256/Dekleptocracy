@@ -6,13 +6,13 @@ This guide explains how to obtain API keys for all the government data sources u
 
 ## Overview
 
-| API | Provider | Cost | Rate Limits | Registration Time |
-|-----|----------|------|-------------|-------------------|
-| BLS | Bureau of Labor Statistics | Free | 500 req/day (v2) | Instant |
-| FRED | Federal Reserve Bank of St. Louis | Free | 120 req/min | Instant |
-| EIA | Energy Information Administration | Free | 1000 req/hour | Instant |
-| HUD | Dept. of Housing & Urban Development | Free | 1000 req/day | 1-2 business days |
-| USDA | Dept. of Agriculture | Free | Varies | Instant |
+| API  | Provider                             | Cost | Rate Limits      | Registration Time |
+| ---- | ------------------------------------ | ---- | ---------------- | ----------------- |
+| BLS  | Bureau of Labor Statistics           | Free | 500 req/day (v2) | Instant           |
+| FRED | Federal Reserve Bank of St. Louis    | Free | 120 req/min      | Instant           |
+| EIA  | Energy Information Administration    | Free | 1000 req/hour    | Instant           |
+| HUD  | Dept. of Housing & Urban Development | Free | 1000 req/day     | 1-2 business days |
+| USDA | Dept. of Agriculture                 | Free | Varies           | Instant           |
 
 ---
 
@@ -21,6 +21,7 @@ This guide explains how to obtain API keys for all the government data sources u
 **Data Provided:** Unemployment rates, CPI, wages by state
 
 ### Steps:
+
 1. Go to: https://www.bls.gov/developers/home.htm
 2. Click **"Registration"** in the left sidebar
 3. Fill out the form:
@@ -31,11 +32,13 @@ This guide explains how to obtain API keys for all the government data sources u
 5. Check your email for the API key (arrives within minutes)
 
 ### Notes:
+
 - **Without registration:** 25 requests/day, 10 years of data
 - **With registration (v2):** 500 requests/day, 20 years of data
 - Registration is highly recommended
 
 ### Add to `.env`:
+
 ```
 BLS_API_KEY=your_key_here
 ```
@@ -47,6 +50,7 @@ BLS_API_KEY=your_key_here
 **Data Provided:** State GDP, personal income, economic indicators
 
 ### Steps:
+
 1. Go to: https://fred.stlouisfed.org/
 2. Click **"My Account"** (top right) → **"Create Account"**
 3. Fill out registration form:
@@ -62,11 +66,13 @@ BLS_API_KEY=your_key_here
 8. Your API key appears immediately
 
 ### Notes:
+
 - 120 requests per minute limit
 - No daily limit
 - Comprehensive economic data access
 
 ### Add to `.env`:
+
 ```
 FRED_API_KEY=your_key_here
 ```
@@ -78,6 +84,7 @@ FRED_API_KEY=your_key_here
 **Data Provided:** Electricity prices, gasoline prices, natural gas prices
 
 ### Steps:
+
 1. Go to: https://www.eia.gov/opendata/register.php
 2. Fill out the form:
    - Email address
@@ -88,11 +95,13 @@ FRED_API_KEY=your_key_here
 4. Check your email - API key arrives within minutes
 
 ### Notes:
+
 - 1000 requests per hour
 - Access to all EIA data series
 - Comprehensive energy data
 
 ### Add to `.env`:
+
 ```
 EIA_API_KEY=your_key_here
 ```
@@ -104,6 +113,7 @@ EIA_API_KEY=your_key_here
 **Data Provided:** Fair Market Rents (FMR) by state and county
 
 ### Steps:
+
 1. Go to: https://www.huduser.gov/hudapi/public/register
 2. Click **"Request API Access"**
 3. Fill out the registration form:
@@ -118,16 +128,19 @@ EIA_API_KEY=your_key_here
 7. Your token will be visible in your account dashboard
 
 ### Notes:
+
 - Requires manual approval (not instant)
 - 1000 requests per day
 - FMR data is updated annually
 
 ### Add to `.env`:
+
 ```
 HUD_API_TOKEN=your_token_here
 ```
 
 ### Alternative (if HUD approval is slow):
+
 The system uses regional cost-of-living adjustments as a fallback until HUD data is available.
 
 ---
@@ -146,11 +159,13 @@ The system uses regional cost-of-living adjustments as a fallback until HUD data
 ### Option B: Use Public Data (No Key Required)
 
 The USDA client is designed to work with publicly available USDA Food Price Outlook data. If no key is provided, it uses:
+
 - Regional cost-of-living adjustments
 - Published USDA food plan costs
 - BLS food CPI data
 
 ### Add to `.env` (if you obtain a key):
+
 ```
 USDA_API_KEY=your_key_here
 ```
@@ -236,21 +251,25 @@ curl "http://localhost:5000/api/reports/state?state=California"
 ## Troubleshooting
 
 ### "API key not found" errors
+
 - Ensure the key is in the correct `.env` file
 - Restart the MCP server after adding keys
 - Check for extra spaces or quotes around the key
 
 ### "Rate limit exceeded" errors
+
 - BLS: Wait until the next day (500/day limit)
 - FRED: Wait 1 minute (120/min limit)
 - EIA: Wait 1 hour (1000/hour limit)
 
 ### "No data available" for a state
+
 - Run the scheduler manually: `POST /api/reports/state/refresh`
 - Check if MCP server is running and healthy
 - Verify API keys are valid
 
 ### HUD approval pending
+
 - The system will work without HUD data
 - Other metrics (unemployment, energy, food) will still show
 - Rent data will be missing until HUD approves your access
@@ -261,14 +280,14 @@ curl "http://localhost:5000/api/reports/state?state=California"
 
 Once configured, the system automatically refreshes data:
 
-| Data Type | Refresh Frequency | TTL |
-|-----------|-------------------|-----|
-| Unemployment | Daily (2 AM EST) | 24 hours |
-| Electricity prices | Daily (2 AM EST) | 24 hours |
-| Gas prices | Every 6 hours | 6 hours |
-| Rent (HUD) | Weekly | 7 days |
-| Food prices | Daily (2 AM EST) | 24 hours |
-| GDP | Weekly | 7 days |
+| Data Type          | Refresh Frequency | TTL      |
+| ------------------ | ----------------- | -------- |
+| Unemployment       | Daily (2 AM EST)  | 24 hours |
+| Electricity prices | Daily (2 AM EST)  | 24 hours |
+| Gas prices         | Every 6 hours     | 6 hours  |
+| Rent (HUD)         | Weekly            | 7 days   |
+| Food prices        | Daily (2 AM EST)  | 24 hours |
+| GDP                | Weekly            | 7 days   |
 
 ---
 

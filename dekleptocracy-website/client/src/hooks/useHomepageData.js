@@ -9,11 +9,7 @@ import * as homepageApi from '../api/homepage';
  * @param {boolean} options.autoFetch - Whether to fetch on mount (default: true)
  */
 export function useHomepageData(options = {}) {
-  const {
-    state = 'nationwide',
-    timePeriod = 'YoY',
-    autoFetch = true
-  } = options;
+  const { state = 'nationwide', timePeriod = 'YoY', autoFetch = true } = options;
 
   const [data, setData] = useState({
     walletShocks: [],
@@ -22,34 +18,37 @@ export function useHomepageData(options = {}) {
     stateComparisons: [],
     socialPosts: [],
     quickQuestions: [],
-    timelineConfig: null
+    timelineConfig: null,
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchData = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setIsRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-    setError(null);
-
-    try {
-      const result = await homepageApi.fetchAllHomepageData(state, timePeriod);
-      setData(result);
-    } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error('Error fetching homepage data:', err);
+  const fetchData = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) {
+        setIsRefreshing(true);
+      } else {
+        setLoading(true);
       }
-      setError(err.message);
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [state, timePeriod]);
+      setError(null);
+
+      try {
+        const result = await homepageApi.fetchAllHomepageData(state, timePeriod);
+        setData(result);
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          console.error('Error fetching homepage data:', err);
+        }
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [state, timePeriod],
+  );
 
   // Auto-fetch on mount and when dependencies change
   useEffect(() => {
@@ -67,7 +66,7 @@ export function useHomepageData(options = {}) {
     loading,
     isRefreshing,
     error,
-    refresh
+    refresh,
   };
 }
 
@@ -99,11 +98,11 @@ export function useWalletShocks(state = 'nationwide', limit = 4) {
   const addReaction = useCallback(async (shockId, reactionType) => {
     try {
       const data = await homepageApi.addReaction(shockId, reactionType);
-      setShocks(prev => prev.map(shock =>
-        shock._id === shockId
-          ? { ...shock, reactions: data.reactions }
-          : shock
-      ));
+      setShocks((prev) =>
+        prev.map((shock) =>
+          shock._id === shockId ? { ...shock, reactions: data.reactions } : shock,
+        ),
+      );
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error('Error adding reaction:', err);

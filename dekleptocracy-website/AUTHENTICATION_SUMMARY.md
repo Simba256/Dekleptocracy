@@ -7,6 +7,7 @@ The Dekleptocracy application supports **both Email/Password and Google OAuth** 
 ### 1. Email/Password Authentication
 
 #### Signup (`/chatbot/create-account`)
+
 - User fills out form with:
   - Full Name
   - Email
@@ -18,6 +19,7 @@ The Dekleptocracy application supports **both Email/Password and Google OAuth** 
 - User is redirected to chatbot
 
 #### Login (`/chatbot/login`)
+
 - User enters:
   - Email
   - Password
@@ -28,6 +30,7 @@ The Dekleptocracy application supports **both Email/Password and Google OAuth** 
 ### 2. Google OAuth Authentication
 
 #### How It Works
+
 Google OAuth **automatically handles both signup and login** using a single endpoint:
 
 1. **New User (Signup)**:
@@ -55,6 +58,7 @@ Google OAuth **automatically handles both signup and login** using a single endp
 ## User Flow
 
 ### Signup Page (`/chatbot/create-account`)
+
 ```
 ┌─────────────────────────────────────┐
 │   Create Account Form               │
@@ -75,6 +79,7 @@ Google OAuth **automatically handles both signup and login** using a single endp
 ```
 
 ### Login Page (`/chatbot/login`)
+
 ```
 ┌─────────────────────────────────────┐
 │   Login Form                        │
@@ -96,6 +101,7 @@ Google OAuth **automatically handles both signup and login** using a single endp
 ## Database Schema
 
 Users can have:
+
 - **Email/Password account**: `password` field, `isGoogleUser: false`
 - **Google account**: `googleId` field, `isGoogleUser: true`, no password
 - **Both methods**: User can link Google to existing email account
@@ -103,16 +109,19 @@ Users can have:
 ## API Endpoints
 
 ### `POST /api/auth/signup`
+
 - Creates new email/password account
 - Requires: `fullName`, `email`, `password`, `agreeToTerms`
 - Returns: JWT token and user data
 
 ### `POST /api/auth/login`
+
 - Authenticates email/password account
 - Requires: `email`, `password`
 - Returns: JWT token and user data
 
 ### `POST /api/auth/google`
+
 - Handles Google OAuth (both signup and login)
 - Requires: `credential` (Google ID token)
 - Returns: JWT token and user data
@@ -134,6 +143,7 @@ Users can have:
 ## User Experience
 
 ### Scenario 1: New User
+
 1. User visits signup page
 2. Can choose:
    - Fill out email/password form → Sign up
@@ -142,6 +152,7 @@ Users can have:
 4. Redirected to chatbot
 
 ### Scenario 2: Existing User
+
 1. User visits login page
 2. Can choose:
    - Enter email/password → Login
@@ -150,6 +161,7 @@ Users can have:
 4. Redirected to chatbot
 
 ### Scenario 3: Account Linking
+
 1. User has email/password account (e.g., `user@example.com`)
 2. User signs in with Google using same email
 3. System automatically links Google account
@@ -160,6 +172,7 @@ Users can have:
 ### Required Environment Variables
 
 **Backend** (`server/.env`):
+
 ```env
 MONGODB_URI=mongodb+srv://hasankamal839_db_user:password@cluster0.fink5ub.mongodb.net/dekleptocracy?retryWrites=true&w=majority&appName=Cluster0
 PORT=5000
@@ -168,6 +181,7 @@ GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ```
 
 **Frontend** (`client/.env`):
+
 ```env
 VITE_API_URL=http://localhost:5000  # Optional, uses proxy in dev
 VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
@@ -176,30 +190,35 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ## Testing
 
 ### Test Email/Password Signup
+
 1. Go to `/chatbot/create-account`
 2. Fill out form
 3. Submit
 4. Should create account and redirect to chatbot
 
 ### Test Email/Password Login
+
 1. Go to `/chatbot/login`
 2. Enter credentials
 3. Submit
 4. Should authenticate and redirect to chatbot
 
 ### Test Google Signup
+
 1. Go to `/chatbot/create-account`
 2. Click Google button
 3. Authorize with Google
 4. Should create account and redirect to chatbot
 
 ### Test Google Login
+
 1. Go to `/chatbot/login`
 2. Click Google button
 3. Authorize with Google
 4. Should authenticate and redirect to chatbot
 
 ### Test Account Linking
+
 1. Create account with email/password
 2. Logout
 3. Login with Google using same email
@@ -214,4 +233,3 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 - Google users don't need a password
 - All authenticated users get the same JWT token format
 - Chatbot is protected and requires authentication
-

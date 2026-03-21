@@ -10,33 +10,33 @@ const Topics = () => {
     {
       id: 'household-costs',
       title: 'Household Costs',
-      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=300&h=200&fit=crop'
+      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=300&h=200&fit=crop',
     },
     {
       id: 'lobbying-influence',
       title: 'Lobbying & Influence',
-      image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=200&fit=crop'
+      image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=200&fit=crop',
     },
     {
       id: 'taxes-tariffs',
       title: 'Taxes & Tariffs',
-      image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=300&h=200&fit=crop'
+      image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=300&h=200&fit=crop',
     },
     {
       id: 'lobbying-influence-2',
       title: 'Lobbying & Influence',
-      image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=200&fit=crop'
+      image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=200&fit=crop',
     },
     {
       id: 'healthcare-education',
       title: 'Healthcare & Education',
-      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=300&h=200&fit=crop'
+      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=300&h=200&fit=crop',
     },
     {
       id: 'environment-climate',
       title: 'Environment & Climate',
-      image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop'
-    }
+      image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop',
+    },
   ];
 
   useEffect(() => {
@@ -47,10 +47,8 @@ const Topics = () => {
   }, []);
 
   const handleTopicToggle = (topicId) => {
-    setSelectedTopics(prev => 
-      prev.includes(topicId) 
-        ? prev.filter(id => id !== topicId)
-        : [...prev, topicId]
+    setSelectedTopics((prev) =>
+      prev.includes(topicId) ? prev.filter((id) => id !== topicId) : [...prev, topicId],
     );
   };
 
@@ -66,7 +64,7 @@ const Topics = () => {
           <h1 className="topics-question">
             What specific topics would you like the AI to focus on during your interactions?
           </h1>
-          
+
           <p className="topics-instruction">
             You can select multiple options from the following list
           </p>
@@ -94,7 +92,7 @@ const Topics = () => {
             >
               Skip
             </Link>
-            <button 
+            <button
               className="next-button"
               onClick={handleNext}
               disabled={selectedTopics.length === 0}

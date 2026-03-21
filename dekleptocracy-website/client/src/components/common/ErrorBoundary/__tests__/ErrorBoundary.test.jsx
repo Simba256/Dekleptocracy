@@ -28,7 +28,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <div>Child content</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Child content')).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
@@ -48,7 +48,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Test error message')).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary sectionName="Dashboard">
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Unable to load Dashboard')).toBeInTheDocument();
@@ -76,7 +76,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ConditionalError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary fallback={customFallback}>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(customFallback).toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     const link = screen.getByRole('link', { name: /contact support/i });
@@ -133,12 +133,10 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(
-      screen.getByRole('button', { name: /report.*issue/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /report.*issue/i })).toBeInTheDocument();
   });
 
   it('report button opens contact page', () => {
@@ -147,7 +145,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /report.*issue/i }));
@@ -160,7 +158,7 @@ describe('SectionErrorBoundary', () => {
     render(
       <SectionErrorBoundary sectionName="Widget">
         <div>Widget content</div>
-      </SectionErrorBoundary>
+      </SectionErrorBoundary>,
     );
 
     expect(screen.getByText('Widget content')).toBeInTheDocument();
@@ -170,7 +168,7 @@ describe('SectionErrorBoundary', () => {
     render(
       <SectionErrorBoundary sectionName="Widget">
         <ThrowError />
-      </SectionErrorBoundary>
+      </SectionErrorBoundary>,
     );
 
     expect(screen.getByText(/Unable to load Widget/)).toBeInTheDocument();
@@ -180,7 +178,7 @@ describe('SectionErrorBoundary', () => {
     render(
       <SectionErrorBoundary sectionName="Widget">
         <ThrowError />
-      </SectionErrorBoundary>
+      </SectionErrorBoundary>,
     );
 
     expect(screen.getByText('Test error message')).toBeInTheDocument();
@@ -188,12 +186,9 @@ describe('SectionErrorBoundary', () => {
 
   it('shows fallback data when provided', () => {
     render(
-      <SectionErrorBoundary
-        sectionName="Widget"
-        fallbackData={<div>Fallback content</div>}
-      >
+      <SectionErrorBoundary sectionName="Widget" fallbackData={<div>Fallback content</div>}>
         <ThrowError />
-      </SectionErrorBoundary>
+      </SectionErrorBoundary>,
     );
 
     expect(screen.getByText('Fallback content')).toBeInTheDocument();
@@ -203,11 +198,9 @@ describe('SectionErrorBoundary', () => {
     render(
       <SectionErrorBoundary sectionName="Widget">
         <ThrowError />
-      </SectionErrorBoundary>
+      </SectionErrorBoundary>,
     );
 
-    expect(
-      screen.getByRole('button', { name: /retry loading widget/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /retry loading widget/i })).toBeInTheDocument();
   });
 });

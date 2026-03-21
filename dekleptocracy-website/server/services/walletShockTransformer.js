@@ -17,10 +17,12 @@ const DATA_TYPE_TO_CATEGORY = {
     chartColor: '#ef4444',
     unit: 'per gallon',
     titleTemplates: {
-      up: (state, change) => `Gas prices ${change > 10 ? 'surge' : 'rise'} ${Math.abs(change).toFixed(1)}% in ${state}`,
-      down: (state, change) => `Gas prices ${Math.abs(change) > 10 ? 'plunge' : 'drop'} ${Math.abs(change).toFixed(1)}% in ${state}`,
-      neutral: (state) => `Gas prices hold steady in ${state}`
-    }
+      up: (state, change) =>
+        `Gas prices ${change > 10 ? 'surge' : 'rise'} ${Math.abs(change).toFixed(1)}% in ${state}`,
+      down: (state, change) =>
+        `Gas prices ${Math.abs(change) > 10 ? 'plunge' : 'drop'} ${Math.abs(change).toFixed(1)}% in ${state}`,
+      neutral: (state) => `Gas prices hold steady in ${state}`,
+    },
   },
   electricity_prices: {
     category: 'utilities',
@@ -29,10 +31,11 @@ const DATA_TYPE_TO_CATEGORY = {
     chartColor: '#3b82f6',
     unit: 'per kWh',
     titleTemplates: {
-      up: (state, change) => `Electric bills ${change > 15 ? 'spike' : 'climb'} ${Math.abs(change).toFixed(1)}% in ${state}`,
+      up: (state, change) =>
+        `Electric bills ${change > 15 ? 'spike' : 'climb'} ${Math.abs(change).toFixed(1)}% in ${state}`,
       down: (state, change) => `Electricity costs fall ${Math.abs(change).toFixed(1)}% in ${state}`,
-      neutral: (state) => `Power prices stable in ${state}`
-    }
+      neutral: (state) => `Power prices stable in ${state}`,
+    },
   },
   food_prices: {
     category: 'groceries',
@@ -41,10 +44,11 @@ const DATA_TYPE_TO_CATEGORY = {
     chartColor: '#f97316',
     unit: 'per month',
     titleTemplates: {
-      up: (state, change) => `Grocery costs ${change > 10 ? 'jump' : 'increase'} ${Math.abs(change).toFixed(1)}% in ${state}`,
+      up: (state, change) =>
+        `Grocery costs ${change > 10 ? 'jump' : 'increase'} ${Math.abs(change).toFixed(1)}% in ${state}`,
       down: (state, change) => `Food prices ease ${Math.abs(change).toFixed(1)}% in ${state}`,
-      neutral: (state) => `Grocery prices unchanged in ${state}`
-    }
+      neutral: (state) => `Grocery prices unchanged in ${state}`,
+    },
   },
   grocery_basket: {
     category: 'groceries',
@@ -54,10 +58,11 @@ const DATA_TYPE_TO_CATEGORY = {
     unit: 'monthly basket',
     titleTemplates: {
       up: (state, change) => `Weekly grocery basket up ${Math.abs(change).toFixed(1)}% in ${state}`,
-      down: (state, change) => `Grocery basket costs down ${Math.abs(change).toFixed(1)}% in ${state}`,
-      neutral: (state) => `Grocery basket steady in ${state}`
-    }
-  }
+      down: (state, change) =>
+        `Grocery basket costs down ${Math.abs(change).toFixed(1)}% in ${state}`,
+      neutral: (state) => `Grocery basket steady in ${state}`,
+    },
+  },
 };
 
 // Source attribution mapping
@@ -66,7 +71,7 @@ const SOURCE_NAMES = {
   usda: 'USDA Economic Research Service',
   bls: 'Bureau of Labor Statistics',
   fred: 'Federal Reserve Economic Data',
-  bea: 'Bureau of Economic Analysis'
+  bea: 'Bureau of Economic Analysis',
 };
 
 /**
@@ -87,7 +92,7 @@ function generateChartPath(values) {
 
   const points = values.map((val, i) => {
     const x = i * stepX;
-    const y = height - ((val - min) / range * height);
+    const y = height - ((val - min) / range) * height;
     return `${x.toFixed(1)} ${y.toFixed(1)}`;
   });
 
@@ -104,9 +109,9 @@ function generateChartPath(values) {
 function generateChartData(timeSeries, currentValue, changePercent) {
   // If we have real time series data, use it
   if (timeSeries && timeSeries.length >= 3) {
-    return timeSeries.slice(-12).map(ts => ({
+    return timeSeries.slice(-12).map((ts) => ({
       date: new Date(ts.date),
-      value: ts.value
+      value: ts.value,
     }));
   }
 
@@ -124,7 +129,7 @@ function generateChartData(timeSeries, currentValue, changePercent) {
 
     data.push({
       date: date,
-      value: parseFloat(value.toFixed(2))
+      value: parseFloat(value.toFixed(2)),
     });
   }
 
@@ -178,7 +183,8 @@ async function transformDataType(stateName, dataType) {
   const value = processedData.value;
   const displayValue = processedData.displayValue || `$${value}`;
   const change = processedData.change || 0;
-  const changeDisplay = processedData.changeDisplay || `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`;
+  const changeDisplay =
+    processedData.changeDisplay || `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`;
 
   // Determine direction
   const direction = getDirection(change);
@@ -189,7 +195,7 @@ async function transformDataType(stateName, dataType) {
 
   // Generate chart data
   const chartData = generateChartData(timeSeries, value, change);
-  const chartPath = generateChartPath(chartData.map(d => d.value));
+  const chartPath = generateChartPath(chartData.map((d) => d.value));
 
   // Determine chart color based on direction
   const chartColor = direction === 'down' ? '#22c55e' : config.chartColor;
@@ -212,7 +218,7 @@ async function transformDataType(stateName, dataType) {
     dataDate: fetchedAt || new Date(),
     reactions: { shock: 0, angry: 0, sad: 0 },
     featured: false,
-    status: 'published'
+    status: 'published',
   };
 }
 
@@ -228,7 +234,7 @@ export async function transformStateData(stateName) {
     state: stateName,
     created: [],
     updated: [],
-    failed: []
+    failed: [],
   };
 
   // Data types to transform (in priority order)
@@ -247,7 +253,7 @@ export async function transformStateData(stateName) {
       const existing = await WalletShock.findOne({
         state: stateName,
         category: walletShock.category,
-        status: 'published'
+        status: 'published',
       });
 
       if (existing) {
@@ -262,14 +268,15 @@ export async function transformStateData(stateName) {
         results.created.push(walletShock.category);
         logger.info(`Created ${walletShock.category} wallet shock for ${stateName}`);
       }
-
     } catch (error) {
       logger.error(`Failed to transform ${dataType} for ${stateName}`, error);
       results.failed.push({ dataType, reason: error.message });
     }
   }
 
-  logger.info(`Transformed wallet shocks for ${stateName}: ${results.created.length} created, ${results.updated.length} updated, ${results.failed.length} failed`);
+  logger.info(
+    `Transformed wallet shocks for ${stateName}: ${results.created.length} created, ${results.updated.length} updated, ${results.failed.length} failed`,
+  );
 
   return results;
 }
@@ -296,8 +303,8 @@ export async function transformAllStates(options = {}) {
 
   // Order states: priority first, then rest
   const orderedStates = [
-    ...priorityStates.filter(s => allStates.includes(s)),
-    ...allStates.filter(s => !priorityStates.includes(s))
+    ...priorityStates.filter((s) => allStates.includes(s)),
+    ...allStates.filter((s) => !priorityStates.includes(s)),
   ];
 
   const results = {
@@ -306,7 +313,7 @@ export async function transformAllStates(options = {}) {
     totalCreated: 0,
     totalUpdated: 0,
     totalFailed: 0,
-    stateResults: []
+    stateResults: [],
   };
 
   for (const state of orderedStates) {
@@ -320,17 +327,18 @@ export async function transformAllStates(options = {}) {
       if (stateResult.created.length > 0 || stateResult.updated.length > 0) {
         results.successfulStates++;
       }
-
     } catch (error) {
       logger.error(`Failed to transform state ${state}`, error);
       results.stateResults.push({
         state,
-        error: error.message
+        error: error.message,
       });
     }
   }
 
-  logger.info(`Wallet shock transformation complete: ${results.successfulStates}/${results.totalStates} states, ${results.totalCreated} created, ${results.totalUpdated} updated`);
+  logger.info(
+    `Wallet shock transformation complete: ${results.successfulStates}/${results.totalStates} states, ${results.totalCreated} created, ${results.totalUpdated} updated`,
+  );
 
   return results;
 }
@@ -379,7 +387,7 @@ export async function getTransformationStatus() {
   const statesWithShocks = await WalletShock.distinct('state', { status: 'published' });
   const categoryCounts = await WalletShock.aggregate([
     { $match: { status: 'published' } },
-    { $group: { _id: '$category', count: { $sum: 1 } } }
+    { $group: { _id: '$category', count: { $sum: 1 } } },
   ]);
 
   const cacheHealth = await StateDataCache.getCacheHealth();
@@ -392,17 +400,17 @@ export async function getTransformationStatus() {
       byCategory: categoryCounts.reduce((acc, item) => {
         acc[item._id] = item.count;
         return acc;
-      }, {})
+      }, {}),
     },
     cache: {
       totalEntries: cacheHealth.totalEntries,
       statesWithData: cacheHealth.statesWithData,
-      healthPercentage: cacheHealth.healthPercentage
+      healthPercentage: cacheHealth.healthPercentage,
     },
-    dataMapping: Object.keys(DATA_TYPE_TO_CATEGORY).map(dt => ({
+    dataMapping: Object.keys(DATA_TYPE_TO_CATEGORY).map((dt) => ({
       dataType: dt,
-      category: DATA_TYPE_TO_CATEGORY[dt].category
-    }))
+      category: DATA_TYPE_TO_CATEGORY[dt].category,
+    })),
   };
 }
 
@@ -410,5 +418,5 @@ export default {
   transformStateData,
   transformAllStates,
   transformNationwide,
-  getTransformationStatus
+  getTransformationStatus,
 };

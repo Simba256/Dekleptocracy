@@ -8,13 +8,13 @@ const router = express.Router();
 // Get all articles with pagination and filters
 router.get('/', async (req, res) => {
   try {
-    const { 
-      category, 
-      status = 'published', 
+    const {
+      category,
+      status = 'published',
       featured,
-      page = 1, 
+      page = 1,
       limit = 10,
-      sort = '-publishedAt'
+      sort = '-publishedAt',
     } = req.query;
 
     const query = { status };
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
       articles,
       totalPages: Math.ceil(count / limit),
       currentPage: parseInt(page),
-      totalArticles: count
+      totalArticles: count,
     });
   } catch (error) {
     console.error('Error fetching articles:', error);
@@ -67,9 +67,9 @@ router.get('/latest', async (req, res) => {
 // Get featured articles
 router.get('/featured', async (req, res) => {
   try {
-    const articles = await Article.find({ 
+    const articles = await Article.find({
       status: 'published',
-      featured: true 
+      featured: true,
     })
       .sort('-publishedAt')
       .limit(5)
@@ -85,9 +85,9 @@ router.get('/featured', async (req, res) => {
 // Get single article by slug
 router.get('/:slug', async (req, res) => {
   try {
-    const article = await Article.findOne({ 
+    const article = await Article.findOne({
       slug: req.params.slug,
-      status: 'published'
+      status: 'published',
     });
 
     if (!article) {
@@ -110,9 +110,9 @@ router.get('/category/:category', async (req, res) => {
     const { category } = req.params;
     const { limit = 10 } = req.query;
 
-    const articles = await Article.find({ 
+    const articles = await Article.find({
       category,
-      status: 'published'
+      status: 'published',
     })
       .sort('-publishedAt')
       .limit(parseInt(limit))
@@ -141,9 +141,9 @@ router.post('/', validate(createArticleSchema), async (req, res) => {
     const article = new Article(articleData);
     await article.save();
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'Article created successfully',
-      article 
+      article,
     });
   } catch (error) {
     console.error('Error creating article:', error);
@@ -154,19 +154,18 @@ router.post('/', validate(createArticleSchema), async (req, res) => {
 // Update article
 router.put('/:id', validate(updateArticleSchema), async (req, res) => {
   try {
-    const article = await Article.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const article = await Article.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!article) {
       return res.status(404).json({ message: 'Article not found' });
     }
 
-    res.json({ 
+    res.json({
       message: 'Article updated successfully',
-      article 
+      article,
     });
   } catch (error) {
     console.error('Error updating article:', error);
@@ -196,17 +195,17 @@ router.get('/stats/overview', async (req, res) => {
     const totalArticles = await Article.countDocuments({ status: 'published' });
     const categoryCounts = await Article.aggregate([
       { $match: { status: 'published' } },
-      { $group: { _id: '$category', count: { $sum: 1 } } }
+      { $group: { _id: '$category', count: { $sum: 1 } } },
     ]);
     const totalViews = await Article.aggregate([
       { $match: { status: 'published' } },
-      { $group: { _id: null, total: { $sum: '$views' } } }
+      { $group: { _id: null, total: { $sum: '$views' } } },
     ]);
 
     res.json({
       totalArticles,
       categoryCounts,
-      totalViews: totalViews[0]?.total || 0
+      totalViews: totalViews[0]?.total || 0,
     });
   } catch (error) {
     console.error('Error fetching stats:', error);
@@ -218,18 +217,18 @@ router.get('/stats/overview', async (req, res) => {
 router.post('/cleanup-duplicates', async (req, res) => {
   try {
     console.log('🧹 Starting duplicate cleanup by title...');
-    
+
     // Get all articles sorted by creation date (newest first)
     const articles = await Article.find({}).sort({ createdAt: -1 });
-    
+
     const titleMap = new Map();
     const duplicateIds = [];
     const duplicateTitles = [];
-    
+
     // Track duplicates by normalized title (keep the newest occurrence)
     for (const article of articles) {
       const normalizedTitle = article.title.trim().toLowerCase();
-      
+
       if (titleMap.has(normalizedTitle)) {
         // This is a duplicate - mark for deletion
         duplicateIds.push(article._id);
@@ -243,38 +242,37 @@ router.post('/cleanup-duplicates', async (req, res) => {
         console.log(`   ✅ Keeping: "${article.title}" (${article.slug})`);
       }
     }
-    
+
     if (duplicateIds.length === 0) {
       return res.json({
         success: true,
         message: 'No duplicates found',
         duplicatesRemoved: 0,
         totalArticles: articles.length,
-        uniqueArticles: titleMap.size
+        uniqueArticles: titleMap.size,
       });
     }
-    
+
     // Delete duplicates
     const result = await Article.deleteMany({ _id: { $in: duplicateIds } });
-    
+
     console.log(`✅ Removed ${result.deletedCount} duplicate articles`);
     console.log(`📋 Duplicate titles: ${duplicateTitles.join(', ')}`);
-    
+
     res.json({
       success: true,
       message: `Successfully removed ${result.deletedCount} duplicates`,
       duplicatesRemoved: result.deletedCount,
       totalArticles: titleMap.size,
       uniqueArticles: titleMap.size,
-      duplicateTitles: duplicateTitles
+      duplicateTitles: duplicateTitles,
     });
-    
   } catch (error) {
     console.error('❌ Error cleaning up duplicates:', error);
     res.status(500).json({
       success: false,
       message: 'Error cleaning up duplicates',
-      error: error.message
+      error: error.message,
     });
   }
 });

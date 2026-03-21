@@ -3,21 +3,26 @@
 ## 🚀 Quick Start (3 Steps)
 
 ### 1. Start Your MCP Server
+
 ```bash
 cd mcp_server
 python http_server.py
 ```
+
 This starts your MCP server with all data APIs and LLM at `http://localhost:8000`
 
 ### 2. Start Node.js Server
+
 ```bash
 cd dekleptocracy-website/server
 npm install node-cron
 npm run dev
 ```
+
 The article generator will automatically start and use your MCP server every 2 hours.
 
 ### 3. Test Article Generation
+
 ```bash
 curl -X POST http://localhost:5000/api/articles/generate -H "Content-Type: application/json" -d '{"count": 2}'
 ```
@@ -33,6 +38,7 @@ Your existing MCP server (`mcp_server/`) is now **FULLY INTEGRATED** with the ar
 ## Current Setup
 
 ### Your MCP Server Provides:
+
 - ✅ OpenAI GPT-4/GPT-5 via `apis/openai_api.py`
 - ✅ Gemini AI via `apis/gemini_api.py`
 - ✅ Multiple data sources (BEA, Census, Federal Register, GNews, etc.)
@@ -40,6 +46,7 @@ Your existing MCP server (`mcp_server/`) is now **FULLY INTEGRATED** with the ar
 - ✅ Intelligent chat with function calling
 
 ### Article Generator Now:
+
 - ✅ **CALLS YOUR MCP SERVER** at `http://localhost:8000`
 - ✅ Uses `/chat/intelligent/v2` endpoint (GPT with function calling)
 - ✅ Fetches real data via `/execute` endpoint (news, tariffs, etc.)
@@ -188,9 +195,7 @@ POST http://localhost:8000/chat/intelligent/v2
       "description": "Detailed explanation"
     }
   ],
-  "chartData": [
-    { "month": "Jan", "value": 100 }
-  ]
+  "chartData": [{ "month": "Jan", "value": 100 }]
 }
 ```
 
@@ -208,7 +213,7 @@ async function getTariffData(htsCode) {
   const response = await fetch('http://localhost:8000/lookup_hts_code', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ hts_code: htsCode })
+    body: JSON.stringify({ hts_code: htsCode }),
   });
   return await response.json();
 }
@@ -218,7 +223,7 @@ async function getLatestNews(topic) {
   const response = await fetch('http://localhost:8000/search_news', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query: topic, max_results: 10 })
+    body: JSON.stringify({ query: topic, max_results: 10 }),
   });
   return await response.json();
 }
@@ -235,18 +240,16 @@ Use your configured APIs directly:
 ```javascript
 // BEA API for economic data
 const beaResponse = await fetch(
-  `https://apps.bea.gov/api/data?UserID=${process.env.BEA_API_KEY}&...`
+  `https://apps.bea.gov/api/data?UserID=${process.env.BEA_API_KEY}&...`,
 );
 
 // Census API for demographic data
 const censusResponse = await fetch(
-  `https://api.census.gov/data?key=${process.env.CENSUS_API_KEY}&...`
+  `https://api.census.gov/data?key=${process.env.CENSUS_API_KEY}&...`,
 );
 
 // Federal Register for policy data
-const policyResponse = await fetch(
-  'https://www.federalregister.gov/api/v1/documents?...'
-);
+const policyResponse = await fetch('https://www.federalregister.gov/api/v1/documents?...');
 ```
 
 ## Advanced Integration
@@ -261,6 +264,7 @@ python tariff_server_improved.py
 ```
 
 This starts an HTTP server (usually on port 8000) with these endpoints:
+
 - `/calculate_tariff_cost` - Calculate tariff impacts
 - `/lookup_hts_code` - Look up tariff codes
 - `/search_news` - Search news via GNews
@@ -279,21 +283,21 @@ async function generateEnhancedArticle(category, topic) {
   const newsResponse = await fetch('http://localhost:8000/search_news', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query: topic, max_results: 5 })
+    body: JSON.stringify({ query: topic, max_results: 5 }),
   });
   const newsData = await newsResponse.json();
-  
+
   // 2. Analyze sentiment
   const sentimentResponse = await fetch('http://localhost:8000/analyze_sentiment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      text: newsData.articles.map(a => a.description).join(' '),
-      context: `${category} price analysis`
-    })
+    body: JSON.stringify({
+      text: newsData.articles.map((a) => a.description).join(' '),
+      context: `${category} price analysis`,
+    }),
   });
   const sentiment = await sentimentResponse.json();
-  
+
   // 3. Generate article with real data
   const prompt = `
     Generate article about ${topic} in ${category}.
@@ -301,11 +305,11 @@ async function generateEnhancedArticle(category, topic) {
     Latest news sentiment: ${sentiment.analysis}
     
     Recent headlines:
-    ${newsData.articles.map(a => `- ${a.title}`).join('\n')}
+    ${newsData.articles.map((a) => `- ${a.title}`).join('\n')}
     
     [Rest of prompt...]
   `;
-  
+
   return await callLLM(prompt);
 }
 ```
@@ -319,10 +323,10 @@ Poll your data sources periodically:
 setInterval(async () => {
   // Update tariff rates
   const tariffs = await fetchLatestTariffs();
-  
+
   // Update news cache
   const news = await fetchLatestNews();
-  
+
   // Store in database for article generation
   await updateDataCache({ tariffs, news });
 }, 3600000); // Every hour
@@ -394,24 +398,26 @@ If you prefer Gemini over OpenAI:
 ```javascript
 async function callLLM(prompt) {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  
+
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }],
+        contents: [
+          {
+            parts: [{ text: prompt }],
+          },
+        ],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 2000
-        }
-      })
-    }
+          maxOutputTokens: 2000,
+        },
+      }),
+    },
   );
-  
+
   const data = await response.json();
   const content = data.candidates[0].content.parts[0].text;
   return JSON.parse(content);
@@ -440,9 +446,11 @@ GEMINI_API_KEY=your-gemini-key
 ### Check API Usage
 
 Monitor your OpenAI usage:
+
 - https://platform.openai.com/usage
 
 Monitor your Gemini usage:
+
 - https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com
 
 ## Troubleshooting
@@ -469,11 +477,13 @@ Monitor your Gemini usage:
 ## Cost Optimization
 
 ### OpenAI Costs
+
 - GPT-4: ~$0.03 per article (1000 tokens)
 - 7 articles every 2 hours = 84 articles/day
 - Estimated: $2.52/day or $75/month
 
 ### Reduce Costs
+
 1. Use GPT-3.5-turbo instead (10x cheaper)
 2. Generate fewer articles (5 instead of 7)
 3. Increase interval (every 3-4 hours)

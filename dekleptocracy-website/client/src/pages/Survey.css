@@ -146,42 +146,42 @@
     height: auto;
     min-height: 100vh;
   }
-  
+
   .survey-container {
     max-width: 100%;
     height: auto;
   }
-  
+
   .survey-content {
     gap: 16px;
   }
-  
+
   .survey-question {
     font-size: 24px;
     max-width: 100%;
   }
-  
+
   .survey-instruction {
     font-size: 14px;
     max-width: 100%;
   }
-  
+
   .options-container {
     max-width: 100%;
     gap: 10px;
   }
-  
+
   .option-button {
     padding: 14px 20px;
     font-size: 15px;
   }
-  
+
   .navigation-buttons {
     flex-direction: column;
     gap: 12px;
     max-width: 100%;
   }
-  
+
   .skip-button,
   .next-button {
     width: 100%;
@@ -195,33 +195,33 @@
   .survey-page {
     padding: 20px 12px;
   }
-  
+
   .survey-content {
     gap: 14px;
   }
-  
+
   .survey-question {
     font-size: 20px;
     line-height: 1.4;
   }
-  
+
   .survey-instruction {
     font-size: 13px;
   }
-  
+
   .options-container {
     gap: 8px;
   }
-  
+
   .option-button {
     padding: 12px 16px;
     font-size: 14px;
   }
-  
+
   .navigation-buttons {
     gap: 10px;
   }
-  
+
   .skip-button,
   .next-button {
     padding: 10px 16px;
@@ -233,20 +233,20 @@
   .survey-page {
     padding: 16px 10px;
   }
-  
+
   .survey-question {
     font-size: 18px;
   }
-  
+
   .survey-instruction {
     font-size: 12px;
   }
-  
+
   .option-button {
     padding: 10px 14px;
     font-size: 13px;
   }
-  
+
   .skip-button,
   .next-button {
     padding: 8px 14px;

@@ -6,14 +6,30 @@ export const StatsSection = memo(function StatsSection() {
   const { stats } = state;
 
   // Use API data with fallbacks (includes source attributions)
-  const lobbying = stats.lobbying || { displayValue: '276K', source: 'U.S. Senate Office of Public Records (LDA)' };
-  const consumerCost = stats.consumerCost || { displayValue: '$4,679', changeDisplay: '+28.42%', source: 'Bureau of Labor Statistics, EIA, USDA' };
-  const contributions = stats.contributions || { displayValue: '$9.2M', changeDisplay: '+18.6%', source: 'Federal Election Commission' };
-  const tariffRevenue = stats.tariffRevenue || { displayValue: '$6.7B', source: 'U.S. Department of the Treasury' };
+  const lobbying = stats.lobbying || {
+    displayValue: '276K',
+    source: 'U.S. Senate Office of Public Records (LDA)',
+  };
+  const consumerCost = stats.consumerCost || {
+    displayValue: '$4,679',
+    changeDisplay: '+28.42%',
+    source: 'Bureau of Labor Statistics, EIA, USDA',
+  };
+  const contributions = stats.contributions || {
+    displayValue: '$9.2M',
+    changeDisplay: '+18.6%',
+    source: 'Federal Election Commission',
+  };
+  const tariffRevenue = stats.tariffRevenue || {
+    displayValue: '$6.7B',
+    source: 'U.S. Department of the Treasury',
+  };
 
   return (
     <section className="stats-section" aria-labelledby="stats-heading">
-      <h2 id="stats-heading" className="sr-only">Key Statistics</h2>
+      <h2 id="stats-heading" className="sr-only">
+        Key Statistics
+      </h2>
       <div className="stats-container">
         {/* Lobbying Cases Tracked */}
         <div className="home-stat-card home-stat-card-large">
@@ -73,7 +89,9 @@ export const StatsSection = memo(function StatsSection() {
             <h3 className="stat-title">Tariff Revenue</h3>
           </div>
           <div className="stat-value">{tariffRevenue.displayValue}</div>
-          <p className="stat-description">Weekly revenue collected from tariffs on imported goods.</p>
+          <p className="stat-description">
+            Weekly revenue collected from tariffs on imported goods.
+          </p>
           <div className="bar-chart">
             {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
               <div key={index} className="bar-group">
@@ -87,7 +105,6 @@ export const StatsSection = memo(function StatsSection() {
           </div>
           <div className="stat-source">Source: {tariffRevenue.source}</div>
         </div>
-
       </div>
     </section>
   );

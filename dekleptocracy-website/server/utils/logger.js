@@ -15,11 +15,13 @@ export const logger = {
   error: (message, error = null, context = {}) => {
     console.error(`[ERROR] ${new Date().toISOString()} - ${message}`, {
       ...context,
-      error: error ? {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      } : null
+      error: error
+        ? {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+          }
+        : null,
     });
   },
 
@@ -30,7 +32,7 @@ export const logger = {
       statusCode,
       ip: req.ip,
       userAgent: req.get('user-agent'),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     if (responseTime) {
@@ -46,7 +48,7 @@ export const logger = {
     } else {
       console.log('[API]', logData);
     }
-  }
+  },
 };
 
 export default logger;

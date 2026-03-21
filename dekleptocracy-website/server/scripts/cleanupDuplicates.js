@@ -12,18 +12,18 @@ async function cleanupDuplicates() {
 
     console.log('🔍 Finding duplicate articles...');
     const articles = await Article.find({}).sort({ createdAt: -1 });
-    
+
     const slugMap = new Map();
     const duplicateIds = [];
     const duplicateDetails = [];
-    
+
     for (const article of articles) {
       if (slugMap.has(article.slug)) {
         duplicateIds.push(article._id);
         duplicateDetails.push({
           title: article.title,
           slug: article.slug,
-          createdAt: article.createdAt
+          createdAt: article.createdAt,
         });
       } else {
         slugMap.set(article.slug, article._id);
@@ -46,11 +46,10 @@ async function cleanupDuplicates() {
     }
 
     console.log('📊 Current article count:', await Article.countDocuments());
-    
+
     await mongoose.connection.close();
     console.log('\n✅ Cleanup complete!');
     process.exit(0);
-    
   } catch (error) {
     console.error('❌ Error:', error);
     process.exit(1);

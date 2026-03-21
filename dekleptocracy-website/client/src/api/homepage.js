@@ -9,7 +9,7 @@ import { API_URL } from '../utils/apiUrl';
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   const headers = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -35,7 +35,7 @@ const handleResponse = async (response) => {
 export const fetchWalletShocks = async (state = 'nationwide', limit = 4, sortBy = 'date') => {
   const response = await fetch(
     `${API_URL}/api/homepage/wallet-shocks?state=${encodeURIComponent(state)}&limit=${limit}&sortBy=${sortBy}`,
-    { headers: getAuthHeaders() }
+    { headers: getAuthHeaders() },
   );
   return handleResponse(response);
 };
@@ -48,7 +48,7 @@ export const fetchWalletShocks = async (state = 'nationwide', limit = 4, sortBy 
 export const fetchCostDrivers = async (state = 'nationwide', period = 'YoY') => {
   const response = await fetch(
     `${API_URL}/api/homepage/cost-drivers?state=${encodeURIComponent(state)}&period=${encodeURIComponent(period)}`,
-    { headers: getAuthHeaders() }
+    { headers: getAuthHeaders() },
   );
   return handleResponse(response);
 };
@@ -58,10 +58,9 @@ export const fetchCostDrivers = async (state = 'nationwide', period = 'YoY') => 
  * @param {string} state - State name or 'nationwide'
  */
 export const fetchStats = async (state = 'nationwide') => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/stats?state=${encodeURIComponent(state)}`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/stats?state=${encodeURIComponent(state)}`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -72,7 +71,7 @@ export const fetchStats = async (state = 'nationwide') => {
 export const fetchStateComparison = async (state = 'nationwide') => {
   const response = await fetch(
     `${API_URL}/api/homepage/state-comparison?state=${encodeURIComponent(state)}`,
-    { headers: getAuthHeaders() }
+    { headers: getAuthHeaders() },
   );
   return handleResponse(response);
 };
@@ -87,10 +86,9 @@ export const fetchProductImpact = async (product, state = 'nationwide') => {
   if (product) params.append('product', product);
   if (state) params.append('state', state);
 
-  const response = await fetch(
-    `${API_URL}/api/homepage/product-impact?${params.toString()}`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/product-impact?${params.toString()}`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -103,10 +101,9 @@ export const fetchSocialPosts = async (limit = 6, state = null) => {
   const params = new URLSearchParams({ limit: limit.toString() });
   if (state) params.append('state', state);
 
-  const response = await fetch(
-    `${API_URL}/api/homepage/social-posts?${params.toString()}`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/social-posts?${params.toString()}`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -114,10 +111,7 @@ export const fetchSocialPosts = async (limit = 6, state = null) => {
  * Fetch map data for heat map
  */
 export const fetchMapData = async () => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/map-data`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/map-data`, { headers: getAuthHeaders() });
   return handleResponse(response);
 };
 
@@ -129,7 +123,7 @@ export const fetchMapData = async () => {
 export const fetchNearbyShocks = async (state = 'nationwide', limit = 5) => {
   const response = await fetch(
     `${API_URL}/api/homepage/nearby-shocks?state=${encodeURIComponent(state)}&limit=${limit}`,
-    { headers: getAuthHeaders() }
+    { headers: getAuthHeaders() },
   );
   return handleResponse(response);
 };
@@ -143,10 +137,9 @@ export const fetchQuickQuestions = async (limit = 3, state = null) => {
   const params = new URLSearchParams({ limit: limit.toString() });
   if (state) params.append('state', state);
 
-  const response = await fetch(
-    `${API_URL}/api/homepage/quick-questions?${params.toString()}`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/quick-questions?${params.toString()}`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -155,13 +148,10 @@ export const fetchQuickQuestions = async (limit = 3, state = null) => {
  * @param {string} questionId - Question ID
  */
 export const trackQuestionClick = async (questionId) => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/quick-questions/${questionId}/click`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders()
-    }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/quick-questions/${questionId}/click`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -169,10 +159,9 @@ export const trackQuestionClick = async (questionId) => {
  * Fetch featured states
  */
 export const fetchFeaturedStates = async () => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/featured-states`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/featured-states`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -180,10 +169,9 @@ export const fetchFeaturedStates = async () => {
  * Fetch timeline configuration
  */
 export const fetchTimelineConfig = async () => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/timeline-config`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/timeline-config`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -192,10 +180,9 @@ export const fetchTimelineConfig = async () => {
  * @param {number} limit - Number of products (default: 5)
  */
 export const fetchTrendingProducts = async (limit = 5) => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/trending-products?limit=${limit}`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/trending-products?limit=${limit}`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -203,10 +190,9 @@ export const fetchTrendingProducts = async (limit = 5) => {
  * Fetch available states with data
  */
 export const fetchAvailableStates = async () => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/available-states`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/available-states`, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
@@ -216,14 +202,11 @@ export const fetchAvailableStates = async () => {
  * @param {string} reactionType - 'shock', 'angry', or 'sad'
  */
 export const addReaction = async (shockId, reactionType) => {
-  const response = await fetch(
-    `${API_URL}/api/homepage/wallet-shocks/${shockId}/react`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ reactionType })
-    }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/wallet-shocks/${shockId}/react`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ reactionType }),
+  });
   return handleResponse(response);
 };
 
@@ -253,13 +236,12 @@ export const downloadCSV = (state = 'nationwide') => {
 export const fetchAllHomepageData = async (state = 'nationwide', timePeriod = 'YoY') => {
   const params = new URLSearchParams({
     state: state,
-    period: timePeriod
+    period: timePeriod,
   });
 
-  const response = await fetch(
-    `${API_URL}/api/homepage/all?${params.toString()}`,
-    { headers: getAuthHeaders() }
-  );
+  const response = await fetch(`${API_URL}/api/homepage/all?${params.toString()}`, {
+    headers: getAuthHeaders(),
+  });
 
   const result = await handleResponse(response);
 
@@ -274,7 +256,7 @@ export const fetchAllHomepageData = async (state = 'nationwide', timePeriod = 'Y
     stateComparisons: result.data.stateComparisons || [],
     socialPosts: result.data.socialPosts || [],
     quickQuestions: result.data.quickQuestions || [],
-    timelineConfig: result.data.timelineConfig || null
+    timelineConfig: result.data.timelineConfig || null,
   };
 };
 
@@ -296,5 +278,5 @@ export default {
   addReaction,
   downloadReport,
   downloadCSV,
-  fetchAllHomepageData
+  fetchAllHomepageData,
 };

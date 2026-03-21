@@ -1,24 +1,24 @@
 /* Design Tokens - Single Source of Truth for Design Values */
 :root {
   /* Brand Colors */
-  --color-coral: #FF6B5A;
-  --color-coral-hover: #FF5647;
+  --color-coral: #ff6b5a;
+  --color-coral-hover: #ff5647;
   --color-coral-dark: #e85d4a;
   --color-coral-light: #ffe4e6;
 
   --color-green-primary: #2c5f3e;
   --color-green-light: #3a7b4e;
-  --color-green-muted: #4A5D3F;
-  --color-green-dark: #3E5132;
-  --color-green-bg: #E8EDE5;
-  --color-green-section: #F5F7F3;
-  --color-green-panel: #F8FAF6;
+  --color-green-muted: #4a5d3f;
+  --color-green-dark: #3e5132;
+  --color-green-bg: #e8ede5;
+  --color-green-section: #f5f7f3;
+  --color-green-panel: #f8faf6;
 
   /* Neutrals */
   --color-white: #ffffff;
   --color-gray-50: #f9fafb;
   --color-gray-100: #f3f4f6;
-  --color-gray-150: #F8F9FA;
+  --color-gray-150: #f8f9fa;
   --color-gray-200: #e5e7eb;
   --color-gray-250: #e9ecef;
   --color-gray-300: #d1d5db;
@@ -29,16 +29,16 @@
   --color-gray-800: #374151;
   --color-gray-900: #1f2937;
   --color-text-primary: #212529;
-  --color-text-dark: #2E3A2E;
+  --color-text-dark: #2e3a2e;
 
   /* Orange/Secondary Accent */
-  --color-orange-primary: #E76F51;
-  --color-orange-hover: #D65A43;
+  --color-orange-primary: #e76f51;
+  --color-orange-hover: #d65a43;
   --color-orange-accent: #ff6b35;
 
   /* Extended Gray Scale */
-  --color-gray-25: #F5F5F5;
-  --color-gray-175: #E5E5E5;
+  --color-gray-25: #f5f5f5;
+  --color-gray-175: #e5e5e5;
   --color-gray-450: #888888;
   --color-gray-750: #333333;
 
@@ -73,11 +73,11 @@
 
   /* Spacing Scale */
   --space-xs: 4px;
-  --space-1: 6px;      /* Between xs and sm */
+  --space-1: 6px; /* Between xs and sm */
   --space-sm: 8px;
-  --space-1-5: 12px;   /* Between sm and md */
+  --space-1-5: 12px; /* Between sm and md */
   --space-md: 16px;
-  --space-2-5: 20px;   /* Between md and lg */
+  --space-2-5: 20px; /* Between md and lg */
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
@@ -142,9 +142,19 @@
   --z-tooltip: 1100;
 
   /* Gradient Tokens */
-  --gradient-green-primary: linear-gradient(135deg, var(--color-green-dark) 0%, var(--color-green-muted) 100%);
+  --gradient-green-primary: linear-gradient(
+    135deg,
+    var(--color-green-dark) 0%,
+    var(--color-green-muted) 100%
+  );
   --gradient-hero-subtle: linear-gradient(135deg, #ffd6e5 0%, #e5d4ff 40%, #c9e9ff 100%);
-  --gradient-heat-map: linear-gradient(to right, #fef3c7, #f97316, #dc2626, var(--color-error-dark));
+  --gradient-heat-map: linear-gradient(
+    to right,
+    #fef3c7,
+    #f97316,
+    #dc2626,
+    var(--color-error-dark)
+  );
 
   /* Overlay Tokens */
   --color-overlay-dark: rgba(0, 0, 0, 0.6);

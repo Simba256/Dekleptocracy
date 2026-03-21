@@ -8,7 +8,7 @@ const verifyToken = (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'No token provided'
+        message: 'No token provided',
       });
     }
 
@@ -18,7 +18,7 @@ const verifyToken = (req, res, next) => {
     if (decoded.type === 'refresh') {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token type'
+        message: 'Invalid token type',
       });
     }
 
@@ -29,17 +29,17 @@ const verifyToken = (req, res, next) => {
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token expired'
+        message: 'Token expired',
       });
     } else if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token'
+        message: 'Invalid token',
       });
     }
     return res.status(500).json({
       success: false,
-      message: 'Token verification failed'
+      message: 'Token verification failed',
     });
   }
 };

@@ -15,7 +15,7 @@ class ErrorBoundary extends Component {
 
     logError(error, {
       componentStack: errorInfo.componentStack?.slice(0, 500),
-      boundary: 'ErrorBoundary'
+      boundary: 'ErrorBoundary',
     });
   }
 
@@ -29,7 +29,7 @@ class ErrorBoundary extends Component {
         this.props.fallback({
           error: this.state.error,
           errorInfo: this.state.errorInfo,
-          retry: this.handleRetry
+          retry: this.handleRetry,
         })
       ) : (
         <ErrorFallback
@@ -60,31 +60,33 @@ const ErrorFallback = ({ error, errorInfo, onRetry, sectionName }) => {
   const errorDetails = {
     message: error?.message || 'An unexpected error occurred',
     stack: error?.stack,
-    componentStack: errorInfo?.componentStack
+    componentStack: errorInfo?.componentStack,
   };
 
   return (
     <div className="error-fallback" role="alert" aria-labelledby="error-fallback-title">
       <div className="error-fallback-content">
-        <div className="error-icon" aria-hidden="true">⚠️</div>
+        <div className="error-icon" aria-hidden="true">
+          ⚠️
+        </div>
 
         <h2 id="error-fallback-title" className="error-title">
           {sectionName ? `Unable to load ${sectionName}` : 'Something went wrong'}
         </h2>
 
-        <p className="error-message">
-          {errorDetails.message}
-        </p>
+        <p className="error-message">{errorDetails.message}</p>
 
-        {process.env.NODE_ENV === 'development' && (errorDetails.stack || errorDetails.componentStack) && (
-          <details className="error-details">
-            <summary>Technical details (development only)</summary>
-            <pre className="error-stack">
-              {errorDetails.stack}
-              {errorDetails.componentStack && '\n\nComponent Stack:\n' + errorDetails.componentStack}
-            </pre>
-          </details>
-        )}
+        {process.env.NODE_ENV === 'development' &&
+          (errorDetails.stack || errorDetails.componentStack) && (
+            <details className="error-details">
+              <summary>Technical details (development only)</summary>
+              <pre className="error-stack">
+                {errorDetails.stack}
+                {errorDetails.componentStack &&
+                  '\n\nComponent Stack:\n' + errorDetails.componentStack}
+              </pre>
+            </details>
+          )}
 
         <div className="error-actions">
           <button
@@ -134,13 +136,10 @@ export const SectionErrorBoundary = ({ children, sectionName, fallbackData }) =>
     fallback={({ error, retry }) => (
       <div className="section-error">
         <p className="section-error-message">
-          Unable to load {sectionName}. <span className="error-text">{error?.message || 'Unknown error'}</span>
+          Unable to load {sectionName}.{' '}
+          <span className="error-text">{error?.message || 'Unknown error'}</span>
         </p>
-        {fallbackData && (
-          <div className="fallback-content">
-            {fallbackData}
-          </div>
-        )}
+        {fallbackData && <div className="fallback-content">{fallbackData}</div>}
         <button
           className="section-retry-btn"
           onClick={retry}

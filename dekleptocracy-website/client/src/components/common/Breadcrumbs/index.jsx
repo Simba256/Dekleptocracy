@@ -66,18 +66,11 @@ const Breadcrumbs = ({ items, showHome = true, className = '' }) => {
   }
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={`breadcrumbs ${className}`.trim()}
-    >
+    <nav aria-label="Breadcrumb" className={`breadcrumbs ${className}`.trim()}>
       <ol className="breadcrumbs__list">
         {showHome && (
           <li className="breadcrumbs__item">
-            <Link
-              to="/"
-              className="breadcrumbs__link breadcrumbs__link--home"
-              aria-label="Home"
-            >
+            <Link to="/" className="breadcrumbs__link breadcrumbs__link--home" aria-label="Home">
               <HomeIcon size={16} />
             </Link>
             {breadcrumbItems.length > 0 && (
@@ -92,23 +85,14 @@ const Breadcrumbs = ({ items, showHome = true, className = '' }) => {
           const isLast = index === breadcrumbItems.length - 1;
 
           return (
-            <li
-              key={item.path || index}
-              className="breadcrumbs__item"
-            >
+            <li key={item.path || index} className="breadcrumbs__item">
               {isLast ? (
-                <span
-                  className="breadcrumbs__current"
-                  aria-current="page"
-                >
+                <span className="breadcrumbs__current" aria-current="page">
                   {item.label}
                 </span>
               ) : (
                 <>
-                  <Link
-                    to={item.path}
-                    className="breadcrumbs__link"
-                  >
+                  <Link to={item.path} className="breadcrumbs__link">
                     {item.label}
                   </Link>
                   <span className="breadcrumbs__separator">
@@ -129,7 +113,7 @@ Breadcrumbs.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       path: PropTypes.string.isRequired,
-    })
+    }),
   ),
   showHome: PropTypes.bool,
   className: PropTypes.string,
@@ -149,18 +133,18 @@ Breadcrumbs.defaultProps = {
 function generateBreadcrumbs(pathname) {
   // Route label mappings
   const routeLabels = {
-    'about': 'About',
-    'contact': 'Contact',
-    'reports': 'Reports',
+    about: 'About',
+    contact: 'Contact',
+    reports: 'Reports',
     'state-report': 'State Report',
-    'insights': 'Insights',
-    'chatbot': 'AI Assistant',
-    'login': 'Login',
+    insights: 'Insights',
+    chatbot: 'AI Assistant',
+    login: 'Login',
     'create-account': 'Create Account',
-    'profile': 'Profile',
-    'articles': 'Articles',
-    'costs': 'Costs',
-    'budget': 'Budget Impact',
+    profile: 'Profile',
+    articles: 'Articles',
+    costs: 'Costs',
+    budget: 'Budget Impact',
   };
 
   const segments = pathname.split('/').filter(Boolean);
@@ -195,7 +179,7 @@ function generateBreadcrumbs(pathname) {
 function formatSegmentLabel(segment) {
   return segment
     .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
 

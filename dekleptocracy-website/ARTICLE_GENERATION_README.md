@@ -90,6 +90,7 @@ npm run dev
 ```
 
 The scheduler will automatically start and log:
+
 ```
 📅 Article generation scheduled: Every 2 hours
 📅 Cron expression: 0 */2 * * *
@@ -99,26 +100,31 @@ The scheduler will automatically start and log:
 ## API Endpoints
 
 ### Get All Articles
+
 ```http
 GET /api/articles?category=groceries&page=1&limit=10
 ```
 
 ### Get Latest Articles
+
 ```http
 GET /api/articles/latest?limit=8
 ```
 
 ### Get Single Article
+
 ```http
 GET /api/articles/:slug
 ```
 
 ### Get Articles by Category
+
 ```http
 GET /api/articles/category/groceries
 ```
 
 ### Generate Articles Manually
+
 ```http
 POST /api/articles/generate
 Content-Type: application/json
@@ -129,11 +135,13 @@ Content-Type: application/json
 ```
 
 ### Check Scheduler Status
+
 ```http
 GET /api/articles/scheduler/status
 ```
 
 ### Create Article
+
 ```http
 POST /api/articles
 Content-Type: application/json
@@ -213,7 +221,7 @@ Test the new version first, then switch:
 
 ```javascript
 // In App.jsx
-import Insights from './pages/InsightsNew';  // Use new version
+import Insights from './pages/InsightsNew'; // Use new version
 // import Insights from './pages/Insights';   // Old version
 ```
 
@@ -331,10 +339,10 @@ Check article count:
 
 ```javascript
 // In MongoDB
-db.articles.countDocuments({ status: 'published' })
+db.articles.countDocuments({ status: 'published' });
 
 // Via API
-GET /api/articles/stats/overview
+GET / api / articles / stats / overview;
 ```
 
 ## Troubleshooting
@@ -342,6 +350,7 @@ GET /api/articles/stats/overview
 ### Scheduler Not Running
 
 Check server logs for:
+
 ```
 📅 Article generation scheduled: Every 2 hours
 ✅ Scheduler started successfully
@@ -387,12 +396,16 @@ FRONTEND_URL=https://yourdomain.com
 Edit `articleScheduler.js`:
 
 ```javascript
-const job = cron.schedule(cronExpression, async () => {
-  // ...
-}, {
-  scheduled: true,
-  timezone: "America/Los_Angeles"  // Your timezone
-});
+const job = cron.schedule(
+  cronExpression,
+  async () => {
+    // ...
+  },
+  {
+    scheduled: true,
+    timezone: 'America/Los_Angeles', // Your timezone
+  },
+);
 ```
 
 ### Scaling Considerations
@@ -416,6 +429,7 @@ const job = cron.schedule(cronExpression, async () => {
 ## Support
 
 For issues or questions:
+
 1. Check server logs
 2. Review MongoDB Atlas logs
 3. Test LLM connection

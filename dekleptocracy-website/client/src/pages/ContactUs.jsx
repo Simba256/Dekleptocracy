@@ -41,7 +41,8 @@ const ContactUs = () => {
           <div className="contact-header">
             <h1 className="contact-main-heading">Connect With Our Team</h1>
             <p className="contact-description">
-              Whether you have data to share, feedback on our reports, or want to collaborate for change, we're here to listen and respond.
+              Whether you have data to share, feedback on our reports, or want to collaborate for
+              change, we're here to listen and respond.
             </p>
           </div>
 
@@ -51,7 +52,7 @@ const ContactUs = () => {
             <div className="contact-info-column">
               <h2 className="contact-info-heading">Have an enquiry?</h2>
               <p className="contact-info-subtitle">Reach out in seconds</p>
-              
+
               <div className="contact-details">
                 <div className="contact-detail-item">
                   <span className="contact-label">Phone Number:</span>
@@ -68,8 +69,10 @@ const ContactUs = () => {
             <div className="contact-form-column">
               <div className="enquiry-form-card">
                 <h3 className="form-heading">Enquiry Form</h3>
-                <p className="form-subtitle">Reach out to us and we'll get back within 1-2 business days.</p>
-                
+                <p className="form-subtitle">
+                  Reach out to us and we'll get back within 1-2 business days.
+                </p>
+
                 <form onSubmit={handleSubmit} className="enquiry-form">
                   <div className="form-row">
                     <div className="form-field">
@@ -95,7 +98,7 @@ const ContactUs = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="form-row">
                     <div className="form-field">
                       <input
@@ -125,7 +128,7 @@ const ContactUs = () => {
                       </select>
                     </div>
                   </div>
-                  
+
                   <div className="form-field">
                     <textarea
                       name="additionalInfo"
@@ -137,7 +140,7 @@ const ContactUs = () => {
                       className="form-input form-textarea"
                     ></textarea>
                   </div>
-                  
+
                   <button type="submit" className="submit-button">
                     Submit
                   </button>
@@ -153,9 +156,10 @@ const ContactUs = () => {
         <div className="business-hours-container">
           <h2 className="business-hours-title">Business Hours</h2>
           <p className="business-hours-intro">
-            Our team is available to provide support and answer your questions during the following times:
+            Our team is available to provide support and answer your questions during the following
+            times:
           </p>
-          
+
           <div className="hours-boxes">
             <div className="hours-box">
               <span className="hours-label">Monday - Friday:</span>
@@ -166,9 +170,10 @@ const ContactUs = () => {
               <span className="hours-time">Closed</span>
             </div>
           </div>
-          
+
           <p className="business-hours-text">
-            We strive to respond to all enquiries within 1-2 business days. Whether you reach out via phone, email, or our contact form, rest assured your message is important to us.
+            We strive to respond to all enquiries within 1-2 business days. Whether you reach out
+            via phone, email, or our contact form, rest assured your message is important to us.
           </p>
           <p className="business-hours-thanks">Thank you for your patience and understanding</p>
         </div>
@@ -179,20 +184,62 @@ const ContactUs = () => {
         <div className="contact-cta-container">
           <div className="contact-cta-card">
             <div className="cta-background-pattern">
-              <svg className="cta-swirl" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M200 50 Q250 100 200 150 T200 250 T200 350" stroke="rgba(123, 156, 123, 0.3)" strokeWidth="2" fill="none"/>
-                <path d="M150 100 Q200 150 150 200 T150 300" stroke="rgba(123, 156, 123, 0.25)" strokeWidth="2" fill="none"/>
-                <path d="M250 100 Q300 150 250 200 T250 300" stroke="rgba(123, 156, 123, 0.25)" strokeWidth="2" fill="none"/>
-                <circle cx="200" cy="200" r="100" stroke="rgba(123, 156, 123, 0.2)" strokeWidth="1.5" fill="none"/>
-                <circle cx="150" cy="150" r="50" stroke="rgba(123, 156, 123, 0.2)" strokeWidth="1.5" fill="none"/>
-                <circle cx="250" cy="250" r="50" stroke="rgba(123, 156, 123, 0.2)" strokeWidth="1.5" fill="none"/>
+              <svg
+                className="cta-swirl"
+                viewBox="0 0 400 400"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M200 50 Q250 100 200 150 T200 250 T200 350"
+                  stroke="rgba(123, 156, 123, 0.3)"
+                  strokeWidth="2"
+                  fill="none"
+                />
+                <path
+                  d="M150 100 Q200 150 150 200 T150 300"
+                  stroke="rgba(123, 156, 123, 0.25)"
+                  strokeWidth="2"
+                  fill="none"
+                />
+                <path
+                  d="M250 100 Q300 150 250 200 T250 300"
+                  stroke="rgba(123, 156, 123, 0.25)"
+                  strokeWidth="2"
+                  fill="none"
+                />
+                <circle
+                  cx="200"
+                  cy="200"
+                  r="100"
+                  stroke="rgba(123, 156, 123, 0.2)"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="50"
+                  stroke="rgba(123, 156, 123, 0.2)"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
+                <circle
+                  cx="250"
+                  cy="250"
+                  r="50"
+                  stroke="rgba(123, 156, 123, 0.2)"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
               </svg>
             </div>
-            
+
             <div className="cta-content">
               <h2 className="cta-title">Ready to See How Policy Impacts Your Wallet?</h2>
               <p className="cta-description">
-                Chat instantly with our AI or explore your local impact map to uncover the hidden costs behind rising bills.
+                Chat instantly with our AI or explore your local impact map to uncover the hidden
+                costs behind rising bills.
               </p>
               <div className="cta-buttons">
                 <button className="cta-btn-white" onClick={() => navigate('/chatbot')}>

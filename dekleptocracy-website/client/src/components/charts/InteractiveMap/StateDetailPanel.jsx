@@ -42,8 +42,11 @@ const StateDetailPanel = ({ stateCode, stateData, onClose, onDrillDown }) => {
       <div className="panel-header">
         <h3>{stateCode === 'nationwide' ? 'National' : stateCode}</h3>
         <div className="intensity-badge">
-          {stateData.intensity > 70 ? 'High Impact' : 
-           stateData.intensity > 40 ? 'Medium Impact' : 'Low Impact'}
+          {stateData.intensity > 70
+            ? 'High Impact'
+            : stateData.intensity > 40
+              ? 'Medium Impact'
+              : 'Low Impact'}
         </div>
       </div>
 
@@ -53,7 +56,8 @@ const StateDetailPanel = ({ stateCode, stateData, onClose, onDrillDown }) => {
             <span className="stat-label">Top Shock</span>
             <span className="stat-value">{stats[0]?.item || 'N/A'}</span>
             <span className={`stat-trend ${stats[0]?.change > 0 ? 'up' : 'down'}`}>
-              {stats[0]?.change > 0 ? '+' : ''}{stats[0]?.change}%
+              {stats[0]?.change > 0 ? '+' : ''}
+              {stats[0]?.change}%
             </span>
           </div>
 
@@ -76,7 +80,8 @@ const StateDetailPanel = ({ stateCode, stateData, onClose, onDrillDown }) => {
                 <span className="shock-icon">{shock.icon}</span>
                 <span className="shock-name">{shock.item}</span>
                 <span className={`shock-change ${shock.change > 0 ? 'up' : 'down'}`}>
-                  {shock.change > 0 ? '+' : ''}{shock.change}%
+                  {shock.change > 0 ? '+' : ''}
+                  {shock.change}%
                 </span>
               </div>
             ))}

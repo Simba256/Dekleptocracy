@@ -21,41 +21,42 @@ export const loadGoogleScript = () => {
 
 // Initialize Google Sign-In
 export const initializeGoogleSignIn = (clientId, callback) => {
-  loadGoogleScript().then((google) => {
-    google.accounts.id.initialize({
-      client_id: clientId,
-      callback: callback,
+  loadGoogleScript()
+    .then((google) => {
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: callback,
+      });
+    })
+    .catch((error) => {
+      if (import.meta.env.DEV) {
+        console.error('[DEV] Error loading Google script:', error);
+      }
     });
-  }).catch((error) => {
-    if (import.meta.env.DEV) {
-      console.error('[DEV] Error loading Google script:', error);
-    }
-  });
 };
 
 // Render Google Sign-In button
 export const renderGoogleButton = (elementId, clientId, callback, text = 'signin_with') => {
-  loadGoogleScript().then((google) => {
-    google.accounts.id.initialize({
-      client_id: clientId,
-      callback: callback,
-    });
+  loadGoogleScript()
+    .then((google) => {
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: callback,
+      });
 
-    google.accounts.id.renderButton(
-      document.getElementById(elementId),
-      {
+      google.accounts.id.renderButton(document.getElementById(elementId), {
         type: 'standard',
         theme: 'outline',
         size: 'large',
         text: text,
         width: '100%',
+      });
+    })
+    .catch((error) => {
+      if (import.meta.env.DEV) {
+        console.error('[DEV] Error rendering Google button:', error);
       }
-    );
-  }).catch((error) => {
-    if (import.meta.env.DEV) {
-      console.error('[DEV] Error rendering Google button:', error);
-    }
-  });
+    });
 };
 
 // Handle Google Sign-In response
@@ -100,4 +101,3 @@ export const handleGoogleSignIn = async (response, apiUrl, onSuccess, onError) =
     onError(error);
   }
 };
-

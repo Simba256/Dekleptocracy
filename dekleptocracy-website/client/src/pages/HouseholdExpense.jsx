@@ -6,13 +6,7 @@ import './HouseholdExpense.css';
 const HouseholdExpense = () => {
   const [selectedExpense, setSelectedExpense] = useState('');
 
-  const expenseOptions = [
-    'Groceries',
-    'Rent / Mortgage',
-    'Utilities',
-    'Healthcare',
-    'Others'
-  ];
+  const expenseOptions = ['Groceries', 'Rent / Mortgage', 'Utilities', 'Healthcare', 'Others'];
 
   useEffect(() => {
     const saved = loadPreferences();
@@ -37,7 +31,7 @@ const HouseholdExpense = () => {
           <h1 className="household-expense-question">
             What's your biggest household expense this week?
           </h1>
-          
+
           <p className="household-expense-subtitle">
             Answer one quick question to personalize your insights. No email required.
           </p>
@@ -66,11 +60,7 @@ const HouseholdExpense = () => {
             >
               Skip
             </Link>
-            <button 
-              className="next-button"
-              onClick={handleNext}
-              disabled={!selectedExpense}
-            >
+            <button className="next-button" onClick={handleNext} disabled={!selectedExpense}>
               Next →
             </button>
           </div>

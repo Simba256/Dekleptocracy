@@ -52,6 +52,7 @@ nano mcp_server/.env
 ```
 
 Add your keys:
+
 ```
 BLS_API_KEY=your_bls_key_here
 FRED_API_KEY=your_fred_key_here
@@ -64,6 +65,7 @@ HUD_API_TOKEN=your_hud_token_here  # Optional
 ## Step 3: Start the Servers
 
 ### Terminal 1 - MCP Server:
+
 ```bash
 cd mcp_server
 pip install -r requirements.txt  # If not already done
@@ -71,6 +73,7 @@ python http_server.py
 ```
 
 ### Terminal 2 - Backend Server:
+
 ```bash
 cd dekleptocracy-website/server
 npm install  # If not already done
@@ -78,6 +81,7 @@ npm run dev
 ```
 
 ### Terminal 3 - Frontend:
+
 ```bash
 cd dekleptocracy-website/client
 npm install  # If not already done
@@ -91,6 +95,7 @@ npm run dev
 The scheduler runs automatically, but you can manually trigger a refresh:
 
 ### Option A: Via API
+
 ```bash
 # Refresh data for California
 curl -X POST http://localhost:5000/api/reports/state/refresh \
@@ -99,6 +104,7 @@ curl -X POST http://localhost:5000/api/reports/state/refresh \
 ```
 
 ### Option B: Refresh Priority States
+
 ```bash
 # Refresh top 10 states
 for state in "California" "Texas" "Florida" "New York" "Pennsylvania"; do
@@ -114,11 +120,13 @@ done
 ## Step 5: Test the Report
 
 ### Check Data Status:
+
 ```bash
 curl "http://localhost:5000/api/reports/state/data-status?state=California"
 ```
 
 Expected response:
+
 ```json
 {
   "success": true,
@@ -134,11 +142,13 @@ Expected response:
 ```
 
 ### Get Full Report:
+
 ```bash
 curl "http://localhost:5000/api/reports/state?state=California"
 ```
 
 ### View in Browser:
+
 Open: http://localhost:5173/report?state=California
 
 ---
@@ -150,6 +160,7 @@ Open: http://localhost:5173/report?state=California
 **Cause:** Cache is empty, data hasn't been fetched yet.
 
 **Fix:**
+
 ```bash
 # Trigger manual refresh
 curl -X POST http://localhost:5000/api/reports/state/refresh \
@@ -162,6 +173,7 @@ curl -X POST http://localhost:5000/api/reports/state/refresh \
 **Cause:** MCP server is not running or not accessible.
 
 **Fix:**
+
 1. Check MCP server is running: `curl http://localhost:8000/health`
 2. Check environment variable: `echo $MCP_SERVER_URL`
 3. Restart MCP server if needed
@@ -171,8 +183,10 @@ curl -X POST http://localhost:5000/api/reports/state/refresh \
 **Cause:** Missing or invalid API key.
 
 **Fix:**
+
 1. Verify key in `.env` file
 2. Test key directly:
+
 ```bash
 # Test BLS
 curl "https://api.bls.gov/publicAPI/v2/timeseries/data/" \
@@ -185,6 +199,7 @@ curl "https://api.bls.gov/publicAPI/v2/timeseries/data/" \
 **Cause:** Data has expired but new data couldn't be fetched.
 
 **Fix:**
+
 1. Check cache health: `curl http://localhost:5000/api/reports/cache/health`
 2. Check MCP server logs for API errors
 3. Verify API rate limits haven't been exceeded
@@ -193,16 +208,17 @@ curl "https://api.bls.gov/publicAPI/v2/timeseries/data/" \
 
 ## API Endpoints Reference
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/reports/state` | GET | Generate state report |
-| `/api/reports/state/data-status` | GET | Check data availability |
-| `/api/reports/state/refresh` | POST | Trigger data refresh |
-| `/api/reports/scheduler/status` | GET | Get scheduler status |
-| `/api/reports/cache/health` | GET | Get cache health stats |
-| `/api/reports/available-states` | GET | List states with data |
+| Endpoint                         | Method | Description             |
+| -------------------------------- | ------ | ----------------------- |
+| `/api/reports/state`             | GET    | Generate state report   |
+| `/api/reports/state/data-status` | GET    | Check data availability |
+| `/api/reports/state/refresh`     | POST   | Trigger data refresh    |
+| `/api/reports/scheduler/status`  | GET    | Get scheduler status    |
+| `/api/reports/cache/health`      | GET    | Get cache health stats  |
+| `/api/reports/available-states`  | GET    | List states with data   |
 
 ### Query Parameters for `/api/reports/state`:
+
 - `state` - State name (default: "California")
 - `role` - User role label (default: "VOTER")
 - `name` - Display name (default: "{State} Resident")
@@ -211,17 +227,17 @@ curl "https://api.bls.gov/publicAPI/v2/timeseries/data/" \
 
 ## Data Sources
 
-| Metric | Source | Update Frequency |
-|--------|--------|------------------|
-| Unemployment Rate | BLS LAUS | Daily |
-| CPI / Inflation | BLS CPI | Daily |
-| Electricity Prices | EIA | Daily |
-| Gas Prices | EIA | Every 6 hours |
-| Natural Gas Prices | EIA | Daily |
-| Fair Market Rent | HUD | Weekly |
-| Food Prices | USDA | Daily |
-| State GDP | FRED | Weekly |
-| Personal Income | FRED | Weekly |
+| Metric             | Source   | Update Frequency |
+| ------------------ | -------- | ---------------- |
+| Unemployment Rate  | BLS LAUS | Daily            |
+| CPI / Inflation    | BLS CPI  | Daily            |
+| Electricity Prices | EIA      | Daily            |
+| Gas Prices         | EIA      | Every 6 hours    |
+| Natural Gas Prices | EIA      | Daily            |
+| Fair Market Rent   | HUD      | Weekly           |
+| Food Prices        | USDA     | Daily            |
+| State GDP          | FRED     | Weekly           |
+| Personal Income    | FRED     | Weekly           |
 
 ---
 
@@ -233,6 +249,7 @@ Once the server starts, data refreshes automatically:
 - **Every 6 hours:** Gas prices refresh (more volatile)
 
 You can check scheduler status:
+
 ```bash
 curl http://localhost:5000/api/reports/scheduler/status
 ```

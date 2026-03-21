@@ -1,7 +1,11 @@
 import express from 'express';
 import { generateStateReportData, getStateDataStatus } from '../services/stateReportGenerator.js';
 import { triggerStateRefresh, getSchedulerStatus } from '../services/stateDataScheduler.js';
-import { transformAllStates, transformStateData, getTransformationStatus } from '../services/walletShockTransformer.js';
+import {
+  transformAllStates,
+  transformStateData,
+  getTransformationStatus,
+} from '../services/walletShockTransformer.js';
 import { transformStats, getStatsStatus } from '../services/statsTransformer.js';
 import StateDataCache from '../models/StateDataCache.js';
 import cache from '../utils/memoryCache.js';
@@ -39,8 +43,8 @@ router.get('/state', async (req, res) => {
         dataFreshness: report.metadata.dataFreshness,
         sources: report.metadata.sources,
         stateName,
-        role
-      }
+        role,
+      },
     };
 
     cache.set(cacheKey, responseBody, 15 * 60 * 1000); // 15 min TTL
@@ -52,7 +56,8 @@ router.get('/state', async (req, res) => {
 
     if (error.code === 'NO_DATA_AVAILABLE') {
       statusCode = 503;
-      message = 'No real data available for this state. Data is being collected from government sources. Please try again later.';
+      message =
+        'No real data available for this state. Data is being collected from government sources. Please try again later.';
     } else if (error.code === 'REPORT_GENERATION_FAILED') {
       statusCode = 500;
       message = 'Unable to generate report. Please try again later.';
@@ -67,10 +72,10 @@ router.get('/state', async (req, res) => {
         generatedAt: new Date().toISOString(),
         source: 'error',
         stateName,
-        role
+        role,
       },
       // No fallback data - we only return real data
-      suggestion: 'Try refreshing data manually at /api/reports/state/refresh'
+      suggestion: 'Try refreshing data manually at /api/reports/state/refresh',
     });
   }
 });
@@ -87,12 +92,12 @@ router.get('/state/data-status', async (req, res) => {
 
     res.json({
       success: true,
-      ...status
+      ...status,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -108,7 +113,7 @@ router.post('/state/refresh', validate(stateRefreshSchema), async (req, res) => 
   if (!state) {
     return res.status(400).json({
       success: false,
-      error: 'State name is required'
+      error: 'State name is required',
     });
   }
 
@@ -119,24 +124,24 @@ router.post('/state/refresh', validate(stateRefreshSchema), async (req, res) => 
       return res.json({
         success: true,
         message: `Data refresh completed for ${state}`,
-        result
+        result,
       });
     }
 
     // Otherwise, start refresh in background and return immediately
     triggerStateRefresh(state)
-      .then(result => console.log(`Background refresh completed for ${state}:`, result))
-      .catch(err => console.error(`Background refresh failed for ${state}:`, err));
+      .then((result) => console.log(`Background refresh completed for ${state}:`, result))
+      .catch((err) => console.error(`Background refresh failed for ${state}:`, err));
 
     res.json({
       success: true,
       message: `Data refresh started for ${state}. Please wait 30-60 seconds and reload the page.`,
-      status: 'in_progress'
+      status: 'in_progress',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -153,12 +158,12 @@ router.get('/scheduler/status', async (req, res) => {
     res.json({
       success: true,
       scheduler: schedulerStatus,
-      cacheHealth
+      cacheHealth,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -173,12 +178,12 @@ router.get('/cache/health', async (req, res) => {
 
     res.json({
       success: true,
-      health
+      health,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -194,12 +199,12 @@ router.get('/available-states', async (req, res) => {
     res.json({
       success: true,
       states: health.statesList,
-      count: health.statesWithData
+      count: health.statesWithData,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -214,12 +219,12 @@ router.get('/wallet-shocks/status', async (req, res) => {
 
     res.json({
       success: true,
-      ...status
+      ...status,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -241,24 +246,25 @@ router.post('/wallet-shocks/transform', async (req, res) => {
       res.json({
         success: true,
         message: `Wallet shocks transformed for ${state}`,
-        result
+        result,
       });
     } else {
       // Transform all states in background
       transformAllStates({ priorityStates: ['California', 'Texas', 'Florida', 'New York'] })
-        .then(result => console.log('Background wallet shock transformation complete:', result))
-        .catch(err => console.error('Background wallet shock transformation failed:', err));
+        .then((result) => console.log('Background wallet shock transformation complete:', result))
+        .catch((err) => console.error('Background wallet shock transformation failed:', err));
 
       res.json({
         success: true,
-        message: 'Wallet shock transformation started for all states. Check /api/reports/wallet-shocks/status for progress.',
-        status: 'in_progress'
+        message:
+          'Wallet shock transformation started for all states. Check /api/reports/wallet-shocks/status for progress.',
+        status: 'in_progress',
       });
     }
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -271,18 +277,18 @@ router.post('/stats/transform', async (req, res) => {
   try {
     // Run transformation in background
     transformStats()
-      .then(result => console.log('Stats transformation complete:', result))
-      .catch(err => console.error('Stats transformation failed:', err));
+      .then((result) => console.log('Stats transformation complete:', result))
+      .catch((err) => console.error('Stats transformation failed:', err));
 
     res.json({
       success: true,
       message: 'Stats transformation started. Check /api/reports/stats/status for progress.',
-      status: 'in_progress'
+      status: 'in_progress',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -296,12 +302,12 @@ router.get('/stats/status', async (req, res) => {
     const status = await getStatsStatus();
     res.json({
       success: true,
-      ...status
+      ...status,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -316,7 +322,7 @@ router.get('/mcp-diagnostic', async (req, res) => {
   const results = {
     mcpServerUrl: process.env.MCP_SERVER_URL || 'http://localhost:8000 (default)',
     timestamp: new Date().toISOString(),
-    tests: {}
+    tests: {},
   };
 
   // Test 1: Health check
@@ -333,8 +339,8 @@ router.get('/mcp-diagnostic', async (req, res) => {
     results.tests.listTools = {
       success: true,
       toolCount: tools.length,
-      hasGenerateText: tools.some(t => t.name === 'generate_text'),
-      tools: tools.map(t => t.name)
+      hasGenerateText: tools.some((t) => t.name === 'generate_text'),
+      tools: tools.map((t) => t.name),
     };
   } catch (error) {
     results.tests.listTools = { success: false, error: error.message };
@@ -345,21 +351,21 @@ router.get('/mcp-diagnostic', async (req, res) => {
     const testResult = await executeMCPTool('generate_text', {
       prompt: 'Say "MCP test successful" in exactly those words.',
       max_tokens: 20,
-      temperature: 0.1
+      temperature: 0.1,
     });
     results.tests.generateText = {
       success: true,
       rawResponse: testResult,
-      extractedText: testResult?.result?.text || testResult?.text || null
+      extractedText: testResult?.result?.text || testResult?.text || null,
     };
   } catch (error) {
     results.tests.generateText = { success: false, error: error.message };
   }
 
-  const allPassed = Object.values(results.tests).every(t => t.success);
+  const allPassed = Object.values(results.tests).every((t) => t.success);
   res.status(allPassed ? 200 : 500).json({
     success: allPassed,
-    ...results
+    ...results,
   });
 });
 

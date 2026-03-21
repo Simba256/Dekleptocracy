@@ -7,11 +7,7 @@ import './LoadingSpinner.css';
  * @param {string} props.size - Spinner size: 'small', 'medium', 'large'
  * @param {boolean} props.fullPage - Whether to show as full page overlay
  */
-export function LoadingSpinner({
-  message = 'Loading...',
-  size = 'medium',
-  fullPage = false
-}) {
+export function LoadingSpinner({ message = 'Loading...', size = 'medium', fullPage = false }) {
   const spinnerClass = `loading-spinner loading-spinner--${size}`;
 
   const content = (
@@ -22,18 +18,10 @@ export function LoadingSpinner({
   );
 
   if (fullPage) {
-    return (
-      <div className="loading-spinner-fullpage">
-        {content}
-      </div>
-    );
+    return <div className="loading-spinner-fullpage">{content}</div>;
   }
 
-  return (
-    <div className="loading-spinner-container">
-      {content}
-    </div>
-  );
+  return <div className="loading-spinner-container">{content}</div>;
 }
 
 export default LoadingSpinner;

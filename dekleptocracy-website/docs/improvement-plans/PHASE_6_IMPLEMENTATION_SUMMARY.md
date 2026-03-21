@@ -15,12 +15,12 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 
 ### Original Plan vs Actual Implementation
 
-| Aspect | Original Plan | Actual Implementation |
-|--------|---------------|----------------------|
-| Data Collectors | Node.js services in `server/services/dataCollectors/` | MCP server with Python API clients |
-| API Integration | Direct HTTP calls from Node server | Node server calls MCP tools via HTTP |
-| Scheduling | Node-cron in Express server | Node-cron calls MCP tools |
-| Caching | MongoDB with custom logic | MongoDB `StateDataCache` model with TTL |
+| Aspect          | Original Plan                                         | Actual Implementation                   |
+| --------------- | ----------------------------------------------------- | --------------------------------------- |
+| Data Collectors | Node.js services in `server/services/dataCollectors/` | MCP server with Python API clients      |
+| API Integration | Direct HTTP calls from Node server                    | Node server calls MCP tools via HTTP    |
+| Scheduling      | Node-cron in Express server                           | Node-cron calls MCP tools               |
+| Caching         | MongoDB with custom logic                             | MongoDB `StateDataCache` model with TTL |
 
 ### Current Architecture
 
@@ -71,16 +71,16 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 
 **Available Tools (11 APIs Active):**
 
-| API | Tools | Data Provided |
-|-----|-------|---------------|
-| **BLS** | `get_bls_unemployment_by_state`, `get_bls_cpi_for_state`, `get_bls_wages_by_state` | Unemployment, CPI, wages |
-| **FRED** | `get_fred_series`, `get_fred_state_gdp`, `get_fred_state_personal_income`, `get_fred_state_unemployment` | GDP, income, economic indicators |
-| **EIA** | `get_electricity_prices_by_state`, `get_gasoline_prices_by_state`, `get_natural_gas_prices_by_state` | Energy prices |
-| **BEA** | `get_bea_state_gdp`, `get_bea_state_personal_income` | State GDP, personal income |
-| **USDA** | `get_usda_food_prices`, `get_usda_grocery_basket` | Food prices, grocery costs |
-| **HUD** | `get_hud_fair_market_rent`, `get_hud_rent_history`, `get_hud_affordability_analysis` | Housing costs |
-| **LDA** | `get_lobbying_filings`, `get_lobbying_totals`, `get_top_lobbying_clients`, `get_lobbying_by_issue`, `get_contributions` | Lobbying expenditures, filings |
-| **FEC** | `get_pac_contributions`, `get_top_employers_contributions`, `get_total_contributions`, `get_contributions_by_employer`, `get_committee_totals`, `get_candidate_contributions` | Campaign finance data |
+| API      | Tools                                                                                                                                                                         | Data Provided                    |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| **BLS**  | `get_bls_unemployment_by_state`, `get_bls_cpi_for_state`, `get_bls_wages_by_state`                                                                                            | Unemployment, CPI, wages         |
+| **FRED** | `get_fred_series`, `get_fred_state_gdp`, `get_fred_state_personal_income`, `get_fred_state_unemployment`                                                                      | GDP, income, economic indicators |
+| **EIA**  | `get_electricity_prices_by_state`, `get_gasoline_prices_by_state`, `get_natural_gas_prices_by_state`                                                                          | Energy prices                    |
+| **BEA**  | `get_bea_state_gdp`, `get_bea_state_personal_income`                                                                                                                          | State GDP, personal income       |
+| **USDA** | `get_usda_food_prices`, `get_usda_grocery_basket`                                                                                                                             | Food prices, grocery costs       |
+| **HUD**  | `get_hud_fair_market_rent`, `get_hud_rent_history`, `get_hud_affordability_analysis`                                                                                          | Housing costs                    |
+| **LDA**  | `get_lobbying_filings`, `get_lobbying_totals`, `get_top_lobbying_clients`, `get_lobbying_by_issue`, `get_contributions`                                                       | Lobbying expenditures, filings   |
+| **FEC**  | `get_pac_contributions`, `get_top_employers_contributions`, `get_total_contributions`, `get_contributions_by_employer`, `get_committee_totals`, `get_candidate_contributions` | Campaign finance data            |
 
 **Health Check**: `GET /health` shows 11/13 services active (Census and DataWeb inactive)
 
@@ -91,6 +91,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 **File**: `server/services/stateDataScheduler.js`
 
 **Features:**
+
 - Cron jobs for automated data refresh
 - Daily full refresh at 2 AM EST
 - Gas prices refresh every 6 hours
@@ -101,15 +102,15 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 
 **Data Types Collected:**
 
-| Type | MCP Tool | TTL | Fallback |
-|------|----------|-----|----------|
-| `unemployment` | `get_bls_unemployment_by_state` | 24h | `get_fred_state_unemployment` |
-| `electricity_prices` | `get_electricity_prices_by_state` | 24h | None |
-| `gas_prices` | `get_gasoline_prices_by_state` | 6h | None |
-| `food_prices` | `get_usda_food_prices` | 24h | None |
-| `grocery_basket` | `get_usda_grocery_basket` | 24h | None |
-| `gdp` | `get_bea_state_gdp` | 168h | `get_fred_state_gdp` |
-| `personal_income` | `get_bea_state_personal_income` | 168h | `get_fred_state_personal_income` |
+| Type                 | MCP Tool                          | TTL  | Fallback                         |
+| -------------------- | --------------------------------- | ---- | -------------------------------- |
+| `unemployment`       | `get_bls_unemployment_by_state`   | 24h  | `get_fred_state_unemployment`    |
+| `electricity_prices` | `get_electricity_prices_by_state` | 24h  | None                             |
+| `gas_prices`         | `get_gasoline_prices_by_state`    | 6h   | None                             |
+| `food_prices`        | `get_usda_food_prices`            | 24h  | None                             |
+| `grocery_basket`     | `get_usda_grocery_basket`         | 24h  | None                             |
+| `gdp`                | `get_bea_state_gdp`               | 168h | `get_fred_state_gdp`             |
+| `personal_income`    | `get_bea_state_personal_income`   | 168h | `get_fred_state_personal_income` |
 
 ---
 
@@ -118,6 +119,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 **File**: `server/models/StateDataCache.js`
 
 **Features:**
+
 - TTL-based cache expiration
 - Upsert logic for data updates
 - Error tracking per state/data type
@@ -125,6 +127,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 - Static methods: `getLatestData()`, `upsertData()`, `getCacheHealth()`
 
 **Current Status (as of Feb 8, 2026):**
+
 - **51 states** with data (all US states + DC)
 - **357 total entries** (7 data types × 51 states)
 - **100% freshness** (no stale data)
@@ -137,6 +140,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 **Endpoint**: `GET /api/homepage/map-data`
 
 **Features:**
+
 - Returns all 51 states with calculated metrics
 - Uses real data from `StateDataCache`
 - Calculates: `priceImpact`, `costOfLiving`, `tariffRevenue`
@@ -144,6 +148,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 - `hasRealData` flag indicates data source
 
 **Sample Response:**
+
 ```json
 {
   "name": "California",
@@ -166,6 +171,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 **Endpoint**: `GET /api/reports/state?state=California`
 
 **Features:**
+
 - Comprehensive state economic report
 - Uses only real data (returns 503 if no data available)
 - Sources cited: BLS, EIA, USDA
@@ -179,9 +185,11 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 ### Wallet Shock Transformer (Feb 8, 2026)
 
 **Files Created:**
+
 - `server/services/walletShockTransformer.js`
 
 **Features:**
+
 - Transforms `StateDataCache` → `WalletShock` entries
 - Maps data types to categories:
   - `gas_prices` → `fuel`
@@ -193,6 +201,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 - Proper source attribution (EIA, USDA, BLS)
 
 **Integration:**
+
 - `stateDataScheduler.js` now calls transformer after data refresh
 - Daily refresh at 2 AM EST triggers full transformation
 - Gas price refresh (every 6 hours) updates fuel wallet shocks
@@ -212,6 +221,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 **Solution:** Integrated Senate LDA API (lobbying data) and FEC API (campaign finance) as free alternatives to the discontinued OpenSecrets API.
 
 **Implementation:**
+
 1. Created `mcp_server/apis/lda_api.py` - Senate Lobbying Disclosure API client
 2. Created `mcp_server/apis/fec_api.py` - Federal Election Commission API client
 3. Updated `mcp_server/http_server.py` with 11 new tools for lobbying/finance data
@@ -229,6 +239,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 | Tariff Revenue | U.S. Department of the Treasury | Research-based estimate (CBP data) |
 
 **Endpoints Added:**
+
 - `POST /api/reports/stats/transform` - Trigger stats transformation
 - `GET /api/reports/stats/status` - Check transformation status
 
@@ -241,6 +252,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 | Tariff Revenue | $95.0B | U.S. Department of the Treasury |
 
 **Bug Fixes During Implementation:**
+
 1. `base_api.py`: Authorization header was being overwritten (Token vs Bearer auth)
 2. `lda_api.py`/`fec_api.py`: Response structure mismatch (`_make_request` returns `{success, data}` wrapper)
 3. `lda_api.py`: Filing type was `"Q"` but API uses `"Q1"`, `"Q2"`, `"Q3"`, `"Q4"`
@@ -264,6 +276,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 | Other | 7% | ❌ Hardcoded |
 
 **What's Needed to Fix:**
+
 - Research authoritative sources for cost driver breakdown
 - Potential sources: BLS Producer Price Index, Federal Reserve reports
 - Create cost driver data collection in MCP server
@@ -278,6 +291,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 **Status**: Not Implemented (Optional)
 
 **What's Needed:**
+
 - Create `DataSource` model for attribution tracking
 - Fields: name, url, updateFrequency, lastFetched, reliability
 - Link data entries to their sources
@@ -290,6 +304,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 **Status**: Not Implemented
 
 **What's Needed:**
+
 - Validation service for incoming data
 - Anomaly detection (3+ std deviations from mean)
 - Freshness monitoring
@@ -301,6 +316,7 @@ Phase 6 focuses on replacing seed/demo data with real, verified data from author
 ## Files Summary
 
 ### Server Files (Implemented):
+
 ```
 server/
 ├── services/
@@ -320,6 +336,7 @@ server/
 ```
 
 ### MCP Server Files (Implemented):
+
 ```
 mcp_server/
 ├── apis/
@@ -331,6 +348,7 @@ mcp_server/
 ```
 
 ### Not Implemented (Optional):
+
 ```
 server/
 ├── services/
@@ -346,6 +364,7 @@ server/
 **API Keys Setup**: See `docs/API_KEYS_SETUP.md`
 
 **Required Environment Variables (MCP Server):**
+
 ```
 BLS_API_KEY=xxx
 FRED_API_KEY=xxx
@@ -358,23 +377,24 @@ FEC_API_KEY=xxx  # Federal Election Commission
 
 **Endpoints:**
 
-| Endpoint | Purpose | Uses Real Data? |
-|----------|---------|-----------------|
-| `GET /api/homepage/map-data` | Map visualization | ✅ Yes (EIA, USDA, BLS) |
-| `GET /api/reports/state` | State economic report | ✅ Yes (EIA, USDA, BLS) |
-| `GET /api/reports/cache/health` | Cache status | ✅ Yes |
-| `GET /api/homepage/wallet-shocks` | Wallet shock cards | ✅ Yes (EIA, USDA) |
-| `GET /api/homepage/all` | Homepage data | ✅ Yes (95%) |
-| `GET /api/homepage/stats` | Stats section | ✅ Yes (LDA, FEC) |
-| `POST /api/reports/stats/transform` | Trigger stats update | ✅ Yes (LDA, FEC) |
-| `GET /api/reports/stats/status` | Stats transform status | ✅ Yes |
-| `GET /api/homepage/cost-drivers` | Cost drivers | 🔲 No (seeded) |
+| Endpoint                            | Purpose                | Uses Real Data?         |
+| ----------------------------------- | ---------------------- | ----------------------- |
+| `GET /api/homepage/map-data`        | Map visualization      | ✅ Yes (EIA, USDA, BLS) |
+| `GET /api/reports/state`            | State economic report  | ✅ Yes (EIA, USDA, BLS) |
+| `GET /api/reports/cache/health`     | Cache status           | ✅ Yes                  |
+| `GET /api/homepage/wallet-shocks`   | Wallet shock cards     | ✅ Yes (EIA, USDA)      |
+| `GET /api/homepage/all`             | Homepage data          | ✅ Yes (95%)            |
+| `GET /api/homepage/stats`           | Stats section          | ✅ Yes (LDA, FEC)       |
+| `POST /api/reports/stats/transform` | Trigger stats update   | ✅ Yes (LDA, FEC)       |
+| `GET /api/reports/stats/status`     | Stats transform status | ✅ Yes                  |
+| `GET /api/homepage/cost-drivers`    | Cost drivers           | 🔲 No (seeded)          |
 
 ---
 
 ## Remaining Tasks
 
 ### ✅ Completed:
+
 - [x] Create `walletShockTransformer.js` to connect real data to homepage
 - [x] Update scheduler to run transformer after data refresh
 - [x] Replace seeded wallet shocks with real API data
@@ -386,13 +406,16 @@ FEC_API_KEY=xxx  # Federal Election Commission
 - [x] Display source attributions in StatsSection.jsx (Feb 8, 2026)
 
 ### ⚠️ Known Issues (Seeded Data Still In Use):
+
 - [ ] **Cost Drivers** - Shows hardcoded percentages with no real data source
 
 ### Medium Priority (To Fix Remaining Seeded Data):
+
 - [ ] Research authoritative sources for cost driver data (BLS PPI, Fed reports)
 - [ ] Create `costDriverTransformer.js`
 
 ### Low Priority (Optional Enhancements):
+
 - [ ] Create `DataSource` model for attribution tracking
 - [ ] Implement `dataQualityChecker.js`
 - [ ] Add anomaly detection
@@ -402,24 +425,24 @@ FEC_API_KEY=xxx  # Federal Election Commission
 
 ## Success Metrics
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Data sources integrated | 5+ | 8 (BLS, FRED, EIA, BEA, USDA, HUD, LDA, FEC) | ✅ |
-| Data freshness | < 24 hours | 100% fresh | ✅ |
-| States with data | 50 | 52 (50 states + DC + nationwide) | ✅ |
-| Homepage uses real data | 100% | ~95% (map, wallet shocks, stats) | ✅ |
-| Stats section real data | 100% | 100% (using LDA/FEC) | ✅ |
-| Cost drivers real data | 100% | 0% (still seeded) | 🔲 |
-| Source attribution | 100% | 95% (stats + wallet shocks) | ✅ |
-| Anomaly detection | Active | None | 🔲 |
+| Metric                  | Target     | Current                                      | Status |
+| ----------------------- | ---------- | -------------------------------------------- | ------ |
+| Data sources integrated | 5+         | 8 (BLS, FRED, EIA, BEA, USDA, HUD, LDA, FEC) | ✅     |
+| Data freshness          | < 24 hours | 100% fresh                                   | ✅     |
+| States with data        | 50         | 52 (50 states + DC + nationwide)             | ✅     |
+| Homepage uses real data | 100%       | ~95% (map, wallet shocks, stats)             | ✅     |
+| Stats section real data | 100%       | 100% (using LDA/FEC)                         | ✅     |
+| Cost drivers real data  | 100%       | 0% (still seeded)                            | 🔲     |
+| Source attribution      | 100%       | 95% (stats + wallet shocks)                  | ✅     |
+| Anomaly detection       | Active     | None                                         | 🔲     |
 
 ### Wallet Shock Coverage (Feb 8, 2026)
 
-| Category | States | Data Source |
-|----------|--------|-------------|
-| Fuel (gas prices) | 52 | U.S. Energy Information Administration |
-| Utilities (electricity) | 52 | U.S. Energy Information Administration |
-| Groceries (food costs) | 52 | USDA Economic Research Service |
+| Category                | States | Data Source                            |
+| ----------------------- | ------ | -------------------------------------- |
+| Fuel (gas prices)       | 52     | U.S. Energy Information Administration |
+| Utilities (electricity) | 52     | U.S. Energy Information Administration |
+| Groceries (food costs)  | 52     | USDA Economic Research Service         |
 
 ---
 
@@ -436,6 +459,7 @@ FEC_API_KEY=xxx  # Federal Election Commission
 **Phase 6 Progress**: 95% Complete
 
 **Key Achievements:**
+
 - ✅ Real government data (EIA, USDA) powers wallet shocks for all 52 states
 - ✅ Map data uses real cached government API data
 - ✅ State reports use real data with proper source attribution
@@ -444,9 +468,11 @@ FEC_API_KEY=xxx  # Federal Election Commission
 - ✅ 8 government APIs integrated (BLS, FRED, EIA, BEA, USDA, HUD, LDA, FEC)
 
 **Still Using Seeded Data:**
+
 - 🔲 Cost Drivers (tariffs 35%, labor 21%, etc.) - hardcoded demo values (needs research for authoritative source)
 
 **API Keys Required:**
+
 ```
 LDA_API_KEY=xxx  (Senate Lobbying Disclosure)
 FEC_API_KEY=xxx  (Federal Election Commission)

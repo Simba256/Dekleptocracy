@@ -16,7 +16,7 @@ export const checkAPIHealth = async () => {
   try {
     const response = await fetch(`${API_URL}/api/health`, {
       method: 'HEAD',
-      cache: 'no-store'
+      cache: 'no-store',
     });
 
     const latency = Math.round(performance.now() - start);

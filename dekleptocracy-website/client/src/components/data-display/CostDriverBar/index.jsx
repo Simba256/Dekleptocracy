@@ -14,7 +14,7 @@ export function CostDriverBar({ driver }) {
           className="cost-driver-bar__fill"
           style={{
             width: `${driver.percentage}%`,
-            backgroundColor: driver.color
+            backgroundColor: driver.color,
           }}
         />
       </div>

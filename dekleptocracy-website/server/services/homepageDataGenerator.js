@@ -22,11 +22,9 @@ async function callIntelligentChat(prompt, _conversationId = null) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-        stream: false
-      })
+        messages: [{ role: 'user', content: prompt }],
+        stream: false,
+      }),
     });
 
     if (!response.ok) {
@@ -36,7 +34,6 @@ async function callIntelligentChat(prompt, _conversationId = null) {
 
     const data = await response.json();
     return data.content || data.response || data.message || '';
-
   } catch (error) {
     logger.error('Error calling MCP intelligent chat', error, { prompt: prompt.substring(0, 100) });
     throw error;
@@ -54,8 +51,8 @@ function extractJSON(response) {
     return JSON.parse(response);
   } catch (e) {
     // Try to extract from markdown code block
-    const jsonMatch = response.match(/```json\s*([\s\S]*?)\s*```/) ||
-                     response.match(/```\s*([\s\S]*?)\s*```/);
+    const jsonMatch =
+      response.match(/```json\s*([\s\S]*?)\s*```/) || response.match(/```\s*([\s\S]*?)\s*```/);
 
     if (jsonMatch) {
       try {
@@ -97,7 +94,7 @@ function generateChartPath(values) {
 
   const points = values.map((val, i) => {
     const x = i * stepX;
-    const y = height - ((val - min) / range * height);
+    const y = height - ((val - min) / range) * height;
     return `${x.toFixed(1)} ${y.toFixed(1)}`;
   });
 
@@ -128,7 +125,7 @@ function generateChartData(currentValue, changePercent) {
 
     data.push({
       date: date.toISOString(),
-      value: parseFloat((value + variance).toFixed(2))
+      value: parseFloat((value + variance).toFixed(2)),
     });
   }
 
@@ -147,8 +144,14 @@ export async function generateWalletShock(category, state) {
   const categoryConfig = {
     groceries: { icon: '🥚', iconBg: '#fef3c7', color: '#ef4444', item: 'eggs', unit: 'per dozen' },
     fuel: { icon: '⛽', iconBg: '#fef3c7', color: '#ef4444', item: 'gas', unit: 'per gallon' },
-    utilities: { icon: '💡', iconBg: '#dbeafe', color: '#3b82f6', item: 'electricity', unit: 'per kWh' },
-    tech: { icon: '📱', iconBg: '#e0e7ff', color: '#6366f1', item: 'iPhone', unit: 'base model' }
+    utilities: {
+      icon: '💡',
+      iconBg: '#dbeafe',
+      color: '#3b82f6',
+      item: 'electricity',
+      unit: 'per kWh',
+    },
+    tech: { icon: '📱', iconBg: '#e0e7ff', color: '#6366f1', item: 'iPhone', unit: 'base model' },
   };
 
   const config = categoryConfig[category] || categoryConfig.groceries;
@@ -197,7 +200,7 @@ Provide current, realistic data for ${config.item} in ${state}.
 
     // Generate chart data
     const chartData = generateChartData(priceValue, data.changePercent);
-    const chartPath = generateChartPath(chartData.map(d => d.value));
+    const chartPath = generateChartPath(chartData.map((d) => d.value));
 
     // Build wallet shock object
     const walletShock = {
@@ -217,12 +220,11 @@ Provide current, realistic data for ${config.item} in ${state}.
       dataDate: new Date(),
       reactions: { shock: 0, angry: 0, sad: 0 },
       featured: false,
-      status: 'published'
+      status: 'published',
     };
 
     logger.info(`Successfully generated wallet shock for ${category} in ${state}`);
     return walletShock;
-
   } catch (error) {
     logger.error(`Failed to generate wallet shock for ${category} in ${state}`, error);
     throw error;
@@ -235,7 +237,10 @@ Provide current, realistic data for ${config.item} in ${state}.
  * @param {array} categories - Array of categories (default: all)
  * @returns {Promise<array>} Array of generated wallet shocks
  */
-export async function generateWalletShocks(states = ['California'], categories = ['groceries', 'fuel', 'utilities', 'tech']) {
+export async function generateWalletShocks(
+  states = ['California'],
+  categories = ['groceries', 'fuel', 'utilities', 'tech'],
+) {
   const results = [];
 
   for (const state of states) {
@@ -244,18 +249,16 @@ export async function generateWalletShocks(states = ['California'], categories =
         const shock = await generateWalletShock(category, state);
 
         // Upsert to database (update if exists, create if not)
-        await WalletShock.findOneAndUpdate(
-          { state, category, status: 'published' },
-          shock,
-          { upsert: true, new: true }
-        );
+        await WalletShock.findOneAndUpdate({ state, category, status: 'published' }, shock, {
+          upsert: true,
+          new: true,
+        });
 
         results.push(shock);
         logger.info(`✅ Saved wallet shock: ${category} in ${state}`);
 
         // Rate limit: wait 2 seconds between requests to avoid overwhelming MCP server
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       } catch (error) {
         logger.error(`Failed to generate/save wallet shock for ${category} in ${state}`, error);
         results.push({ error: error.message, category, state });
@@ -276,7 +279,7 @@ export async function generateHomepageData(options = {}) {
     states = ['California', 'Texas'],
     skipWalletShocks = false,
     skipCostDrivers: _skipCostDrivers = true, // Skip for now, implement later
-    skipStats: _skipStats = true // Skip for now, implement later
+    skipStats: _skipStats = true, // Skip for now, implement later
   } = options;
 
   logger.info('🚀 Starting homepage data generation', { states, options });
@@ -285,7 +288,7 @@ export async function generateHomepageData(options = {}) {
     walletShocks: [],
     costDrivers: [],
     stats: [],
-    errors: []
+    errors: [],
   };
 
   // Generate wallet shocks
@@ -306,7 +309,7 @@ export async function generateHomepageData(options = {}) {
     walletShocks: results.walletShocks.length,
     costDrivers: results.costDrivers.length,
     stats: results.stats.length,
-    errors: results.errors.length
+    errors: results.errors.length,
   });
 
   return results;
@@ -315,5 +318,5 @@ export async function generateHomepageData(options = {}) {
 export default {
   generateWalletShock,
   generateWalletShocks,
-  generateHomepageData
+  generateHomepageData,
 };

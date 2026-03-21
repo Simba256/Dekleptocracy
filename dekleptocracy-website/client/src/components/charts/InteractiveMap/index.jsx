@@ -26,24 +26,19 @@ const METRICS = {
     unit: '%',
     colors: ['#fef3c7', '#f97316', '#dc2626', '#b91c1c'],
     format: (val) => `${val >= 0 ? '+' : ''}${val?.toFixed(1) || 0}%`,
-    field: 'priceImpact'
+    field: 'priceImpact',
   },
   costOfLiving: {
     label: 'Cost of Living',
     unit: 'index',
     colors: ['#d1fae5', '#34d399', '#059669', '#065f46'],
-    format: (val) => val ? val.toFixed(0) : '100',
+    format: (val) => (val ? val.toFixed(0) : '100'),
     field: 'costOfLiving',
-    showAvgInLegend: true
-  }
+    showAvgInLegend: true,
+  },
 };
 
-const InteractiveMap = ({
-  data,
-  selectedState,
-  onStateSelect,
-  onDrillDown
-}) => {
+const InteractiveMap = ({ data, selectedState, onStateSelect, onDrillDown }) => {
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState({ x: 0, y: 0 });
   const [hoveredState, setHoveredState] = useState(null);
@@ -67,13 +62,13 @@ const InteractiveMap = ({
   // Fetch and parse the TopoJSON data
   useEffect(() => {
     fetch(US_TOPO_JSON)
-      .then(response => response.json())
-      .then(topology => {
+      .then((response) => response.json())
+      .then((topology) => {
         const geojson = feature(topology, topology.objects.states);
         setGeoData(geojson);
         setIsLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         if (import.meta.env.DEV) {
           console.error('Failed to load US map data:', err);
         }
@@ -125,7 +120,7 @@ const InteractiveMap = ({
     setIsDragging(true);
     setDragStart({
       x: e.clientX - center.x,
-      y: e.clientY - center.y
+      y: e.clientY - center.y,
     });
   };
 
@@ -133,7 +128,7 @@ const InteractiveMap = ({
     if (isDragging) {
       setCenter({
         x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        y: e.clientY - dragStart.y,
       });
     }
   };
@@ -147,8 +142,8 @@ const InteractiveMap = ({
     setHoveredState(null);
   };
 
-  const handleZoomIn = () => setZoom(prev => Math.min(8, prev * 1.5));
-  const handleZoomOut = () => setZoom(prev => Math.max(1, prev / 1.5));
+  const handleZoomIn = () => setZoom((prev) => Math.min(8, prev * 1.5));
+  const handleZoomOut = () => setZoom((prev) => Math.max(1, prev / 1.5));
   const handleReset = () => {
     setZoom(1);
     setCenter({ x: 0, y: 0 });
@@ -159,13 +154,15 @@ const InteractiveMap = ({
 
   const { colorScale, minValue, maxValue } = useMemo(() => {
     const field = metricConfig.field;
-    const values = data?.map(d => d[field] || d.intensity || 0).filter(v => v !== 0) || [];
+    const values = data?.map((d) => d[field] || d.intensity || 0).filter((v) => v !== 0) || [];
 
     if (values.length === 0) {
       return {
-        colorScale: scaleLinear().domain([0, 100]).range([metricConfig.colors[0], metricConfig.colors[3]]),
+        colorScale: scaleLinear()
+          .domain([0, 100])
+          .range([metricConfig.colors[0], metricConfig.colors[3]]),
         minValue: 0,
-        maxValue: 100
+        maxValue: 100,
       };
     }
 
@@ -184,75 +181,78 @@ const InteractiveMap = ({
         paddedMin,
         paddedMin + (paddedMax - paddedMin) * 0.33,
         paddedMin + (paddedMax - paddedMin) * 0.66,
-        paddedMax
+        paddedMax,
       ])
       .range(metricConfig.colors);
 
     return { colorScale: scale, minValue: min, maxValue: max };
   }, [data, activeMetric, metricConfig]);
 
-  const getStateData = useCallback((stateId) => {
-    if (!stateId || !data) return null;
+  const getStateData = useCallback(
+    (stateId) => {
+      if (!stateId || !data) return null;
 
-    const stateMap = {
-      '01': 'Alabama',
-      '02': 'Alaska',
-      '04': 'Arizona',
-      '05': 'Arkansas',
-      '06': 'California',
-      '08': 'Colorado',
-      '09': 'Connecticut',
-      '10': 'Delaware',
-      '11': 'Florida',
-      '12': 'Georgia',
-      '13': 'Hawaii',
-      '15': 'Hawaii',
-      '16': 'Idaho',
-      '17': 'Illinois',
-      '18': 'Indiana',
-      '19': 'Iowa',
-      '20': 'Kansas',
-      '21': 'Kentucky',
-      '22': 'Louisiana',
-      '23': 'Maine',
-      '24': 'Maryland',
-      '25': 'Massachusetts',
-      '26': 'Michigan',
-      '27': 'Minnesota',
-      '28': 'Mississippi',
-      '29': 'Missouri',
-      '30': 'Montana',
-      '31': 'Nebraska',
-      '32': 'Nevada',
-      '33': 'New Hampshire',
-      '34': 'New Jersey',
-      '35': 'New Mexico',
-      '36': 'New York',
-      '37': 'North Carolina',
-      '38': 'North Dakota',
-      '39': 'Ohio',
-      '40': 'Oklahoma',
-      '41': 'Oregon',
-      '42': 'Pennsylvania',
-      '44': 'Rhode Island',
-      '45': 'South Carolina',
-      '46': 'South Dakota',
-      '47': 'Tennessee',
-      '48': 'Texas',
-      '49': 'Utah',
-      '50': 'Vermont',
-      '51': 'Virginia',
-      '53': 'Washington',
-      '54': 'West Virginia',
-      '55': 'Wisconsin',
-      '56': 'Wyoming'
-    };
+      const stateMap = {
+        '01': 'Alabama',
+        '02': 'Alaska',
+        '04': 'Arizona',
+        '05': 'Arkansas',
+        '06': 'California',
+        '08': 'Colorado',
+        '09': 'Connecticut',
+        10: 'Delaware',
+        11: 'Florida',
+        12: 'Georgia',
+        13: 'Hawaii',
+        15: 'Hawaii',
+        16: 'Idaho',
+        17: 'Illinois',
+        18: 'Indiana',
+        19: 'Iowa',
+        20: 'Kansas',
+        21: 'Kentucky',
+        22: 'Louisiana',
+        23: 'Maine',
+        24: 'Maryland',
+        25: 'Massachusetts',
+        26: 'Michigan',
+        27: 'Minnesota',
+        28: 'Mississippi',
+        29: 'Missouri',
+        30: 'Montana',
+        31: 'Nebraska',
+        32: 'Nevada',
+        33: 'New Hampshire',
+        34: 'New Jersey',
+        35: 'New Mexico',
+        36: 'New York',
+        37: 'North Carolina',
+        38: 'North Dakota',
+        39: 'Ohio',
+        40: 'Oklahoma',
+        41: 'Oregon',
+        42: 'Pennsylvania',
+        44: 'Rhode Island',
+        45: 'South Carolina',
+        46: 'South Dakota',
+        47: 'Tennessee',
+        48: 'Texas',
+        49: 'Utah',
+        50: 'Vermont',
+        51: 'Virginia',
+        53: 'Washington',
+        54: 'West Virginia',
+        55: 'Wisconsin',
+        56: 'Wyoming',
+      };
 
-    const stateName = stateMap[stateId];
-    if (!stateName) return null;
+      const stateName = stateMap[stateId];
+      if (!stateName) return null;
 
-    return data.find(d => d.name === stateName);
-  }, [data]);
+      return data.find((d) => d.name === stateName);
+    },
+    [data],
+  );
 
   const handleStateClick = (stateName, _stateId) => {
     if (stateName) {
@@ -264,7 +264,7 @@ const InteractiveMap = ({
   const mapStyle = {
     width: '100%',
     height: '100%',
-    cursor: isDragging ? 'grabbing' : 'grab'
+    cursor: isDragging ? 'grabbing' : 'grab',
   };
 
   return (
@@ -289,9 +289,15 @@ const InteractiveMap = ({
       </div>
 
       <div className="map-controls">
-        <button onClick={handleZoomIn} aria-label="Zoom in">+</button>
-        <button onClick={handleZoomOut} aria-label="Zoom out">−</button>
-        <button onClick={handleReset} aria-label="Reset view">↺</button>
+        <button onClick={handleZoomIn} aria-label="Zoom in">
+          +
+        </button>
+        <button onClick={handleZoomOut} aria-label="Zoom out">
+          −
+        </button>
+        <button onClick={handleReset} aria-label="Reset view">
+          ↺
+        </button>
       </div>
 
       <div
@@ -299,7 +305,7 @@ const InteractiveMap = ({
         className="map-wrapper"
         style={{
           transform: `translate(${center.x}px, ${center.y}px) scale(${zoom})`,
-          transformOrigin: 'center'
+          transformOrigin: 'center',
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -319,8 +325,9 @@ const InteractiveMap = ({
                   return (geographies || []).map((geo) => {
                     // Get state name from properties or look up by ID
                     const stateName = geo.properties?.name || getStateData(geo.id)?.name;
-                    const stateData = data?.find(d => d.name === stateName);
-                    const metricValue = stateData?.[metricConfig.field] || stateData?.intensity || 0;
+                    const stateData = data?.find((d) => d.name === stateName);
+                    const metricValue =
+                      stateData?.[metricConfig.field] || stateData?.intensity || 0;
                     const isSelected = selectedState === stateName;
                     const isHovered = hoveredState === stateName;
 
@@ -329,8 +336,8 @@ const InteractiveMap = ({
                         key={geo.rsmKey || geo.id}
                         geography={geo}
                         fill={colorScale(metricValue)}
-                        stroke={isSelected ? '#2d3748' : (isHovered ? '#4A5D3F' : '#ffffff')}
-                        strokeWidth={isSelected ? 3 : (isHovered ? 2 : 1)}
+                        stroke={isSelected ? '#2d3748' : isHovered ? '#4A5D3F' : '#ffffff'}
+                        strokeWidth={isSelected ? 3 : isHovered ? 2 : 1}
                         className={`state-geo ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
                         onMouseEnter={() => setHoveredState(stateName)}
                         onMouseLeave={() => setHoveredState(null)}
@@ -341,7 +348,7 @@ const InteractiveMap = ({
                         style={{
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
-                          filter: isSelected ? 'brightness(1.1)' : 'none'
+                          filter: isSelected ? 'brightness(1.1)' : 'none',
                         }}
                         data-tooltip-id="map-tooltip"
                         data-tooltip-content={stateName}
@@ -358,7 +365,7 @@ const InteractiveMap = ({
       <Tooltip
         id="map-tooltip"
         render={({ content }) => {
-          const stateData = data?.find(d => d.name === content);
+          const stateData = data?.find((d) => d.name === content);
           if (!stateData) return null;
 
           const metricValue = stateData[metricConfig.field] || stateData.intensity || 0;
@@ -375,7 +382,8 @@ const InteractiveMap = ({
                   <span className="tooltip-icon">{shock.icon}</span>
                   <span>{shock.item}</span>
                   <span className="tooltip-change">
-                    {shock.change > 0 ? '+' : ''}{shock.change}%
+                    {shock.change > 0 ? '+' : ''}
+                    {shock.change}%
                   </span>
                 </div>
               ))}
@@ -391,17 +399,20 @@ const InteractiveMap = ({
           <div
             className="legend-bar"
             style={{
-              background: `linear-gradient(to right, ${metricConfig.colors.join(', ')})`
+              background: `linear-gradient(to right, ${metricConfig.colors.join(', ')})`,
             }}
           />
           <div className="legend-labels">
             <span>{metricConfig.format(minValue)}</span>
-            <span>{metricConfig.showAvgInLegend ? 'avg' : metricConfig.format((minValue + maxValue) / 2)}</span>
+            <span>
+              {metricConfig.showAvgInLegend
+                ? 'avg'
+                : metricConfig.format((minValue + maxValue) / 2)}
+            </span>
             <span>{metricConfig.format(maxValue)}</span>
           </div>
         </div>
       </div>
-
     </div>
   );
 };

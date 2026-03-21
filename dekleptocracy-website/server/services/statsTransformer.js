@@ -14,7 +14,7 @@ const SOURCES = {
   lobbying: 'U.S. Senate Office of Public Records (LDA)',
   contributions: 'Federal Election Commission',
   consumerCost: 'Bureau of Labor Statistics, EIA, USDA',
-  tariffRevenue: 'U.S. Department of the Treasury'
+  tariffRevenue: 'U.S. Department of the Treasury',
 };
 
 /**
@@ -51,7 +51,7 @@ function calculateChange(current, previous) {
   return {
     change,
     changeDisplay: `${sign}${change.toFixed(1)}%`,
-    changeDirection: direction
+    changeDirection: direction,
   };
 }
 
@@ -72,18 +72,21 @@ async function fetchLobbyingData(year = new Date().getFullYear()) {
         value: data.total_spending || 0,
         displayValue: data.displayValue || formatCurrency(data.total_spending || 0),
         filings: data.total_filings || 0,
-        source: SOURCES.lobbying
+        source: SOURCES.lobbying,
       };
     }
 
     // Fallback: try to get top clients and sum
     const topClients = await executeMCPTool('get_top_lobbying_clients', { year, limit: 50 }, 60000);
     if (topClients?.success && topClients?.result?.data?.top_clients) {
-      const total = topClients.result.data.top_clients.reduce((sum, c) => sum + (c.spending || 0), 0);
+      const total = topClients.result.data.top_clients.reduce(
+        (sum, c) => sum + (c.spending || 0),
+        0,
+      );
       return {
         value: total,
         displayValue: formatCurrency(total),
-        source: SOURCES.lobbying
+        source: SOURCES.lobbying,
       };
     }
 
@@ -107,7 +110,11 @@ async function fetchContributionData(cycle = 2024) {
     const pacResult = await executeMCPTool('get_pac_contributions', { cycle }, 60000);
 
     // Get top employers contributions
-    const employerResult = await executeMCPTool('get_top_employers_contributions', { cycle }, 60000);
+    const employerResult = await executeMCPTool(
+      'get_top_employers_contributions',
+      { cycle },
+      60000,
+    );
 
     let totalContributions = 0;
 
@@ -123,7 +130,7 @@ async function fetchContributionData(cycle = 2024) {
       return {
         value: totalContributions,
         displayValue: formatCurrency(totalContributions),
-        source: SOURCES.contributions
+        source: SOURCES.contributions,
       };
     }
 
@@ -132,8 +139,10 @@ async function fetchContributionData(cycle = 2024) {
     if (totalResult?.success && totalResult?.result?.data) {
       return {
         value: totalResult.result.data.total_receipts || 0,
-        displayValue: totalResult.result.data.displayValue || formatCurrency(totalResult.result.data.total_receipts || 0),
-        source: SOURCES.contributions
+        displayValue:
+          totalResult.result.data.displayValue ||
+          formatCurrency(totalResult.result.data.total_receipts || 0),
+        source: SOURCES.contributions,
       };
     }
 
@@ -170,9 +179,12 @@ async function calculateConsumerCost() {
       .lean();
 
     // Calculate national averages
-    let totalGas = 0, countGas = 0;
-    let totalElectricity = 0, countElectricity = 0;
-    let totalFood = 0, countFood = 0;
+    let totalGas = 0,
+      countGas = 0;
+    let totalElectricity = 0,
+      countElectricity = 0;
+    let totalFood = 0,
+      countFood = 0;
 
     for (const entry of gasData) {
       if (entry.data?.value) {
@@ -195,7 +207,7 @@ async function calculateConsumerCost() {
       }
     }
 
-    const avgGas = countGas > 0 ? totalGas / countGas : 3.50;
+    const avgGas = countGas > 0 ? totalGas / countGas : 3.5;
     const avgElectricity = countElectricity > 0 ? totalElectricity / countElectricity : 0.15;
     const avgFood = countFood > 0 ? totalFood / countFood : 500;
 
@@ -211,7 +223,7 @@ async function calculateConsumerCost() {
     const totalAnnualCost = annualGasCost + annualElectricityCost + annualFoodCost;
 
     // Estimate increase due to policy/tariffs (conservative 8-12% estimate based on research)
-    const policyImpactPercent = 0.10; // 10% of costs attributed to policy impacts
+    const policyImpactPercent = 0.1; // 10% of costs attributed to policy impacts
     const policyImpactCost = totalAnnualCost * policyImpactPercent;
 
     return {
@@ -221,9 +233,9 @@ async function calculateConsumerCost() {
         gas: annualGasCost,
         electricity: annualElectricityCost,
         food: annualFoodCost,
-        total: totalAnnualCost
+        total: totalAnnualCost,
       },
-      source: SOURCES.consumerCost
+      source: SOURCES.consumerCost,
     };
   } catch (error) {
     logger.error('Error calculating consumer cost:', error);
@@ -251,7 +263,7 @@ async function fetchTariffRevenue() {
       value: estimatedRevenue,
       displayValue: formatCurrency(estimatedRevenue),
       source: SOURCES.tariffRevenue,
-      note: 'FY2024 estimate based on CBP trade statistics'
+      note: 'FY2024 estimate based on CBP trade statistics',
     };
   } catch (error) {
     logger.error('Error fetching tariff revenue:', error);
@@ -293,9 +305,9 @@ export async function transformStats() {
           description: `Total lobbying spending reported to the U.S. Senate in ${currentYear}`,
           source: lobbyingData.source,
           dataDate: new Date(),
-          status: 'published'
+          status: 'published',
         },
-        { upsert: true, new: true }
+        { upsert: true, new: true },
       );
       logger.info(`Updated lobbying stats: ${lobbyingData.displayValue}`);
       results.success++;
@@ -329,9 +341,9 @@ export async function transformStats() {
           description: `Campaign contributions for the ${currentCycle} federal election cycle`,
           source: contributionData.source,
           dataDate: new Date(),
-          status: 'published'
+          status: 'published',
         },
-        { upsert: true, new: true }
+        { upsert: true, new: true },
       );
       logger.info(`Updated contribution stats: ${contributionData.displayValue}`);
       results.success++;
@@ -360,9 +372,9 @@ export async function transformStats() {
           description: 'Estimated annual household cost increase due to tariffs and policy changes',
           source: consumerCostData.source,
           dataDate: new Date(),
-          status: 'published'
+          status: 'published',
         },
-        { upsert: true, new: true }
+        { upsert: true, new: true },
       );
       logger.info(`Updated consumer cost stats: ${consumerCostData.displayValue}`);
       results.success++;
@@ -391,9 +403,9 @@ export async function transformStats() {
           description: 'Estimated federal revenue from customs duties and tariffs',
           source: tariffData.source,
           dataDate: new Date(),
-          status: 'published'
+          status: 'published',
         },
-        { upsert: true, new: true }
+        { upsert: true, new: true },
       );
       logger.info(`Updated tariff revenue stats: ${tariffData.displayValue}`);
       results.success++;
@@ -404,7 +416,9 @@ export async function transformStats() {
     results.errors.push({ type: 'tariff-revenue', error: error.message });
   }
 
-  logger.info(`Stats transformation complete: ${results.success} success, ${results.failed} failed`);
+  logger.info(
+    `Stats transformation complete: ${results.success} success, ${results.failed} failed`,
+  );
   return results;
 }
 
@@ -418,12 +432,12 @@ export async function getStatsStatus() {
 
   return {
     count: stats.length,
-    stats: stats.map(s => ({
+    stats: stats.map((s) => ({
       type: s.statType,
       value: s.displayValue,
       source: s.source,
-      lastUpdated: s.dataDate
-    }))
+      lastUpdated: s.dataDate,
+    })),
   };
 }
 

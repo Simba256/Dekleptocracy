@@ -138,7 +138,7 @@ export const verifyToken = async () => {
     const response = await fetch(`${API_URL}/api/auth/verify`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });

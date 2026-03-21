@@ -12,7 +12,7 @@ const CreateAccount = () => {
     fullName: '',
     email: '',
     password: '',
-    agreeToTerms: false
+    agreeToTerms: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,54 +23,56 @@ const CreateAccount = () => {
   // Initialize Google Sign-In
   useEffect(() => {
     if (GOOGLE_CLIENT_ID && googleButtonRef.current) {
-      loadGoogleScript().then((google) => {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: async (response) => {
-            setLoading(true);
-            setError('');
-            try {
-              await handleGoogleSignIn(
-                response,
-                API_URL,
-                () => {
-                  clearPreferences();
-                  setSuccess(true);
-                  setTimeout(() => {
-                    navigate('/survey');
-                  }, 1500);
-                },
-                (error) => {
-                  setError(error.message || 'Google sign-up failed. Please try again.');
-                  setLoading(false);
-                }
-              );
-            } catch (error) {
-              setError(error.message || 'Google sign-up failed. Please try again.');
-              setLoading(false);
-            }
-          },
-        });
+      loadGoogleScript()
+        .then((google) => {
+          google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: async (response) => {
+              setLoading(true);
+              setError('');
+              try {
+                await handleGoogleSignIn(
+                  response,
+                  API_URL,
+                  () => {
+                    clearPreferences();
+                    setSuccess(true);
+                    setTimeout(() => {
+                      navigate('/survey');
+                    }, 1500);
+                  },
+                  (error) => {
+                    setError(error.message || 'Google sign-up failed. Please try again.');
+                    setLoading(false);
+                  },
+                );
+              } catch (error) {
+                setError(error.message || 'Google sign-up failed. Please try again.');
+                setLoading(false);
+              }
+            },
+          });
 
-        // Render Google button
-        google.accounts.id.renderButton(googleButtonRef.current, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          text: 'signup_with',
-          width: '100%',
+          // Render Google button
+          google.accounts.id.renderButton(googleButtonRef.current, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            text: 'signup_with',
+            width: '100%',
+          });
+        })
+        .catch(() => {
+          // Silent fail for Google script loading errors
         });
-      }).catch(() => {
-        // Silent fail for Google script loading errors
-      });
     }
   }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
     // Clear error when user starts typing
     if (error) setError('');
@@ -90,7 +92,7 @@ const CreateAccount = () => {
         },
         body: JSON.stringify({
           ...formData,
-          preferences
+          preferences,
         }),
       });
 
@@ -111,7 +113,7 @@ const CreateAccount = () => {
 
       setSuccess(true);
       clearPreferences();
-      
+
       // Redirect to preferences flow after successful signup
       setTimeout(() => {
         navigate('/survey');
@@ -127,7 +129,6 @@ const CreateAccount = () => {
       <div className="create-account-container">
         {/* Left Section - Form */}
         <div className="form-section">
-
           <div className="form-content">
             <h1 className="form-title">Create an Account</h1>
             <p className="form-description">Kindly fill in your details to create an account</p>
@@ -152,7 +153,9 @@ const CreateAccount = () => {
 
             <form onSubmit={handleSubmit} className="account-form" noValidate>
               <div className="form-group">
-                <label htmlFor="fullName" className="form-label">Your fullname*</label>
+                <label htmlFor="fullName" className="form-label">
+                  Your fullname*
+                </label>
                 <input
                   type="text"
                   id="fullName"
@@ -162,13 +165,15 @@ const CreateAccount = () => {
                   placeholder="Enter your name"
                   className="form-input"
                   required
-                  aria-invalid={error ? "true" : "false"}
-                  aria-describedby={error ? "signup-error-message" : undefined}
+                  aria-invalid={error ? 'true' : 'false'}
+                  aria-describedby={error ? 'signup-error-message' : undefined}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="email" className="form-label">Your email*</label>
+                <label htmlFor="email" className="form-label">
+                  Your email*
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -178,16 +183,18 @@ const CreateAccount = () => {
                   placeholder="Enter your email"
                   className="form-input"
                   required
-                  aria-invalid={error ? "true" : "false"}
-                  aria-describedby={error ? "signup-error-message" : undefined}
+                  aria-invalid={error ? 'true' : 'false'}
+                  aria-describedby={error ? 'signup-error-message' : undefined}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="password" className="form-label">Password*</label>
+                <label htmlFor="password" className="form-label">
+                  Password*
+                </label>
                 <div className="password-input-container">
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     id="password"
                     name="password"
                     value={formData.password}
@@ -195,26 +202,33 @@ const CreateAccount = () => {
                     placeholder="Enter password"
                     className="form-input password-input"
                     required
-                    aria-invalid={error ? "true" : "false"}
-                    aria-describedby={error ? "signup-error-message" : undefined}
+                    aria-invalid={error ? 'true' : 'false'}
+                    aria-describedby={error ? 'signup-error-message' : undefined}
                   />
                   <button
                     type="button"
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                     aria-pressed={showPassword}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       {showPassword ? (
                         <>
-                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                          <line x1="1" y1="1" x2="23" y2="23"/>
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                          <line x1="1" y1="1" x2="23" y2="23" />
                         </>
                       ) : (
                         <>
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                          <circle cx="12" cy="12" r="3"/>
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
                         </>
                       )}
                     </svg>
@@ -233,7 +247,10 @@ const CreateAccount = () => {
                     required
                   />
                   <span className="checkbox-text">
-                    I agree to <Link to="/terms-of-service" target="_blank" className="terms-link">terms & conditions</Link>
+                    I agree to{' '}
+                    <Link to="/terms-of-service" target="_blank" className="terms-link">
+                      terms & conditions
+                    </Link>
                   </span>
                 </label>
               </div>
@@ -246,16 +263,26 @@ const CreateAccount = () => {
                 <span>Or</span>
               </div>
 
-              <div ref={googleButtonRef} id="google-signup-button" className="google-signin-container"></div>
+              <div
+                ref={googleButtonRef}
+                id="google-signup-button"
+                className="google-signin-container"
+              ></div>
               {!GOOGLE_CLIENT_ID && (
                 <div className="config-warning">
                   <strong>⚠️ Google Sign-In Not Configured</strong>
                   <div className="config-warning__content">
                     <p>To enable Google Sign-In:</p>
                     <ol>
-                      <li>Create a <code>.env</code> file in the <code>client/</code> directory</li>
-                      <li>Add: <code>VITE_GOOGLE_CLIENT_ID=your-client-id</code></li>
-                      <li><strong>Restart the dev server</strong> (Ctrl+C then npm run dev)</li>
+                      <li>
+                        Create a <code>.env</code> file in the <code>client/</code> directory
+                      </li>
+                      <li>
+                        Add: <code>VITE_GOOGLE_CLIENT_ID=your-client-id</code>
+                      </li>
+                      <li>
+                        <strong>Restart the dev server</strong> (Ctrl+C then npm run dev)
+                      </li>
                     </ol>
                     <p className="config-warning__hint">
                       Check browser console for debug info. See ENV_SETUP.md for details.
@@ -265,7 +292,10 @@ const CreateAccount = () => {
               )}
 
               <div className="login-link">
-                Already have an Account? <Link to="/chatbot/login" className="login-text">Login</Link>
+                Already have an Account?{' '}
+                <Link to="/chatbot/login" className="login-text">
+                  Login
+                </Link>
               </div>
             </form>
           </div>

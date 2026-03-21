@@ -21,7 +21,7 @@ export const logMetric = (name, value, metadata = {}) => {
     value,
     timestamp: Date.now(),
     path: window.location.pathname,
-    ...metadata
+    ...metadata,
   };
 
   // Log in dev

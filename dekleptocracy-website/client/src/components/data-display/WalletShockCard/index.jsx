@@ -58,13 +58,22 @@ export function WalletShockCard({ shock, onReaction, selectedState }) {
         </button>
         <div className="wallet-shock-card__reactions">
           <span onClick={() => handleReaction('shock')} className="wallet-shock-card__reaction">
-            <span role="img" aria-label="shock">😱</span> {shock.reactions?.shock || 0}
+            <span role="img" aria-label="shock">
+              😱
+            </span>{' '}
+            {shock.reactions?.shock || 0}
           </span>
           <span onClick={() => handleReaction('angry')} className="wallet-shock-card__reaction">
-            <span role="img" aria-label="angry">😠</span> {shock.reactions?.angry || 0}
+            <span role="img" aria-label="angry">
+              😠
+            </span>{' '}
+            {shock.reactions?.angry || 0}
           </span>
           <span onClick={() => handleReaction('sad')} className="wallet-shock-card__reaction">
-            <span role="img" aria-label="sad">😢</span> {shock.reactions?.sad || 0}
+            <span role="img" aria-label="sad">
+              😢
+            </span>{' '}
+            {shock.reactions?.sad || 0}
           </span>
         </div>
       </div>

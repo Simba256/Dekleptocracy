@@ -22,11 +22,13 @@ dekleptocracy-website/
 Your Google OAuth Client ID from Google Cloud Console.
 
 **Format:**
+
 ```env
 VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ```
 
 **Important Notes:**
+
 - **No quotes**: Don't use quotes around the value
 - **No spaces**: No spaces before or after the `=`
 - **Exact name**: Must be exactly `VITE_GOOGLE_CLIENT_ID` (Vite requires `VITE_` prefix)
@@ -73,13 +75,14 @@ VITE_API_URL=http://localhost:5000
    - Must start with `VITE_`
 
 4. **Spaces or quotes in value**
+
    ```env
    # ❌ WRONG - has quotes
    VITE_GOOGLE_CLIENT_ID="your-client-id"
-   
+
    # ❌ WRONG - has spaces
    VITE_GOOGLE_CLIENT_ID = your-client-id
-   
+
    # ✅ CORRECT - no quotes, no spaces
    VITE_GOOGLE_CLIENT_ID=your-client-id
    ```
@@ -98,6 +101,7 @@ VITE_API_URL=http://localhost:5000
    - Check if `hasGoogleClientId` is `true`
 
 2. **Check .env file:**
+
    ```bash
    # In client/ directory
    cat .env
@@ -113,6 +117,7 @@ VITE_API_URL=http://localhost:5000
 ### Steps to Fix
 
 1. **Create/Update .env file:**
+
    ```bash
    cd client
    # Create .env file (if it doesn't exist)
@@ -120,6 +125,7 @@ VITE_API_URL=http://localhost:5000
    ```
 
 2. **Verify file location:**
+
    ```
    client/
      .env          ← Should be here
@@ -128,6 +134,7 @@ VITE_API_URL=http://localhost:5000
    ```
 
 3. **Restart dev server:**
+
    ```bash
    # Stop server (Ctrl+C)
    # Then start again
@@ -182,7 +189,7 @@ For production deployment:
 ## Debug Mode
 
 The application logs environment variables in development mode. Check the browser console to see:
+
 - Whether `VITE_GOOGLE_CLIENT_ID` is set
 - What value it has (first 20 characters)
 - All available `VITE_` environment variables
-

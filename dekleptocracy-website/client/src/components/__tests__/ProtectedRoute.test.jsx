@@ -14,17 +14,14 @@ vi.mock('../../utils/auth', () => ({
 // Mock the CSS import
 vi.mock('../ProtectedRoute.css', () => ({}));
 
-const renderWithRouter = (
-  ui,
-  { route = '/protected', initialEntries = [route] } = {}
-) => {
+const renderWithRouter = (ui, { route = '/protected', initialEntries = [route] } = {}) => {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <Routes>
         <Route path="/chatbot/login" element={<div>Login Page</div>} />
         <Route path="/protected" element={ui} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 };
 
@@ -41,7 +38,7 @@ describe('ProtectedRoute', () => {
     renderWithRouter(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
@@ -54,7 +51,7 @@ describe('ProtectedRoute', () => {
     renderWithRouter(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     await waitFor(() => {
@@ -68,7 +65,7 @@ describe('ProtectedRoute', () => {
     renderWithRouter(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     await waitFor(() => {
@@ -84,7 +81,7 @@ describe('ProtectedRoute', () => {
     renderWithRouter(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     await waitFor(() => {
@@ -102,7 +99,7 @@ describe('ProtectedRoute', () => {
     renderWithRouter(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     await waitFor(() => {
@@ -118,12 +115,10 @@ describe('ProtectedRoute', () => {
     renderWithRouter(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
-    expect(
-      document.querySelector('.protected-route__spinner')
-    ).toBeInTheDocument();
+    expect(document.querySelector('.protected-route__spinner')).toBeInTheDocument();
   });
 
   it('skips verifyToken if not authenticated', async () => {
@@ -132,7 +127,7 @@ describe('ProtectedRoute', () => {
     renderWithRouter(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     await waitFor(() => {

@@ -27,7 +27,7 @@ const Navbar = () => {
     const checkAuth = () => {
       const authenticated = isAuthenticated();
       setIsLoggedIn(authenticated);
-      
+
       if (authenticated) {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -73,7 +73,7 @@ const Navbar = () => {
   }, []);
 
   const toggleProfileDropdown = useCallback(() => {
-    setIsProfileDropdownOpen(prev => !prev);
+    setIsProfileDropdownOpen((prev) => !prev);
     setIsInsightsOpen(false);
   }, []);
 
@@ -132,17 +132,19 @@ const Navbar = () => {
                     strokeWidth="2.5"
                     aria-hidden="true"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
                 {/* Dropdown Menu */}
                 {isInsightsOpen && (
-                  <div id="insights-dropdown-menu" className="dropdown-menu" role="menu" aria-label="Insights navigation" onClick={(e) => e.stopPropagation()}>
+                  <div
+                    id="insights-dropdown-menu"
+                    className="dropdown-menu"
+                    role="menu"
+                    aria-label="Insights navigation"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <Link
                       to="/insights"
                       onClick={() => setIsInsightsOpen(false)}
@@ -186,7 +188,7 @@ const Navbar = () => {
             ref={mobileMenuButtonRef}
             className="mobile-menu-button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-navigation-menu"
           >
@@ -208,7 +210,7 @@ const Navbar = () => {
 
           {/* Profile Avatar with Dropdown */}
           <div className="profile-container" ref={profileMenuRef}>
-            <button 
+            <button
               className="profile-avatar-button"
               onClick={toggleProfileDropdown}
               aria-label="Profile menu"
@@ -219,9 +221,11 @@ const Navbar = () => {
               <div className="profile-avatar">
                 {isLoggedIn && userProfile?.profilePhoto ? (
                   <img
-                    src={userProfile.profilePhoto.startsWith('http') 
-                      ? userProfile.profilePhoto 
-                      : `${API_URL}/${userProfile.profilePhoto}`}
+                    src={
+                      userProfile.profilePhoto.startsWith('http')
+                        ? userProfile.profilePhoto
+                        : `${API_URL}/${userProfile.profilePhoto}`
+                    }
                     alt="Profile"
                     onError={(e) => {
                       e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.fullName || 'User')}&background=ff6b35&color=fff&size=128`;
@@ -233,7 +237,14 @@ const Navbar = () => {
                   </div>
                 ) : (
                   <div className="profile-avatar-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
@@ -304,25 +315,31 @@ const Navbar = () => {
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
           <div className="mobile-menu-overlay" onClick={closeMobileMenu}>
-            <nav id="mobile-navigation-menu" className="mobile-menu" role="navigation" aria-label="Mobile navigation" onClick={(e) => e.stopPropagation()}>
-              <Link 
-                to="/" 
+            <nav
+              id="mobile-navigation-menu"
+              className="mobile-menu"
+              role="navigation"
+              aria-label="Mobile navigation"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Link
+                to="/"
                 className={`mobile-menu-link ${isActive('/') ? 'active' : ''}`}
                 onClick={closeMobileMenu}
               >
                 Home
               </Link>
 
-              <Link 
-                to="/about" 
+              <Link
+                to="/about"
                 className={`mobile-menu-link ${isActive('/about') ? 'active' : ''}`}
                 onClick={closeMobileMenu}
               >
                 About Us
               </Link>
 
-              <Link 
-                to="/reports" 
+              <Link
+                to="/reports"
                 className={`mobile-menu-link ${isActive('/reports') ? 'active' : ''}`}
                 onClick={closeMobileMenu}
               >
@@ -343,21 +360,13 @@ const Navbar = () => {
                     viewBox="0 0 24 24"
                     strokeWidth="2.5"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
                 {isInsightsOpen && (
                   <div className="mobile-dropdown-items">
-                    <Link
-                      to="/insights"
-                      onClick={closeMobileMenu}
-                      className="mobile-dropdown-link"
-                    >
+                    <Link to="/insights" onClick={closeMobileMenu} className="mobile-dropdown-link">
                       All Insights
                     </Link>
                     <Link
@@ -378,24 +387,24 @@ const Navbar = () => {
                 )}
               </div>
 
-              <Link 
-                to="/chatbot" 
+              <Link
+                to="/chatbot"
                 className={`mobile-menu-link ${isActive('/chatbot') ? 'active' : ''}`}
                 onClick={closeMobileMenu}
               >
                 Chatbot
               </Link>
 
-              <Link 
-                to="/dashboard" 
+              <Link
+                to="/dashboard"
                 className={`mobile-menu-link ${isActive('/dashboard') ? 'active' : ''}`}
                 onClick={closeMobileMenu}
               >
                 Dashboard
               </Link>
 
-              <Link 
-                to="/contact" 
+              <Link
+                to="/contact"
                 className={`mobile-menu-link ${isActive('/contact') ? 'active' : ''}`}
                 onClick={closeMobileMenu}
               >
@@ -404,16 +413,16 @@ const Navbar = () => {
 
               {/* Mobile Profile/Login Link */}
               {isLoggedIn ? (
-                <Link 
-                  to="/profile" 
+                <Link
+                  to="/profile"
                   className={`mobile-menu-link ${isActive('/profile') ? 'active' : ''}`}
                   onClick={closeMobileMenu}
                 >
                   My Profile
                 </Link>
               ) : (
-                <Link 
-                  to="/chatbot/login" 
+                <Link
+                  to="/chatbot/login"
                   className={`mobile-menu-link ${isActive('/chatbot/login') ? 'active' : ''}`}
                   onClick={closeMobileMenu}
                 >

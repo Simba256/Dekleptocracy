@@ -8,17 +8,17 @@
 
 ## Completed Phases
 
-| Phase | Status | Commit |
-|-------|--------|--------|
-| Phase 2: Color Token Migration | ✅ Complete | `b534649` |
-| Phase 3: CSS Token Migration | ✅ Complete | `e527866` |
-| Phase 4: Performance Optimization | ✅ Complete | `7c9dfc9` |
-| Phase 5: Accessibility Compliance | ✅ Complete | `36fa629` |
-| Phase 6: Security Hardening | ✅ Complete | `223c529` |
-| Phase 7: Testing Infrastructure | ✅ Complete | `bd34e10` |
-| Phase 8: Documentation | ✅ Complete | `c9b69ad` |
-| Phase 9: Monitoring & Analytics | ✅ Complete | `2d37f5f` |
-| **Phase 10: Final QA & Launch** | ⏳ Remaining | - |
+| Phase                             | Status       | Commit    |
+| --------------------------------- | ------------ | --------- |
+| Phase 2: Color Token Migration    | ✅ Complete  | `b534649` |
+| Phase 3: CSS Token Migration      | ✅ Complete  | `e527866` |
+| Phase 4: Performance Optimization | ✅ Complete  | `7c9dfc9` |
+| Phase 5: Accessibility Compliance | ✅ Complete  | `36fa629` |
+| Phase 6: Security Hardening       | ✅ Complete  | `223c529` |
+| Phase 7: Testing Infrastructure   | ✅ Complete  | `bd34e10` |
+| Phase 8: Documentation            | ✅ Complete  | `c9b69ad` |
+| Phase 9: Monitoring & Analytics   | ✅ Complete  | `2d37f5f` |
+| **Phase 10: Final QA & Launch**   | ⏳ Remaining | -         |
 
 ---
 
@@ -47,17 +47,17 @@ This roadmap outlines the systematic approach to achieving production-ready stat
 
 ### Current State Assessment
 
-| Category | Score | Target | Status |
-|----------|-------|--------|--------|
-| Code Quality | 9.0/10 | 9.0/10 | ✅ |
-| Type Safety | 8.0/10 | 8.0/10 | ✅ PropTypes added |
-| CSS Consistency | 9.5/10 | 9.5/10 | ✅ Tokens migrated |
-| Performance | 9.0/10 | 9.0/10 | ✅ Lazy loading, memoization |
-| Accessibility | 9.5/10 | 9.5/10 | ✅ ARIA, keyboard nav |
-| Security | 9.0/10 | 9.0/10 | ✅ CSP, validation |
-| Test Coverage | 9.8/10 | 8.0/10 | ✅ 131 tests, 98% coverage |
-| Documentation | 9.0/10 | 9.0/10 | ✅ README, API docs, JSDoc |
-| Monitoring | 9.0/10 | 8.0/10 | ✅ Web Vitals, error logging |
+| Category        | Score  | Target | Status                       |
+| --------------- | ------ | ------ | ---------------------------- |
+| Code Quality    | 9.0/10 | 9.0/10 | ✅                           |
+| Type Safety     | 8.0/10 | 8.0/10 | ✅ PropTypes added           |
+| CSS Consistency | 9.5/10 | 9.5/10 | ✅ Tokens migrated           |
+| Performance     | 9.0/10 | 9.0/10 | ✅ Lazy loading, memoization |
+| Accessibility   | 9.5/10 | 9.5/10 | ✅ ARIA, keyboard nav        |
+| Security        | 9.0/10 | 9.0/10 | ✅ CSP, validation           |
+| Test Coverage   | 9.8/10 | 8.0/10 | ✅ 131 tests, 98% coverage   |
+| Documentation   | 9.0/10 | 9.0/10 | ✅ README, API docs, JSDoc   |
+| Monitoring      | 9.0/10 | 8.0/10 | ✅ Web Vitals, error logging |
 
 ---
 
@@ -109,17 +109,18 @@ This roadmap outlines the systematic approach to achieving production-ready stat
 
 **Status:** 🔴 Critical
 
-| File | Lines | Action |
-|------|-------|--------|
-| `src/utils/googleAuth.js` | 59-114 | Remove 20+ debug console statements |
-| `src/pages/Chatbot.jsx` | 112, 192, 215 | Remove or wrap in DEV check |
-| `src/pages/CreateAccount.jsx` | 11-15, 73 | Remove environment logging |
-| `src/components/Navbar.jsx` | 32 | Keep error logging, wrap in DEV |
-| `src/pages/Dashboard.jsx` | 31 | Keep error logging, wrap in DEV |
-| `src/utils/auth.js` | 22, 70, 134 | Keep error logging, wrap in DEV |
-| `src/components/common/ErrorBoundary/index.jsx` | 12 | Keep, this is intentional error capture |
+| File                                            | Lines         | Action                                  |
+| ----------------------------------------------- | ------------- | --------------------------------------- |
+| `src/utils/googleAuth.js`                       | 59-114        | Remove 20+ debug console statements     |
+| `src/pages/Chatbot.jsx`                         | 112, 192, 215 | Remove or wrap in DEV check             |
+| `src/pages/CreateAccount.jsx`                   | 11-15, 73     | Remove environment logging              |
+| `src/components/Navbar.jsx`                     | 32            | Keep error logging, wrap in DEV         |
+| `src/pages/Dashboard.jsx`                       | 31            | Keep error logging, wrap in DEV         |
+| `src/utils/auth.js`                             | 22, 70, 134   | Keep error logging, wrap in DEV         |
+| `src/components/common/ErrorBoundary/index.jsx` | 12            | Keep, this is intentional error capture |
 
 **Implementation Pattern:**
+
 ```javascript
 // BEFORE
 console.log('🔧 [Login] Environment configuration:', { ... });
@@ -134,8 +135,8 @@ if (import.meta.env.DEV) {
 
 **Status:** 🟡 Medium
 
-| File | Issue | Fix |
-|------|-------|-----|
+| File                                       | Issue                    | Fix                     |
+| ------------------------------------------ | ------------------------ | ----------------------- |
 | `src/pages/Home/sections/StatsSection.jsx` | Unused `Suspense` import | Remove or use correctly |
 
 ### 1.3 Migrate to Constants File
@@ -144,15 +145,16 @@ if (import.meta.env.DEV) {
 
 Update all files to use `src/utils/constants.js`:
 
-| File | Hardcoded Value | Constant to Use |
-|------|-----------------|-----------------|
-| `src/pages/Chatbot.jsx:10` | `'dekleptocracy_chat_history'` | `STORAGE_KEYS.CHAT_HISTORY` |
-| `src/utils/preferences.js:1` | `'dekleptocracy_user_preferences'` | `STORAGE_KEYS.USER_PREFERENCES` |
-| `src/pages/Dashboard.jsx:23-24` | `'user_preferences'`, `'user_profile'` | `STORAGE_KEYS.*` |
-| `src/context/HomepageContext.jsx` | `5 * 60 * 1000` (5 min TTL) | `CACHE_CONFIG.DEFAULT_TTL_MS` |
-| `src/utils/auth.js:38` | `60` (token buffer) | `AUTH_CONFIG.TOKEN_EXPIRY_BUFFER_SECONDS` |
+| File                              | Hardcoded Value                        | Constant to Use                           |
+| --------------------------------- | -------------------------------------- | ----------------------------------------- |
+| `src/pages/Chatbot.jsx:10`        | `'dekleptocracy_chat_history'`         | `STORAGE_KEYS.CHAT_HISTORY`               |
+| `src/utils/preferences.js:1`      | `'dekleptocracy_user_preferences'`     | `STORAGE_KEYS.USER_PREFERENCES`           |
+| `src/pages/Dashboard.jsx:23-24`   | `'user_preferences'`, `'user_profile'` | `STORAGE_KEYS.*`                          |
+| `src/context/HomepageContext.jsx` | `5 * 60 * 1000` (5 min TTL)            | `CACHE_CONFIG.DEFAULT_TTL_MS`             |
+| `src/utils/auth.js:38`            | `60` (token buffer)                    | `AUTH_CONFIG.TOKEN_EXPIRY_BUFFER_SECONDS` |
 
 **New constants to add:**
+
 ```javascript
 // Add to src/utils/constants.js
 export const AUTH_CONFIG = {
@@ -169,21 +171,24 @@ STORAGE_KEYS.USER_PREFERENCES_LEGACY: 'dekleptocracy_user_preferences',
 
 Add Breadcrumbs to pages with deep navigation:
 
-| Page | Location |
-|------|----------|
+| Page                        | Location                     |
+| --------------------------- | ---------------------------- |
 | `src/pages/StateReport.jsx` | After header, before content |
-| `src/pages/Insights.jsx` | After header |
-| Article detail pages | After header |
+| `src/pages/Insights.jsx`    | After header                 |
+| Article detail pages        | After header                 |
 
 **Implementation:**
+
 ```jsx
 import Breadcrumbs from '../components/common/Breadcrumbs';
 
 // In component:
-<Breadcrumbs items={[
-  { label: 'Reports', path: '/reports' },
-  { label: stateName, path: `/reports/${stateCode}` }
-]} />
+<Breadcrumbs
+  items={[
+    { label: 'Reports', path: '/reports' },
+    { label: stateName, path: `/reports/${stateCode}` },
+  ]}
+/>;
 ```
 
 ### Phase 1 Checklist
@@ -211,20 +216,21 @@ import Breadcrumbs from '../components/common/Breadcrumbs';
 
 **Priority Order:**
 
-| Priority | Component | File |
-|----------|-----------|------|
-| P0 | ProtectedRoute | `src/components/ProtectedRoute.jsx` |
-| P0 | ErrorBoundary | `src/components/common/ErrorBoundary/index.jsx` |
-| P0 | Navbar | `src/components/Navbar.jsx` |
-| P1 | StatCard | `src/components/data-display/StatCard/index.jsx` |
-| P1 | SocialPostCard | `src/components/data-display/SocialPostCard/index.jsx` |
-| P1 | ProductImpactModal | `src/components/modals/ProductImpactModal/index.jsx` |
-| P1 | Breadcrumbs | `src/components/common/Breadcrumbs/index.jsx` |
-| P2 | HeroSection | `src/pages/Home/sections/HeroSection.jsx` |
-| P2 | StatsSection | `src/pages/Home/sections/StatsSection.jsx` |
-| P2 | All remaining sections | `src/pages/Home/sections/*.jsx` |
+| Priority | Component              | File                                                   |
+| -------- | ---------------------- | ------------------------------------------------------ |
+| P0       | ProtectedRoute         | `src/components/ProtectedRoute.jsx`                    |
+| P0       | ErrorBoundary          | `src/components/common/ErrorBoundary/index.jsx`        |
+| P0       | Navbar                 | `src/components/Navbar.jsx`                            |
+| P1       | StatCard               | `src/components/data-display/StatCard/index.jsx`       |
+| P1       | SocialPostCard         | `src/components/data-display/SocialPostCard/index.jsx` |
+| P1       | ProductImpactModal     | `src/components/modals/ProductImpactModal/index.jsx`   |
+| P1       | Breadcrumbs            | `src/components/common/Breadcrumbs/index.jsx`          |
+| P2       | HeroSection            | `src/pages/Home/sections/HeroSection.jsx`              |
+| P2       | StatsSection           | `src/pages/Home/sections/StatsSection.jsx`             |
+| P2       | All remaining sections | `src/pages/Home/sections/*.jsx`                        |
 
 **Template:**
+
 ```javascript
 import PropTypes from 'prop-types';
 
@@ -270,19 +276,19 @@ Breadcrumbs.defaultProps = {
 
 ### 2.3 Improve Error Handling
 
-| Location | Issue | Fix |
-|----------|-------|-----|
-| `src/pages/Chatbot.jsx` | Stream errors not caught | Add try-catch with user feedback |
-| `src/context/HomepageContext.jsx` | API errors silently fail | Add error state and retry logic |
-| `src/utils/auth.js` | Token parse errors | Already has try-catch ✓ |
+| Location                          | Issue                    | Fix                              |
+| --------------------------------- | ------------------------ | -------------------------------- |
+| `src/pages/Chatbot.jsx`           | Stream errors not caught | Add try-catch with user feedback |
+| `src/context/HomepageContext.jsx` | API errors silently fail | Add error state and retry logic  |
+| `src/utils/auth.js`               | Token parse errors       | Already has try-catch ✓          |
 
 ### 2.4 Code Cleanup
 
-| File | Issue | Action |
-|------|-------|--------|
-| `src/pages/ProtectedRoute.jsx:56-61` | Inline styles | Move to CSS |
-| `src/pages/Login.jsx:237` | Inline style on link | Move to CSS |
-| `src/pages/Insights.jsx:85-95` | Inline styles | Move to CSS |
+| File                                 | Issue                | Action      |
+| ------------------------------------ | -------------------- | ----------- |
+| `src/pages/ProtectedRoute.jsx:56-61` | Inline styles        | Move to CSS |
+| `src/pages/Login.jsx:237`            | Inline style on link | Move to CSS |
+| `src/pages/Insights.jsx:85-95`       | Inline styles        | Move to CSS |
 
 ### Phase 2 Checklist
 
@@ -310,15 +316,16 @@ Breadcrumbs.defaultProps = {
 
 ### 3.1 Remove All Hardcoded Colors
 
-| File | Line | Current | Replace With |
-|------|------|---------|--------------|
-| `src/pages/Login.jsx` | 237 | `color: '#3e5132'` | `var(--color-green-muted)` |
-| `src/pages/ProtectedRoute.jsx` | 56 | `border: '2px dashed #ff6b35'` | CSS class |
-| `src/pages/ProtectedRoute.jsx` | 57 | `backgroundColor: '#f3f3f3'` | CSS class |
-| `src/pages/ProtectedRoute.jsx` | 61 | `color: '#666'` | CSS class |
-| `src/styles/buttons.css` | 69 | `#b91c1c` | `var(--color-error)` |
+| File                           | Line | Current                        | Replace With               |
+| ------------------------------ | ---- | ------------------------------ | -------------------------- |
+| `src/pages/Login.jsx`          | 237  | `color: '#3e5132'`             | `var(--color-green-muted)` |
+| `src/pages/ProtectedRoute.jsx` | 56   | `border: '2px dashed #ff6b35'` | CSS class                  |
+| `src/pages/ProtectedRoute.jsx` | 57   | `backgroundColor: '#f3f3f3'`   | CSS class                  |
+| `src/pages/ProtectedRoute.jsx` | 61   | `color: '#666'`                | CSS class                  |
+| `src/styles/buttons.css`       | 69   | `#b91c1c`                      | `var(--color-error)`       |
 
 **New tokens to add to `tokens.css`:**
+
 ```css
 --color-error-dark: #b91c1c;
 --color-gray-loading: #f3f3f3;
@@ -326,27 +333,28 @@ Breadcrumbs.defaultProps = {
 
 ### 3.2 Remove All Hardcoded Spacing
 
-| File | Line | Current | Replace With |
-|------|------|---------|--------------|
-| `src/components/Navbar.css` | 18 | `gap: 20px` | `var(--space-2-5)` |
-| `src/components/Navbar.css` | 29 | `gap: 20px` | `var(--space-2-5)` |
-| `src/components/Navbar.css` | 84 | `gap: 3rem` | `var(--space-2xl)` |
-| `src/pages/Login.css` | 37 | `50px` | `var(--space-2xl)` |
-| `src/styles/buttons.css` | 99 | `12px 20px` | `var(--space-1-5) var(--space-2-5)` |
-| `src/styles/forms.css` | 27 | `10px 14px` | `var(--space-sm) var(--space-md)` |
+| File                        | Line | Current     | Replace With                        |
+| --------------------------- | ---- | ----------- | ----------------------------------- |
+| `src/components/Navbar.css` | 18   | `gap: 20px` | `var(--space-2-5)`                  |
+| `src/components/Navbar.css` | 29   | `gap: 20px` | `var(--space-2-5)`                  |
+| `src/components/Navbar.css` | 84   | `gap: 3rem` | `var(--space-2xl)`                  |
+| `src/pages/Login.css`       | 37   | `50px`      | `var(--space-2xl)`                  |
+| `src/styles/buttons.css`    | 99   | `12px 20px` | `var(--space-1-5) var(--space-2-5)` |
+| `src/styles/forms.css`      | 27   | `10px 14px` | `var(--space-sm) var(--space-md)`   |
 
 ### 3.3 Standardize CSS Naming Convention
 
 **Decision: Use BEM notation consistently**
 
-| Current Pattern | New Pattern |
-|-----------------|-------------|
-| `.navbar-links` | `.navbar__links` |
+| Current Pattern     | New Pattern          |
+| ------------------- | -------------------- |
+| `.navbar-links`     | `.navbar__links`     |
 | `.navbar-container` | `.navbar__container` |
-| `.login-button` | `.login__button` |
-| `.form-input` | `.form__input` |
+| `.login-button`     | `.login__button`     |
+| `.form-input`       | `.form__input`       |
 
 **Migration Strategy:**
+
 1. Update CSS class names to BEM
 2. Update corresponding JSX files
 3. Run visual regression check
@@ -356,19 +364,19 @@ Breadcrumbs.defaultProps = {
 
 Create corresponding CSS classes for:
 
-| File | Lines | Create Class |
-|------|-------|--------------|
-| `src/pages/ProtectedRoute.jsx` | 54-64 | `.loading-container` |
-| `src/pages/Login.jsx` | 237 | `.terms-link` |
-| `src/pages/Insights.jsx` | 85-95 | `.insight-card__image` |
+| File                           | Lines | Create Class           |
+| ------------------------------ | ----- | ---------------------- |
+| `src/pages/ProtectedRoute.jsx` | 54-64 | `.loading-container`   |
+| `src/pages/Login.jsx`          | 237   | `.terms-link`          |
+| `src/pages/Insights.jsx`       | 85-95 | `.insight-card__image` |
 
 ### 3.5 Consolidate Duplicate CSS
 
-| Duplicate | Files | Action |
-|-----------|-------|--------|
-| Link hover styles | App.css, Navbar.css | Keep in App.css only |
+| Duplicate           | Files                  | Action                   |
+| ------------------- | ---------------------- | ------------------------ |
+| Link hover styles   | App.css, Navbar.css    | Keep in App.css only     |
 | Button focus states | buttons.css, forms.css | Keep in buttons.css only |
-| Card shadows | cards.css, Home.css | Use shared cards.css |
+| Card shadows        | cards.css, Home.css    | Use shared cards.css     |
 
 ### Phase 3 Checklist
 
@@ -393,14 +401,15 @@ Create corresponding CSS classes for:
 
 **Files to update:**
 
-| File | Images | Action |
-|------|--------|--------|
-| `src/pages/AboutUs.jsx` | 4+ images | Add `loading="lazy"` |
-| `src/pages/Insights.jsx` | 3+ images | Add `loading="lazy"` |
-| `src/components/Navbar.jsx` | Profile photo | Already lazy ✓ |
-| `src/pages/Home/sections/*.jsx` | Various | Verify all have lazy |
+| File                            | Images        | Action               |
+| ------------------------------- | ------------- | -------------------- |
+| `src/pages/AboutUs.jsx`         | 4+ images     | Add `loading="lazy"` |
+| `src/pages/Insights.jsx`        | 3+ images     | Add `loading="lazy"` |
+| `src/components/Navbar.jsx`     | Profile photo | Already lazy ✓       |
+| `src/pages/Home/sections/*.jsx` | Various       | Verify all have lazy |
 
 **Template:**
+
 ```jsx
 <img
   src={imageUrl}
@@ -426,12 +435,13 @@ All images should have explicit `width` and `height` to prevent layout shift:
 
 ### 4.3 Dynamic Import Heavy Dependencies
 
-| Dependency | Size (gzip) | Current | Improvement |
-|------------|-------------|---------|-------------|
-| html2canvas | 18.4 KB | Static import | Dynamic import |
-| jspdf | 11.8 KB | Static import | Dynamic import |
+| Dependency  | Size (gzip) | Current       | Improvement    |
+| ----------- | ----------- | ------------- | -------------- |
+| html2canvas | 18.4 KB     | Static import | Dynamic import |
+| jspdf       | 11.8 KB     | Static import | Dynamic import |
 
 **Implementation:**
+
 ```javascript
 // BEFORE
 import html2canvas from 'html2canvas';
@@ -449,17 +459,17 @@ const exportToPDF = async () => {
 
 ### 4.4 Add Memoization
 
-| Component | Hook | Benefit |
-|-----------|------|---------|
-| `Navbar.jsx` | `useMemo` for `isActive` | Prevent recalculation |
-| `HomepageContext.jsx` | `useMemo` for derived state | Prevent rerenders |
-| `Chatbot.jsx` | `useMemo` for message filtering | Large list optimization |
+| Component             | Hook                            | Benefit                 |
+| --------------------- | ------------------------------- | ----------------------- |
+| `Navbar.jsx`          | `useMemo` for `isActive`        | Prevent recalculation   |
+| `HomepageContext.jsx` | `useMemo` for derived state     | Prevent rerenders       |
+| `Chatbot.jsx`         | `useMemo` for message filtering | Large list optimization |
 
 **Example:**
+
 ```javascript
 const isActivePath = useMemo(() => {
-  return (path) => location.pathname === path ||
-    location.pathname.startsWith(path + '/');
+  return (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 }, [location.pathname]);
 ```
 
@@ -511,6 +521,7 @@ manualChunks: {
 ```
 
 **CSS:**
+
 ```css
 .skip-link {
   position: absolute;
@@ -530,42 +541,45 @@ manualChunks: {
 
 ### 5.2 Fix Missing Alt Text
 
-| File | Element | Current Alt | Better Alt |
-|------|---------|-------------|------------|
-| `src/pages/Home/sections/SocialPostsSection.jsx:237` | Post image | "Post" | "Social media post about {topic}" |
-| `src/pages/Insights.jsx` | Article images | Missing | "Article thumbnail: {title}" |
-| `src/pages/AboutUs.jsx` | Team photos | Generic | "Photo of {name}, {role}" |
+| File                                                 | Element        | Current Alt | Better Alt                        |
+| ---------------------------------------------------- | -------------- | ----------- | --------------------------------- |
+| `src/pages/Home/sections/SocialPostsSection.jsx:237` | Post image     | "Post"      | "Social media post about {topic}" |
+| `src/pages/Insights.jsx`                             | Article images | Missing     | "Article thumbnail: {title}"      |
+| `src/pages/AboutUs.jsx`                              | Team photos    | Generic     | "Photo of {name}, {role}"         |
 
 ### 5.3 Add ARIA Labels to Icon Buttons
 
-| Component | Button | Add |
-|-----------|--------|-----|
-| `HeroSection.jsx` | Quick question cards | `aria-label="Ask about {topic}"` |
-| `Chatbot.jsx` | Send button | `aria-label="Send message"` |
-| `Chatbot.jsx` | Clear chat | `aria-label="Clear chat history"` |
+| Component         | Button               | Add                               |
+| ----------------- | -------------------- | --------------------------------- |
+| `HeroSection.jsx` | Quick question cards | `aria-label="Ask about {topic}"`  |
+| `Chatbot.jsx`     | Send button          | `aria-label="Send message"`       |
+| `Chatbot.jsx`     | Clear chat           | `aria-label="Clear chat history"` |
 
 ### 5.4 Ensure Keyboard Navigation
 
-| Component | Issue | Fix |
-|-----------|-------|-----|
+| Component        | Issue             | Fix                                     |
+| ---------------- | ----------------- | --------------------------------------- |
 | Chatbot messages | Not tab-navigable | Add `tabIndex={0}` to message container |
-| Modal dialogs | Focus not trapped | Already fixed ✓ |
-| Dropdown menus | Arrow key nav | Add arrow key handlers |
+| Modal dialogs    | Focus not trapped | Already fixed ✓                         |
+| Dropdown menus   | Arrow key nav     | Add arrow key handlers                  |
 
 ### 5.5 Color Contrast Audit
 
 **Run automated check:**
+
 ```bash
 npx axe-cli https://localhost:5173 --rules color-contrast
 ```
 
 **Known issues to fix:**
+
 - Coral (#FF6B5A) on white: 4.2:1 (AA pass, AAA fail)
 - Consider darker coral for text: #E5533E (4.7:1)
 
 ### 5.6 Screen Reader Testing
 
 **Manual tests to perform:**
+
 1. Navigate entire site with VoiceOver/NVDA
 2. Verify all interactive elements announced correctly
 3. Verify form labels read correctly
@@ -599,6 +613,7 @@ npx axe-cli https://localhost:5173 --rules color-contrast
 **Improvements:**
 
 1. **Auto-clear expired tokens:**
+
 ```javascript
 // src/utils/auth.js
 export const initAuthCheck = () => {
@@ -610,6 +625,7 @@ export const initAuthCheck = () => {
 ```
 
 2. **Token refresh mechanism:**
+
 ```javascript
 // Add refresh token flow before expiry
 export const setupTokenRefresh = () => {
@@ -663,20 +679,25 @@ if (import.meta.env.PROD && window.location.protocol !== 'https:') {
 ### 6.4 Content Security Policy
 
 **Add to index.html or server config:**
+
 ```html
-<meta http-equiv="Content-Security-Policy" content="
+<meta
+  http-equiv="Content-Security-Policy"
+  content="
   default-src 'self';
   script-src 'self' https://accounts.google.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' https: data:;
   connect-src 'self' https://node-server-production-7f39.up.railway.app;
   frame-src https://accounts.google.com;
-">
+"
+/>
 ```
 
 ### 6.5 Secure Headers (Server-side)
 
 Ensure server returns:
+
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
@@ -704,11 +725,13 @@ Ensure server returns:
 ### 7.1 Testing Setup
 
 **Install dependencies:**
+
 ```bash
 npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
 ```
 
 **Configure Vitest:**
+
 ```javascript
 // vite.config.js
 export default defineConfig({
@@ -725,6 +748,7 @@ export default defineConfig({
 ```
 
 **Setup file:**
+
 ```javascript
 // src/test/setup.js
 import '@testing-library/jest-dom';
@@ -742,21 +766,22 @@ global.localStorage = localStorageMock;
 
 ### 7.2 Unit Tests - Priority Order
 
-| Priority | File | Coverage Target |
-|----------|------|-----------------|
-| P0 | `src/utils/auth.js` | 90% |
-| P0 | `src/utils/constants.js` | 100% |
-| P0 | `src/utils/validation.js` | 100% |
-| P1 | `src/components/ProtectedRoute.jsx` | 85% |
-| P1 | `src/components/common/ErrorBoundary/` | 85% |
-| P1 | `src/context/HomepageContext.jsx` | 80% |
-| P2 | `src/components/Navbar.jsx` | 75% |
-| P2 | `src/components/common/Breadcrumbs/` | 90% |
-| P3 | All remaining components | 70% |
+| Priority | File                                   | Coverage Target |
+| -------- | -------------------------------------- | --------------- |
+| P0       | `src/utils/auth.js`                    | 90%             |
+| P0       | `src/utils/constants.js`               | 100%            |
+| P0       | `src/utils/validation.js`              | 100%            |
+| P1       | `src/components/ProtectedRoute.jsx`    | 85%             |
+| P1       | `src/components/common/ErrorBoundary/` | 85%             |
+| P1       | `src/context/HomepageContext.jsx`      | 80%             |
+| P2       | `src/components/Navbar.jsx`            | 75%             |
+| P2       | `src/components/common/Breadcrumbs/`   | 90%             |
+| P3       | All remaining components               | 70%             |
 
 ### 7.3 Test Examples
 
 **Auth utility tests:**
+
 ```javascript
 // src/utils/__tests__/auth.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -791,6 +816,7 @@ describe('auth utilities', () => {
 ```
 
 **Component tests:**
+
 ```javascript
 // src/components/common/Breadcrumbs/__tests__/Breadcrumbs.test.jsx
 import { render, screen } from '@testing-library/react';
@@ -799,27 +825,23 @@ import Breadcrumbs from '../index';
 
 describe('Breadcrumbs', () => {
   const renderWithRouter = (ui, { route = '/' } = {}) => {
-    return render(
-      <MemoryRouter initialEntries={[route]}>
-        {ui}
-      </MemoryRouter>
-    );
+    return render(<MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>);
   };
 
   it('renders home icon by default', () => {
-    renderWithRouter(
-      <Breadcrumbs items={[{ label: 'Test', path: '/test' }]} />
-    );
+    renderWithRouter(<Breadcrumbs items={[{ label: 'Test', path: '/test' }]} />);
 
     expect(screen.getByLabelText('Home')).toBeInTheDocument();
   });
 
   it('marks last item as current page', () => {
     renderWithRouter(
-      <Breadcrumbs items={[
-        { label: 'Parent', path: '/parent' },
-        { label: 'Current', path: '/parent/current' },
-      ]} />
+      <Breadcrumbs
+        items={[
+          { label: 'Parent', path: '/parent' },
+          { label: 'Current', path: '/parent/current' },
+        ]}
+      />,
     );
 
     expect(screen.getByText('Current')).toHaveAttribute('aria-current', 'page');
@@ -830,6 +852,7 @@ describe('Breadcrumbs', () => {
 ### 7.4 Integration Tests
 
 **Protected route flow:**
+
 ```javascript
 // src/test/integration/auth-flow.test.jsx
 describe('Authentication Flow', () => {
@@ -852,12 +875,14 @@ describe('Authentication Flow', () => {
 ### 7.5 E2E Testing Setup (Optional)
 
 **Install Playwright:**
+
 ```bash
 npm install -D @playwright/test
 npx playwright install
 ```
 
 **Basic E2E test:**
+
 ```javascript
 // e2e/homepage.spec.js
 import { test, expect } from '@playwright/test';
@@ -873,13 +898,13 @@ test('homepage loads correctly', async ({ page }) => {
 
 ### 7.6 Coverage Goals
 
-| Category | Target | Minimum |
-|----------|--------|---------|
-| Utilities | 90% | 80% |
-| Components | 75% | 60% |
-| Context/Hooks | 80% | 70% |
-| Integration | 50% | 40% |
-| **Overall** | **70%** | **60%** |
+| Category      | Target  | Minimum |
+| ------------- | ------- | ------- |
+| Utilities     | 90%     | 80%     |
+| Components    | 75%     | 60%     |
+| Context/Hooks | 80%     | 70%     |
+| Integration   | 50%     | 40%     |
+| **Overall**   | **70%** | **60%** |
 
 ### Phase 7 Checklist
 
@@ -908,7 +933,7 @@ test('homepage loads correctly', async ({ page }) => {
 
 ### 8.1 README.md
 
-```markdown
+````markdown
 # Dekleptocracy Client
 
 A React-based web application for tracking and analyzing economic policy impacts.
@@ -932,14 +957,15 @@ npm test
 # Build for production
 npm run build
 ```
+````
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_API_URL` | Yes | Backend API URL |
-| `VITE_GOOGLE_CLIENT_ID` | No | Google OAuth client ID |
-| `VITE_MCP_SERVER_URL` | No | MCP chatbot server URL |
+| Variable                | Required | Description            |
+| ----------------------- | -------- | ---------------------- |
+| `VITE_API_URL`          | Yes      | Backend API URL        |
+| `VITE_GOOGLE_CLIENT_ID` | No       | Google OAuth client ID |
+| `VITE_MCP_SERVER_URL`   | No       | MCP chatbot server URL |
 
 ## Project Structure
 
@@ -962,6 +988,7 @@ src/
 ## Design System
 
 See `src/styles/tokens.css` for design tokens:
+
 - Colors: `--color-*`
 - Spacing: `--space-*`
 - Typography: `--font-size-*`, `--font-weight-*`
@@ -970,14 +997,14 @@ See `src/styles/tokens.css` for design tokens:
 
 ## Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
-| `npm test` | Run unit tests |
-| `npm run test:coverage` | Run tests with coverage |
-| `npm run lint` | Run ESLint |
+| Command                 | Description              |
+| ----------------------- | ------------------------ |
+| `npm run dev`           | Start dev server         |
+| `npm run build`         | Production build         |
+| `npm run preview`       | Preview production build |
+| `npm test`              | Run unit tests           |
+| `npm run test:coverage` | Run tests with coverage  |
+| `npm run lint`          | Run ESLint               |
 
 ## Contributing
 
@@ -990,7 +1017,8 @@ See `src/styles/tokens.css` for design tokens:
 ## License
 
 Proprietary - All rights reserved
-```
+
+````
 
 ### 8.2 Component Documentation
 
@@ -1017,13 +1045,13 @@ Proprietary - All rights reserved
  * @param {'up'|'down'} [props.changeDirection] - Direction of change
  * @param {'default'|'large'|'compact'} [props.variant='default'] - Size variant
  */
-```
+````
 
 ### 8.3 API Documentation
 
 **Create `docs/API.md`:**
 
-```markdown
+````markdown
 # API Integration
 
 ## Authentication
@@ -1036,17 +1064,25 @@ headers: {
   'Content-Type': 'application/json',
 }
 ```
+````
 
 ## Endpoints
 
 ### POST /api/auth/login
+
 ### POST /api/auth/register
+
 ### POST /api/auth/google
+
 ### GET /api/user/profile
+
 ### PUT /api/user/preferences
+
 ### GET /api/homepage-data
+
 ### POST /api/chatbot
-```
+
+````
 
 ### 8.4 Environment Setup Guide
 
@@ -1073,7 +1109,7 @@ Environment variables set in Vercel dashboard:
 1. Verify client ID is correct
 2. Check authorized domains in Google Console
 3. Ensure redirect URI is configured
-```
+````
 
 ### Phase 8 Checklist
 
@@ -1097,11 +1133,13 @@ Environment variables set in Vercel dashboard:
 ### 9.1 Error Tracking (Sentry)
 
 **Install:**
+
 ```bash
 npm install @sentry/react
 ```
 
 **Configure:**
+
 ```javascript
 // src/main.jsx
 import * as Sentry from '@sentry/react';
@@ -1119,6 +1157,7 @@ if (import.meta.env.PROD) {
 ### 9.2 Performance Monitoring
 
 **Web Vitals:**
+
 ```javascript
 // src/utils/analytics.js
 import { onCLS, onFID, onLCP, onFCP, onTTFB } from 'web-vitals';
@@ -1135,6 +1174,7 @@ export const initWebVitals = () => {
 ### 9.3 Analytics (Optional)
 
 **Privacy-focused option - Plausible:**
+
 ```html
 <script defer data-domain="dekleptocracy.org" src="https://plausible.io/js/script.js"></script>
 ```
@@ -1142,6 +1182,7 @@ export const initWebVitals = () => {
 ### 9.4 Health Checks
 
 **API health endpoint check:**
+
 ```javascript
 // src/utils/health.js
 export const checkAPIHealth = async () => {
@@ -1174,6 +1215,7 @@ export const checkAPIHealth = async () => {
 ### 10.1 Pre-Launch Audit Checklist
 
 **Code Quality:**
+
 - [ ] No console.log in production code
 - [ ] No TODO/FIXME comments remaining
 - [ ] All PropTypes defined
@@ -1181,6 +1223,7 @@ export const checkAPIHealth = async () => {
 - [ ] ESLint passes with 0 errors/warnings
 
 **Styling:**
+
 - [ ] All colors use tokens
 - [ ] All spacing uses tokens
 - [ ] No inline styles (except dynamic values)
@@ -1188,6 +1231,7 @@ export const checkAPIHealth = async () => {
 - [ ] Dark mode works (if applicable)
 
 **Performance:**
+
 - [ ] Lighthouse Performance ≥90
 - [ ] First Contentful Paint <1.5s
 - [ ] Largest Contentful Paint <2.5s
@@ -1195,6 +1239,7 @@ export const checkAPIHealth = async () => {
 - [ ] Bundle size optimized
 
 **Accessibility:**
+
 - [ ] Lighthouse Accessibility ≥95
 - [ ] axe-core returns 0 violations
 - [ ] Keyboard navigation complete
@@ -1202,6 +1247,7 @@ export const checkAPIHealth = async () => {
 - [ ] Color contrast passes WCAG AA
 
 **Security:**
+
 - [ ] No exposed secrets
 - [ ] HTTPS enforced
 - [ ] CSP configured
@@ -1209,12 +1255,14 @@ export const checkAPIHealth = async () => {
 - [ ] Token handling secure
 
 **Testing:**
+
 - [ ] Unit test coverage ≥70%
 - [ ] All critical paths tested
 - [ ] E2E tests pass
 - [ ] Manual QA completed
 
 **Documentation:**
+
 - [ ] README complete
 - [ ] API documented
 - [ ] Environment setup guide exists
@@ -1222,28 +1270,29 @@ export const checkAPIHealth = async () => {
 
 ### 10.2 Browser Testing
 
-| Browser | Version | Status |
-|---------|---------|--------|
-| Chrome | Latest | [ ] |
-| Firefox | Latest | [ ] |
-| Safari | Latest | [ ] |
-| Edge | Latest | [ ] |
-| Chrome Mobile | Latest | [ ] |
-| Safari Mobile | Latest | [ ] |
+| Browser       | Version | Status |
+| ------------- | ------- | ------ |
+| Chrome        | Latest  | [ ]    |
+| Firefox       | Latest  | [ ]    |
+| Safari        | Latest  | [ ]    |
+| Edge          | Latest  | [ ]    |
+| Chrome Mobile | Latest  | [ ]    |
+| Safari Mobile | Latest  | [ ]    |
 
 ### 10.3 Device Testing
 
-| Device | Resolution | Status |
-|--------|------------|--------|
-| Desktop | 1920x1080 | [ ] |
-| Desktop | 1366x768 | [ ] |
-| Tablet | 768x1024 | [ ] |
-| Mobile | 375x667 | [ ] |
-| Mobile | 414x896 | [ ] |
+| Device  | Resolution | Status |
+| ------- | ---------- | ------ |
+| Desktop | 1920x1080  | [ ]    |
+| Desktop | 1366x768   | [ ]    |
+| Tablet  | 768x1024   | [ ]    |
+| Mobile  | 375x667    | [ ]    |
+| Mobile  | 414x896    | [ ]    |
 
 ### 10.4 Load Testing
 
 **Verify:**
+
 - Homepage loads <2s on 3G
 - API responses <500ms
 - No memory leaks in long sessions
@@ -1275,31 +1324,31 @@ export const checkAPIHealth = async () => {
 
 ### Must Have (Launch Blockers)
 
-| Criteria | Target | Current | Status |
-|----------|--------|---------|--------|
-| Build passes | 0 errors | 0 errors | ✅ |
-| Console.log removed | 0 in prod | 0 in prod | ✅ |
-| Lighthouse Performance | ≥85 | ~90 | ✅ |
-| Lighthouse Accessibility | ≥95 | 95+ | ✅ |
-| Test Coverage | ≥60% | 98% | ✅ |
-| Critical bugs | 0 | 0 | ✅ |
+| Criteria                 | Target    | Current   | Status |
+| ------------------------ | --------- | --------- | ------ |
+| Build passes             | 0 errors  | 0 errors  | ✅     |
+| Console.log removed      | 0 in prod | 0 in prod | ✅     |
+| Lighthouse Performance   | ≥85       | ~90       | ✅     |
+| Lighthouse Accessibility | ≥95       | 95+       | ✅     |
+| Test Coverage            | ≥60%      | 98%       | ✅     |
+| Critical bugs            | 0         | 0         | ✅     |
 
 ### Should Have
 
-| Criteria | Target | Current | Status |
-|----------|--------|---------|--------|
-| Lighthouse Performance | ≥90 | ~90 | ✅ |
-| Test Coverage | ≥70% | 98% | ✅ |
-| Documentation complete | 100% | 100% | ✅ |
-| All tokens migrated | 100% | 100% | ✅ |
+| Criteria               | Target | Current | Status |
+| ---------------------- | ------ | ------- | ------ |
+| Lighthouse Performance | ≥90    | ~90     | ✅     |
+| Test Coverage          | ≥70%   | 98%     | ✅     |
+| Documentation complete | 100%   | 100%    | ✅     |
+| All tokens migrated    | 100%   | 100%    | ✅     |
 
 ### Nice to Have
 
-| Criteria | Target | Current | Status |
-|----------|--------|---------|--------|
-| TypeScript migration | 100% | 0% | ⏳ Future |
-| E2E test coverage | ≥50% | 0% | ⏳ Future |
-| Performance monitoring | Active | Active (local) | ✅ |
+| Criteria               | Target | Current        | Status    |
+| ---------------------- | ------ | -------------- | --------- |
+| TypeScript migration   | 100%   | 0%             | ⏳ Future |
+| E2E test coverage      | ≥50%   | 0%             | ⏳ Future |
+| Performance monitoring | Active | Active (local) | ✅        |
 
 ---
 
@@ -1307,48 +1356,49 @@ export const checkAPIHealth = async () => {
 
 ### High Risk
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| No tests = regressions | High | Phase 7 priority |
-| Console logs expose info | Medium | Phase 1 priority |
+| Risk                               | Impact | Mitigation       |
+| ---------------------------------- | ------ | ---------------- |
+| No tests = regressions             | High   | Phase 7 priority |
+| Console logs expose info           | Medium | Phase 1 priority |
 | Missing PropTypes = runtime errors | Medium | Phase 2 priority |
 
 ### Medium Risk
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Large bundle size | User experience | Phase 4 |
-| Accessibility gaps | Legal/UX | Phase 5 |
-| No error tracking | Debug difficulty | Phase 9 |
+| Risk               | Impact           | Mitigation |
+| ------------------ | ---------------- | ---------- |
+| Large bundle size  | User experience  | Phase 4    |
+| Accessibility gaps | Legal/UX         | Phase 5    |
+| No error tracking  | Debug difficulty | Phase 9    |
 
 ### Low Risk
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Inconsistent CSS | Maintenance | Phase 3 |
-| Missing docs | Onboarding | Phase 8 |
+| Risk             | Impact      | Mitigation |
+| ---------------- | ----------- | ---------- |
+| Inconsistent CSS | Maintenance | Phase 3    |
+| Missing docs     | Onboarding  | Phase 8    |
 
 ---
 
 ## Timeline Estimate
 
-| Phase | Effort | Status |
-|-------|--------|--------|
-| Phase 1: Critical Fixes | 4-6h | ✅ Merged into Phase 6 |
-| Phase 2: Code Quality | 8-12h | ✅ Complete |
-| Phase 3: CSS Consistency | 6-10h | ✅ Complete |
-| Phase 4: Performance | 6-8h | ✅ Complete |
-| Phase 5: Accessibility | 6-8h | ✅ Complete |
-| Phase 6: Security | 4-6h | ✅ Complete |
-| Phase 7: Testing | 12-16h | ✅ Complete |
-| Phase 8: Documentation | 6-8h | ✅ Complete |
-| Phase 9: Monitoring | 4-6h | ✅ Complete |
-| Phase 10: Final QA | 8-12h | ⏳ Remaining |
+| Phase                    | Effort | Status                 |
+| ------------------------ | ------ | ---------------------- |
+| Phase 1: Critical Fixes  | 4-6h   | ✅ Merged into Phase 6 |
+| Phase 2: Code Quality    | 8-12h  | ✅ Complete            |
+| Phase 3: CSS Consistency | 6-10h  | ✅ Complete            |
+| Phase 4: Performance     | 6-8h   | ✅ Complete            |
+| Phase 5: Accessibility   | 6-8h   | ✅ Complete            |
+| Phase 6: Security        | 4-6h   | ✅ Complete            |
+| Phase 7: Testing         | 12-16h | ✅ Complete            |
+| Phase 8: Documentation   | 6-8h   | ✅ Complete            |
+| Phase 9: Monitoring      | 4-6h   | ✅ Complete            |
+| Phase 10: Final QA       | 8-12h  | ⏳ Remaining           |
 
 **Completed:** ~57-82 hours of work
 **Remaining:** Phase 10 (8-12 hours)
 
 **Next Steps:**
+
 1. Run browser testing (Chrome, Firefox, Safari, Edge)
 2. Run device testing (Desktop, Tablet, Mobile)
 3. Run Lighthouse audits
@@ -1361,13 +1411,13 @@ export const checkAPIHealth = async () => {
 
 ### A. Tools Reference
 
-| Tool | Purpose | Command |
-|------|---------|---------|
-| Vitest | Unit testing | `npm test` |
-| ESLint | Linting | `npm run lint` |
-| Lighthouse | Performance audit | Chrome DevTools |
-| axe-core | Accessibility | Browser extension |
-| Sentry | Error tracking | Dashboard |
+| Tool       | Purpose           | Command           |
+| ---------- | ----------------- | ----------------- |
+| Vitest     | Unit testing      | `npm test`        |
+| ESLint     | Linting           | `npm run lint`    |
+| Lighthouse | Performance audit | Chrome DevTools   |
+| axe-core   | Accessibility     | Browser extension |
+| Sentry     | Error tracking    | Dashboard         |
 
 ### B. Useful Commands
 
@@ -1387,16 +1437,16 @@ npx lighthouse http://localhost:5173 --output html
 
 ### C. Key Files Reference
 
-| File | Purpose |
-|------|---------|
-| `src/styles/tokens.css` | Design tokens |
-| `src/utils/constants.js` | App constants |
-| `src/utils/auth.js` | Authentication |
-| `src/context/HomepageContext.jsx` | Data management |
-| `vite.config.js` | Build configuration |
+| File                              | Purpose             |
+| --------------------------------- | ------------------- |
+| `src/styles/tokens.css`           | Design tokens       |
+| `src/utils/constants.js`          | App constants       |
+| `src/utils/auth.js`               | Authentication      |
+| `src/context/HomepageContext.jsx` | Data management     |
+| `vite.config.js`                  | Build configuration |
 
 ---
 
-*Document Version: 1.0*
-*Created: March 2026*
-*Maintainer: Development Team*
+_Document Version: 1.0_
+_Created: March 2026_
+_Maintainer: Development Team_

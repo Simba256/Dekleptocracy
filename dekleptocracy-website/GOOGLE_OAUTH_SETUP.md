@@ -37,6 +37,7 @@ This guide will help you set up Google OAuth authentication for the Dekleptocrac
    - Click "Create"
 
 **⚠️ IMPORTANT:** The "Authorized JavaScript origins" must **exactly** match the URL in your browser's address bar, including:
+
 - Protocol: `http://` or `https://`
 - Domain: `localhost` or your domain
 - Port: `:5173` (or whatever port your app uses)
@@ -79,12 +80,14 @@ npm install
 ## Step 6: Test Google Sign-In
 
 1. Start your backend server:
+
    ```bash
    cd server
    npm run dev
    ```
 
 2. Start your frontend:
+
    ```bash
    cd client
    npm run dev
@@ -120,7 +123,7 @@ npm install
    - Scroll down to "Authorized JavaScript origins"
    - Click "+ ADD URI"
    - Add **EXACTLY** the URL from step 1 (e.g., `http://localhost:5173`)
-   - **Important:** 
+   - **Important:**
      - Include the protocol (`http://` or `https://`)
      - Include the port number (`:5173`)
      - NO trailing slash (`/`)
@@ -140,6 +143,7 @@ npm install
    - Restart both frontend and backend servers after changing `.env` files
 
 **Common Mistakes:**
+
 - ❌ Missing port number: `http://localhost` (wrong)
 - ✅ Correct: `http://localhost:5173`
 - ❌ Using `https://` for localhost: `https://localhost:5173` (wrong for local dev)
@@ -150,23 +154,27 @@ npm install
 - ✅ Correct: Use the exact Client ID from your OAuth 2.0 credentials
 
 ### Google Sign-In button doesn't appear
+
 - Check that `VITE_GOOGLE_CLIENT_ID` is set in your frontend `.env` file
 - Check the browser console for errors
 - Make sure the Google script is loading (check Network tab)
 - **Restart your dev server** after adding the environment variable
 
 ### "Invalid Google token" error
+
 - Verify that `GOOGLE_CLIENT_ID` is set correctly in your backend `.env` file
 - Make sure the Client ID matches between frontend and backend
 - Check that the authorized JavaScript origins include your current domain
 - Verify the token hasn't expired (try signing in again)
 
 ### "Google OAuth is not configured" error
+
 - Make sure `GOOGLE_CLIENT_ID` is set in your backend `.env` file
 - Restart your backend server after adding the environment variable
 - Check server console for error messages
 
 ### Redirect URI mismatch
+
 - Make sure your current domain (including port) is added to "Authorized JavaScript origins" in Google Cloud Console
 - For localhost development, use `http://localhost:5173`
 - For production, use your full production URL (e.g., `https://yourdomain.com`)
@@ -186,4 +194,3 @@ When deploying to production:
 - Keep your Google Client ID secure
 - Use environment variables for all sensitive configuration
 - Regularly rotate your OAuth credentials if compromised
-

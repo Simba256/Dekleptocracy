@@ -25,10 +25,10 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, `profile-${req.userId}-${uniqueSuffix}${ext}`);
-  }
+  },
 });
 
 const fileFilter = (req, file, cb) => {
@@ -43,23 +43,25 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 5 * 1024 * 1024, // 5MB limit
   },
-  fileFilter: fileFilter
+  fileFilter: fileFilter,
 });
 
 const normalizePreferences = (preferences = {}) => {
-  const toArray = (value) => Array.isArray(value)
-    ? value.map(item => (typeof item === 'string' ? item.trim() : String(item || '')))
-        .filter(Boolean)
-        .slice(0, 20)
-    : [];
+  const toArray = (value) =>
+    Array.isArray(value)
+      ? value
+          .map((item) => (typeof item === 'string' ? item.trim() : String(item || '')))
+          .filter(Boolean)
+          .slice(0, 20)
+      : [];
   const toString = (value) => (typeof value === 'string' ? value.trim() : '');
 
   const normalized = {
     conversationStyles: toArray(preferences.conversationStyles),
     topicsOfInterest: toArray(preferences.topicsOfInterest),
-    householdExpenseFocus: toString(preferences.householdExpenseFocus)
+    householdExpenseFocus: toString(preferences.householdExpenseFocus),
   };
 
   // Add selectedState if provided
@@ -79,11 +81,11 @@ const normalizePreferences = (preferences = {}) => {
 router.get('/profile', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password');
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -97,14 +99,14 @@ router.get('/profile', verifyToken, async (req, res) => {
         isGoogleUser: user.isGoogleUser,
         preferences: user.preferences,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
-      }
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
     console.error('Get profile error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error. Please try again later.'
+      message: 'Server error. Please try again later.',
     });
   }
 });
@@ -116,9 +118,10 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
     let incomingPreferences = null;
     if (req.body.preferences) {
       try {
-        incomingPreferences = typeof req.body.preferences === 'string'
-          ? JSON.parse(req.body.preferences)
-          : req.body.preferences;
+        incomingPreferences =
+          typeof req.body.preferences === 'string'
+            ? JSON.parse(req.body.preferences)
+            : req.body.preferences;
       } catch (err) {
         console.error('Failed to parse preferences', err);
       }
@@ -128,7 +131,7 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -167,12 +170,12 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
         email: user.email,
         profilePhoto: user.profilePhoto,
         isGoogleUser: user.isGoogleUser,
-        updatedAt: user.updatedAt
-      }
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    
+
     // Delete uploaded file if there was an error
     if (req.file) {
       const filePath = req.file.path;
@@ -183,7 +186,7 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
 
     res.status(500).json({
       success: false,
-      message: 'Server error. Please try again later.'
+      message: 'Server error. Please try again later.',
     });
   }
 });
@@ -191,14 +194,20 @@ router.put('/profile', verifyToken, upload.single('profilePhoto'), async (req, r
 // Update user preferences (homepage state, time period, etc.)
 router.put('/preferences', verifyToken, validate(updatePreferencesSchema), async (req, res) => {
   try {
-    const { selectedState, defaultTimePeriod, conversationStyles, topicsOfInterest, householdExpenseFocus } = req.body;
+    const {
+      selectedState,
+      defaultTimePeriod,
+      conversationStyles,
+      topicsOfInterest,
+      householdExpenseFocus,
+    } = req.body;
 
     const user = await User.findById(req.userId);
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -223,22 +232,21 @@ router.put('/preferences', verifyToken, validate(updatePreferencesSchema), async
     const updatedUser = await User.findByIdAndUpdate(
       req.userId,
       { $set: updates },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     ).select('-password');
 
     res.status(200).json({
       success: true,
       message: 'Preferences updated successfully',
-      preferences: updatedUser.preferences
+      preferences: updatedUser.preferences,
     });
   } catch (error) {
     console.error('Update preferences error:', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Server error. Please try again later.'
+      message: error.message || 'Server error. Please try again later.',
     });
   }
 });
 
 export default router;
-

@@ -5,6 +5,7 @@
 ## Project Status: 85% Production Ready
 
 ### Completed
+
 - ✅ Backend APIs & Data Integration
 - ✅ Component Architecture (modular, code-split)
 - ✅ Performance Optimization (79KB bundle, 82% TBT reduction)
@@ -14,6 +15,7 @@
 - ✅ Real Data - Wallet Shocks (EIA/USDA APIs)
 
 ### Remaining
+
 - ❌ Analytics (Google Analytics 4)
 - ❌ Cost Drivers (still seeded, needs real data source)
 - ❌ Domain Configuration
@@ -21,10 +23,10 @@
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [REMAINING_WORK.md](./REMAINING_WORK.md) | **Start here** - All tasks needed before launch |
-| [PRODUCTION_CHECKLIST.md](../PRODUCTION_CHECKLIST.md) | Domain setup & go-live checklist |
+| Document                                                                 | Description                                         |
+| ------------------------------------------------------------------------ | --------------------------------------------------- |
+| [REMAINING_WORK.md](./REMAINING_WORK.md)                                 | **Start here** - All tasks needed before launch     |
+| [PRODUCTION_CHECKLIST.md](../PRODUCTION_CHECKLIST.md)                    | Domain setup & go-live checklist                    |
 | [PHASE_6_IMPLEMENTATION_SUMMARY.md](./PHASE_6_IMPLEMENTATION_SUMMARY.md) | Real data integration details (LDA, FEC, EIA, etc.) |
 
 ## Architecture

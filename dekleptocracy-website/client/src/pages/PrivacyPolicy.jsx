@@ -17,16 +17,17 @@ const PrivacyPolicy = () => {
         <section className="privacy-section">
           <h2>1. Introduction</h2>
           <p>
-            Welcome to Dekleptocracy. We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
+            Welcome to Dekleptocracy. We are committed to protecting your privacy and ensuring the
+            security of your personal information. This Privacy Policy explains how we collect, use,
+            disclose, and safeguard your information when you visit our website and use our
+            services.
           </p>
         </section>
 
         <section className="privacy-section">
           <h2>2. Information We Collect</h2>
           <h3>2.1 Personal Information</h3>
-          <p>
-            We may collect personal information that you voluntarily provide to us when you:
-          </p>
+          <p>We may collect personal information that you voluntarily provide to us when you:</p>
           <ul>
             <li>Create an account on our platform</li>
             <li>Subscribe to our newsletter</li>
@@ -43,7 +44,8 @@ const PrivacyPolicy = () => {
 
           <h3>2.2 Automatically Collected Information</h3>
           <p>
-            When you visit our website, we automatically collect certain information about your device, including:
+            When you visit our website, we automatically collect certain information about your
+            device, including:
           </p>
           <ul>
             <li>IP address</li>
@@ -72,33 +74,55 @@ const PrivacyPolicy = () => {
         <section className="privacy-section">
           <h2>4. Information Sharing and Disclosure</h2>
           <p>
-            We do not sell your personal information to third parties. We may share your information in the following circumstances:
+            We do not sell your personal information to third parties. We may share your information
+            in the following circumstances:
           </p>
           <ul>
-            <li><strong>Service Providers:</strong> We may share your information with third-party service providers who perform services on our behalf</li>
-            <li><strong>Legal Requirements:</strong> We may disclose your information if required by law or in response to valid requests by public authorities</li>
-            <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets, your information may be transferred</li>
-            <li><strong>With Your Consent:</strong> We may share your information with your explicit consent</li>
+            <li>
+              <strong>Service Providers:</strong> We may share your information with third-party
+              service providers who perform services on our behalf
+            </li>
+            <li>
+              <strong>Legal Requirements:</strong> We may disclose your information if required by
+              law or in response to valid requests by public authorities
+            </li>
+            <li>
+              <strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of
+              assets, your information may be transferred
+            </li>
+            <li>
+              <strong>With Your Consent:</strong> We may share your information with your explicit
+              consent
+            </li>
           </ul>
         </section>
 
         <section className="privacy-section">
           <h2>5. Data Security</h2>
           <p>
-            We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
+            We implement appropriate technical and organizational measures to protect your personal
+            information against unauthorized access, alteration, disclosure, or destruction.
+            However, no method of transmission over the Internet or electronic storage is 100%
+            secure, and we cannot guarantee absolute security.
           </p>
         </section>
 
         <section className="privacy-section">
           <h2>6. Cookies and Tracking Technologies</h2>
           <p>
-            We use cookies and similar tracking technologies to track activity on our website and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our service.
+            We use cookies and similar tracking technologies to track activity on our website and
+            hold certain information. You can instruct your browser to refuse all cookies or to
+            indicate when a cookie is being sent. However, if you do not accept cookies, you may not
+            be able to use some portions of our service.
           </p>
         </section>
 
         <section className="privacy-section">
           <h2>7. Your Rights</h2>
-          <p>Depending on your location, you may have the following rights regarding your personal information:</p>
+          <p>
+            Depending on your location, you may have the following rights regarding your personal
+            information:
+          </p>
           <ul>
             <li>Access to your personal information</li>
             <li>Correction of inaccurate or incomplete information</li>
@@ -107,30 +131,31 @@ const PrivacyPolicy = () => {
             <li>Data portability</li>
             <li>Withdrawal of consent</li>
           </ul>
-          <p>
-            To exercise these rights, please contact us using the information provided below.
-          </p>
+          <p>To exercise these rights, please contact us using the information provided below.</p>
         </section>
 
         <section className="privacy-section">
           <h2>8. Children's Privacy</h2>
           <p>
-            Our services are not directed to individuals under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected personal information from a child under 13, we will take steps to delete such information.
+            Our services are not directed to individuals under the age of 13. We do not knowingly
+            collect personal information from children under 13. If we become aware that we have
+            collected personal information from a child under 13, we will take steps to delete such
+            information.
           </p>
         </section>
 
         <section className="privacy-section">
           <h2>9. Changes to This Privacy Policy</h2>
           <p>
-            We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date. You are advised to review this Privacy Policy periodically for any changes.
+            We may update our Privacy Policy from time to time. We will notify you of any changes by
+            posting the new Privacy Policy on this page and updating the "Last Updated" date. You
+            are advised to review this Privacy Policy periodically for any changes.
           </p>
         </section>
 
         <section className="privacy-section">
           <h2>10. Contact Us</h2>
-          <p>
-            If you have any questions about this Privacy Policy, please contact us:
-          </p>
+          <p>If you have any questions about this Privacy Policy, please contact us:</p>
           <ul>
             <li>Email: enquires@dekloptocracy.com</li>
             <li>Phone: 0432 740 160</li>

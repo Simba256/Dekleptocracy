@@ -34,7 +34,7 @@ Client has ESLint (flat config, React only) but server has none. No Prettier, no
 - Install `prettier` as root devDependency
 - Add `eslint-config-prettier` to both client and server ESLint configs to disable conflicting rules
 - Add root scripts: `"format": "prettier --write ."`, `"format:check": "prettier --check ."`
-- Add `.prettierignore` (dist, node_modules, coverage, .env*)
+- Add `.prettierignore` (dist, node_modules, coverage, .env\*)
 - Run `prettier --write .` once to normalize existing code, commit separately
 
 ---
@@ -85,6 +85,7 @@ trim_trailing_whitespace = false
 **File:** `.github/workflows/test.yml` (update)
 
 Add jobs:
+
 1. **lint** — runs `npm run lint` in both client/ and server/, `npm run format:check` at root
 2. **build-client** — runs `npm run build` in client/ (catches build-breaking imports)
 3. **test-server** — existing server test job (already works)
@@ -98,6 +99,7 @@ All three jobs run in parallel. PR checks require all three to pass.
 **New file (root):** `dekleptocracy-website/README.md`
 
 Sections:
+
 - Project overview (1-2 sentences)
 - Architecture diagram (already exists in docs/improvement-plans/README.md, move up)
 - Prerequisites (Node 20+, MongoDB for local dev or use memory server)
@@ -121,14 +123,14 @@ Steps 1-3 can be done in a single session. Steps 4-5 build on them. Step 6 is in
 
 ## Estimated Effort
 
-| Step | Effort | Notes |
-|------|--------|-------|
-| 1. Server ESLint | 15 min | Config + fix violations |
-| 2. Prettier | 20 min | Config + initial format pass |
-| 3. .editorconfig | 2 min | Drop-in file |
-| 4. Pre-commit hooks | 10 min | husky + lint-staged |
-| 5. CI/CD expansion | 15 min | Add lint + build jobs |
-| 6. Root README | 15 min | Write from scratch |
+| Step                | Effort | Notes                        |
+| ------------------- | ------ | ---------------------------- |
+| 1. Server ESLint    | 15 min | Config + fix violations      |
+| 2. Prettier         | 20 min | Config + initial format pass |
+| 3. .editorconfig    | 2 min  | Drop-in file                 |
+| 4. Pre-commit hooks | 10 min | husky + lint-staged          |
+| 5. CI/CD expansion  | 15 min | Add lint + build jobs        |
+| 6. Root README      | 15 min | Write from scratch           |
 
 ## Files Changed/Created
 

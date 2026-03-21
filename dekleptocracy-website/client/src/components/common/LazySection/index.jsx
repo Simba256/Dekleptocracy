@@ -19,16 +19,12 @@ export default function LazySection({ children, fallback = null, rootMargin = '2
           observer.disconnect();
         }
       },
-      { rootMargin }
+      { rootMargin },
     );
 
     observer.observe(el);
     return () => observer.disconnect();
   }, [rootMargin]);
 
-  return (
-    <div ref={ref}>
-      {isVisible ? children : fallback}
-    </div>
-  );
+  return <div ref={ref}>{isVisible ? children : fallback}</div>;
 }

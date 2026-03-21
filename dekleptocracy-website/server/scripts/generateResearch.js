@@ -1,17 +1,17 @@
 /**
  * Test script for research generation
- * 
+ *
  * Usage:
  *   node scripts/generateResearch.js [count]
- * 
+ *
  * Examples:
  *   node scripts/generateResearch.js     // Generate 5 reports (default)
  *   node scripts/generateResearch.js 3   // Generate 3 reports
- * 
+ *
  * Or use the API endpoint:
  *   POST http://localhost:5000/api/research/generate
  *   Body: { "count": 5 }
- * 
+ *
  * Or use curl:
  *   curl -X POST http://localhost:5000/api/research/generate -H "Content-Type: application/json" -d "{\"count\": 3}"
  */
@@ -30,11 +30,11 @@ async function main() {
 
     // Get count from command line args or default to 5
     const count = parseInt(process.argv[2]) || 5;
-    
+
     console.log(`🔬 Generating ${count} research reports...\n`);
-    
+
     const research = await generateResearch(count);
-    
+
     console.log('\n' + '='.repeat(80));
     console.log('📊 RESEARCH GENERATION SUMMARY');
     console.log('='.repeat(80));
@@ -50,11 +50,10 @@ async function main() {
       console.log(`   Data Points: ${r.chartData.length}`);
     });
     console.log('\n' + '='.repeat(80));
-    
+
     await mongoose.connection.close();
     console.log('\n✅ Script complete!');
     process.exit(0);
-    
   } catch (error) {
     console.error('❌ Error:', error);
     process.exit(1);
@@ -62,4 +61,3 @@ async function main() {
 }
 
 main();
-

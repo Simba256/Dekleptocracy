@@ -7,16 +7,57 @@ const BASE_URL = 'https://dekleptocracy.vercel.app';
 
 // All US states for sitemap
 const US_STATES = [
-  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-  'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
-  'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
-  'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
-  'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon',
-  'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
-  'West Virginia', 'Wisconsin', 'Wyoming', 'District of Columbia'
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+  'Massachusetts',
+  'Michigan',
+  'Minnesota',
+  'Mississippi',
+  'Missouri',
+  'Montana',
+  'Nebraska',
+  'Nevada',
+  'New Hampshire',
+  'New Jersey',
+  'New Mexico',
+  'New York',
+  'North Carolina',
+  'North Dakota',
+  'Ohio',
+  'Oklahoma',
+  'Oregon',
+  'Pennsylvania',
+  'Rhode Island',
+  'South Carolina',
+  'South Dakota',
+  'Tennessee',
+  'Texas',
+  'Utah',
+  'Vermont',
+  'Virginia',
+  'Washington',
+  'West Virginia',
+  'Wisconsin',
+  'Wyoming',
+  'District of Columbia',
 ];
 
 // Static pages with their properties
@@ -32,7 +73,7 @@ const STATIC_PAGES = [
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3 },
   { url: '/accessibility', changefreq: 'yearly', priority: 0.3 },
   { url: '/data-policy', changefreq: 'yearly', priority: 0.3 },
-  { url: '/copyright-policy', changefreq: 'yearly', priority: 0.3 }
+  { url: '/copyright-policy', changefreq: 'yearly', priority: 0.3 },
 ];
 
 /**
@@ -82,7 +123,9 @@ router.get('/sitemap.xml', async (req, res) => {
 
     // Add article pages
     for (const article of articles) {
-      const lastmod = (article.updatedAt || article.publishedAt || new Date()).toISOString().split('T')[0];
+      const lastmod = (article.updatedAt || article.publishedAt || new Date())
+        .toISOString()
+        .split('T')[0];
       xml += '  <url>\n';
       xml += `    <loc>${BASE_URL}/insights?slug=${article.slug}</loc>\n`;
       xml += `    <lastmod>${lastmod}</lastmod>\n`;
@@ -145,8 +188,8 @@ router.get('/api/seo/health', async (req, res) => {
         staticPages: STATIC_PAGES.length,
         statePages: US_STATES.length,
         articlePages: articleCount,
-        totalUrls: STATIC_PAGES.length + US_STATES.length + articleCount
-      }
+        totalUrls: STATIC_PAGES.length + US_STATES.length + articleCount,
+      },
     });
   } catch (error) {
     res.status(500).json({ status: 'error', message: error.message });

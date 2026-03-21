@@ -59,9 +59,9 @@ export default defineConfig([
   // Files that legitimately export helpers alongside components
   {
     files: [
-      'src/components/common/SEO/index.jsx',
-      'src/context/HomepageContext.jsx',
-      'src/components/common/AnimatedSection/index.jsx',
+      '**/components/common/SEO/index.jsx',
+      '**/context/HomepageContext.jsx',
+      '**/components/common/AnimatedSection/index.jsx',
     ],
     rules: {
       'react-refresh/only-export-components': 'off',
