@@ -839,18 +839,6 @@ IMPORTANT GUIDELINES:
 
       {/* Main Chat Container */}
       <div className="chatbot-main">
-        {/* Header — minimal white strip */}
-        <div className="chatbot-header">
-          <div className="header-inner">
-            <h1 className="chatbot-title">AI Assistant</h1>
-            {userLocation && (
-              <span className="header-badge">
-                {userLocation === 'nationwide' ? 'All States' : userLocation}
-              </span>
-            )}
-          </div>
-        </div>
-
         {/* Messages Area */}
         <div className="chatbot-messages">
           <div className="chatbot-messages-inner">

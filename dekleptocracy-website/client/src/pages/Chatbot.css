@@ -24,36 +24,6 @@
   overflow: hidden;
 }
 
-/* Header — minimal white strip */
-.chatbot-header {
-  background-color: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-200);
-  padding: 12px 24px;
-  flex-shrink: 0;
-}
-
-.header-inner {
-  max-width: 768px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.chatbot-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-green-muted);
-  margin: 0;
-  letter-spacing: var(--letter-spacing-normal);
-}
-
-.header-badge {
-  font-size: 13px;
-  color: var(--color-gray-500);
-  font-weight: 400;
-}
-
 /* Messages Area */
 .chatbot-messages {
   flex: 1;
