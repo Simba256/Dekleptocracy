@@ -28,7 +28,12 @@ const Insights = () => {
 
   // Update filter when path changes
   useEffect(() => {
-    setContentTypeFilter(getContentTypeFromPath());
+    const type = (() => {
+      if (location.pathname === '/insights/articles') return 'article';
+      if (location.pathname === '/insights/research') return 'research';
+      return 'all';
+    })();
+    setContentTypeFilter(type);
   }, [location.pathname]);
 
   // Fetch articles from API

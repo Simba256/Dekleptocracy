@@ -63,7 +63,7 @@ const TimelineSlider = ({ config, value, onChange, onMilestoneClick }) => {
 
   const position = useMemo(() => {
     return value ? dateToPosition(value) : dateToPosition(defaultDate || minDate);
-  }, [value, defaultDate, dateToPosition]);
+  }, [value, defaultDate, minDate, dateToPosition]);
 
   const handleChange = (e) => {
     const newPosition = parseFloat(e.target.value);

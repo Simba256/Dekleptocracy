@@ -191,7 +191,7 @@ const StateReport = () => {
 
     loadReport();
     return () => controller.abort();
-  }, [API_URL, name, role, stateName]);
+  }, [name, role, stateName]);
 
   const triggerDataRefresh = async () => {
     if (triggeringRefresh) return;

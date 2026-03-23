@@ -267,8 +267,12 @@ const Chatbot = () => {
 
   // Update welcome message when userLocation is loaded
   useEffect(() => {
-    if (userLocation && messages.length === 1 && messages[0].id === '1') {
-      // Update the initial welcome message with location context
+    if (!userLocation) return;
+
+    setMessages((prev) => {
+      // Only update if still showing the initial welcome message
+      if (prev.length !== 1 || prev[0].id !== '1') return prev;
+
       const locationDisplay = userLocation === 'nationwide' ? 'All States' : userLocation;
       const locationContext =
         userLocation === 'nationwide' ? 'nationwide' : `${userLocation}-specific`;
@@ -285,14 +289,9 @@ I see you're looking at **${locationDisplay}** data. When you ask about prices o
 
 How can I help you today?`;
 
-      setMessages([
-        {
-          ...messages[0],
-          content: updatedWelcomeMessage,
-        },
-      ]);
-    }
-  }, [userLocation]); // Only run when userLocation changes
+      return [{ ...prev[0], content: updatedWelcomeMessage }];
+    });
+  }, [userLocation]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -336,17 +335,12 @@ How can I help you today?`;
       navigate(location.pathname, { replace: true, state: {} });
       submitMessage(query);
     }
+    // submitMessage is ref-guarded — runs at most once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state, navigate, location.pathname]);
 
-  // Save current chat to history after messages change
-  useEffect(() => {
-    if (messages.length > 1) {
-      // More than just the welcome message
-      saveCurrentChat();
-    }
-  }, [messages]);
-
-  const saveCurrentChat = async () => {
+  // Save current chat to history
+  const saveCurrentChat = useCallback(async () => {
     const history = getChatHistory();
     const chatId = currentChatId || Date.now().toString();
 
@@ -378,7 +372,15 @@ How can I help you today?`;
     if (!currentChatId) {
       setCurrentChatId(chatId);
     }
-  };
+  }, [messages, currentChatId, MCP_SERVER_URL]);
+
+  // Save current chat to history after messages change
+  useEffect(() => {
+    if (messages.length > 1) {
+      // More than just the welcome message
+      saveCurrentChat();
+    }
+  }, [messages, saveCurrentChat]);
 
   const loadChat = (chatId) => {
     const history = getChatHistory();

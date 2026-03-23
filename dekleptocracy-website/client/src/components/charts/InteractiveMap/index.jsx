@@ -186,7 +186,7 @@ const InteractiveMap = ({ data, selectedState, onStateSelect, onDrillDown }) => 
       .range(metricConfig.colors);
 
     return { colorScale: scale, minValue: min, maxValue: max };
-  }, [data, activeMetric, metricConfig]);
+  }, [data, metricConfig]);
 
   const getStateData = useCallback(
     (stateId) => {

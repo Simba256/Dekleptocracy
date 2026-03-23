@@ -40,9 +40,10 @@ export const useFocusTrap = (isActive) => {
 
     container.addEventListener('keydown', handleKeyDown);
 
+    const previousFocus = previousFocusRef.current;
     return () => {
       container.removeEventListener('keydown', handleKeyDown);
-      previousFocusRef.current?.focus();
+      previousFocus?.focus();
     };
   }, [isActive]);
 

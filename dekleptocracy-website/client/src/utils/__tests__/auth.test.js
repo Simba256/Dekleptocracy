@@ -182,9 +182,11 @@ describe('auth utilities', () => {
       expect(setupTokenRefresh(callback)).toBeNull();
     });
 
-    it('schedules callback before expiry', () => {
-      // Token expires in 10 minutes
+    it('schedules callback before expiry', async () => {
+      // Token expires in 10 minutes (600s)
       localStorage.setItem('token', createToken({ sub: '123' }, 600));
+      // Mock fetch for silentRefresh (called inside the timer callback)
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 401 }));
 
       const callback = vi.fn();
       const timerId = setupTokenRefresh(callback);
@@ -192,20 +194,23 @@ describe('auth utilities', () => {
       expect(timerId).not.toBeNull();
       expect(callback).not.toHaveBeenCalled();
 
-      // Fast forward to just before the refresh time (5 min buffer)
-      vi.advanceTimersByTime(4 * 60 * 1000);
+      // Fast forward to just before the refresh time (1 min buffer = fires at 9 min)
+      vi.advanceTimersByTime(8 * 60 * 1000);
       expect(callback).not.toHaveBeenCalled();
 
-      // Fast forward past refresh time
+      // Fast forward past refresh time (9 min mark)
       vi.advanceTimersByTime(2 * 60 * 1000);
+      // Flush async silentRefresh promise
+      await vi.advanceTimersByTimeAsync(0);
       expect(callback).toHaveBeenCalledTimes(1);
 
       clearTimeout(timerId);
+      vi.unstubAllGlobals();
     });
 
     it('returns null if token expires within buffer period', () => {
-      // Token expires in 3 minutes (less than 5 min buffer)
-      localStorage.setItem('token', createToken({ sub: '123' }, 180));
+      // Token expires in 30 seconds (less than 1 min buffer)
+      localStorage.setItem('token', createToken({ sub: '123' }, 30));
 
       const callback = vi.fn();
       expect(setupTokenRefresh(callback)).toBeNull();

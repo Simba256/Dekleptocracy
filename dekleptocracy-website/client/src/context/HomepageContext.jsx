@@ -361,10 +361,12 @@ export function HomepageProvider({ children }) {
   }, []);
 
   // Fetch data when state or time period changes
+  // state.loading is read as a parameter, not a trigger — including it would cause infinite loops
   useEffect(() => {
     fetchData(state.loading === false);
-    fetchMapData(); // Also fetch map data
-  }, [state.selectedState, state.timePeriod, fetchMapData]);
+    fetchMapData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.selectedState, state.timePeriod, fetchData, fetchMapData]);
 
   // Save user preferences
   const savePreferences = useCallback(async (updates) => {
@@ -399,81 +401,81 @@ export function HomepageProvider({ children }) {
     }
   }, []);
 
-  // Actions
-  const actions = {
-    setSelectedState: (newState) => {
-      const stateValue = newState === 'All states' ? 'nationwide' : newState;
-      dispatch({ type: ActionTypes.SET_SELECTED_STATE, payload: stateValue });
-      savePreferences({ selectedState: stateValue });
-    },
-
-    setTimePeriod: (period) => {
-      dispatch({ type: ActionTypes.SET_TIME_PERIOD, payload: period });
-      savePreferences({ defaultTimePeriod: period });
-    },
-
-    addReaction: async (shockId, reactionType) => {
-      try {
-        const data = await homepageApi.addReaction(shockId, reactionType);
-        dispatch({
-          type: ActionTypes.UPDATE_REACTION,
-          payload: { shockId, reactions: data.reactions },
-        });
-      } catch {
-        // Silent fail for reaction adding
-      }
-    },
-
-    toggleDropdown: (dropdownName) => {
-      dispatch({ type: ActionTypes.TOGGLE_DROPDOWN, payload: dropdownName });
-    },
-
-    closeAllDropdowns: () => {
-      dispatch({ type: ActionTypes.CLOSE_ALL_DROPDOWNS });
-    },
-
-    setDropdownSearch: (dropdown, value) => {
-      dispatch({ type: ActionTypes.SET_DROPDOWN_SEARCH, payload: { dropdown, value } });
-    },
-
-    showImpactModal: (product = '') => {
-      dispatch({ type: ActionTypes.SET_SHOW_IMPACT_MODAL, payload: { show: true, product } });
-    },
-
-    hideImpactModal: () => {
-      dispatch({ type: ActionTypes.SET_SHOW_IMPACT_MODAL, payload: { show: false } });
-    },
-
-    setTimelineDate: (value) => {
-      dispatch({ type: ActionTypes.SET_TIMELINE_DATE, payload: value });
-    },
-
-    setSearchQuery: (query) => {
-      dispatch({ type: ActionTypes.SET_SEARCH_QUERY, payload: query });
-    },
-
-    setProductQuery: (query) => {
-      dispatch({ type: ActionTypes.SET_PRODUCT_QUERY, payload: query });
-    },
-
-    refresh: () => {
-      clearCache(); // Clear cache on manual refresh
-      fetchData(true);
-    },
-
-    clearCache: () => clearCache(),
-
-    downloadReport: () => {
-      homepageApi.downloadReport(getEffectiveState(), state.timePeriod);
-    },
-
-    downloadCSV: () => {
-      homepageApi.downloadCSV(getEffectiveState());
-    },
-  };
-
   // Memoize the actions object to prevent unnecessary re-renders
-  const memoizedActions = useMemo(() => actions, [savePreferences, fetchData]);
+  const memoizedActions = useMemo(
+    () => ({
+      setSelectedState: (newState) => {
+        const stateValue = newState === 'All states' ? 'nationwide' : newState;
+        dispatch({ type: ActionTypes.SET_SELECTED_STATE, payload: stateValue });
+        savePreferences({ selectedState: stateValue });
+      },
+
+      setTimePeriod: (period) => {
+        dispatch({ type: ActionTypes.SET_TIME_PERIOD, payload: period });
+        savePreferences({ defaultTimePeriod: period });
+      },
+
+      addReaction: async (shockId, reactionType) => {
+        try {
+          const data = await homepageApi.addReaction(shockId, reactionType);
+          dispatch({
+            type: ActionTypes.UPDATE_REACTION,
+            payload: { shockId, reactions: data.reactions },
+          });
+        } catch {
+          // Silent fail for reaction adding
+        }
+      },
+
+      toggleDropdown: (dropdownName) => {
+        dispatch({ type: ActionTypes.TOGGLE_DROPDOWN, payload: dropdownName });
+      },
+
+      closeAllDropdowns: () => {
+        dispatch({ type: ActionTypes.CLOSE_ALL_DROPDOWNS });
+      },
+
+      setDropdownSearch: (dropdown, value) => {
+        dispatch({ type: ActionTypes.SET_DROPDOWN_SEARCH, payload: { dropdown, value } });
+      },
+
+      showImpactModal: (product = '') => {
+        dispatch({ type: ActionTypes.SET_SHOW_IMPACT_MODAL, payload: { show: true, product } });
+      },
+
+      hideImpactModal: () => {
+        dispatch({ type: ActionTypes.SET_SHOW_IMPACT_MODAL, payload: { show: false } });
+      },
+
+      setTimelineDate: (value) => {
+        dispatch({ type: ActionTypes.SET_TIMELINE_DATE, payload: value });
+      },
+
+      setSearchQuery: (query) => {
+        dispatch({ type: ActionTypes.SET_SEARCH_QUERY, payload: query });
+      },
+
+      setProductQuery: (query) => {
+        dispatch({ type: ActionTypes.SET_PRODUCT_QUERY, payload: query });
+      },
+
+      refresh: () => {
+        clearCache(); // Clear cache on manual refresh
+        fetchData(true);
+      },
+
+      clearCache: () => clearCache(),
+
+      downloadReport: () => {
+        homepageApi.downloadReport(getEffectiveState(), state.timePeriod);
+      },
+
+      downloadCSV: () => {
+        homepageApi.downloadCSV(getEffectiveState());
+      },
+    }),
+    [savePreferences, fetchData, getEffectiveState, state.timePeriod],
+  );
 
   // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(

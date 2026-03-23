@@ -35,6 +35,8 @@ const ChatbotDebug = () => {
       hasSubmittedInitialQuery.current = true;
       submitMessage(location.state.initialQuery);
     }
+    // submitMessage is ref-guarded — runs at most once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
 
   const submitMessage = async (messageText) => {
