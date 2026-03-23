@@ -1,6 +1,6 @@
 # Project Tracker
 
-> Last updated: 2026-03-22
+> Last updated: 2026-03-23
 
 ## Project Summary
 Dekleptocracy — a web app exposing how federal policies impact household costs, with AI chatbot, state reports, and data visualizations.
@@ -12,7 +12,12 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 - None
 
 ## Recently Completed
-- [x] Bulk format codebase with Prettier (2026-03-22)
+- [x] Fix all 12 ESLint warnings + expand client test coverage (2026-03-23)
+  - 12 react-hooks/exhaustive-deps warnings → 0 across 8 files
+  - Client tests: 6 → 15 files, 111 → 267 tests (+156)
+  - New test coverage: 5 hooks, 2 utilities, 4 components, 2 layout components
+  - Fixed 2 pre-existing flaky auth timer tests
+- [x] Bulk format codebase with Prettier (2026-03-23)
   - Also fixed missing vitest `afterEach` import in server test
   - Fixed ESLint override patterns to work from workspace root (lint-staged)
 - [x] Developer Experience: Prettier + pre-commit hooks (2026-03-22)
