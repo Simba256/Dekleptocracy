@@ -308,6 +308,7 @@ const timelineConfig = {
   milestones: [
     {
       position: 0,
+      date: '2024-07-01T00:00:00.000Z',
       dateDisplay: 'Jul 1, 2024',
       label: 'Before Policy',
       description: 'Baseline before major policy changes',
@@ -316,6 +317,7 @@ const timelineConfig = {
     },
     {
       position: 20,
+      date: '2024-10-01T00:00:00.000Z',
       dateDisplay: 'Oct 1, 2024',
       label: 'Pre-Election',
       description: 'Period leading up to election',
@@ -324,6 +326,7 @@ const timelineConfig = {
     },
     {
       position: 50,
+      date: '2025-01-20T00:00:00.000Z',
       dateDisplay: 'Jan 20, 2025',
       label: 'Inauguration Day',
       description: 'Presidential inauguration',
@@ -332,6 +335,7 @@ const timelineConfig = {
     },
     {
       position: 70,
+      date: '2025-04-01T00:00:00.000Z',
       dateDisplay: 'Apr 1, 2025',
       label: 'Early Months',
       description: 'First 100 days impact',
@@ -340,6 +344,7 @@ const timelineConfig = {
     },
     {
       position: 85,
+      date: '2025-07-01T00:00:00.000Z',
       dateDisplay: 'Jul 1, 2025',
       label: 'Mid-Year',
       description: 'Mid-year assessment',
@@ -348,6 +353,7 @@ const timelineConfig = {
     },
     {
       position: 100,
+      date: '2025-10-01T00:00:00.000Z',
       dateDisplay: 'Oct 1, 2025',
       label: 'Current Snapshot',
       description: 'Current state of prices',
@@ -356,6 +362,10 @@ const timelineConfig = {
     },
   ],
   slider: { min: 0, max: 100, step: 1, defaultValue: 50 },
+  dateRange: {
+    start: '2024-07-01T00:00:00.000Z',
+    end: '2025-10-01T00:00:00.000Z',
+  },
   suggestedSearches: [
     { term: 'eggs', category: 'groceries' },
     { term: 'housing', category: 'housing' },
