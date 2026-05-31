@@ -1,6 +1,6 @@
 # Project Tracker
 
-> Last updated: 2026-03-23
+> Last updated: 2026-05-31
 
 ## Project Summary
 Dekleptocracy — a web app exposing how federal policies impact household costs, with AI chatbot, state reports, and data visualizations.
@@ -12,6 +12,12 @@ Dekleptocracy — a web app exposing how federal policies impact household costs
 - None
 
 ## Recently Completed
+- [x] DB-outage resilience for homepage (2026-05-31)
+  - MongoDB Atlas unreachable (secureConnect timeout) blanked the site with "Error fetching homepage data"
+  - Added static fallback payload (`server/utils/fallbackHomepageData.js`) matching `/api/homepage/all` shape
+  - `/all` route serves fallback instantly when DB disconnected (readyState check) + in catch block — no 30s hang, returns 200
+  - Server startup hardened: `app.listen` first, DB connects in background with retry/backoff (no `process.exit` on DB failure); schedulers start on `connected` event
+  - NOTE: requires Railway redeploy (push to main) to go live
 - [x] Fix all 12 ESLint warnings + expand client test coverage (2026-03-23)
   - 12 react-hooks/exhaustive-deps warnings → 0 across 8 files
   - Client tests: 6 → 15 files, 111 → 267 tests (+156)
