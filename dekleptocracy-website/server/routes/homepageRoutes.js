@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import WalletShock from '../models/WalletShock.js';
@@ -14,6 +15,7 @@ import User from '../models/User.js';
 import StateDataCache from '../models/StateDataCache.js';
 import logger from '../utils/logger.js';
 import cache from '../utils/memoryCache.js';
+import { getFallbackHomepageData } from '../utils/fallbackHomepageData.js';
 import { generateStateReport, generateCSVExport } from '../services/reportGenerator.js';
 
 const router = express.Router();
@@ -38,6 +40,19 @@ if (process.env.NODE_ENV !== 'test') {
  * Query params: state (optional), period (optional)
  */
 router.get('/all', async (req, res) => {
+  // If the database is unreachable, serve a static snapshot immediately so the
+  // homepage renders instead of hanging ~30s on a connection timeout.
+  // readyState: 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+  if (mongoose.connection.readyState !== 1) {
+    const state = req.query.state || 'nationwide';
+    const period = req.query.period || 'YoY';
+    logger.warn(
+      `DB not connected (readyState=${mongoose.connection.readyState}) - serving fallback homepage data`,
+    );
+    res.set('Cache-Control', 'public, max-age=30');
+    return res.json(getFallbackHomepageData(state, period));
+  }
+
   try {
     // Extract auth token if provided
     let userPreferences = {};
@@ -137,11 +152,12 @@ router.get('/all', async (req, res) => {
     res.json(responseBody);
   } catch (error) {
     logger.error('Error fetching aggregated homepage data', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching homepage data',
-      error: error.message,
-    });
+    // DB query failed (e.g. connection/timeout) - degrade gracefully with a
+    // static snapshot instead of blanking the homepage with a 500.
+    const state = req.query.state || 'nationwide';
+    const period = req.query.period || 'YoY';
+    res.set('Cache-Control', 'public, max-age=30');
+    res.json(getFallbackHomepageData(state, period));
   }
 });
 
